@@ -12,29 +12,20 @@
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-5 sm:flex">
                     <x-nav-link :href="route('guesttop')" :active="request()->routeIs('guesttop')" size="2xl" weight="bold">
-                        {{ env('APP_NAME', 'ConfmanEx') }}
+                        {{ env('APP_NAME', 'ReviewHub') }}
                     </x-nav-link>
                 </div>
-                @php
-                    $voting = App\Models\Setting::findByIdOrName('VOTING', 'value');
-                @endphp
 
                 @auth
                     @php
                         $navs_href = [
-                            '投票' => route('vote.index'),
                             '新規投稿' => route('paper.create'),
                             '投稿一覧' => route('paper.index'),
                         ];
                         $navs_active = [
-                            '投票' => request()->routeIs('vote.index'),
                             '新規投稿' => request()->routeIs('paper.create'),
                             '投稿一覧' => request()->routeIs('paper.index'),
                         ];
-                        if ($voting == 'false') {
-                            unset($navs_href['投票']);
-                            unset($navs_active['投票']);
-                        }
                         //閲覧者のロールを取得
                         $roles = auth()->user()->roles;
                         foreach ($roles as $role) {

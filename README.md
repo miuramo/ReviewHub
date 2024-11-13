@@ -1,8 +1,6 @@
-## ConfmanEx
+## ReviewHub
 
-ConfmanEx is a paper submission and peer review system developed using Laravel.
-
-Paper authors can upload PDF files, video files, and image files related to paper submission.
+ReviewHub is a journal paper submission and peer review system developed using Laravel.
 
 
 
@@ -11,4 +9,15 @@ Paper authors can upload PDF files, video files, and image files related to pape
 
 ## License
 
-ConfmanEx is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+ReviewHub is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+## First Step
+
+- prepare .env  from dotenv_sample or .env.example
+ - set INITIAL_*** for 1st user account made by db:seed
+- composer update
+- npm install
+- npm run build
+- ./artisan migrate:fresh --seed 
+

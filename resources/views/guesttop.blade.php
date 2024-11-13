@@ -48,25 +48,8 @@
         </ol>
     </div>
 
-    @php
-        $introvideourl_obj = App\Models\Setting::findByIdOrName('INTRO_VIDEO_URL');
-        if ($introvideourl_obj->valid) $introvideourl = $introvideourl_obj->value;
-    @endphp
-    <!-- 動画でみる投稿の流れの設定は、Setting:INTRO_VIDEO_URL にあります。 -->
-    @isset($introvideourl)
-        <div class="my-6 mx-6 p-6 bg-slate-200 dark:bg-slate-700 dark:text-slate-400">
-            <div class="mx-2">
-                <span class=" bg-gray-500 px-3 py-1 text-lg text-white">動画でみる投稿の流れ</span>
-                <video class="mt-2" width="640" height="360" controls>
-                    <source src="{{ $introvideourl }}" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-        </div>
-    @endisset
-
     <div class="my-10 text-center text-gray-300 dark:text-gray-500">
-        Powered by <a href="https://github.com/miuramo/ConfmanEx/" target="_blank" class="hover:underline">ConfmanEx</a>
+        Powered by <a href="https://github.com/miuramo/ReviewHub/" target="_blank" class="hover:underline">ReviewHub</a>
         <br>
         Copyright &copy; 2024 <a href="https://istlab.info/" target="_blank" class="hover:underline">Motoki Miura</a>
     </div>
