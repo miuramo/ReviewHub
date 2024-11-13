@@ -185,7 +185,7 @@ class Enquete extends Model
             ->roles->pluck("id", "name")
             ->toArray();
         // PCをもっていれば、ぜんぶみれる
-        if (isset($rolename_id['pc'])) {
+        if (isset($rolename_id['ce'])) {
             if ($returnAry) return Enquete::select("id","name")->get()->pluck("name","id")->toArray();
             return Enquete::with("roles")->get();
         }

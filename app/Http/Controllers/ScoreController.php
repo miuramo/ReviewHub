@@ -74,7 +74,7 @@ class ScoreController extends Controller
      */
     public function resetscore(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'pc|manager|admin')) abort(403);
+        if (!auth()->user()->can('role_any', 'ce|manager|admin')) abort(403);
         if ($req->method() === 'POST') {
             if ($req->has("action")) {
                 foreach ($req->all() as $k => $v) {

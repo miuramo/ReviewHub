@@ -46,7 +46,7 @@ class Bb extends Model
     {
         $subs = [
             1 => "reviewer|metareviewer",
-            2 => "pc|metareviewer|author",
+            2 => "ce|metareviewer|author",
             3 => "pub|author",
         ];
         $firstmes = [
@@ -54,10 +54,6 @@ class Bb extends Model
             2 => "ここはメタ査読者と著者の掲示板です。（プログラム委員長も閲覧できます。）",
             3 => "ここは出版担当と著者の掲示板です。",
         ];
-        $nameofmeta = Setting::findByIdOrName('name_of_meta')->value;
-        if ($nameofmeta != null){
-            $firstmes[2] = "ここは".$nameofmeta."と著者の掲示板です。（プログラム委員長も閲覧できます。）";
-        }
         $bb = Bb::firstOrCreate([
             'paper_id' => $pid,
             'category_id' => $cid,

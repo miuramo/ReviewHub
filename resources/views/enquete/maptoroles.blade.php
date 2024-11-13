@@ -2,7 +2,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="mb-4">
-            <x-element.linkbutton href="{{ route('role.top', ['role' => 'pc']) }}" color="gray" size="sm">
+            <x-element.linkbutton href="{{ route('role.top', ['role' => 'ce']) }}" color="gray" size="sm">
                 &larr; PC長 Topに戻る
             </x-element.linkbutton>
         </div>
@@ -69,7 +69,7 @@
 
     <div class="py-2 px-6">
         <div class="mb-4 my-10">
-            <x-element.linkbutton href="{{ route('role.top', ['role' => 'pc']) }}" color="gray" size="sm">
+            <x-element.linkbutton href="{{ route('role.top', ['role' => 'ce']) }}" color="gray" size="sm">
                 &larr; PC長 Topに戻る
             </x-element.linkbutton>
         </div>

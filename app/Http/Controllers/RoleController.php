@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Exports\BiddingResultExportFromView;
 use App\Exports\RoleMembersExportFromView;
 use App\Models\Category;
+use App\Models\Confirm;
 use App\Models\MailTemplate;
 use App\Models\Review;
 use App\Models\Role;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,6 +35,14 @@ class RoleController extends Controller
                 abort(403);
             }
         }
+                // Setting seeder
+                Setting::seeder();
+                // Confirm seeder
+                Confirm::seeder_policy();
+        
+                // Userが存在しないContactを参照していたら、直す
+                User::fix_broken_contact_all();
+        
         // $role = Role::where("name",$name)->first();
         $role = Role::findByIdOrName($name);
         return view('role/top', ["role" => 1])->with(["name" => $name, "role" => $role]);
@@ -185,7 +195,7 @@ class RoleController extends Controller
      */
     public function revassign(Role $role, Category $cat)
     {
-        if (!auth()->user()->can('role_any', 'pc')) abort(403);
+        if (!auth()->user()->can('role_any', 'ce')) abort(403);
         // 査読者がBiddingしてくれない場合もあるので、ここで抽出しておく。
         Review::extractAllCoAuthorRigais();
 
@@ -198,7 +208,7 @@ class RoleController extends Controller
 
     public function revassignpost(Request $req, Role $role, Category $cat)
     {
-        if (!auth()->user()->can('role_any', 'pc')) abort(403);
+        if (!auth()->user()->can('role_any', 'ce')) abort(403);
         if ($req->has("paper_id") && $req->has("user_id") && $req->has("status")) {
             $status = $req->input("status");
             $paper_id = $req->input("paper_id");
@@ -214,7 +224,7 @@ class RoleController extends Controller
 
     public function revassign_excel(Role $role, Category $cat)
     {
-        if (!auth()->user()->can('role_any', 'pc')) abort(403);
+        if (!auth()->user()->can('role_any', 'ce')) abort(403);
         Review::extractAllCoAuthorRigais();
         // $reviewers = $role->users;
         // $roles = Role::where("name", "like", "%reviewer")->get();

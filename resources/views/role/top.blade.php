@@ -10,7 +10,7 @@
             <x-element.deletebutton action="{{ route('file.delall') }}" color="red" confirm="全部削除してよいですか？"> Delete All
             </x-element.deletebutton> --}}
             <span class="mx-4"></span>
-            @if ($role->name == 'pc')
+            @if ($role->name == 'ce')
                 <x-element.linkbutton
                     href="https://scrapbox.io/confman/ReviewHub_PC%E5%A7%94%E5%93%A1%E9%95%B7%E5%90%91%E3%81%91%E3%81%AE%E8%B3%87%E6%96%99"
                     color="cyan" size="sm" target="_blank">
@@ -26,7 +26,7 @@
         <x-alert.error>{{ session('feedback.error') }}</x-alert.error>
     @endif
 
-    @can('role_any', 'metareviewer|reviewer|pc|pub|award|acc|demo|web|wc|admin')
+    @can('role_any', 'metareviewer|reviewer|ce|pub|award|acc|demo|web|wc|admin')
         @if ($role->name == 'reviewer')
             <x-role.reviewer :role="$role">
             </x-role.reviewer>
@@ -35,7 +35,7 @@
             <x-role.reviewer :role="$role">
             </x-role.reviewer>
         @endif
-        @if ($role->name == 'pc')
+        @if ($role->name == 'ce')
             <x-role.pc :role="$role">
             </x-role.pc>
         @endif

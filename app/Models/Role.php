@@ -65,7 +65,7 @@ class Role extends Model
     /**
      * テスト用：tinkerから呼び出す
      * demo = 10
-     * metareviewer|reviewer|pc|pub|award|acc|demo|web|wc|admin
+     * metareviewer|reviewer|ce|pub|award|acc|demo|web|wc|admin
      */
     public static function resetRolesExcept(int $user_id, $roles){
         $user = User::find($user_id);

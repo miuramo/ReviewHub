@@ -72,7 +72,7 @@ class Category extends Model
     {
         $canshow = false;
         $revlist = Category::select('id', 'status__revlist_on')->get()->pluck('status__revlist_on', 'id')->toArray();
-        if (!auth()->user()->can('role', 'pc')) {
+        if (!auth()->user()->can('role', 'ce')) {
             if (auth()->user()->can('role_any', 'reviewer|metareviewer') && $revlist[$cat_id]) {
                 $canshow = true;
             } else {
@@ -89,7 +89,7 @@ class Category extends Model
     public static function manage_cats()
     {
         $cats = Category::select('id', 'name')->get()->pluck('name', 'id')->toArray();
-        if (auth()->user()->can('role', 'pc')) {
+        if (auth()->user()->can('role', 'ce')) {
             return $cats;
         } else {
             if (auth()->user()->can('manage_cat_any')) {

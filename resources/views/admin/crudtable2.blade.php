@@ -1,6 +1,6 @@
 @php
     if (!isset($back_link_href)) {
-        $back_link_href = route('role.top', ['role' => 'pc']);
+        $back_link_href = route('role.top', ['role' => 'ce']);
     }
     if (!isset($back_link_label)) {
         $back_link_label = 'PC長 Topに戻る';

@@ -113,6 +113,7 @@ class Setting extends Model
             'isnumber' => false,
             'isbool' => false,
         ]);
+        
         Setting::firstOrCreate([
             'name' => "LAST_QUEUEWORK_DATE",
         ], [
@@ -120,13 +121,7 @@ class Setting extends Model
             'isnumber' => false,
             'isbool' => false,
         ]);
-        Setting::firstOrCreate([
-            'name' => "TUTORIAL_URL",
-        ], [
-            'value' => "https://exconf.istlab.info/SSS_tutorial.mp4",
-            'isnumber' => false,
-            'isbool' => false,
-        ]);
+
         Setting::firstOrCreate([
             'name' => "CFP_LINKTEXT",
         ], [
@@ -134,13 +129,7 @@ class Setting extends Model
             'isnumber' => false,
             'isbool' => false,
         ]);
-        Setting::firstOrCreate([
-            'name' => "INTRO_VIDEO_URL",
-        ], [
-            'value' => "https://exconf.istlab.info/SSS_tutorial.mp4",
-            'isnumber' => false,
-            'isbool' => false,
-        ]);
+
         Setting::firstOrCreate([
             'name' => "CROP_YHWX",
         ], [
@@ -160,13 +149,6 @@ class Setting extends Model
 
         // Viewpoint::change_separator();
 
-        Setting::firstOrCreate([
-            'name' => "VOTING",
-        ], [
-            'value' => "false",
-            'isnumber' => false,
-            'isbool' => true,
-        ]);
         Setting::firstOrCreate([
             'name' => "REDIRECT",
         ], [

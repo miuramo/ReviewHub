@@ -23,7 +23,7 @@ class RevConflictController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->can('role_any', 'pc')) abort(403);
+        if (!auth()->user()->can('role_any', 'ce')) abort(403);
         $missing = RevConflict::bidding_status(false, "name"); // include all finished reviewer, key is name
         return view('revcon.index')->with(compact("missing"));
     }
@@ -34,7 +34,7 @@ class RevConflictController extends Controller
      */
     public function stat()
     {
-        if (!auth()->user()->can('role_any', 'pc')) abort(403);
+        if (!auth()->user()->can('role_any', 'ce')) abort(403);
         $cats = Category::select('id', 'name')->get()->pluck('name', 'id')->toArray();
 
         foreach ($cats as $cid => $cname) {
@@ -48,7 +48,7 @@ class RevConflictController extends Controller
      */
     public function revstat(string $revrolename="reviewer")
     {
-        if (!auth()->user()->can('role_any', 'pc')) abort(403);
+        if (!auth()->user()->can('role_any', 'ce')) abort(403);
         $cats = Category::select('id', 'name')->get()->pluck('name', 'id')->toArray();
 
         foreach ($cats as $cid => $cname) {
@@ -66,7 +66,7 @@ class RevConflictController extends Controller
      */
     public function revstatus()
     {
-        if (!auth()->user()->can('role_any', 'pc')) abort(403);
+        if (!auth()->user()->can('role_any', 'ce')) abort(403);
         Review::validateAllRev(); // statusを更新
         
         $cats = Category::select('id', 'name')->get()->pluck('name', 'id')->toArray();
@@ -113,7 +113,7 @@ class RevConflictController extends Controller
      * 査読者の名前 revcon.revname -> revname_table
      */
     public function revname(Request $req, Category $cat){
-        if (!auth()->user()->can('role_any', 'pc')) abort(403);
+        if (!auth()->user()->can('role_any', 'ce')) abort(403);
         if ($req->has("excel")) {
             return Excel::download(new RevNameExportFromView($cat->id), "査読者一覧_{$cat->name}.xlsx");
         }

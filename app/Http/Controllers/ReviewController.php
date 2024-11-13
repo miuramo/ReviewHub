@@ -105,7 +105,7 @@ class ReviewController extends Controller
             ->pluck('status__revlist_on', 'id')
             ->toArray();
 
-        if (!auth()->user()->can('role', 'pc')) {
+        if (!auth()->user()->can('role', 'ce')) {
             if (auth()->user()->can('role_any', 'reviewer|metareviewer') && $revlist[$cat->id]) {
                 // OK , pass
             } else {
@@ -119,7 +119,7 @@ class ReviewController extends Controller
     }
     public function resultpost(Request $req, Category $cat)
     {
-        if (!auth()->user()->can('role', 'pc')) {
+        if (!auth()->user()->can('role', 'ce')) {
             if (!auth()->user()->can('manage_cat', $cat->id)) return abort(403, 'review result');
         }
         if ($req->has("action") && $req->input("action") == "excel") {
@@ -211,7 +211,7 @@ class ReviewController extends Controller
      */
     public function show(Review $review)
     {
-        if (!auth()->user()->can('role_any', 'pc|reviewer|metareviewer',)) return abort(403);
+        if (!auth()->user()->can('role_any', 'ce|reviewer|metareviewer',)) return abort(403);
         if ($review->user_id != auth()->id()) return abort(403, "THIS IS NOT YOUR REVIEW");
 
         if ($review->ismeta) {
@@ -234,7 +234,7 @@ class ReviewController extends Controller
      */
     public function pubshow(Review $review, string $token)
     {
-        if (!auth()->user()->can('role_any', 'pc|reviewer|metareviewer',)) return abort(403);
+        if (!auth()->user()->can('role_any', 'ce|reviewer|metareviewer',)) return abort(403);
         if ($review->token() != $token) return abort(403, "Review Browse TOKEN ERROR");
 
         if ($review->ismeta) {
@@ -256,7 +256,7 @@ class ReviewController extends Controller
      */
     public function edit_dummy($cat_id, $ismeta = 0)
     {
-        if (!auth()->user()->can('role', 'pc')) return abort(403);
+        if (!auth()->user()->can('role', 'ce')) return abort(403);
         $rev = new Review();
         $rev->category_id = $cat_id;
         $rev->submit_id = 9999;
