@@ -35,12 +35,12 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        {{-- <x-dropdown-link target="_blank" :href="route('file.pdfimages', ['file' => $file->id])">
+                         <x-dropdown-link target="_blank" :href="route('file.pdfimages', ['file' => $file->id])">
                         thumb
                     </x-dropdown-link>
                     <x-dropdown-link target="_blank" :href="route('file.altimgshow', ['file' => $file->id, 'hash'=> substr($file->key,0,8)])">
                         alt
-                    </x-dropdown-link> --}}
+                    </x-dropdown-link> 
                         <x-dropdown-div>
                             <x-element.deletebutton action="{{ route('file.destroy', ['file' => $file->id]) }}"
                                 color="red" confirm="削除してよいですか？"> Delete File
