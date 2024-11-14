@@ -256,7 +256,7 @@ class FileController extends Controller
             if (!is_array(@$pids[$res->category_id][$res->valid][$res->deleted][$res->pending][$res->locked])) {
                 $pids[$res->category_id][$res->valid][$res->deleted][$res->pending][$res->locked] = [];
             }
-            $label = sprintf("%03d", $res->paper_id) . " (f{$res->id} {$shortmime}";
+            $label = sprintf("%04d", $res->paper_id) . " (f{$res->id} {$shortmime}";
             if ($res->mime === 'application/pdf') {
                 $label .= $res->pagenum . "p";
             }
@@ -275,13 +275,13 @@ class FileController extends Controller
     {
         $im = imagecreatefrompng(public_path("favicon.png"));
 
-        $year = Setting::findByIdOrName("CONFTITLE_YEAR", "value");
+        $year = Setting::findByIdOrName("CONFTITLE_ABB", "value");
         if ($year) {
-            $year_02d = $year % 100;
+            $year_02d = $year;
             $fabcolors = Setting::firstOrCreate([
                 'name' => "FAVICON_COLORS",
             ], [
-                'value' => "[207,48,48,  252,204,204]",
+                'value' => "[157,48,157,  252,204,252]",
                 'isnumber' => false,
                 'isbool' => false,
             ]);
@@ -295,10 +295,10 @@ class FileController extends Controller
             // Yearの下2桁を書き込む
             for ($i = -2; $i < 3; $i++) {
                 for ($j = -2; $j < 3; $j++) {
-                    ImageTTFText($im, 16, 0, 6 + $i, 28 + $j, $bgc, $dejavu, $year_02d);
+                    ImageTTFText($im, 14, 0, 2 + $i, 26 + $j, $bgc, $dejavu, $year_02d);
                 }
             }
-            ImageTTFText($im, 16, 0, 6, 28, $fgc, $dejavu, $year_02d);
+            ImageTTFText($im, 14, 0, 2, 26, $fgc, $dejavu, $year_02d);
         }
 
         header("Content-Type: image/png");

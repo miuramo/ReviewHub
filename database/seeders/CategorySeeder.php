@@ -13,9 +13,7 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         $data = [
-            1 => "登壇発表",
-            2 => "デモポスター発表",
-            3 => "予備",
+            1 => "論文誌",
         ];
         $bg = [
             1 => "teal",
@@ -28,9 +26,9 @@ class CategorySeeder extends Seeder
             3 => "orange",
         ];
         $oe = [
-            1 => "05-31",
-            2 => "05-31",
-            3 => "03-02",
+            1 => "12-31",
+            2 => "12-31",
+            3 => "12-31",
         ];
         foreach ($data as $n => $d) {
             \App\Models\Category::factory()->create([

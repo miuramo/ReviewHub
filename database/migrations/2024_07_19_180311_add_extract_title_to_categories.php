@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('categories', function (Blueprint $table) {
-            $table->boolean('extract_title')->default(true)->comment("PDFテキストからタイトルを抽出する")->after("show_bibinfo_btn");
+            $table->boolean('extract_title')->default(false)->comment("PDFテキストからタイトルを抽出する")->after("show_bibinfo_btn");
             //
         });
     }

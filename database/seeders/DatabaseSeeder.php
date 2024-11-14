@@ -35,10 +35,24 @@ class DatabaseSeeder extends Seeder
             }
         }
 
+        \App\Models\Paper::firstOrCreate([
+            'category_id' => 1,
+            'owner' => 1,
+            'contactemails' => "miura@istlab.info",
+            'title' => "サンプル論文",
+            'etitle' => "Sample Paper",
+            'abst' => "これはサンプル論文です。",
+            'keyword' => "サンプル, 論文",
+            'authorlist' => "創造 太郎 (創造大)",
+            'eauthorlist' => "Sozo, Taro (Sozo University)",
+        ], [
+        ]);
+
         $this->call([
             EnqueteSeeder::class,
             EnqueteConfigSeeder::class,
             EnqueteItemSeeder::class,
+            EnqueteAnswerSeeder::class,
             BiddingSeeder::class,
             ViewpointSeeder::class,
             CategorySeeder::class,
@@ -47,6 +61,8 @@ class DatabaseSeeder extends Seeder
             SettingSeeder::class,
             MailTemplateSeeder::class,
             EventConfigSeeder::class,
+            FiletypeSeeder::class,
         ]);
+
     }
 }

@@ -31,9 +31,9 @@
                     {{ implode('、', array_values($koumoku)) }}
                     ）を設定していただきます。
                     <div class="my-2"></div>
-                    ここでは、「和文タイトル」を例にして、設定方法を説明します。<br>最初に、画面下部の<span
+                    ここでは、「和文題名」を例にして、設定方法を説明します。<br>最初に、画面下部の<span
                         class="border border-gray-600 bg-cyan-50 p-0.5">PDFから抽出したテキスト</span>
-                    の和文タイトル部分を、マウスドラッグによって選択してください。<br>
+                    の和文題名部分を、マウスドラッグによって選択してください。<br>
                     選択したテキストが下の <span class="border border-gray-600 bg-yellow-100 p-0.5">エディタ</span>
                     にコピーされます。必要があれば修正してください。（例：和文中の不要な空白を除去）
                     <div class="my-2 mx-4 bg-pink-50 px-4 py-1">
@@ -43,28 +43,21 @@
                             {{-- color="purple" confirm="本当に直接入力モードにしますか？必要がなければキャンセルを押してください。"> --}}
                         </x-element.button>
                         {{-- <span class="border border-gray-600 bg-purple-200 p-0.5">直接入力モードに切替</span> --}}
-                        <b>を押して編集してください。直接入力モードの使用は必要最小限でお願いします。和文著者名・所属を入力する際は改行が必要となるため、</b>
-                        <span class="bg-purple-200 p-0.5">直接入力モード</span> <b>を使用してください。</b><br>
+                        <b>を押して編集してください。直接入力モードの使用は必要最小限でお願いします。和文著者名(所属)を入力する際は改行が必要となるため、</b>
+                        <span class="bg-purple-200 p-0.5">直接入力モード</span> <b>を使用するか、前画面のフォームを使用してください。</b><br>
                         <span class="bg-purple-200 p-0.5">直接入力モード</span> から
                         <span class="bg-yellow-100 p-0.5">通常モード</span> に戻すには、<span
                             class="border border-gray-600 bg-cyan-50 p-0.5">PDFから抽出したテキスト</span> を再度ドラッグで選択してください。
                     </div>
 
-                    修正がおわったら、エディタ下の「和文タイトルに設定」ボタンを押すと、エディタ内のテキストを和文タイトルとして設定します。
+                    修正がおわったら、エディタ下の「和文題名に設定」ボタンを押すと、エディタ内のテキストを和文題名として設定します。
 
-                    この手順を繰り返し、和文アブストラクト、和文著者名についても、設定してください。
+                    この手順を繰り返し、英文題名等についても、設定してください。
                     <div class="my-2"></div>
 
                     <a href="#confirm_shoshi"
                         class="border border-cyan-500 bg-cyan-500 text-white p-0.5">設定確認画面</a>（本ページの下部）に表示されていれば、設定ができています。
                 </div>
-                <div class="px-10 py-2 text-red-800 text-sm">
-                    出版にあたり、シンポジウムの予稿集・出版担当が書誌情報の体裁統一（不要な空白の削除や句読点の修正）を行う場合があります。</div>
-
-
-                <div class="px-10 text-gray-500 text-sm">全角記号に囲みをつけて強調するため、アシアル情報教育研究所が開発した<a
-                        class=" hover:text-blue-500" target="_blank"
-                        href="https://anko.education/monacakomi">「もなかこみフォント」</a>を使用しています。</div>
             </div>
 
             <div class="hidden-content bg-slate-100 p-2 mt-2 dark:text-gray-600" id="ex_authorlist"
@@ -78,9 +71,6 @@
                      focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
                       dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="投稿 太郎 (投稿大学)&#10;和布蕪 二郎 (和布蕪大学)&#10;昆布 巻子 (ダシ大学/昆布研究所)" readonly></textarea>
-
-                <div class="px-10 text-red-800 text-sm">
-                    シンポジウムの予稿集・出版担当が所属表記の短縮や修正を行う場合があります。ご了承ください。</div>
 
             </div>
 

@@ -108,11 +108,18 @@ class Paper extends Model
         'deleted_at'
     ];
 
-    public static function mandatory_bibs(){
-        $koumoku = ['title' => '和文タイトル', 'abst' => '和文アブストラクト', 
-        'keyword' => '和文キーワード', 'authorlist' => '和文著者名', 
-        'etitle' => '英文Title', 'eabst' => '英文Abstract', 
-        'ekeyword' => '英文Keyword', 'eauthorlist' => '英文Author(s)'];
+    public static function mandatory_bibs()
+    {
+        $koumoku = [
+            'title' => '和文題名',
+            'abst' => '和文アブストラクト',
+            'keyword' => '和文キーワード',
+            'authorlist' => '和文著者名(所属)',
+            'etitle' => '英文題名',
+            'eabst' => '英文Abstract',
+            'ekeyword' => '英文Keyword',
+            'eauthorlist' => '英文著者名(所属)'
+        ];
         $skip_bibinfo = Setting::findByIdOrName("SKIP_BIBINFO", "value");
         $skip_bibinfo = json_decode($skip_bibinfo);
         foreach ($skip_bibinfo as $key) {
@@ -186,7 +193,7 @@ class Paper extends Model
 
     public function id_03d()
     {
-        return sprintf("%03d", $this->id);
+        return sprintf("%04d", $this->id);
     }
     public function pdf_file()
     {
@@ -321,7 +328,7 @@ class Paper extends Model
                 $bcclist[] = $bcc;
             }
         }
-        return ["to" => $this->paperowner->email, "cc" => $cclist, "bcc" => $bcclist ];
+        return ["to" => $this->paperowner->email, "cc" => $cclist, "bcc" => $bcclist];
     }
 
     /**
@@ -481,9 +488,19 @@ class Paper extends Model
         $koumoku = Paper::mandatory_bibs();
         // 設定されていないものがあれば、error配列として返す。
         $errors = [];
+        foreach ($koumoku as $key => $expr) {
+            if ($this->{$key} == null || strlen($this->{$key}) < 2) {
+                $errors[$key] = "書誌情報の設定から、" . $expr . " を入力してください。";
+            }
+        }
+
+        // 著者名(所属) のチェック
         foreach($koumoku as $key=>$expr){
-            if ($this->{$key} == null || strlen($this->{$key}) < 2){
-                $errors[$key] = "書誌情報の設定から、".$expr." を入力してください。";
+            if ($key == "authorlist" || $key == "eauthorlist"){
+                $ret = $this->authorlist_check($key);
+                if (!$ret) {
+                    $errors[$key] = ($key=="authorlist"? "和文著者名(所属)":"英文Authors(所属)")." の書式が正しくありません。";
+                }
             }
         }
         return $errors;
@@ -561,6 +578,27 @@ class Paper extends Model
         $this->accepted = (count($fileerrors) == 0 && count($enqerrors) == 0);
         $this->save();
     }
+
+    /**
+     * 著者名(所属) のチェック
+     */
+    public function authorlist_check($field = "authorlist")
+    {
+        $src = $this->{$field};
+        $src = str_replace("（", "(", $src);
+        $src = str_replace("）", ")", $src);
+        $lines = explode("\n", $src);
+        $lines = array_map("trim", $lines);
+        if (count($lines) == 0) return true;
+        $pattern = '/^([\p{Hiragana}\p{Katakana}\p{Han}\w\-,.]+(?:\s[\p{Hiragana}\p{Katakana}\p{Han}\w\-,.]+)*)\s*\([^\)]+\)$/u';
+        foreach ($lines as $line) {
+            if (!preg_match($pattern, $line)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     // 著者名と所属のパース結果を配列で返す。英文所属は引数にeauthorlist を指定する。
     public function authorlist_ary($field = "authorlist")

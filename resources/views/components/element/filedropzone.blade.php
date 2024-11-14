@@ -22,7 +22,7 @@
             return $num;
         }
     }
-    $id_03d = sprintf('%03d', $paper_id);
+    $id_03d = sprintf('%04d', $paper_id);
 @endphp
 <form action="{{ route('file.store') }}" method="post" id="imgupform" enctype="multipart/form-data" class="text-sm dark:text-gray-300">
     @csrf

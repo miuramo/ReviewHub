@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('mime');
             $table->string('key');
             $table->integer('user_id');
+            $table->integer('filetype_id')->nullable();
             $table->integer('paper_id')->nullable();
             $table->integer('pagenum')->nullable()->comment('ページ数');
             $table->boolean('valid')->default(true)->comment('有効ならtrue');

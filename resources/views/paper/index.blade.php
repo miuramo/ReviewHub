@@ -100,7 +100,7 @@
         <div id="coauthorpaperlist" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             @foreach ($coauthor_all as $paper)
                 @php
-                    $id_03d = sprintf('%03d', $paper->id);
+                    $id_03d = sprintf('%04d', $paper->id);
                 @endphp
                 @if ($paper->accepted)
                     <div

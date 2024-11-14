@@ -13,20 +13,20 @@ class SettingSeeder extends Seeder
      */
     public function run(): void
     {
-        $confname = "SSS";
-        $confyear = "2024";
-        $mailfrom = "ssstoukou@istlab.info"; // "toukouadmin@interaction-ipsj.org"
+        $confname = "日本創造学会論文誌";
+        $confabb = "JCS";
+        $mailfrom = "jcs-editorial@googlegroups.com"; // "toukouadmin@interaction-ipsj.org"
         Setting::factory()->create([
             'name' => "CONFTITLE",
-            'value' => $confname.$confyear,
+            'value' => $confname,
         ]);
         Setting::factory()->create([
             'name' => "CONFTITLE_BASE",
             'value' => $confname,
         ]);
         Setting::factory()->create([
-            'name' => "CONFTITLE_YEAR",
-            'value' => $confyear,
+            'name' => "CONFTITLE_ABB",
+            'value' => $confabb,
         ]);
         Setting::factory()->create([
             'name' => "MAILFROM",
@@ -34,7 +34,7 @@ class SettingSeeder extends Seeder
         ]);
         Setting::factory()->create([
             'name' => "CONF_URL",
-            'value' => "https://cm.istlab.info/",
+            'value' => "http://www.japancreativity.jp/member_2.html",
         ]);
         Setting::factory()->create([
             'name' => "PSEUDOTESTSITE",
@@ -43,16 +43,13 @@ class SettingSeeder extends Seeder
             'isbool' => true,
         ]);
         Setting::factory()->create([
-            'name' => "CONFMAN_EX",
-            'value' => "true",
-            'isnumber' => false,
-            'isbool' => true,
-        ]);
-        Setting::factory()->create([
             'name' => "FILEPUT_DIR",
-            'value' => "z".$confyear,
+            'value' => "z" . $confabb,
             'isnumber' => false,
             'isbool' => false,
         ]);
+
+        // Setting seeder
+        Setting::seeder();
     }
 }

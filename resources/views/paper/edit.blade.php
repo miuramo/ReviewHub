@@ -116,7 +116,7 @@
                     @endif
                 @endif
             @else
-                <x-alert.success>投稿に必要なファイルと情報は、そろっています。<br>投稿完了通知は「投稿完了通知メールを送信」を押すと送信します。<br>締め切り日時までは、ひきつづき修正可能です。</x-alert.success>
+                <x-alert.success>投稿に必要なファイルと情報は、そろっています。<br>さいごに「投稿完了通知メールを送信」を押してください。</x-alert.success>
                 @php
                     $submit_finished = true;
                 @endphp
@@ -132,7 +132,7 @@
                         @php
                             $gendo = array_map('intval', explode('-', $cat->pdf_accept_end));
                         @endphp
-                        <x-element.gendospan>{{ $gendo[0] }}月{{ $gendo[1] }}日まで修正可</x-element.gendospan>
+                        {{-- <x-element.gendospan>{{ $gendo[0] }}月{{ $gendo[1] }}日まで修正可</x-element.gendospan> --}}
                     </div>
                 </x-element.h1>
 
@@ -152,15 +152,24 @@
                 </div>
             </div>
 
-            @if ($cat->show_bibinfo_btn && !$is_reviewing)
+            @if (!$paper->locked)
+            <x-paper.authorlist :paper="$paper">
+            </x-paper.authorlist>
+        @endif
+
+
+        @if ($cat->show_bibinfo_btn && !$is_reviewing)
                 <div class="m-6">
+
+
+
                     <x-element.h1>
                         PDFファイルをアップロードしたあとで、 <x-element.linkbutton
                             href="{{ route('paper.dragontext', ['paper' => $paper->id]) }}" color="blue"
                             size="md">
                             書誌情報の設定
                         </x-element.linkbutton>
-                        を行ってください。
+                        から、題名（和文・英文）を設定してください。
                         @if ($paper->locked)
                             <span class="text-red-500 dark:text-red-400">（現在、投稿はロックされているため、書誌情報の設定はできません。）</span>
                         @endif
@@ -186,13 +195,13 @@
                                 @endforeach
                             </table>
 
-                            <div class="mt-2 text-sm px-2  dark:text-gray-400">注：和文著者名の書き方は、以下の例に合わせてください。詳細は
+                            {{-- <div class="mt-2 text-sm px-2  dark:text-gray-400">注：和文著者名の書き方は、以下の例に合わせてください。詳細は
                                 [書誌情報の設定]→[和文著者名の設定方法を表示] を参照してください。</div>
                             <textarea id="jpex" name="jpexample" rows="3"
                                 class="inline-flex mb-1 block p-2.5 w-full text-md text-gray-900 bg-gray-200 rounded-lg border border-gray-300
                              focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
                               dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                placeholder="投稿 太郎 (投稿大学)&#10;和布蕪 二郎 (和布蕪大学)&#10;昆布 巻子 (ダシ大学/昆布研究所)" readonly></textarea>
+                                placeholder="投稿 太郎 (投稿大学)&#10;和布蕪 二郎 (和布蕪大学)&#10;昆布 巻子 (ダシ大学/昆布研究所)" readonly></textarea> --}}
 
                         </div>
                     </x-element.h1>
@@ -213,7 +222,7 @@
                                     ここをクリックして回答
                                 </x-element.linkbutton>
                             @endif
-                            <x-element.gendospan>{{ $enqs['until'][$enq->id] }}まで修正可</x-element.gendospan>
+                            {{-- <x-element.gendospan>{{ $enqs['until'][$enq->id] }}まで修正可</x-element.gendospan> --}}
                         </div>
                         @if ($enq->showonpaperindex)
                             <form action="{{ route('enquete.update', ['paper' => $paper->id, 'enq' => $enq]) }}"
@@ -269,11 +278,10 @@
                 <div class="text-lg my-5 p-1 bg-slate-200 rounded-lg dark:bg-slate-800 dark:text-slate-400">
                     @if ($submit_finished)
                         <div class="mx-5 my-5 bg-cyan-200 p-5">
-                            投稿は完了しています。
                             <x-element.linkbutton href="{{ route('paper.sendsubmitted', ['paper' => $paper->id]) }}"
                                 color="cyan" confirm="本当にメール送信しますか？">
                                 投稿完了通知メールを送信
-                            </x-element.linkbutton> を押すと、投稿完了通知をメールで受け取ることができます。
+                            </x-element.linkbutton> を押すと、投稿完了となります。（編集委員にも通知されます。）
                         </div>
                     @else
                         @if ($revreturn[$paper->category_id])
@@ -354,13 +362,8 @@
             </div> --}}
 
 
-                {{-- <div class="my-10"></div>
+                <div class="my-10"></div>
 
-                {{-- 著者名と所属 
-                @if (!$paper->locked)
-                    <x-paper.authorlist :paper="$paper">
-                    </x-paper.authorlist>
-                @endif --}}
 
             </div>
         </div>

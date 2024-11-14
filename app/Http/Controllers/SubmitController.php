@@ -394,10 +394,10 @@ class SubmitController extends Controller
         $pids = [];
         foreach ($res2 as $res) {
             if (is_array(@$pids[$res->category_id][$res->accept_id])) {
-                $pids[$res->category_id][$res->accept_id][] = sprintf("%03d", $res->paper_id);
+                $pids[$res->category_id][$res->accept_id][] = sprintf("%04d", $res->paper_id);
             } else {
                 $pids[$res->category_id][$res->accept_id] = [];
-                $pids[$res->category_id][$res->accept_id][] = sprintf("%03d", $res->paper_id);
+                $pids[$res->category_id][$res->accept_id][] = sprintf("%04d", $res->paper_id);
             }
         }
 

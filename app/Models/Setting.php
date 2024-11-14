@@ -59,7 +59,7 @@ class Setting extends Model
         Setting::firstOrCreate([
             'name' => "SKIP_BIBINFO",
         ], [
-            'value' => '["keyword","etitle","eabst","ekeyword"]',
+            'value' => '["keyword","abst","eabst","ekeyword"]',
             'isnumber' => false,
             'isbool' => false,
         ]);
@@ -145,6 +145,7 @@ class Setting extends Model
             'isnumber' => false,
             'isbool' => false,
             'misc' => '句読点。ReplaceKutenMiddlewareで使用する。valid=0で無効にできる。',
+            'valid' => false,
         ]);
 
         // Viewpoint::change_separator();

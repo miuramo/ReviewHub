@@ -128,7 +128,7 @@
                                 ">
                                         {{ @$cnt_papers[$cid][$pid][0] }}
                                     </td>
-                                    <td class="p-1 text-center">{{ sprintf('%03d', $pid) }}
+                                    <td class="p-1 text-center">{{ sprintf('%04d', $pid) }}
                                     </td>
                                     <td class="p-1 text-sm">{{ $pname }}
                                     </td>

@@ -49,8 +49,8 @@ class StoreFileRequest extends FormRequest
         // fnameは暫定として、一回保存して、fileid を確定する
         $file->fname = "zantei.pdf";
         $file->save();
-        // $hashname = sprintf("%03d", $this->input("paper_id"))."_".Auth::user()->id."_".$tmp->hashName();
-        $hashname = sprintf("%03d", $this->input("paper_id")) . "_" . $file->id . "_" . $tmp->hashName();
+        // $hashname = sprintf("%04d", $this->input("paper_id"))."_".Auth::user()->id."_".$tmp->hashName();
+        $hashname = sprintf("%04d", $this->input("paper_id")) . "_" . $file->id . "_" . $tmp->hashName();
         $tmp->storeAs(File::pf(), $hashname);
 
         $file->fname = $hashname;

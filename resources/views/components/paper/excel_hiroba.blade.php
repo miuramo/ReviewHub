@@ -62,7 +62,7 @@
                         $sub->booth = 0;
                     }
                     if (is_numeric($sub->booth)) {
-                        $booth = sprintf('%03d', $sub->booth);
+                        $booth = sprintf('%04d', $sub->booth);
                     } else {
                         $booth = $sub->booth;
                     }

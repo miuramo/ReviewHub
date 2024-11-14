@@ -45,7 +45,7 @@
             @foreach ($files as $file)
                 <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-lime-100' : 'bg-lime-50' }}">
                     <td class="px-2 py-1 text-center">
-                        {{ sprintf('%03d', $file->paper_id) }}
+                        {{ sprintf('%04d', $file->paper_id) }}
                     </td>
                     <td class="px-2 py-1 text-center font-bold">
                         {{ $pid2sub[$file->paper_id]->booth }}

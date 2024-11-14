@@ -35,14 +35,10 @@ class RoleController extends Controller
                 abort(403);
             }
         }
-                // Setting seeder
-                Setting::seeder();
-                // Confirm seeder
-                Confirm::seeder_policy();
-        
-                // Userが存在しないContactを参照していたら、直す
-                User::fix_broken_contact_all();
-        
+
+        // Userが存在しないContactを参照していたら、直す
+        User::fix_broken_contact_all();
+
         // $role = Role::where("name",$name)->first();
         $role = Role::findByIdOrName($name);
         return view('role/top', ["role" => 1])->with(["name" => $name, "role" => $role]);
