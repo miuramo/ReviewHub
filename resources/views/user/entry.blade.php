@@ -50,20 +50,9 @@
                 <li> パスワードの設定</li>
                 <li> 氏名と所属の登録</li>
                 <li> 新規投稿情報の作成と、確認事項への了承</li>
-                <li> 論文PDF等のアップロード、アンケートに回答</li>
+                <li> 論文PDFのアップロード、投稿受付完了通知メールを送信</li>
             </ol>
 
-            @php
-                $tutorial_url_obj = App\Models\Setting::findByIdOrName('TUTORIAL_URL');
-                if ($tutorial_url_obj->valid) $tutorial_url = $tutorial_url_obj->value;
-            @endphp
-            @isset($tutorial_url)
-            <div class="mt-4">
-                <x-element.linkbutton :href="$tutorial_url" color="cyan" target="_blank">
-                    4. 5. の投稿手順を動画で観る
-                </x-element.linkbutton>
-            </div>
-            @endisset
         </x-element.sankou>
     </div>
 

@@ -19,6 +19,10 @@ class File extends Model
     {
         return $this->belongsTo(Paper::class);
     }
+    public function filetype()
+    {
+        return $this->belongsTo(Filetype::class);
+    }
 
     // public static $app_public_files = 'app/public/';
     // public static $public_files = 'public';

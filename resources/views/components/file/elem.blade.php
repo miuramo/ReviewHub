@@ -19,7 +19,15 @@
                 <x-dropdown2>
                     <x-slot name="trigger">
                         <button
-                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-slate-200 dark:bg-gray-800 hover:bg-slate-50 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
+                            class="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-2 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-slate-200 dark:bg-gray-800 hover:bg-slate-50 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
+                            @if (!$file->filetype_id)
+                                <span
+                                    class="mx-1 mb-1 sm:rounded-lg border-2 border-red-600 bg-red-200 px-2 py-1 font-bold text-red-600 text-lg dark:bg-red-400">
+                                    種別未選択</span>
+                            @else
+                                <span class="mx-1 mb-1 sm:rounded-lg border-2 border-green-600 bg-lime-200 px-2 py-1 font-bold text-green-600 text-lg dark:bg-lime-400">
+                                    {{ $file->filetype->name }}</span>
+                            @endif
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
@@ -34,13 +42,22 @@
                         </button>
                     </x-slot>
 
+                    @php
+                        $fts = App\Models\Filetype::orderBy('id', 'asc')->pluck('name', 'id')->toArray();
+
+                    @endphp
                     <x-slot name="content">
-                         <x-dropdown-link target="_blank" :href="route('file.pdfimages', ['file' => $file->id])">
-                        thumb
-                    </x-dropdown-link>
-                    <x-dropdown-link target="_blank" :href="route('file.altimgshow', ['file' => $file->id, 'hash'=> substr($file->key,0,8)])">
-                        alt
-                    </x-dropdown-link> 
+                        @foreach ($fts as $ftid => $ftname)
+                            <x-dropdown-div>
+                                <x-element.submitbutton
+                                    action="{{ route('file.settype', ['file' => $file->id, 'ft' => $ftid]) }}">
+                                    {{ $ftname }}
+                                </x-element.submitbutton>
+                                {{-- <x-dropdown-link :href="route('file.settype', ['file'=>$file->id, 'ft' => $ftid])">
+                                {{ $ftname }}
+                            </x-dropdown-link> --}}
+                            </x-dropdown-div>
+                        @endforeach
                         <x-dropdown-div>
                             <x-element.deletebutton action="{{ route('file.destroy', ['file' => $file->id]) }}"
                                 color="red" confirm="削除してよいですか？"> Delete File
@@ -96,7 +113,7 @@
                         target="_blank">{{ $file->origname }}</a>
                 @endif
             @endif
-            
+
             @if ($file->deleted)
                 <span class="mx-4 sm:rounded-lg  bg-yellow-200 px-2 py-1 font-bold text-red-600 text-lg">Deleted</span>
             @endif

@@ -107,13 +107,6 @@
                     </x-dropdown>
                 @else
                     <div class="flex h-16" align="right">
-                        @if ($voting == 'true')
-                            <div class="hidden space-x-8 sm:-my-px sm:ms-5 sm:flex">
-                                <x-nav-link :href="route('vote.index')" :active="request()->routeIs('vote.index')">
-                                    {{ __('投票') }}
-                                </x-nav-link>
-                            </div>
-                        @endif
                         <div class="hidden space-x-8 sm:-my-px sm:ms-5 sm:flex">
                             <x-nav-link :href="route('entry0')" :active="request()->routeIs('entry0')">
                                 {{ __('投稿者アカウントの作成') }}
