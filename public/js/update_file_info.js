@@ -19,6 +19,7 @@ function ft_changed(formName, file_id, filetype_id) {
             // setTimeout(function () {
             //     elem.removeClass('flash');
             // }, 1000); // フラッシュの時間
+            location.reload();
         },
         error: function (xhr, textStatus, error) {
             alert("error form submit (form changed, but not saved.)");

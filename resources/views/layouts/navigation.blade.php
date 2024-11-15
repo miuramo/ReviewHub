@@ -12,6 +12,8 @@
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-5 sm:flex">
                     <x-nav-link :href="route('guesttop')" :active="request()->routeIs('guesttop')" size="2xl" weight="bold">
+                        <img src="/file/favicon" alt="logo" class="inline-block">
+                        <span class="mx-0.5"></span>
                         {{ env('APP_NAME', 'ReviewHub') }}
                     </x-nav-link>
                 </div>

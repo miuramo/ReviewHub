@@ -374,88 +374,39 @@ class Paper extends Model
      */
     public function validateFiles()
     {
-        $checkary = [];
-        $checkary['pdf'] = [];
-        $checkary['altpdf'] = [];
-        $checkary['video'] = [];
-        $checkary['img'] = [];
-        $checkary['pptx'] = [];
+        // ルール； 論文(1)、回答書(2)、対照表(3)、その他(4) について、4以外は1つのみ。4は0個以上。
 
+        $checkary = [];
         $errorary = [];
         $cat = Category::find($this->category_id);
         if ($cat == null) return []; //通常はありえないが、テストを通すため...
         foreach ($this->files as $file) {
-            if ($file->mime == "application/pdf") {
-
+            // if ($file->mime == "application/pdf") {
                 if ($file->deleted) continue;
                 if ($file->pending) continue;
-                if ($cat->accept_altpdf > 0 && $this->between($cat->altpdf_page_min, $file->pagenum, $cat->altpdf_page_max)) {
-                    $checkary['altpdf'][] = $file->id;
-                } else if ($this->between($cat->pdf_page_min, $file->pagenum, $cat->pdf_page_max)) {
-                    $checkary['pdf'][] = $file->id;
-                } else {
-                    $errorary[] = "PDFのページ数を確認してください。";
-                }
-                continue;
-            }
-            if ($file->mime == "image/png" || $file->mime == "image/jpeg" || $file->mime == "image/jpg") {
-                $checkary['img'][] = $file->id;
-                continue;
-            }
-            if (strpos($file->mime, "video") === 0) {
-                $checkary['video'][] = $file->id;
-            }
-            if ($file->mime == "application/vnd.openxmlformats-officedocument.presentationml.presentation") {
-                $checkary['pptx'][] = $file->id;
-            }
+                $checkary[$file->filetype_id][] = $file->id;
+            // }
         }
-        $maxnum = [];
-        $minnum = [];
-        $minnum['pdf'] = $maxnum['pdf'] = 1; //PDFは普通は必須、min=max=1
-        $minnum['altpdf'] = $maxnum['altpdf'] = isset($cat) ? $cat->accept_altpdf : 1;
-        if ($cat->accept_altpdf == 2) { //2はオプション。0or1
-            $minnum['altpdf'] = 0;
-            $maxnum['altpdf'] = 1;
+        // それぞれのファイルの数をチェックする
+        if (!isset($checkary[1]) || count($checkary[1]) == 0){
+            $errorary[] = "論文PDFは必須です。";
+        } else if (count($checkary[1]) > 1) {
+            $errorary[] = "論文PDFは1つのファイルのみ受け付けます。";
         }
-        $minnum['img'] = $maxnum['img'] = isset($cat) ? $cat->accept_img : 0;
-        if ($cat->accept_img == 2) { //2はオプション。0or1
-            $minnum['img'] = 0;
-            $maxnum['img'] = 1;
+        if (isset($checkary[2]) && count($checkary[2]) > 1) {
+            $errorary[] = "回答書は1つのファイルのみ受け付けます。";
         }
-        $minnum['video'] = $maxnum['video'] = isset($cat) ? $cat->accept_video : 0;
-        if ($cat->accept_video == 2) { //2はオプション。0or1
-            $minnum['video'] = 0;
-            $maxnum['video'] = 1;
+        if (isset($checkary[3]) && count($checkary[3]) > 1) {
+            $errorary[] = "対照表は1つのファイルのみ受け付けます。";
         }
-        $minnum['pptx'] = $maxnum['pptx'] = isset($cat) ? $cat->accept_pptx : 0;
-        if ($cat->accept_pptx == 2) { //2はオプション。0or1
-            $minnum['pptx'] = 0;
-            $maxnum['pptx'] = 1;
-        }
-        // ['pdf'=>'論文PDF', 'altpdf'=>'ティザー資料', 'img'=>'代表画像', 'video'=>'参考ビデオ', 'pptx'=>'PowerPoint(pptx)']
-        $file_desc = Setting::findByIdOrName("FILE_DESCRIPTIONS", "value");
-        $file_desc = json_decode($file_desc);
 
-        foreach ($file_desc as $ft => $ffname) {
-            if (!$this->between($minnum[$ft], count($checkary[$ft]), $maxnum[$ft])) {
-                if ($minnum[$ft] == 1 && $maxnum[$ft] == 1) {
-                    $errorary[] = "{$ffname}は必須です。（1つのファイルのみ受け付けます。ファイル種別も確認してください。）";
-                } else {
-                    if ($minnum[$ft] == 0) {
-                        $errorary[] = "{$ffname}は {$maxnum[$ft]}個以下にしてください。";
-                    } else {
-                        $errorary[] = "{$ffname}は {$minnum[$ft]}個〜{$maxnum[$ft]}個にしてください。";
-                    }
-                }
-            }
-        }
         if (count($errorary) > 0) return $errorary;
 
         // ALL OKなら、paperにセットする
-        $this->pdf_file_id = $checkary['pdf'][0];
-        $this->img_file_id = isset($checkary['img'][0]) ? $checkary['img'][0] : null;
-        $this->video_file_id = isset($checkary['video'][0]) ? $checkary['video'][0] : null;
-        $this->altpdf_file_id = isset($checkary['altpdf'][0]) ? $checkary['altpdf'][0] : null;
+        $this->pdf_file_id = $checkary[1][0];
+        $this->img_file_id = isset($checkary[2][0]) ? $checkary[2][0] : null;
+        $this->video_file_id = isset($checkary[3][0]) ? $checkary[3][0] : null;
+        $this->altpdf_file_id = isset($checkary[4][0]) ? $checkary[4][0] : null;
         $this->save();
         return [];
     }
