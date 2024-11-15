@@ -128,7 +128,7 @@
                 <x-element.h1>ファイルをアップロードするには <span class="bg-lime-200 text-green-700 px-1 dark:bg-lime-500">Drop Files
                         Here</span> にドラッグ＆ドロップしてください。
                     <div class="text-sm mx-4 mt-2">
-                        複数のファイルをまとめてアップロードできます。ファイル種別は自動で認識します。
+                        複数のファイルをまとめてアップロードできます。ファイル種別（論文／回答書／etc.）はアップロード後に選択していただきます。
                         @php
                             $gendo = array_map('intval', explode('-', $cat->pdf_accept_end));
                         @endphp
@@ -140,13 +140,15 @@
                     <x-element.filedropzone color="lime" :paper_id="$id"></x-element.filedropzone>
                 </div>
 
+                <form action="{{ route('file.updateinfo') }}" method="post" id="file_updateinfo_form">
+                    @csrf
+                    <input type="hidden" name="file_id" id="file_updateinfo_form_file_id" value="">
+                    <input type="hidden" name="filetype_id" id="file_updateinfo_form_filetype_id" value="">
+                </form>
                 <div class="py-2 px-6">
                     {{-- ファイルアップロードがあると、#filelist の中身をAjaxでかきかえていく --}}
                     <div id="filelist"
                         class="grid xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                        {{-- @if (count($all) == 0)
-                                <div class="text-3xl bg-yellow-200 p-4 rounded-md text-white text-center">No File</div>
-                            @endif --}}
                         <x-file.elem :all="$all" />
                     </div>
                 </div>
@@ -332,38 +334,7 @@
                     </div>
                 </div>
 
-
-                {{-- <div class="mt-4 px-6 mb-10">
-                    <x-element.linkbutton href="{{ route('paper.index') }}" color="gray" size="lg">
-                        &larr; 投稿一覧に戻る
-                    </x-element.linkbutton>
-                </div> --}}
-
-                {{-- <x-element.sankou>
-                    参考：投稿締め切り後の流れは、およそ以下のようになります。
-                    <ol class="list-decimal px-8 pt-4">
-                        <li> 査読結果（採否）の通知</li>
-                        <li> （採択の場合）コメントに対応したPDF（カメラレディ）の再アップロード、
-                            <x-element.linkbutton2 href="#authorlist" color="teal" size="md">
-                                著者名と所属の入力
-                            </x-element.linkbutton2>
-                            、<x-element.linkbutton2 href="{{ route('paper.dragontext', ['paper' => $paper->id]) }}"
-                                color="cyan" size="md">
-                                書誌情報の設定
-                            </x-element.linkbutton2>
-                            など。
-                        </li>
-                    </ol>
-                    原稿または入力事項に問題がある場合は、個別に連絡しますので、期日までにすみやかに対応してください。
-                </x-element.sankou> --}}
-
-                {{-- <div class="mx-6 mt-12 mb-0  dark:text-gray-400">
-                投稿連絡用メールアドレスを修正する必要がある場合は、この下のフォームで送信してください。
-            </div> --}}
-
-
                 <div class="my-10"></div>
-
 
             </div>
         </div>
@@ -379,6 +350,7 @@
             <script src="/js/drop_zone_upload.js"></script>
             <script src="/js/form_changed.js"></script>
             <script src="/js/openclose.js"></script>
+            <script src="/js/update_file_info.js"></script>
         @endpush
 
 </x-app-layout>

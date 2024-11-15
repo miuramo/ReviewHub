@@ -6,6 +6,7 @@ use App\Http\Requests\StoreFileRequest;
 use App\Http\Requests\UpdateFileRequest;
 use App\Jobs\PdfJob;
 use App\Models\File;
+use App\Models\Filetype;
 use App\Models\MailTemplate;
 use App\Models\Paper;
 use App\Models\Setting;
@@ -148,6 +149,14 @@ class FileController extends Controller
     public function update(UpdateFileRequest $request, File $file)
     {
         //
+    }
+    public function updateinfo(Request $req)
+    {
+        $file = File::findOrFail($req->input('file_id'));
+        $file->filetype_id = $req->input('filetype_id');
+        $file->save();
+        $ft = Filetype::find($req->input('filetype_id'));
+        return json_encode(["ftname" => $ft->name, "file_id" => $file->id]);
     }
 
     /**

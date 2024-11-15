@@ -84,20 +84,20 @@ class StoreFileRequest extends FormRequest
                     $old_pdf_file = File::find($paper->pdf_file_id);
                     // info("old file exists");
                     if (!$old_pdf_file->locked) { // ロックされていなければ
-                        info("old file not locked, delete and replace");
-                        $old_pdf_file->deleted = true; // 古いファイルに削除フラグをつける
-                        $old_pdf_file->save();
-                        $paper->pdf_file_id = $file->id; //差し替える
-                        $paper->save();
+                        // info("old file not locked, delete and replace");
+                        // $old_pdf_file->deleted = true; // 古いファイルに削除フラグをつける
+                        // $old_pdf_file->save();
+                        // $paper->pdf_file_id = $file->id; //差し替える
+                        // $paper->save();
                     } else { // ロックされていれば Pending
                         // info("old file locked, pending");
-                        $file->pending = true;
-                        $file->save();
+                        // $file->pending = true;
+                        // $file->save();
                     }
                 } else {
                     // info("no old file");
-                    $paper->pdf_file_id = $file->id; //差し替える
-                    $paper->save();
+                    // $paper->pdf_file_id = $file->id; //差し替える
+                    // $paper->save();
                 }
             } else {
                 // info("cat pdf duration over. pending.");

@@ -14,6 +14,9 @@ use Normalizer;
 class File extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'filetype_id',
+    ];
 
     public function paper()
     {

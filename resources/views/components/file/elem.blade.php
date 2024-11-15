@@ -21,11 +21,11 @@
                         <button
                             class="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-2 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-slate-200 dark:bg-gray-800 hover:bg-slate-50 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
                             @if (!$file->filetype_id)
-                                <span
+                                <span id="file_{{ $file->id }}"
                                     class="mx-1 mb-1 sm:rounded-lg border-2 border-red-600 bg-red-200 px-2 py-1 font-bold text-red-600 text-lg dark:bg-red-400">
                                     種別未選択</span>
                             @else
-                                <span class="mx-1 mb-1 sm:rounded-lg border-2 border-green-600 bg-lime-200 px-2 py-1 font-bold text-green-600 text-lg dark:bg-lime-400">
+                                <span id="file_{{ $file->id }}" class="mx-1 mb-1 sm:rounded-lg border-2 border-green-600 bg-lime-200 px-2 py-1 font-bold text-green-600 text-lg dark:bg-lime-400">
                                     {{ $file->filetype->name }}</span>
                             @endif
                             <div class="ms-1">
@@ -48,15 +48,15 @@
                     @endphp
                     <x-slot name="content">
                         @foreach ($fts as $ftid => $ftname)
-                            <x-dropdown-div>
+                            {{-- <x-dropdown-div>
                                 <x-element.submitbutton
                                     action="{{ route('file.settype', ['file' => $file->id, 'ft' => $ftid]) }}">
                                     {{ $ftname }}
                                 </x-element.submitbutton>
-                                {{-- <x-dropdown-link :href="route('file.settype', ['file'=>$file->id, 'ft' => $ftid])">
+                            </x-dropdown-div> --}}
+                            <x-dropdown-link onclick="javascript:ft_changed('file_updateinfo_form',{{$file->id}},{{$ftid}});">
                                 {{ $ftname }}
-                            </x-dropdown-link> --}}
-                            </x-dropdown-div>
+                            </x-dropdown-link>
                         @endforeach
                         <x-dropdown-div>
                             <x-element.deletebutton action="{{ route('file.destroy', ['file' => $file->id]) }}"
@@ -100,6 +100,8 @@
                             page
                         @endif
                     </span>
+                    
+                    <div class="mt-2 text-gray-400 text-xs text-right">{{$file->created_at}}</div>
                 @elseif (strpos($file->mime, 'video') === 0)
                     <a href="{{ route('file.showhash', ['file' => $file->id, 'hash' => substr($file->key, 0, 8)]) }}"
                         target="_blank">

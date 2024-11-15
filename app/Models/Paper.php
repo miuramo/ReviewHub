@@ -439,7 +439,7 @@ class Paper extends Model
         foreach ($file_desc as $ft => $ffname) {
             if (!$this->between($minnum[$ft], count($checkary[$ft]), $maxnum[$ft])) {
                 if ($minnum[$ft] == 1 && $maxnum[$ft] == 1) {
-                    $errorary[] = "{$ffname}は必須です（1つのファイルのみ受け付けます）。";
+                    $errorary[] = "{$ffname}は必須です。（1つのファイルのみ受け付けます。ファイル種別も確認してください。）";
                 } else {
                     if ($minnum[$ft] == 0) {
                         $errorary[] = "{$ffname}は {$maxnum[$ft]}個以下にしてください。";
