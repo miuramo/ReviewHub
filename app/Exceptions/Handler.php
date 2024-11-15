@@ -34,13 +34,15 @@ class Handler extends ExceptionHandler
 
     // セッションタイムアウト時はログインページにリダイレクトさせる
     // https://qiita.com/miki_grapes/items/8d8104cf3cba614ffac8
-	public function render($request, Throwable $exception) {
-		if ($exception instanceof TokenMismatchException) {
-			return redirect()->route('login');
-		}
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof TokenMismatchException) {
+            return redirect()->route('login');
+        }
         if ($exception instanceof HttpException) {
             event(new ForbiddenErrorEvent($exception, $request));
         }
-		return parent::render($request, $exception);
-	}
+        return parent::render($request, $exception);
+    }
+
 }
