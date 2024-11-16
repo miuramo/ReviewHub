@@ -229,6 +229,20 @@ class Paper extends Model
     }
 
     /**
+     * 2回目以降のラウンドのSubmitを作成する (1回目はPaper作成時に,
+     * PaperObserverで作成される)
+     * 採録通知のときに、作成する。著者は2回目以降は、Submitに対してファイルをアップロードする。
+     */
+    public function createSubmit(int $round)
+    {
+        $sub = new Submit();
+        $sub->paper_id = $this->id;
+        $sub->category_id = $this->category_id;
+        $sub->round = $round;
+        $sub->save();
+    }
+
+    /**
      * getAuthorType
      */
     public function getAuthorType(): int

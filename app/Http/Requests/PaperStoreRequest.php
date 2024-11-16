@@ -115,6 +115,7 @@ class PaperStoreRequest extends FormRequest
                 'contactemails' => $em,
                 'owner' => Auth::user()->id,
             ]);
+            // $paper->createSubmit(1); PaperObserver で作成
             // $paper->updateContacts();
         } catch (QueryException $e) {
             return redirect()->route('paper.create')->with('feedback.error', "QueryException on Paper create");

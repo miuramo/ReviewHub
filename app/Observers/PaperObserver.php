@@ -29,6 +29,7 @@ class PaperObserver
         Submit::factory()->create([
             'paper_id' => $paper->id,
             'category_id' => $paper->category_id,
+            'round' => 1,
         ]);
         //
     }
