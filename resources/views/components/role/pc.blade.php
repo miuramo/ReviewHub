@@ -12,81 +12,11 @@
 
     <x-element.h1>投稿論文</x-element.h1>
 
-    <div class="px-6 py-2 flex">
+    <div class="px-6">
         <x-paper.summarytable />
-
-        {{-- <div class="px-6 py-2 flex-grow">
-            <x-element.linkbutton href="{{ route('admin.paperlist') }}" color="green">
-                すべての投稿論文リスト
-            </x-element.linkbutton>
-            <x-element.linkbutton href="{{ route('admin.paperlist_excel') }}" color="teal">
-                すべての投稿論文リストのExcel Download
-            </x-element.linkbutton>
-        </div> --}}
-        <div class="px-6 py-2 flex-grow">
-            <form action="{{ route('admin.paperlist') }}" method="post" id="admin_paperlist">
-                @csrf
-                @method('post')
-                <div>
-                    @foreach ($cats as $catid => $catname)
-                        <input type="checkbox" name="targetcat{{ $catid }}" value="{{ $catid }}"
-                            id="label{{ $catid }}" @if ($catid == 1) checked="checked" @endif>
-                        <label for="label{{ $catid }}" class="dark:text-gray-300">{{ $catname }}</label>
-                        &nbsp;
-                    @endforeach
-                </div>
-                <x-element.submitbutton value="view" color="green">↑ 選択カテゴリの投稿論文リスト
-                </x-element.submitbutton><br>
-                <x-element.submitbutton value="excel" color="teal">↑ 選択カテゴリのExcel Download
-                </x-element.submitbutton>
-            </form>
-            <div class="py-1"></div>
-            <x-element.linkbutton2 href="{{ route('admin.deletepaper',['cat'=>1]) }}" color="yellow">
-                投稿とファイルの状況（削除済みを含む）
-            </x-element.linkbutton2>
-            <div class="py-1"></div>
-            <x-element.linkbutton2 href="{{ route('admin.timestamp',['cat'=>1]) }}" color="purple">
-                投稿とファイルのタイムスタンプ
-            </x-element.linkbutton2>
-        </div>
-
-        <div class="px-2 py-2 flex-grow">
-            @php
-                $fts = ['pdf', 'img', 'video', 'altpdf'];
-            @endphp
-            <form action="{{ route('admin.zipstream') }}" method="post" id="admin_zipdownload">
-                @csrf
-                @method('post')
-                <div>
-                    @foreach ($cats as $catid => $catname)
-                        <input type="checkbox" name="targetcat{{ $catid }}" value="{{ $catid }}"
-                            id="label{{ $catid }}" @if ($catid == 1) checked="checked" @endif>
-                        <label for="label{{ $catid }}"
-                            class="dark:text-gray-300">{{ $catname }}</label>&nbsp;
-                    @endforeach
-                </div>
-                <div>
-                    @foreach ($fts as $ft)
-                        <input type="checkbox" name="filetype{{ $ft }}" value="{{ $ft }}"
-                            id="label{{ $ft }}" @if ($ft == 'pdf') checked="checked" @endif>
-                        <label for="label{{ $ft }}"
-                            class="dark:text-gray-300">{{ $ft }}</label>&nbsp;
-                    @endforeach
-                </div>
-
-                <x-element.submitbutton value="downzip" color="yellow">↑ 選択したファイルをDownload
-                </x-element.submitbutton>
-            </form>
-            <div class="pt-4">
-                <div>
-                    デモ希望数：{{ App\Models\EnqueteAnswer::demoCount() }}
-                </div>
-                <div>
-                    デモ希望PaperIDリスト：{{ implode(",", App\Models\EnqueteAnswer::demoPaperIDs()) }}
-                </div>
-            </div>
-        </div>
     </div>
+
+    <div class="my-20"></div>
 
     <x-element.h1> <span class="px-2"></span>
         <x-element.linkbutton href="{{ route('admin.catsetting', ['toukou' => 'on']) }}" color="cyan"

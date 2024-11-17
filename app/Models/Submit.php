@@ -34,6 +34,34 @@ class Submit extends Model
     {
         return $this->hasMany(Review::class, "submit_id")->orderBy('ismeta', 'desc');
     }
+    public function meta()
+    {
+        return $this->reviews()->where('ismeta', 1)->first();
+    }
+    public function rev1()
+    {
+        return $this->reviews()->where('ismeta', 0)->first();
+    }
+    public function rev2()
+    {
+        return $this->reviews()->where('ismeta', 0)->skip(1)->first();
+    }
+
+    public function init_reviews()
+    {
+        $revs = Review::factory(1)->create([
+            'submit_id' => $this->id,
+            'category_id' => $this->category_id,
+            'paper_id' => $this->paper_id,
+            'ismeta' => 1,
+        ]);
+        $revs = Review::factory(2)->create([
+            'submit_id' => $this->id,
+            'category_id' => $this->category_id,
+            'paper_id' => $this->paper_id,
+            'ismeta' => 0,
+        ]);
+    }
 
     /**
      * この査読のトークンを生成（査読者同士の参照用）

@@ -31,8 +31,12 @@ class Submitted extends Mailable
     {
         $this->paper = $_paper;
         $this->mail_to_cc = $_paper->get_mail_to_cc();
-        //TODO: paperの情報をつかって書き込む
-        // $this->imagePath = $imagePath;
+        // 編集長をCCに追加
+        $ec_role = \App\Models\Role::findByIdOrName('ce');
+        $ec_users = $ec_role->users;
+        foreach($ec_users as $u){
+            $this->mail_to_cc['cc'][] = $u->email;
+        }
     }
     /**
      * メール送信

@@ -1,37 +1,55 @@
 @props([
-    'width' => 'w-32',
+    'all' => [],
+    'heads' => ['カテゴリ','id', 'status', 'title', 'pdf', '投稿日', '投稿者', '所属', 'メタ', '1査','2査'],
+    'enqans' => [],
 ])
-<!-- components.paper.authorlist -->
+<!-- components.paper.summarytable -->
 @php
-    $cat_paper_count = App\Models\Category::withCount('papers')->get();
-    // PDFファイルがある投稿の数
-    $count_paper_haspdf = App\Models\Paper::select(DB::raw('count(id) as count, category_id'))
-        ->whereNotNull('pdf_file_id')
-        ->whereNot('pdf_file_id', 0) // 一度PDFをアップして、あとで消すとnullではなく0になることがあった。現在は修正済み
-        ->groupBy('category_id')
-        ->get()
-        ->pluck('count', 'category_id');
-
+    $papers = App\Models\Paper::get();
 @endphp
-<table class="{{$width}} divide-y divide-gray-400 flex-grow  dark:text-gray-300">
+
+<table class="min-w-full divide-y divide-gray-200">
     <thead>
         <tr>
-            <th class="px-2">Category</th>
-            <th class="px-2">Papers</th>
-            <th class="px-2">withPDF</th>
+            @foreach ($heads as $h)
+                <th class="p-1 bg-slate-300">{{ $h }}</th>
+            @endforeach
         </tr>
     </thead>
-    <tbody>
-        @foreach ($cat_paper_count as $cpc)
-            <tr>
-                <td class="px-2 text-center">{{ $cpc->name }}</td>
-                <td class="px-2 text-right">{{ $cpc->papers_count }}</td>
-                @isset($count_paper_haspdf[$cpc->id])
-                    <td class="px-2 text-right">{{ $count_paper_haspdf[$cpc->id] }}</td>
-                @else
-                    <td class="px-2 text-right">0</td>
-                @endisset
+    <tbody class="bg-white divide-y divide-gray-200">
+        @foreach ($papers as $paper)
+            <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200' : 'bg-white' }}">
+                <td class="p-1 text-center">{{ $paper->category->name }}</td>
+                <td class="p-1 text-center">{{ $paper->id_03d() }}</td>
+                <td class="p-1 text-center">
+                    {{$paper->currentsubmit->round}}回目 
+                    {{ $paper->currentstatus->name }}</td>
+                <td class="p-1 text-center block break-all">{{ $paper->title }}</td>
+                <td class="p-1 text-center">
+                    @if ($paper->pdf_file_id != 0)
+                        <a class="underline text-blue-600 hover:bg-lime-200" href="{{ route('file.showhash', ['file' => $paper->pdf_file_id, 'hash' => substr($paper->pdf_file->key, 0, 8)]) }}"
+                            target="_blank">
+                            {{ $paper->pdf_file->pagenum }}page
+                        </a>
+                    @else
+                        No PDF
+                    @endif
+                </td>
+
+                <td class="p-1 text-center">{{ $paper->currentsubmit->submitted_at }}</td>
+                <td class="p-1 text-center">{{ $paper->paperowner->name }}
+                </td>
+                <td class="p-1 text-center">{{ $paper->paperowner->affil }}
+                </td>
+                <td class="p-1">{{ $paper->currentsubmit->meta()->user->name ?? '---' }}
+                </td>
+                <td class="p-1">{{ $paper->currentsubmit->rev1()->user->name ?? '---' }}
+                </td>
+                <td class="p-1">{{ $paper->currentsubmit->rev2()->user->name ?? '---' }}
+                </td>
+
             </tr>
         @endforeach
     </tbody>
 </table>
+

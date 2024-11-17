@@ -185,6 +185,11 @@ class Paper extends Model
         // return $this->hasOne(Submit::class)->where('round', 1);
     }
 
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
     public function contacts()
     {
         // $table_fields = Schema::getColumnListing('paper_contact');
@@ -212,18 +217,18 @@ class Paper extends Model
     {
         return $this->belongsTo(File::class, 'pdf_file_id');
     }
-    public function img_file()
-    {
-        return $this->belongsTo(File::class, 'img_file_id');
-    }
-    public function video_file()
-    {
-        return $this->belongsTo(File::class, 'video_file_id');
-    }
-    public function altpdf_file()
-    {
-        return $this->belongsTo(File::class, 'altpdf_file_id');
-    }
+    // public function img_file()
+    // {
+    //     return $this->belongsTo(File::class, 'img_file_id');
+    // }
+    // public function video_file()
+    // {
+    //     return $this->belongsTo(File::class, 'video_file_id');
+    // }
+    // public function altpdf_file()
+    // {
+    //     return $this->belongsTo(File::class, 'altpdf_file_id');
+    // }
     public function enqans()
     {
         return $this->hasMany(EnqueteAnswer::class, 'paper_id');

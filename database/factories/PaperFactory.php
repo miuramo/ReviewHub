@@ -20,7 +20,8 @@ class PaperFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => $this->faker->sentence,
+            'title' => fake()->sentence,
+            'etitle' => $this->faker->sentence,
             'owner' => 1,
             'category_id' => 2,
             'contactemails' => $this->faker->safeEmail(). "\n"
