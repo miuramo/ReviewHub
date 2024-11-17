@@ -70,7 +70,7 @@
 
             @if ($file->locked)
                 <span
-                    class="mx-1 sm:rounded-lg border-2 border-green-600 bg-lime-200 px-2 py-1 font-bold text-green-600 text-lg dark:bg-lime-400">Locked</span>
+                    class="mx-1 sm:rounded-lg border-2 border-green-600 bg-lime-200 px-2 py-1 font-bold text-green-600 text-lg dark:bg-lime-400">Locked ({{ $file->filetype->name }})</span>
                 <div class="my-2"></div>
             @endif
 

@@ -32,9 +32,15 @@ class PaperController extends Controller
     {
         $aT = $this->author_check($id);
         if ($aT > 0) {
-            $paper = Paper::with("contacts")->find($id);
+            $paper = Paper::with(["contacts","currentsubmit"])->find($id);
             if ($paper->pdf_file_id != 0 && count($paper->validateFiles()) == 0) {
-                // $paper->pendingMail("Submitted");
+                // status_id が 1 だったら、 2 にする
+                if ($paper->status_id <= 2) {
+                    $paper->status_id = 2;
+                    $paper->currentsubmit->submitted_at = now();
+                    $paper->currentsubmit->save();
+                    $paper->save();
+                }
                 (new Submitted($paper))->process_send();
                 // $mail->send();
                 return redirect()->route('paper.edit', ['paper' => $paper->id])->with('feedback.success', "投稿状況メールを送信しました。");

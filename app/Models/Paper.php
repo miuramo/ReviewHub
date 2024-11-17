@@ -178,6 +178,13 @@ class Paper extends Model
         return $this->belongsTo(Status::class, 'status_id');
     }
 
+    // 最新のSubmitを返す
+    public function currentsubmit()
+    {
+        return $this->hasOne(Submit::class)->latest();
+        // return $this->hasOne(Submit::class)->where('round', 1);
+    }
+
     public function contacts()
     {
         // $table_fields = Schema::getColumnListing('paper_contact');

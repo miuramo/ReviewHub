@@ -32,7 +32,6 @@
                     @if ($paper->accepted)
                         <div
                             class="bg-cyan-100 p-3 motion-safe:hover:scale-[1.03] transition-all duration-250 dark:bg-cyan-300">
-                            <span class="border-2 border-blue-600 p-1 text-blue-600 font-bold">投稿完了</span>
                         @else
                             <div
                                 class="bg-slate-200 p-3 motion-safe:hover:scale-[1.03] transition-all duration-250 dark:bg-slate-700">
@@ -46,12 +45,12 @@
                     <span class="text-lg font-bold text-gray-800 dark:text-slate-400">
                         {{ $paper->currentstatus->name }}
                     </span>
-                    <span class="mx-1"></span>
+                    {{-- <span class="mx-1"></span>
                     <x-element.linkbutton href="{{ route('paper.edit', ['paper' => $paper->id]) }}" color="blue">
                         Edit </x-element.linkbutton>
                     <span class="mx-1"></span>
                     <x-element.linkbutton2 href="{{ route('paper.show', ['paper' => $paper->id]) }}" color="green">
-                        View </x-element.linkbutton2>
+                        View </x-element.linkbutton2> --}}
 
                     @if ($revreturn[$paper->category_id])
                         <span class="mx-1"></span>

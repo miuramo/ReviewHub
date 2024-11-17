@@ -27,7 +27,7 @@
             @endforeach
         </div> --}}
     </div>
-    <div class="px-6 py-2">
+    {{-- <div class="px-6 py-2">
         <form action="{{ route('admin.paperlist') }}" method="post" id="admin_paperlist">
             @csrf
             @method('post')
@@ -44,7 +44,7 @@
             <x-element.submitbutton value="excel" color="teal">←選択カテゴリのExcel Download
             </x-element.submitbutton>
         </form>
-    </div>
+    </div> --}}
     @if (session('feedback.success'))
         <x-alert.success>{{ session('feedback.success') }}</x-alert.success>
     @endif

@@ -89,7 +89,7 @@ $(function () {
     var waitreload = 3;
     //  This is fired, if fail or done
     function completeHandler(event) {
-        $("#status").html("アップロード完了。再読み込みしてください。<button class=\"inline-flex justify-center py-1 px-2 border border-transparent shadow-sm text-md font-medium rounded-md text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500\" onclick=\"location.reload();\">再読み込み</button>");//event.target.responseText;
+        $("#status").html("アップロード完了。再読み込みします。<button class=\"inline-flex justify-center py-1 px-2 border border-transparent shadow-sm text-md font-medium rounded-md text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500\" onclick=\"location.reload();\">再読み込み</button>");//event.target.responseText;
         $("#progressbar").attr("value", 100);
         $("#progressdiv").css("width", "100%");
         $("#drop_zone").text("Drop Files Here");//event.target.responseText;
@@ -97,6 +97,7 @@ $(function () {
 
         // AJAXでindexを呼び、#filelist にさしかえる
         reloadFileList();
+        location.reload();
     }
     function reloadFileList(){
         var xhr = new XMLHttpRequest();
