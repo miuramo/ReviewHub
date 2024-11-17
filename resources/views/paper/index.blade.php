@@ -39,22 +39,22 @@
                     @endif
                     <x-element.paperid size=2 :paper_id="$paper->id">
                     </x-element.paperid>
-                    &nbsp;
-                    &nbsp;
+                    <span class="mx-1"></span>
                     <x-element.category :cat="$paper->category_id">
                     </x-element.category>
-                    &nbsp;
-                    &nbsp;
+                    <span class="mx-2"></span>
+                    <span class="text-lg font-bold text-gray-800 dark:text-slate-400">
+                        {{ $paper->currentstatus->name }}
+                    </span>
+                    <span class="mx-1"></span>
                     <x-element.linkbutton href="{{ route('paper.edit', ['paper' => $paper->id]) }}" color="blue">
                         Edit </x-element.linkbutton>
-                    &nbsp;
-                    &nbsp;
+                    <span class="mx-1"></span>
                     <x-element.linkbutton2 href="{{ route('paper.show', ['paper' => $paper->id]) }}" color="green">
                         View </x-element.linkbutton2>
 
                     @if ($revreturn[$paper->category_id])
-                        &nbsp;
-                        &nbsp;
+                        <span class="mx-1"></span>
                         <x-element.linkbutton
                             href="{{ route('paper.review', ['paper' => $paper->id, 'token' => $paper->token()]) }}"
                             color="orange" target="_blank">
@@ -67,8 +67,7 @@
                                 ->first();
                         @endphp
                         @isset($bb)
-                            &nbsp;
-                            &nbsp;
+                            <span class="mx-1"></span>
                             <x-element.linkbutton href="{{ route('bb.show', ['bb' => $bb, 'key' => $bb->key]) }}"
                                 color="pink" target="_blank">
                                 掲示板 </x-element.linkbutton>

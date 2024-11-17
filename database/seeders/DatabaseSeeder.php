@@ -62,6 +62,7 @@ class DatabaseSeeder extends Seeder
             MailTemplateSeeder::class,
             EventConfigSeeder::class,
             FiletypeSeeder::class,
+            StatusSeeder::class,
         ]);
 
     }

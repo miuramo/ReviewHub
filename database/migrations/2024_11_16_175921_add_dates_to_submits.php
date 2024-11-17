@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('submits', function (Blueprint $table) {
-            $table->integer('round')->nullable()->comment("査読ラウンド 1,2,3...");
+            $table->integer('round')->nullable()->comment("査読ラウンド 1,2,3...")->after('category_id');
             $table->date('resubmit_until')->nullable()->comment("再投稿期限");
             $table->date('submitted_at')->nullable()->comment("投稿日");
             $table->date('review_until')->nullable()->comment("査読期限");

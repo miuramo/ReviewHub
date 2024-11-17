@@ -18,6 +18,7 @@ return new class extends Migration
             $table->id();
             $table->integer('category_id')->default(0)->comment('投稿時のカテゴリ');
             $table->integer('owner')->default(0)->comment('投稿者uID');;
+            $table->integer('status_id')->default(1)->comment('投稿ステータス');
             $table->string('title')->nullable();
             $table->mediumText('authorlist')->nullable()->comment('著者リスト');
             $table->mediumText('abst')->nullable();
@@ -40,10 +41,8 @@ return new class extends Migration
             $table->dateTime('created_at')->nullable()->comment('mod for Laravel');
             $table->dateTime('updated_at')->nullable()->comment('mod for Laravel');
             $table->boolean('accepted')->default(false)->comment('投稿が採択されたらtrue');
-            $table->integer('status_id')->default(0)->comment('投稿ステータス');
             $table->boolean('valid')->default(false)->comment('投稿が健全になったらtrue');
-            // $table->boolean('hidden')->default(false)->comment('不可視ならtrue');
-            $table->boolean('deleted')->default(false);
+            $table->boolean('deleted')->default(false); // will be removed through 2024_07_01_184107_change_deleted_at_type.php
         });
     }
 

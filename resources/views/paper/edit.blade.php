@@ -7,14 +7,22 @@
 
             {{ __('投稿情報の編集') }}
 
+            <span class="mx-1"></span>
+
             <x-element.paperid size=2 :paper_id="$paper->id">
             </x-element.paperid>
-            &nbsp;
-            &nbsp;
+
+            <span class="mx-1"></span>
+
             <x-element.category :cat="$paper->category_id">
             </x-element.category>
-            &nbsp;
-            &nbsp;
+
+            <span class="mx-1"></span>
+
+            <span class="text-lg font-bold text-gray-800 dark:text-slate-400">
+                {{ $paper->currentstatus->name }}
+            </span>
+
         </h2>
         <style>
             .hidden-content {

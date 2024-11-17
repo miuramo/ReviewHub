@@ -105,7 +105,8 @@ class Paper extends Model
         'status',
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
+        'status_id',
     ];
 
     public static function mandatory_bibs()
@@ -170,6 +171,11 @@ class Paper extends Model
     public function files()
     {
         return $this->hasMany(File::class, 'paper_id')->where('valid', 1)->where('deleted', 0);
+    }
+
+    public function currentstatus()
+    {
+        return $this->belongsTo(Status::class, 'status_id');
     }
 
     public function contacts()
