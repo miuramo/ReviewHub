@@ -91,6 +91,19 @@ class AdminController extends Controller
         return redirect()->route('admin.dashboard')->with('feedback.success', 'すべてのPaperの投稿連絡用メールアドレスから削除しました。' . implode(",", $ids));
     }
 
+    public function paper_edit(int $paper_id, Request $req)
+    {
+        if (!auth()->user()->can('role_any', 'ce')) {
+            if (!auth()->user()->can('manage_paper', $paper_id)) abort(403);
+        }
+        $paper = Paper::find($paper_id);
+        if ($req->isMethod("post")) {
+            $paper->update($req->all());
+            return redirect()->route('admin.paper_edit', ['paper_id' => $paper_id])->with('feedback.success', '更新しました');
+        }
+        return view('admin.paper_edit')->with(compact("paper"));
+    }
+
     public function paperlist(Request $req)
     {
         if (!auth()->user()->can('role_any', 'ce')) {
