@@ -100,6 +100,7 @@ class DatabaseSeeder extends Seeder
             EventConfigSeeder::class,
             FiletypeSeeder::class,
             StatusSeeder::class,
+            WorkflowSeeder::class,
         ]);
 
     }
