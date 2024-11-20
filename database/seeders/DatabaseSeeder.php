@@ -69,9 +69,15 @@ class DatabaseSeeder extends Seeder
             Role::findByIdOrName('admin')->users()->attach(2);
             Role::findByIdOrName('ec')->users()->attach(2);
             Role::findByIdOrName('ec')->users()->attach(3);
+            Role::findByIdOrName('aec')->users()->attach(2);
+            Role::findByIdOrName('aec')->users()->attach(3);
+            Role::findByIdOrName('aec')->users()->attach(4);
+            Role::findByIdOrName('aec')->users()->attach(5);
             Role::findByIdOrName('manager')->users()->attach(4);
             Role::findByIdOrName('manager')->users()->attach(5);
             Role::findByIdOrName('meta')->users()->attach(6);
+            Role::findByIdOrName('meta')->users()->attach(7);
+            Role::findByIdOrName('meta')->users()->attach(8);
             Role::findByIdOrName('rev')->users()->attach(7);
             Role::findByIdOrName('rev')->users()->attach(8);
             Role::findByIdOrName('rev')->users()->attach(9);
@@ -101,6 +107,7 @@ class DatabaseSeeder extends Seeder
             FiletypeSeeder::class,
             StatusSeeder::class,
             WorkflowSeeder::class,
+            FileSeeder::class,
         ]);
 
     }

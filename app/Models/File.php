@@ -6,6 +6,7 @@ use App\Jobs\OcrJob;
 use App\Jobs\PdfJob;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -41,6 +42,48 @@ class File extends Model
         File::$filedir = Setting::where('name', 'FILEPUT_DIR')->first()['value'];
         if (strlen(File::$filedir) == 0) File::$filedir = env('FILEPUT_DIR', 'plz_set_Setting_FILEPUT_DIR');
         return 'public/' . File::$filedir;
+    }
+
+    public static function createnew($tmp, $pid = 0, $uid = 0)
+    {
+        // フォルダがなければ作る
+        File::mkdir_ifnot(storage_path(File::apf()));
+
+        $file = new File();
+        // $uid = $file->user_id = Auth::user()->id;
+        $file->user_id = $uid;
+        $pid = $file->paper_id = $pid;
+        // fnameは暫定として、一回保存して、fileid を確定する
+        $file->fname = "zantei.pdf";
+        $file->save();
+        $hashname = sprintf("%03d", $pid) . "_" . $file->id . "_" . $tmp->hashName();
+        $tmp->storeAs(File::pf(), $hashname);
+
+        $file->fname = $hashname;
+        $fullpath = storage_path(File::apf() . '/' . $hashname);
+        $file->key = shell_exec("md5sum {$fullpath}");
+        $file->key = substr($file->key, 0, 32);
+        $file->mime = trim(shell_exec("file --mime-type -b {$fullpath}")); // $tmp->getClientMimeType();
+        $file->origname = $tmp->getClientOriginalName();
+
+        // ページ番号を取得
+        $pdfinfo = trim(shell_exec("pdfinfo {$fullpath}"));
+        $ary = explode("\n", $pdfinfo);
+        $pnum = -1;
+        foreach ($ary as $n => $p) {
+            if (preg_match('/^Pages:[ ]+(\d+)/', $p, $match)) {
+                $pnum = $match[1];
+            }
+        }
+        $file->pagenum = $pnum;
+        $file->save();
+        // 1ページ目のサムネをつくる
+        shell_exec("pdftoppm -png -singlefile {$fullpath} " . storage_path(File::apf() . '/' . substr($hashname, 0, -4)));
+
+        if ($file->mime == "application/pdf") {
+            PdfJob::dispatch($file);
+        }
+        return $file;
     }
 
     /**

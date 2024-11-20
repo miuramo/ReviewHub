@@ -1,6 +1,6 @@
 @props([
     'all' => [],
-    'heads' => ['カテゴリ','id', 'status', 'title', 'pdf', '投稿日', '投稿者', '所属', 'メタ', '1査','2査'],
+    'heads' => ['カテゴリ','id', 'status', 'title', 'pdf', '投稿日', '投稿者', '所属', 'AEC', 'メタ', '1査','2査'],
     'enqans' => [],
 ])
 <!-- components.paper.summarytable -->
@@ -51,6 +51,8 @@
                 <td class="p-1 text-center">{{ $paper->paperowner->name }}
                 </td>
                 <td class="p-1 text-center">{{ $paper->paperowner->affil }}
+                </td>
+                <td class="p-1">{{ $paper->currentsubmit->aec->name ?? '---' }}
                 </td>
                 <td class="p-1">{{ $paper->currentsubmit->meta()->user->name ?? '---' }}
                 </td>

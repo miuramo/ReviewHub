@@ -20,9 +20,12 @@ class Workflow extends Model
                 'submit_id' => $sub->id,
                 'workflow_id' => $wkfl->id,
                 'due_date' => $wkfl->addDaysToDate($days),
-                'subject_id' => $wkfl->subject_id(),
+                // 'subject_id' => ($wkfl->id == 1)? $wkfl->subject_id() : null,
             ]);
         }
+        $firsttask = Task::where('submit_id', $sub->id)->first();
+        $firsttask->subject_id = $firsttask->workflow->subject_id();
+        $firsttask->save();
     }
     public function addDaysToDate($days) {
         // 現在の日付を取得

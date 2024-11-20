@@ -11,9 +11,8 @@ class Submit extends MetaModel
 
     protected $fillable = [
         'psessionid',
-        'booth',
+        'aec_id',
         'canceled',
-        'award',
         'orderint',
         'accept_id',
         'category_id',
@@ -33,6 +32,10 @@ class Submit extends MetaModel
     public function reviews()
     {
         return $this->hasMany(Review::class, "submit_id")->orderBy('ismeta', 'desc');
+    }
+    public function aec()
+    {
+        return $this->belongsTo(User::class, 'aec_id');
     }
     public function meta()
     {
@@ -77,7 +80,7 @@ class Submit extends MetaModel
     }
 
     public function heads(){
-        $fs = ['submitted_at', 'review_until', 'ec_decision_at', 'notify_at'];
+        $fs = ['resubmit_until', 'submitted_at', 'review_until', 'ec_decision_at', 'notify_at'];
         // $fs に該当する、schema comment を取得
         $heads = [];
         $comments = $this->get_table_comments();

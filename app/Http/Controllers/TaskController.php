@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
+use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
@@ -51,9 +52,17 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTaskRequest $request, Task $task)
+    public function update(Request $req, Task $task)
     {
-        //
+        // info($req->all());
+        // info($task);
+        // info($task->workflow);
+        $task->completed = 1;
+        $task->completed_at = now();
+        $task->submit->aec_id = $req->object_id;
+        $task->submit->save();
+        $task->save();
+        return redirect()->route('role.top', ['role' => $req->redirect_role])->with('feedback.success', 'Task completed successfully');
     }
 
     /**

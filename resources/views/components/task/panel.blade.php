@@ -37,13 +37,14 @@
     @csrf
     @method('PUT')
     <input type="hidden" name="task" value="{{ $task->id }}">
+    <input type="hidden" name="redirect_role" value="{{ $task->workflow->subject}}">
     @php
         $objectRole = App\Models\Role::findByIdOrName($task->workflow->object);
     @endphp
-    <label for="task" class="text-sm bg-slate-100 font-thin mr-2 p-0 h-5">
+    <label for="object_id" class="text-sm bg-slate-100 font-thin mr-2 p-0 h-5">
         選択してください→
     </label>
-    <select name="task" id="task" class="">
+    <select name="object_id" id="object_id" class="">
         @foreach($objectRole->users as $user)
             <option value="{{ $user->id }}" class="text-sm bg-slate-100 font-thin mr-2 p-0 h-5">
                 {{ $user->name }}
@@ -51,7 +52,7 @@
         @endforeach
     </select>
     
-    <x-element.submitbutton color="blue" confirm='このタスクを完了し、次のワークフローに移行すると、戻ることはできません。本当に進めてよいですか？'>割り当てる</x-element.submitbutton>
+    <x-element.submitbutton color="blue" value="assign" confirm='このタスクを完了し、次のワークフローに移行すると、戻ることはできません。本当に進めてよいですか？'>割り当てる</x-element.submitbutton>
 </form>
 @elseif( $task->workflow->task == "confirm")
 
