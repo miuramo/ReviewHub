@@ -13,13 +13,14 @@ class Role extends Model
 
     // 暫定ロール ここで設定したものはSeederで作成される。
     public static $roles = [
+        'ec' => '編集長',
+        'aec' => '幹事',
+        'rev' => '査読者',
+        'meta' => 'メタ',
         'admin' => '管理者',
-        'ce' => '編集長',
         'manager' => 'マネージャ',
-        'metareviewer' => 'メタ査読者',
-        'reviewer' => '査読者',
+        'brev' => '査読者候補',
     ];
-
 
     protected $fillable = [
         'name',

@@ -40,6 +40,9 @@ class PaperController extends Controller
                     $paper->currentsubmit->submitted_at = now();
                     $paper->currentsubmit->save();
                     $paper->save();
+
+                    //newSubmit_newTasks from workflow (すでに、Submitは作成済み)
+                    $paper->currentsubmit->newTasks();
                 }
                 (new Submitted($paper))->process_send();
                 // $mail->send();

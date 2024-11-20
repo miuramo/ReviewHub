@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Submit extends Model
+class Submit extends MetaModel
 {
     use HasFactory;
 
@@ -46,6 +46,10 @@ class Submit extends Model
     {
         return $this->reviews()->where('ismeta', 0)->skip(1)->first();
     }
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 
     public function init_reviews()
     {
@@ -63,6 +67,25 @@ class Submit extends Model
         ]);
     }
 
+    /**
+     * デフォルトのワークフローから、タスク群を生成する
+     */
+    public function newTasks()
+    {
+        $numtasks = Task::where('submit_id', $this->id)->count();
+        if ($numtasks == 0) Workflow::createTasks($this);
+    }
+
+    public function heads(){
+        $fs = ['submitted_at', 'review_until', 'ec_decision_at', 'notify_at'];
+        // $fs に該当する、schema comment を取得
+        $heads = [];
+        $comments = $this->get_table_comments();
+        foreach ($fs as $f) {
+            $heads[$f] = $comments[$f] ?? $f;
+        }
+        return $heads;
+    }
     /**
      * この査読のトークンを生成（査読者同士の参照用）
      */

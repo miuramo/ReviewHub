@@ -123,6 +123,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin_filelist', [AdminController::class, 'filelist'])->name('admin.filelist');
     Route::get('admin_paper/{paper}/edit', [AdminController::class, 'paper_edit'])->name('admin.paper_edit'); //ECが操作
 
+    Route::get('sub/{sub}/show', [SubmitController::class, 'show'])->name('sub.show'); // 査読管理
+
+    Route::resource('task', TaskController::class);
+
     Route::get('/role/{role}/top', [RoleController::class, 'top'])->name('role.top');
     // Route::get('/role/{role}/pc', [RoleController::class, 'top'])->name('role.pc'); //本当はrole.topがあればよいのだが、navigationをactiveにするため...
     // Route::get('/role/{role}/pub', [RoleController::class, 'top'])->name('role.pub'); //本当はrole.topがあればよいのだが、navigationをactiveにするため...

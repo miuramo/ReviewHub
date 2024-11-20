@@ -49,8 +49,13 @@ class SubmitController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(submit $submit)
+    public function show(Submit $sub)
     {
+        if (!auth()->user()->can('role_any', 'ec')) {
+            if (!auth()->user()->can('manage_paper', $sub->paper_id)) abort(403);
+        }
+
+        return view('submit.show')->with(compact("sub"));
         //
     }
 

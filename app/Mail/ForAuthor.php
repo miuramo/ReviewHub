@@ -13,17 +13,10 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 
-class ForAuthor extends Mailable implements ShouldQueue
+class ForAuthor extends RetryMailable 
 {
-    use Queueable, SerializesModels;
-
     public MailTemplate $template;
     public array $replacetxt;
-    public array $mail_to_cc;
-
-    public $tries = 5;
-    public $backoff = 10;
-    public $timeout = 60;
 
     /**
      * Create a new message instance.
@@ -49,49 +42,13 @@ class ForAuthor extends Mailable implements ShouldQueue
         if ($backup_bcc != null) {
             $this->mail_to_cc['bcc'][] = $backup_bcc;
         }
-    }
 
-    /**
-     * メール送信
-     */
-    public function process_send()
-    {
-        $pmail = Mail::to($this->mail_to_cc['to']);
-        if (count($this->mail_to_cc['cc']) > 0) $pmail->cc($this->mail_to_cc['cc']);
-        if (isset($this->mail_to_cc['bcc']) && count($this->mail_to_cc['bcc']) > 0) $pmail->bcc($this->mail_to_cc['bcc']);
-        $pmail->send($this);
-    }
-
-    /**
-     * Get the message envelope.
-     */
-    public function envelope(): Envelope
-    {
-        return new Envelope(
-            subject: $this->template->make_subject($this->replacetxt),
-        );
-    }
-
-    /**
-     * Get the message content definition.
-     */
-    public function content(): Content
-    {
-        return new Content(
+        $this->subject = $this->template->make_subject($this->replacetxt);
+        $this->content = new Content(
             markdown: 'emails.forauthor',
             with: [
-                'body' => $this->template->make_body($this->replacetxt),
+                'body' => $this->template->make_body($this->replacetxt) . $this->errormessage,
             ],
         );
-    }
-
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
-    public function attachments(): array
-    {
-        return [];
     }
 }

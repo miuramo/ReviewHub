@@ -5,9 +5,21 @@
         ->get()
         ->pluck('name', 'id')
         ->toArray();
+    $tasks = App\Models\Task::with('submit')->where('subject_id', auth()->id())->get();
 
 @endphp
 <!-- components.role.pc -->
+@if (count($tasks) > 0)
+<div class="px-6 py-4">
+    <x-element.h1>未完了のタスクがあります</x-element.h1>
+    @foreach ($tasks as $task)
+    <div class="mx-6">
+        <x-task.panel :task="$task" />
+    </div>
+    @endforeach
+</div>
+@endif
+
 <div class="px-6 py-4">
 
     <x-element.h1>投稿論文</x-element.h1>
@@ -19,8 +31,7 @@
     <div class="my-20"></div>
 
     <x-element.h1> <span class="px-2"></span>
-        <x-element.linkbutton href="{{ route('admin.catsetting', ['toukou' => 'on']) }}" color="cyan"
-            target="_blank">
+        <x-element.linkbutton href="{{ route('admin.catsetting', ['toukou' => 'on']) }}" color="cyan" target="_blank">
             投稿受付管理
         </x-element.linkbutton>
         <span class="px-2"></span>
@@ -33,7 +44,8 @@
             査読進行管理
         </x-element.linkbutton>
         <span class="px-2"></span>
-        <x-element.linkbutton2 href="{{ route('admin.catsetting', ['leadtext' => 'on']) }}" color="gray" target="_blank">
+        <x-element.linkbutton2 href="{{ route('admin.catsetting', ['leadtext' => 'on']) }}" color="gray"
+            target="_blank">
             カテゴリ固有の案内(リード文など)
         </x-element.linkbutton2>
     </x-element.h1>
@@ -114,19 +126,18 @@
     <x-element.h1>査読者一覧と利害表明者 <span class="px-2"></span>
         @foreach ($cats as $catid => $catname)
             @isset($cat_arrange_review[$catid])
-            <x-element.linkbutton href="{{ route('revcon.revname', ['cat' => $catid]) }}"
-                color="lime">
-                {{ $catname }} 
-            </x-element.linkbutton>
-                @endisset
+                <x-element.linkbutton href="{{ route('revcon.revname', ['cat' => $catid]) }}" color="lime">
+                    {{ $catname }}
+                </x-element.linkbutton>
+            @endisset
         @endforeach
         @foreach ($cats as $catid => $catname)
             @isset($cat_arrange_review[$catid])
-            <x-element.linkbutton href="{{ route('revcon.revname', ['cat' => $catid, 'excel' => 'dl']) }}"
-                color="teal">
-                {{ $catname }} Excel
-            </x-element.linkbutton>
-                @endisset
+                <x-element.linkbutton href="{{ route('revcon.revname', ['cat' => $catid, 'excel' => 'dl']) }}"
+                    color="teal">
+                    {{ $catname }} Excel
+                </x-element.linkbutton>
+            @endisset
         @endforeach
     </x-element.h1>
 
@@ -169,7 +180,8 @@
         <span class="px-3"></span>
         <x-element.linkbutton href="{{ route('file.adminlock') }}" color="orange">
             投稿ファイルの管理
-        </x-element.linkbutton> <span class="text-sm mx-2 mr-10">ファイルを修正ロック（査読中に使用）したり、ロック解除（査読結果通知前に使用）したりできる設定画面が開きます。</span>
+        </x-element.linkbutton> <span
+            class="text-sm mx-2 mr-10">ファイルを修正ロック（査読中に使用）したり、ロック解除（査読結果通知前に使用）したりできる設定画面が開きます。</span>
 
         <x-element.linkbutton href="{{ route('paper.adminlock') }}" color="green">
             書誌情報(Paper)の管理
@@ -182,8 +194,8 @@
         @foreach ($cats as $catid => $catname)
             @isset($cat_arrange_review[$catid])
                 <x-element.linkbutton
-                    href="{{ route('viewpoint.itmsetting', ['cat_id' => $catid, 'cat_name' => $catname]) }}"
-                    color="yellow" size="sm">
+                    href="{{ route('viewpoint.itmsetting', ['cat_id' => $catid, 'cat_name' => $catname]) }}" color="yellow"
+                    size="sm">
                     {{ $catname }}
                 </x-element.linkbutton>
 
@@ -259,7 +271,8 @@
             $user = App\Models\User::find(auth()->id());
         @endphp
         @foreach ($user->roles as $ro)
-            <span class="inline-block bg-slate-300 rounded-md p-1 mb-0.5 dark:bg-slate-500 dark:text-gray-300">{{ $ro->desc }}
+            <span
+                class="inline-block bg-slate-300 rounded-md p-1 mb-0.5 dark:bg-slate-500 dark:text-gray-300">{{ $ro->desc }}
                 ({{ $ro->name }})
             </span>
         @endforeach

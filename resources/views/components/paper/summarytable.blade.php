@@ -20,10 +20,21 @@
         @foreach ($papers as $paper)
             <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200' : 'bg-white' }}">
                 <td class="p-1 text-center">{{ $paper->category->name }}</td>
-                <td class="p-1 text-center">{{ $paper->id_03d() }}</td>
                 <td class="p-1 text-center">
+                    <a href="{{ route('paper.show', ['paper' => $paper]) }}"
+                        class="underline text-blue-600 hover:bg-lime-200" target="_blank">
+                    {{ $paper->id_03d() }}
+                    </a>
+                </td>
+                <td class="p-1 text-center">
+                    @php
+                        $sub = $paper->currentsubmit;
+                    @endphp
+                    <a href="{{ route('sub.show', ['sub' => $sub]) }}"
+                        class="underline text-blue-600 hover:bg-lime-200" target="_blank">
                     {{$paper->currentsubmit->round}}回目 
                     {{ $paper->currentstatus->name }}</td>
+                    </a>
                 <td class="p-1 text-center block break-all">{{ $paper->title }}</td>
                 <td class="p-1 text-center">
                     @if ($paper->pdf_file_id != 0)
@@ -36,7 +47,7 @@
                     @endif
                 </td>
 
-                <td class="p-1 text-center">{{ $paper->currentsubmit->submitted_at }}</td>
+                <td class="p-1 text-center">{{ $paper->currentsubmit->submitted_at ?? '---' }}</td>
                 <td class="p-1 text-center">{{ $paper->paperowner->name }}
                 </td>
                 <td class="p-1 text-center">{{ $paper->paperowner->affil }}

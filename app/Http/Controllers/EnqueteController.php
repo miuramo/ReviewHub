@@ -89,11 +89,11 @@ class EnqueteController extends Controller
         $coldetails = $cold2;
         $title = "「" . $req->input('enq_name') . "」アンケート項目の編集";
 
-        $domain = config('database.default');
-        $db_name = config('database.connections.' . str_replace('.', '_', $domain) . '.database');
+        // $domain = config('database.default');
+        // $db_name = config('database.connections.' . str_replace('.', '_', $domain) . '.database');
 
         $whereBy['enquete_id'] = $req->input("enq_id");
-        $tableComments = AdminController::get_table_comments($db_name, $tableName);
+        $tableComments = (new Enquete())->get_table_comments();
         $data = DB::table($tableName)->where("enquete_id", $req->input("enq_id"))
             ->orderBy('orderint')->limit(100)->get()->toArray();
         $numdata = DB::table($tableName)->count();
