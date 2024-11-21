@@ -5,6 +5,7 @@ namespace App\Models;
 use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 
 class Task extends Model
 {
@@ -22,10 +23,22 @@ class Task extends Model
     {
         return $this->belongsTo(Workflow::class);
     }
+    public function next()
+    {
+        return $this->belongsTo(Task::class, 'next');
+    }
+    public function next2()
+    {
+        return $this->belongsTo(Task::class, 'next2');
+    }
 
     public function subject()
     {
         return $this->belongsTo(User::class, 'subject_id');
+    }
+    public function object()
+    {
+        return $this->belongsTo(User::class, 'object_id');
     }
     public function submit()
     {
@@ -52,5 +65,10 @@ class Task extends Model
             // 不正な日付形式の場合はエラーメッセージを返す
             return "Invalid date format: $date";
         }
+    }
+
+    public function process(Request $req)
+    {
+        return $this->workflow->process($this, $req);
     }
 }

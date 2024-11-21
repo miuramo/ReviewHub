@@ -83,6 +83,11 @@
                                 {{ __('Profile') }}
                             </x-dropdown-link>
 
+                            <x-responsive-nav-link :href="route('role.index')">
+                                {{ __('Roles') }}
+                            </x-responsive-nav-link>
+
+                            
                             <!-- Authentication -->
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf

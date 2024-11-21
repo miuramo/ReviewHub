@@ -61,7 +61,7 @@ class PaperController extends Controller
     public function index()
     {
         $all = Paper::with('currentstatus')->where('owner', Auth::user()->id)->get()->sortBy("id");
-        info($all[0]->currentstatus);
+        // info($all[0]->currentstatus);
         foreach ($all as $p) {
             $p->validate_accepted();
         }

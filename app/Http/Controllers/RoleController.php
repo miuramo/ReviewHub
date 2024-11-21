@@ -228,4 +228,11 @@ class RoleController extends Controller
         // $cats = Category::select('id', 'name')->get()->pluck('name', 'id')->toArray();
         return Excel::download(new BiddingResultExportFromView($cat, $role), "bidding_{$cat->name}.xlsx");
     }
+
+    public function index()
+    {
+        if (!auth()->user()->can('role_any', 'ec|aec|rev|meta|admin|manager|brev')) abort(403);
+        $roles = Role::orderBy("id")->get();
+        return view('role.index')->with(compact("roles"));
+    }
 }

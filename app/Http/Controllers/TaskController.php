@@ -57,11 +57,14 @@ class TaskController extends Controller
         // info($req->all());
         // info($task);
         // info($task->workflow);
-        $task->completed = 1;
-        $task->completed_at = now();
-        $task->submit->aec_id = $req->object_id;
-        $task->submit->save();
-        $task->save();
+        // 本来は、Taskを通じて、Workflowに従って処理してほしい
+        $task = Task::with(['workflow', 'submit','next','next2'])->find($task->id);
+        $ret = $task->process($req);
+        if ($ret) {
+            return redirect()->route('role.top', ['role' => $req->redirect_role])->with('feedback.success', 'Task completed successfully');
+        } else {
+            return redirect()->route('role.top', ['role' => $req->redirect_role])->with('feedback.error', 'Task failed');
+        }
         return redirect()->route('role.top', ['role' => $req->redirect_role])->with('feedback.success', 'Task completed successfully');
     }
 

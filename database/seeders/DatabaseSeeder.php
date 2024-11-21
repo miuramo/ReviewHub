@@ -50,6 +50,12 @@ class DatabaseSeeder extends Seeder
                 ]);
                 $tmp->users()->attach(1);
             }
+            $brev = Role::findByIdOrName('brev');
+            $brev->navi = "x";
+            $brev->save();
+            $manager = Role::findByIdOrName('manager');
+            $manager->navi = "x";
+            $manager->save();
         }
         Paper::firstOrCreate([
             'category_id' => 1,

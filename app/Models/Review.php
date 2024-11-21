@@ -36,6 +36,12 @@ class Review extends Model
         return $this->belongsTo(Submit::class, 'submit_id');
     }
 
+    public function save_user_id($user_id)
+    {
+        $this->user_id = $user_id;
+        $this->save();
+    }
+
     /**
      * この査読のトークンを生成（査読者同士の参照用）
      */

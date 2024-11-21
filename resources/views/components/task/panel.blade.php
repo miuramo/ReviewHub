@@ -7,6 +7,8 @@
 @endphp
 
 <x-element.h1c color="yellow" dark=300 :options="['font-bold']">
+    {{-- 論文 --}}
+    {{ $task->submit->paper->id_03d() }} の
     {{-- 誰が --}}
     @php
     $role = App\Models\Role::findByIdOrName($task->workflow->subject);
@@ -39,7 +41,11 @@
     <input type="hidden" name="task" value="{{ $task->id }}">
     <input type="hidden" name="redirect_role" value="{{ $task->workflow->subject}}">
     @php
-        $objectRole = App\Models\Role::findByIdOrName($task->workflow->object);
+        $rolename = $task->workflow->object;
+        $rolename = str_replace("1", "", $rolename);
+        $rolename = str_replace("2", "", $rolename);
+        $rolename = str_replace("3", "", $rolename);
+        $objectRole = App\Models\Role::findByIdOrName($rolename);
     @endphp
     <label for="object_id" class="text-sm bg-slate-100 font-thin mr-2 p-0 h-5">
         選択してください→

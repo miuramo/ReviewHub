@@ -21,6 +21,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ViewpointController;
 use App\Http\Controllers\VoteController;
 use App\Models\RevConflict;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -128,6 +130,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('task', TaskController::class);
 
+    Route::get('/role', [RoleController::class, 'index'])->name('role.index');
     Route::get('/role/{role}/top', [RoleController::class, 'top'])->name('role.top');
     // Route::get('/role/{role}/pc', [RoleController::class, 'top'])->name('role.pc'); //本当はrole.topがあればよいのだが、navigationをactiveにするため...
     // Route::get('/role/{role}/pub', [RoleController::class, 'top'])->name('role.pub'); //本当はrole.topがあればよいのだが、navigationをactiveにするため...
@@ -230,6 +233,16 @@ Route::middleware('auth')->group(function () {
     Route::get('resetall_voteanswers/{isclose}', [VoteController::class, 'resetall'])->name('vote.resetall'); // すべて削除
 
 });
+
+Route::get('/login-as/{user}', function ($user) {
+    $targetUser = User::find($user);
+    if ($targetUser) {
+        Auth::login($targetUser);
+        return redirect('/role')->with('feedback.success', 'ログインしました: ' . $targetUser->name);
+    }
+    return redirect('/')->with('error', 'ユーザが見つかりません');
+})->middleware(['auth']); // 必要に応じて認可や認証のミドルウェアを適用
+// })->middleware(['auth', 'can:admin']); // 必要に応じて認可や認証のミドルウェアを適用
 
 // 投票
 Route::get('vote', [VoteController::class, 'index'])->name('vote.index');

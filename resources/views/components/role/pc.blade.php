@@ -7,6 +7,7 @@
         ->toArray();
     $tasks = App\Models\Task::with('submit')->where('subject_id', auth()->id())->where('completed',0)->get();
 
+    $recent = App\Models\Task::with('submit')->where('subject_id', auth()->id())->where('completed',1)->orderBy('updated_at', 'desc')->get();
 @endphp
 <!-- components.role.pc -->
 @if (count($tasks) > 0)
@@ -19,6 +20,18 @@
     @endforeach
 </div>
 @endif
+
+@if(count($recent) > 0)
+<div class="px-6 py-4">
+    <x-element.h1>最近完了したタスク</x-element.h1>
+    @foreach ($recent as $task)
+    <div class="mx-6">
+        <x-task.abstpanel :task="$task" />
+    </div>
+    @endforeach
+</div>
+@endif
+
 
 <div class="px-6 py-4">
 
