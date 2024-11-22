@@ -47,7 +47,7 @@ class Task extends Model
 
     public function dueForHumans($prefix = 'あと', $postfix = '超過')
     {
-        $date = $this->due_date; 
+        $date = $this->due_date;
         try {
             // 現在の日付を取得
             $currentDate = new DateTime();
@@ -57,14 +57,40 @@ class Task extends Model
             $difference = $currentDate->diff($givenDate);
             // 差分の日数を返す（符号を考慮）
             if ($difference->days >= 0) {
-                return $prefix.$difference->days . '日';
+                return $prefix . $difference->days . '日';
             } else {
-                return $difference->days . '日'.$postfix;
+                return $difference->days . '日' . $postfix;
             }
         } catch (Exception $e) {
             // 不正な日付形式の場合はエラーメッセージを返す
             return "Invalid date format: $date";
         }
+    }
+
+    // next, next2をみながら、
+    public function recursive_set_due_date(string $ymd) {
+        $this->due_date = $this->addDaysToDate($this->workflow->num_of_days, $ymd);
+        $this->save();
+        if ($this->workflow->next_workflow_id) {
+            Task::find($this->next)->recursive_set_due_date($this->due_date);
+        }
+        if ($this->workflow->next_workflow_id2) {
+            Task::find($this->next2)->recursive_set_due_date($this->due_date);
+        }
+    }
+    public function addDaysToDate(int $days, string $currentDate = null)
+    {
+        if ($currentDate == null) {
+            // 現在の日付を取得
+            $currentDate = new DateTime();
+        } else {
+            // 指定された日付を DateTime オブジェクトに変換
+            $currentDate = new DateTime($currentDate);
+        }
+        // 日数を加算
+        $currentDate->modify("+{$days} days");
+        // フォーマットして返す
+        return $currentDate->format('Y-m-d');
     }
 
     public function process(Request $req)

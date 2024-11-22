@@ -14,14 +14,14 @@ class Workflow extends Model
 
     public static function createTasks(Submit $sub){
         $wkfls = Workflow::get();
-        $days = 0;
+        // $days = 0;
         $taskary = [];
         foreach($wkfls as $wkfl){
-            $days += $wkfl->num_of_days;
+            // $days += $wkfl->num_of_days;
             $task = Task::create([
                 'submit_id' => $sub->id,
                 'workflow_id' => $wkfl->id,
-                'due_date' => $wkfl->addDaysToDate($days),
+                // 'due_date' => $wkfl->addDaysToDate($days),
                 // 'subject_id' => ($wkfl->id == 1)? $wkfl->subject_id() : null,
             ]);
             $taskary[$wkfl->id] = $task;
@@ -37,19 +37,13 @@ class Workflow extends Model
             }
             $task->save();
         }
-
+        // update due date recursively
+        $now = (new DateTime())->format('Y-m-d');
+        $taskary[1]->recursive_set_due_date($now);
 
         $firsttask = Task::where('submit_id', $sub->id)->first();
         $firsttask->subject_id = $firsttask->workflow->subject_id();
         $firsttask->save();
-    }
-    public function addDaysToDate($days) {
-        // 現在の日付を取得
-        $currentDate = new DateTime();
-        // 日数を加算
-        $currentDate->modify("+$days days");
-        // フォーマットして返す
-        return $currentDate->format('Y-m-d');
     }
     public function subject_id(){
         if ($this->subject == "ec"){
