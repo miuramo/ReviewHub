@@ -5,7 +5,7 @@
     @endphp
     <x-slot name="header">
         <div class="mb-4">
-            <x-element.linkbutton href="{{ route('review.indexcat', ['cat' => $review->paper->category_id]) }}"
+            <x-element.linkbutton href="{{ route('review.index') }}"
                 color="gray" size="sm">
                 &larr; 担当査読一覧に戻る
             </x-element.linkbutton>

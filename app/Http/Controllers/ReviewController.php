@@ -274,7 +274,7 @@ class ReviewController extends Controller
      */
     public function edit(Review $review)
     {
-        if (!auth()->user()->can('role_any', 'reviewer|metareviewer')) return abort(403);
+        if (!auth()->user()->can('role_any', 'ec|aec|rev|meta')) return abort(403);
         if ($review->user_id != auth()->id()) return abort(403, "THIS IS NOT YOUR REVIEW");
 
         $query = Viewpoint::where("category_id", $review->category_id);
