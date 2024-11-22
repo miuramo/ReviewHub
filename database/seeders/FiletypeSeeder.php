@@ -12,16 +12,16 @@ class FiletypeSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\FileType::factory()->create([
+        \App\Models\Filetype::factory()->create([
             'name' => '論文',
         ]);
-        \App\Models\FileType::factory()->create([
+        \App\Models\Filetype::factory()->create([
             'name' => '回答書',
         ]);
-        \App\Models\FileType::factory()->create([
+        \App\Models\Filetype::factory()->create([
             'name' => '対照表',
         ]);
-        \App\Models\FileType::factory()->create([
+        \App\Models\Filetype::factory()->create([
             'name' => 'その他',
         ]);
     }
