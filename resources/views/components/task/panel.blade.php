@@ -21,6 +21,10 @@
     締切: {{ $task->due_date }}
     <span class="mx-2"></span>
     {{ $task->dueForHumans() }}
+    <span class="mx-2"></span>
+    @if($task->workflow->need_approve)
+    <span class="bg-red-200 text-red-800 p-1 rounded">割当後、承認プロセスあり</span>
+    @endif
     </x-element.h1>
     <div class="mx-4">
         ファイル：
@@ -58,7 +62,13 @@
                         </option>
                     @endforeach
                 </select>
-
+                @if($task->workflow->need_approve)
+                <span class="mx-2"></span>
+                <input type="checkbox" name="skip_approve" id="skip_approve" value="1">
+                <label for="skip_approve" class="text-sm hover:bg-pink-200 p-1">承認プロセスをスキップする（内諾あり） 
+                </label>
+                @endif
+                <span class="mx-2"></span>
                 <x-element.submitbutton color="blue" value="assign"
                     confirm='このタスクを完了し、次のワークフローに移行すると、戻ることはできません。本当に進めてよいですか？'>割り当てる</x-element.submitbutton>
             </form>

@@ -12,6 +12,9 @@ class Workflow extends Model
     /** @use HasFactory<\Database\Factories\WorkflowFactory> */
     use HasFactory;
 
+    /**
+     * 新しいタスクを、submitに対して作成する
+     */
     public static function createTasks(Submit $sub){
         $wkfls = Workflow::get();
         // $days = 0;
@@ -45,6 +48,8 @@ class Workflow extends Model
         $firsttask->subject_id = $firsttask->workflow->subject_id();
         $firsttask->save();
     }
+
+    // 初期タスクのsubject_idを返す
     public function subject_id(){
         if ($this->subject == "ec"){
             $role = Role::findByIdOrName("ec");
@@ -55,6 +60,7 @@ class Workflow extends Model
         }
     }
 
+    // ワークフローを進める from TaskController.update
     public function process(Task $task, Request $req)
     {
         if ($this->task == 'assign'){
@@ -62,46 +68,20 @@ class Workflow extends Model
             $task->completed = 1;
             $task->completed_at = now();
             $task->save();
-            if ($this->object == "aec"){
-                $task->submit->aec_id = $req->object_id;
-                $task->submit->save();
-            } else if ($this->object == "meta"){
-                $rev = $task->submit->meta();
-                $rev->user_id = $req->object_id;
-                $rev->save();
-            } else if ($this->object == "rev1"){
-                $task->submit->rev1()->save_user_id($req->object_id);
-            } else if ($this->object == "rev2"){
-                $task->submit->rev2()->save_user_id($req->object_id);
-            } else if ($this->object == "rev3"){
-                $task->submit->rev3()->save_user_id($req->object_id);
-            }
-            // submitのstatusを更新
-            $task->submit->updateStatus();
 
             // もし、approve必要なら
-            if ($this->need_approve){
-                // 次のタスクのsubjectを設定
-                $ntask = Task::find($task->next);
-                $ntask->subject_id = $task->object_id;
-                $ntask->save();
+            if ($this->need_approve && !$req->skip_approve){
+                $task->require_approve = 1; // 承認が必要
+                $task->save();
 
-                if ($task->next2){
-                    $ntask = Task::find($task->next2);
-                    $ntask->subject_id = $task->object_id;
-                    $ntask->save();
-                }
+                $this->assign_forward($task, $req->object_id); // 割り当て（暫定）
+                // メールを送る
+                $task->sendApproveMail();
             } else {
-                // 次のタスクのsubjectを設定
-                $ntask = Task::find($task->next);
-                $ntask->subject_id = $task->object_id;
-                $ntask->save();
-
-                if ($task->next2){
-                    $ntask = Task::find($task->next2);
-                    $ntask->subject_id = $task->object_id;
-                    $ntask->save();
-                }
+                // 承認不要で進める
+                $this->assign_forward($task, $req->object_id); // 割り当て
+                $task->sendApproveMail();
+                $this->proceed_workflow($task, $req); //ワークフローを介して、次のタスクに進む
             }
             return true;
         } else if ($this->task == 'submit'){
@@ -113,4 +93,84 @@ class Workflow extends Model
         }
         return true;
     }
+    /**
+     * 割り当てた人に打診する。
+     */
+    public function approved(Task $task, Request $req)
+    {
+        $task->object_id = $req->object_id;
+        $task->completed = 1;
+        $task->completed_at = now();
+        $task->save();
+        // submitのstatusを更新
+        $task->submit->updateStatus();
+
+        // 次のタスクのsubjectを設定
+        $ntask = Task::find($task->next);
+        $ntask->subject_id = $task->object_id;
+        $ntask->save();
+
+        if ($task->next2){
+            $ntask = Task::find($task->next2);
+            $ntask->subject_id = $task->object_id;
+            $ntask->save();
+        }
+        return true;
+    }
+    /**
+     * 次のタスクに進む from Task.approve
+     */
+    public function proceed_workflow(Task $task, Request $req)
+    {
+        // 次のタスクのsubjectを設定
+        $ntask = Task::find($task->next);
+        $ntask->subject_id = $task->object_id;
+        $ntask->save();
+
+        if ($task->next2){
+            $ntask = Task::find($task->next2);
+            $ntask->subject_id = $task->object_id;
+            $ntask->save();
+        }
+    }
+    /**
+     * 無事、承認された場合や、承認不要でプロセスが進んだ場合
+     * 
+     */
+    public function assign_forward(Task $task, int $oid)
+    {
+        if ($this->object == "aec"){
+            $task->submit->aec_id = $oid;
+            $task->submit->save();
+        } else if ($this->object == "meta"){
+            $rev = $task->submit->meta();
+            $rev->user_id = $oid;
+            $rev->save();
+        } else if ($this->object == "rev1"){
+            $task->submit->rev1()->save_user_id($oid);
+        } else if ($this->object == "rev2"){
+            $task->submit->rev2()->save_user_id($oid);
+        } else if ($this->object == "rev3"){
+            $task->submit->rev3()->save_user_id($oid);
+        }
+        // submitのstatusを更新
+        $task->submit->updateStatus();
+    }
+    public function assign_backward(Task $task){
+        if ($this->object == "aec"){
+            $task->submit->aec_id = null;
+            $task->submit->save();
+        } else if ($this->object == "meta"){
+            $task->submit->meta()->save_user_id(null);
+        } else if ($this->object == "rev1"){
+            $task->submit->rev1()->save_user_id(null);
+        } else if ($this->object == "rev2"){
+            $task->submit->rev2()->save_user_id(null);
+        } else if ($this->object == "rev3"){
+            $task->submit->rev3()->save_user_id(null);
+        }
+        // submitのstatusを更新
+        $task->submit->updateStatus();
+    }
+
 }

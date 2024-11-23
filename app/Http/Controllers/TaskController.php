@@ -54,20 +54,31 @@ class TaskController extends Controller
      */
     public function update(Request $req, Task $task)
     {
-        // info($req->all());
-        // info($task);
-        // info($task->workflow);
         // 本来は、Taskを通じて、Workflowに従って処理してほしい
         $task = Task::with(['workflow', 'submit','next','next2'])->find($task->id);
         $ret = $task->process($req);
         if ($ret) {
             return redirect()->route('role.top', ['role' => $req->redirect_role])->with('feedback.success', 'Task completed successfully');
         } else {
-            return redirect()->route('role.top', ['role' => $req->redirect_role])->with('feedback.error', 'Task failed');
+            return redirect()->route('role.top', ['role' => $req->redirect_role])->with('feedback.error', 'タスク処理に失敗しました');
         }
         return redirect()->route('role.top', ['role' => $req->redirect_role])->with('feedback.success', 'Task completed successfully');
     }
 
+    /**
+     * 承認画面からの承認または辞退があったとき
+     */
+    public function approve(Request $req, Task $task)
+    {
+        if ($req->approve){
+            $task->approve($req, true);
+            return redirect()->route('role.top', ['role' => $req->redirect_role])->with('feedback.success', 'タスクを承認しました');
+        } else {
+            // 不承認メールを送る
+            $task->approve($req, false);
+            return redirect()->route('role.top', ['role' => $req->redirect_role])->with('feedback.success', 'タスクを辞退しました');
+        }
+    }
     /**
      * Remove the specified resource from storage.
      */

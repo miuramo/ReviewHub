@@ -129,6 +129,7 @@ Route::middleware('auth')->group(function () {
     Route::get('sub/{sub}/show', [SubmitController::class, 'show'])->name('sub.show'); // 査読管理
 
     Route::resource('task', TaskController::class);
+    Route::put('/task/{task}/approve', [TaskController::class, 'approve'])->name('task.approve');
 
     Route::get('/role', [RoleController::class, 'index'])->name('role.index');
     Route::get('/role/{role}/top', [RoleController::class, 'top'])->name('role.top');

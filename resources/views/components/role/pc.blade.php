@@ -5,31 +5,54 @@
         ->get()
         ->pluck('name', 'id')
         ->toArray();
-    $tasks = App\Models\Task::with('submit')->where('subject_id', auth()->id())->where('completed',0)->get();
+    $tasks = App\Models\Task::with('submit')->where('subject_id', auth()->id())->where('completed', 0)->get();
 
-    $recent = App\Models\Task::with('submit')->where('subject_id', auth()->id())->where('completed',1)->orderBy('updated_at', 'desc')->get();
+    $recent = App\Models\Task::with('submit')
+        ->where('subject_id', auth()->id())
+        ->where('completed', 1)
+        ->orderBy('updated_at', 'desc')
+        ->get();
+
+    $approvetasks = App\Models\Task::with('submit')
+        ->where('object_id', auth()->id())
+        ->where('completed', 1)
+        ->where('require_approve', 1)
+        ->where('approved', 0)
+        ->get();
 @endphp
 <!-- components.role.pc -->
 @if (count($tasks) > 0)
-<div class="px-6 py-4">
-    <x-element.h1>未完了のタスクがあります</x-element.h1>
-    @foreach ($tasks as $task)
-    <div class="mx-6">
-        <x-task.panel :task="$task" />
+    <div class="px-6 py-4">
+        <x-element.h1>未完了のタスクがあります</x-element.h1>
+        @foreach ($tasks as $task)
+            <div class="mx-6">
+                <x-task.panel :task="$task" />
+            </div>
+        @endforeach
     </div>
-    @endforeach
-</div>
 @endif
 
-@if(count($recent) > 0)
-<div class="px-6 py-4">
-    <x-element.h1>最近完了したタスク</x-element.h1>
-    @foreach ($recent as $task)
-    <div class="mx-6">
-        <x-task.abstpanel :task="$task" />
+@if (count($approvetasks) > 0)
+    <div class="px-6 py-4">
+        <x-element.h1>未完了の承認タスクがあります</x-element.h1>
+        @foreach ($approvetasks as $task)
+            <div class="mx-6">
+                <x-task.app_panel :task="$task" />
+            </div>
+        @endforeach
     </div>
-    @endforeach
-</div>
+@endif
+
+
+@if (count($recent) > 0)
+    <div class="px-6 py-4">
+        <x-element.h1>最近完了したタスク</x-element.h1>
+        @foreach ($recent as $task)
+            <div class="mx-6">
+                <x-task.abstpanel :task="$task" />
+            </div>
+        @endforeach
+    </div>
 @endif
 
 
