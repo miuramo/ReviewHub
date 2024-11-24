@@ -2,17 +2,17 @@
     <!-- revcon.revstat -->
     <x-slot name="header">
         <div class="mb-4">
-            <x-element.linkbutton href="{{ route('role.top', ['role' => 'ce']) }}" color="gray" size="sm">
+            <x-element.linkbutton href="{{ route('role.top', ['role' => 'ec']) }}" color="gray" size="sm">
                 &larr; PC長 Topに戻る
             </x-element.linkbutton>
             <span class="mx-6"></span>
             表示切り替え → 
             <span class="mx-1"></span>
-            <x-element.linkbutton2 href="{{ route('revcon.revstat', ['role' => 'reviewer']) }}" color="lime" size="sm">
+            <x-element.linkbutton2 href="{{ route('revcon.revstat', ['role' => 'rev']) }}" color="lime" size="sm">
                 査読者
             </x-element.linkbutton>
             <span class="mx-2"></span>
-            <x-element.linkbutton2 href="{{ route('revcon.revstat', ['role' => 'metareviewer']) }}" color="lime" size="sm">
+            <x-element.linkbutton2 href="{{ route('revcon.revstat', ['role' => 'meta']) }}" color="lime" size="sm">
                 {{ App\Models\Setting::findByIdOrName('name_of_meta')->value }}
             </x-element.linkbutton>
         </div>

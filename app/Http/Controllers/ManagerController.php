@@ -54,14 +54,14 @@ class ManagerController extends Controller
      */
     public function paperlist_headimg()
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
         $all = Paper::whereNotNull('pdf_file_id')->get();
 
         return view('admin.paperlist_headimg')->with(compact("all"));
     }
     public function paperlist_headimg_recrop()
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
         $all = Paper::whereNotNull('pdf_file_id')->get();
         foreach ($all as $paper) {
             $paper->pdf_file->altimg_recrop();
@@ -74,7 +74,7 @@ class ManagerController extends Controller
 
     public function mailtest()
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
         if (!auth()->user()->id == 1) abort(403);
         $papers = Paper::all();
         $mts = MailTemplate::all();
@@ -89,7 +89,7 @@ class ManagerController extends Controller
 
     public function test9w()
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
         Test9w::dispatch();
         // $this->ocr9w();
         ExportHintFileJob::dispatch();
@@ -98,7 +98,7 @@ class ManagerController extends Controller
 
     public function ocr9w()
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
         File::rebuildOcrTsv();
         // OcrJob::dispatch();
         return redirect()->route('admin.dashboard')->with('feedback.success', 'OCR Queueを実行しました。');
@@ -106,7 +106,7 @@ class ManagerController extends Controller
     
     public function paperauthorhead(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
         $sets = Setting::where("name", "like", "SKIP_HEAD_%")->where("valid", true)->get();
         $papers = Paper::whereNotNull("pdf_file_id")->get();
         if ($req->input('action')=='titleupdate'){ // 第3要素のタイトルで書き換える

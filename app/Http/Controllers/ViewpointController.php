@@ -32,7 +32,7 @@ class ViewpointController extends Controller
         $tmp->storeAs(File::pf(), $hashname);
         $fullpath = storage_path(File::apf() . '/' . $hashname);
         Excel::import(new ViewpointsImport, $fullpath);
-        return redirect(route('role.top', ['role' => 'ce']))->with('feedback.success', 'Viewpoint Imported !!');
+        return redirect(route('role.top', ['role' => 'ec']))->with('feedback.success', 'Viewpoint Imported !!');
     }
 
     /**
@@ -40,7 +40,7 @@ class ViewpointController extends Controller
      */
     public function itmsetting(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
         $tableName = 'viewpoints';
         // copy_id がセットされていたら、行をコピーする
         if ($req->has('copy_id')) {

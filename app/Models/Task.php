@@ -12,7 +12,7 @@ class Task extends Model
     /** @use HasFactory<\Database\Factories\TaskFactory> */
     use HasFactory;
 
-    protected $with = ['subject', 'object', 'submit', 'workflow', 'tnext', 'tnext2'];
+    protected $with = ['subject', 'object', 'submit', 'workflow', 'tnext', 'tnext2', 'tnext3'];
 
     protected $fillable = [
         'submit_id',
@@ -20,6 +20,7 @@ class Task extends Model
         'due_date',
         'next',
         'next2',
+        'next3',
         'due_date',
         'completed',
         'completed_at',
@@ -41,6 +42,10 @@ class Task extends Model
     public function tnext2()
     {
         return $this->belongsTo(Task::class, 'next2');
+    }
+    public function tnext3()
+    {
+        return $this->belongsTo(Task::class, 'next3');
     }
 
     public function subject()
@@ -132,6 +137,9 @@ class Task extends Model
         }
         if ($this->workflow->next_workflow_id2) {
             $this->tnext2->recursive_set_due_date($this->due_date);
+        }
+        if ($this->workflow->next_workflow_id3) {
+            $this->tnext3->recursive_set_due_date($this->due_date);
         }
     }
     public function addDaysToDate(int $days, string $currentDate = null)

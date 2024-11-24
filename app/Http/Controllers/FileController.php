@@ -195,7 +195,7 @@ class FileController extends Controller
      */
     public function adminlock(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
         if ($req->method() === 'POST') {
 
             if ($req->has('action')) { // action is lock or unlock

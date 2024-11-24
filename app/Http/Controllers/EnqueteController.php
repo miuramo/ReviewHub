@@ -26,7 +26,7 @@ class EnqueteController extends Controller
     {
         $aEnq = Enquete::accessibleEnquetes(true);
         if (count($aEnq) < 1) abort(403);
-        // if (!auth()->user()->can('role_any', 'ce|demo|acc')) abort(403);
+        // if (!auth()->user()->can('role_any', 'ec|demo|acc')) abort(403);
         Enquete::reorderint(10); // orderint を再割り当てする
         $enqs = Enquete::accessibleEnquetes();
         return view("enquete.index")->with(compact("enqs"));
@@ -39,7 +39,7 @@ class EnqueteController extends Controller
     {
         $aEnq = Enquete::accessibleEnquetes(true);
         if (!isset($aEnq[$enq_id])) abort(403);
-        // if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        // if (!auth()->user()->can('role_any', 'ec')) abort(403);
 
         $enq = Enquete::find($enq_id);
         $enqans = EnqueteAnswer::where('enquete_id', $enq_id)->orderBy('paper_id')->get();
@@ -62,7 +62,7 @@ class EnqueteController extends Controller
         // info($aEnq);
         $enq_id = $req->input('enq_id');
         if (!isset($aEnq[$enq_id])) abort(403);
-        // if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        // if (!auth()->user()->can('role_any', 'ec')) abort(403);
         $tableName = 'enquete_items';
         // copy_id がセットされていたら、行をコピーする
         if ($req->has('copy_id')) {
@@ -121,7 +121,7 @@ class EnqueteController extends Controller
      */
     public function create()
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
 
         //
     }
@@ -131,7 +131,7 @@ class EnqueteController extends Controller
      */
     public function store(StoreEnqueteRequest $request)
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
 
         //
     }
@@ -180,7 +180,7 @@ class EnqueteController extends Controller
         //Paperアンケートのときは、Paperのカテゴリが要求するアンケート→それぞれの質問項目、の順に集めたが、プレビューなので後者のみ。
         $aEnq = Enquete::accessibleEnquetes(true);
         if (!isset($aEnq[$enq->id])) abort(403);
-        // if (!auth()->user()->can('role', 'ce')) return abort(403);
+        // if (!auth()->user()->can('role', 'ec')) return abort(403);
         $itms = EnqueteItem::where('enquete_id', $enq->id)->orderBy('orderint');
         $enqans = [];
         $enqs["canedit"][$enq->id] = $enq;
@@ -210,7 +210,7 @@ class EnqueteController extends Controller
      */
     public function destroy(Enquete $enquete)
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
 
         //
     }
@@ -220,7 +220,7 @@ class EnqueteController extends Controller
      */
     public function map_to_roles(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'ce|manager|admin')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec|manager|admin')) abort(403);
         $roles = Role::all();
         $enqs = Enquete::all();
         $roleid_desc = Role::select("id", "desc")->pluck("desc", "id")->toArray();
@@ -253,7 +253,7 @@ class EnqueteController extends Controller
      */
     public function resetenqans(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'ce|manager|admin')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec|manager|admin')) abort(403);
         if ($req->method() === 'POST') {
             if ($req->has("action")) {
                 foreach ($req->all() as $k => $v) {

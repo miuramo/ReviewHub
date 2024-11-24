@@ -347,7 +347,7 @@ class PaperController extends Controller
     public function review(string $id, string $token)
     {
         $paper = Paper::findOrFail($id);
-        if (!auth()->user()->can('role_any', 'ce|reviewer|metareviewer')) {
+        if (!auth()->user()->can('role_any', 'ec|aec|rev|meta')) {
             if (!Gate::allows('show_paper', $paper)) {
                 abort(403, 'forbidden_for_others');
             }
@@ -441,7 +441,7 @@ class PaperController extends Controller
      */
     public function adminlock(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'ce|pub|web')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec|pub|web')) abort(403);
         if ($req->method() === 'POST') {
             if ($req->has('action')) { // action is lock or unlock
                 foreach ($req->all() as $k => $v) {

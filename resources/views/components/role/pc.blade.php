@@ -5,6 +5,7 @@
         ->get()
         ->pluck('name', 'id')
         ->toArray();
+        
     $tasks = App\Models\Task::with('submit')->where('subject_id', auth()->id())->where('completed', 0)->get();
 
     $recent = App\Models\Task::with('submit')

@@ -31,7 +31,7 @@ class Workflow extends Model
             ]);
             $taskary[$wkfl->id] = $task;
         }
-        // next, next2を設定
+        // next, next2, next3を設定
         foreach($wkfls as $wkfl){
             $task = $taskary[$wkfl->id];
             if ($wkfl->next_workflow_id){
@@ -39,6 +39,9 @@ class Workflow extends Model
             }
             if ($wkfl->next_workflow_id2){
                 $task->next2 = $taskary[$wkfl->next_workflow_id2]->id;
+            }
+            if ($wkfl->next_workflow_id3){
+                $task->next3 = $taskary[$wkfl->next_workflow_id3]->id;
             }
             $task->save();
         }
@@ -117,6 +120,11 @@ class Workflow extends Model
             $ntask->subject_id = $task->object_id;
             $ntask->save();
         }
+        if ($task->next3){
+            $ntask = Task::find($task->next3);
+            $ntask->subject_id = $task->object_id;
+            $ntask->save();
+        }
         return true;
     }
     /**
@@ -131,6 +139,11 @@ class Workflow extends Model
 
         if ($task->next2){
             $ntask = Task::find($task->next2);
+            $ntask->subject_id = $task->object_id;
+            $ntask->save();
+        }
+        if ($task->next3){
+            $ntask = Task::find($task->next3);
             $ntask->subject_id = $task->object_id;
             $ntask->save();
         }

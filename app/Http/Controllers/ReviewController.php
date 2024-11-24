@@ -27,7 +27,7 @@ class ReviewController extends Controller
 
     public function conflict(int $cat_id)
     {
-        if (!auth()->user()->can('role_any', 'reviewer|metareviewer')) return abort(403);
+        if (!auth()->user()->can('role_any', 'rev|meta')) return abort(403);
         // 自著分、共著分については、さきにRevConflictを作成しておく
         $author_papers = Paper::where("owner", auth()->user()->id)->get();
         foreach ($author_papers as $p) {
@@ -63,7 +63,7 @@ class ReviewController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->can('role_any', 'reviewer|metareviewer')) return abort(403);
+        if (!auth()->user()->can('role_any', 'rev|meta')) return abort(403);
         // さっそく、読み取る
         $reviews = Review::where("user_id", auth()->user()->id)->orderBy("category_id")->orderBy("paper_id")->get();
         $revbycat = [];
@@ -74,24 +74,6 @@ class ReviewController extends Controller
         // 査読掲示板URLの生成は、index のなかで、必要があればrevからcomponentをよびだす
 
         return view("review.index")->with(compact("reviews", "revbycat", "cats"));
-        //
-    }
-    /**
-     * Display a listing of the resource.
-     */
-    public function indexcat($cat_id)
-    {
-        if (!auth()->user()->can('role_any', 'reviewer|metareviewer')) return abort(403);
-        if (!is_numeric($cat_id)) return abort(404);
-        $reviews = Review::where("user_id", auth()->user()->id)->where("category_id", $cat_id)->orderBy("paper_id")->get();
-        // $revbycat = [];
-        $cat = Category::find($cat_id);
-        // foreach ($cats as $cat) {
-        //     $revbycat[$cat->id] = Review::where("user_id", auth()->user()->id)->where("category_id", $cat->id)->orderBy("paper_id")->get();
-        // }
-        // 査読掲示板URLの生成は、index のなかで、必要があればrevからcomponentをよびだす
-
-        return view("review.indexcat")->with(compact("reviews", "cat", "cat_id"));
         //
     }
 
@@ -105,8 +87,8 @@ class ReviewController extends Controller
             ->pluck('status__revlist_on', 'id')
             ->toArray();
 
-        if (!auth()->user()->can('role', 'ce')) {
-            if (auth()->user()->can('role_any', 'reviewer|metareviewer') && $revlist[$cat->id]) {
+        if (!auth()->user()->can('role', 'ec')) {
+            if (auth()->user()->can('role_any', 'rev|meta') && $revlist[$cat->id]) {
                 // OK , pass
             } else {
                 if (!auth()->user()->can('manage_cat', $cat->id)) return abort(403, 'review result');
@@ -119,7 +101,7 @@ class ReviewController extends Controller
     }
     public function resultpost(Request $req, Category $cat)
     {
-        if (!auth()->user()->can('role', 'ce')) {
+        if (!auth()->user()->can('role', 'ec')) {
             if (!auth()->user()->can('manage_cat', $cat->id)) return abort(403, 'review result');
         }
         if ($req->has("action") && $req->input("action") == "excel") {
@@ -211,7 +193,7 @@ class ReviewController extends Controller
      */
     public function show(Review $review)
     {
-        if (!auth()->user()->can('role_any', 'ce|reviewer|metareviewer',)) return abort(403);
+        if (!auth()->user()->can('role_any', 'ec|aec|rev|meta',)) return abort(403);
         if ($review->user_id != auth()->id()) return abort(403, "THIS IS NOT YOUR REVIEW");
 
         if ($review->ismeta) {
@@ -234,7 +216,7 @@ class ReviewController extends Controller
      */
     public function pubshow(Review $review, string $token)
     {
-        if (!auth()->user()->can('role_any', 'ce|reviewer|metareviewer',)) return abort(403);
+        if (!auth()->user()->can('role_any', 'ec|aec|rev|meta',)) return abort(403);
         if ($review->token() != $token) return abort(403, "Review Browse TOKEN ERROR");
 
         if ($review->ismeta) {
@@ -256,7 +238,7 @@ class ReviewController extends Controller
      */
     public function edit_dummy($cat_id, $ismeta = 0)
     {
-        if (!auth()->user()->can('role', 'ce')) return abort(403);
+        if (!auth()->user()->can('role', 'ec')) return abort(403);
         $rev = new Review();
         $rev->category_id = $cat_id;
         $rev->submit_id = 9999;
@@ -301,7 +283,7 @@ class ReviewController extends Controller
     public function update(UpdateReviewRequest $request, int $reviewid)
     {
         if ($reviewid == 0) return $request->shori_dummy(); // ダミーはかならずReviewID = 0 にする。
-        if (!auth()->user()->can('role_any', 'reviewer|metareviewer')) return abort(403);
+        if (!auth()->user()->can('role_any', 'rev|meta')) return abort(403);
         $review = Review::find($reviewid);
         if ($review->user_id != auth()->id()) return abort(403, "THIS IS NOT YOUR REVIEW");
 
@@ -326,7 +308,7 @@ class ReviewController extends Controller
      */
     public function zipdownload_for_rev($catid)
     {
-        if (!auth()->user()->can('role_any', 'reviewer|metareviewer')) return abort(403);
+        if (!auth()->user()->can('role_any', 'rev|meta')) return abort(403);
 
         // $reviews = Review::where("user_id", auth()->user()->id)->orderBy("category_id")->orderBy("paper_id")->get();
         $reviews = Review::where("user_id", auth()->user()->id)->where("category_id", $catid)->orderBy("paper_id")->get();

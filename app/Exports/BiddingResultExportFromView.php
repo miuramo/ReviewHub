@@ -24,9 +24,7 @@ class BiddingResultExportFromView implements FromView, ShouldAutoSize, WithHeadi
     public function view(): View
     {
         $reviewers = $this->role->users;
-        // $roles = Role::where("name", "like", "%reviewer")->get();
         $papers = $this->cat->paperswithpdf;
-        // $cats = Category::select('id', 'name')->get()->pluck('name', 'id')->toArray();
         $cat = $this->cat;
         $role = $this->role;
         return view('components.role.revmap', ["role" => $role, "cat" => $cat])->with(compact("reviewers", "papers"));

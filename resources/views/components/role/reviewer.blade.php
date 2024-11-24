@@ -1,6 +1,8 @@
 @php
     $reviews = App\Models\Review::where('user_id', auth()->id())->get();
 
+    $tasks = App\Models\Task::with('submit')->where('subject_id', auth()->id())->where('completed', 0)->get();
+
     $approvetasks = App\Models\Task::with('submit')
         ->where('object_id', auth()->id())
         ->where('completed', 1)
@@ -24,11 +26,19 @@
         </div>
     @endif
 
-    <x-element.h1>
-        担当査読一覧
-    </x-element.h1>
+    @if (count($tasks) > 0)
+        <div class="px-6 py-4">
+            <x-element.h1>未完了のタスクがあります</x-element.h1>
+            @foreach ($tasks as $task)
+                <div class="mx-6">
+                    <x-task.panel :task="$task" />
+                </div>
+            @endforeach
+        </div>
+    @endif
 
-    <div class="px-6 py-2 pb-6">
+
+    {{-- <div class="px-6 py-2 pb-6">
         @foreach ($reviews as $rev)
             <div class="mx-4">
                 {{ $rev->paper->title }}
@@ -41,15 +51,15 @@
 
             </div>
         @endforeach
-    </div>
+    </div> --}}
 
-    <x-element.h1>
+    {{-- <x-element.h1>
         過去の担当査読
     </x-element.h1>
     <div class="mx-6 my-4">
         <x-element.linkbutton href="{{ route('review.index') }}" color="lime">
             査読を担当していただく投稿の一覧
         </x-element.linkbutton>
-    </div>
+    </div> --}}
 
 </div>

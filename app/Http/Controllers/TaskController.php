@@ -55,7 +55,7 @@ class TaskController extends Controller
     public function update(Request $req, Task $task)
     {
         // 本来は、Taskを通じて、Workflowに従って処理してほしい
-        $task = Task::with(['workflow', 'submit','tnext','tnext2'])->find($task->id);
+        $task = Task::with(['workflow', 'submit','tnext','tnext2','tnext3'])->find($task->id);
         $ret = $task->process($req);
 
         $jumprole = $req->redirect_role;

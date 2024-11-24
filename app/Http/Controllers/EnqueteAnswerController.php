@@ -18,7 +18,7 @@ class EnqueteAnswerController extends Controller
      */
     public function manualset(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'ce|demo')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec|demo')) abort(403);
         if ($req->method() === 'POST') {
             info($req->all());
             $pids = $req->input('pids');

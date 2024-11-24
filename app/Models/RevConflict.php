@@ -72,7 +72,7 @@ App\Models\RevConflict::select(DB::raw("count(id) as count, user_id"))
             ->pluck('name', 'id')
             ->toArray();
         // reviewer
-        $reviewers = Role::findByIdOrName('reviewer')->users;
+        $reviewers = Role::findByIdOrName('rev')->users;
         // 現在、BiddingをしているPaperIDs
         $missing = [];
         foreach ($reviewers as $reviewer) {

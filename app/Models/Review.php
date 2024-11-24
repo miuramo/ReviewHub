@@ -175,7 +175,7 @@ class Review extends Model
     public static function extractAllCoAuthorRigais()
     {
         // 査読者とメタ査読者
-        $roles = Role::where("name", "like", "%reviewer")->get();
+        $roles = Role::where("name", "like", "%rev")->get();
         foreach ($roles as $role) {
             foreach ($role->users as $revu) {
                 // 自著分、共著分については、さきにRevConflictを作成しておく

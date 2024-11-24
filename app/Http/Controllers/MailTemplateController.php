@@ -121,7 +121,7 @@ class MailTemplateController extends Controller
      */
     public function bundle(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'ce')) {
+        if (!auth()->user()->can('role_any', 'ec')) {
             if (!auth()->user()->can('manage_cat_any')) abort(403);
         }
         // valueがonの要素をあつめる。mt_{mtid}になっているので、とりだす。

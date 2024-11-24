@@ -93,7 +93,7 @@ class AuthServiceProvider extends ServiceProvider
          */
         Gate::define('manage_cat', function ($user, $category) {
             // もし、PC長なら、true
-            if ($user->can('role', 'ce')) return true;
+            if ($user->can('role', 'ec')) return true;
             // そうでなければ、cat_id が0以外のRoleを調べる
             $catid_roles = Role::where('cat_id', $category)->get();
             foreach ($catid_roles as $role) {

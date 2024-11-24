@@ -2,7 +2,7 @@
     <!-- revcon.index -->
     <x-slot name="header">
         <div class="mb-4">
-            <x-element.linkbutton href="{{ route('role.top', ['role' => 'ce']) }}" color="gray" size="sm">
+            <x-element.linkbutton href="{{ route('role.top', ['role' => 'ec']) }}" color="gray" size="sm">
                 &larr; PC長 Topに戻る
             </x-element.linkbutton>
         </div>

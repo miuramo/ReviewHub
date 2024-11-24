@@ -22,7 +22,7 @@ return new class extends Migration
             $table->boolean('needreply')->default(false);
             $table->boolean('isopen')->default(true);
             $table->boolean('isclose')->default(false);
-            $table->string('subscribers')->nullable()->comment('author|ce|metareviewer|reviewer|pub|admin');
+            $table->string('subscribers')->nullable()->comment('author|ec|aec|meta|rev|pub|admin');
 
             $table->timestamps();
         });

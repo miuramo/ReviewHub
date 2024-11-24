@@ -26,8 +26,8 @@ class RoleController extends Controller
         //     abort(403);
         // }
         if (!auth()->user()->can('role', $name)) {
-            if ($name == "reviewer" && auth()->user()->can('role', 'metareviewer')) {
-                return redirect()->route('role.top', ["role" => "metareviewer"]);
+            if ($name == "rev" && auth()->user()->can('role', 'meta')) {
+                return redirect()->route('role.top', ["role" => "meta"]);
                 // reviewerはmetareviewerも見ることができる。
             } else if ($name == "pub" && auth()->user()->can('role', 'web')) {
                 return redirect()->route('role.top', ["role" => "web"]);
@@ -221,7 +221,7 @@ class RoleController extends Controller
         Review::extractAllCoAuthorRigais();
 
         $reviewers = $role->users;
-        $roles = Role::where("name", "like", "%reviewer")->get();
+        $roles = Role::where("name", "like", "%rev")->get();
         $papers = $cat->paperswithpdf;
         $cats = Category::select('id', 'name')->get()->pluck('name', 'id')->toArray();
         return view('role.revassign', ["role" => $role, "cat" => $cat])->with(compact("reviewers", "role", "roles", "cat", "papers", "cats"));
@@ -229,7 +229,7 @@ class RoleController extends Controller
 
     public function revassignpost(Request $req, Role $role, Category $cat)
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
         if ($req->has("paper_id") && $req->has("user_id") && $req->has("status")) {
             $status = $req->input("status");
             $paper_id = $req->input("paper_id");
@@ -245,10 +245,10 @@ class RoleController extends Controller
 
     public function revassign_excel(Role $role, Category $cat)
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
         Review::extractAllCoAuthorRigais();
         // $reviewers = $role->users;
-        // $roles = Role::where("name", "like", "%reviewer")->get();
+        // $roles = Role::where("name", "like", "%rev")->get();
         // $papers = $cat->paperswithpdf;
         // $cats = Category::select('id', 'name')->get()->pluck('name', 'id')->toArray();
         return Excel::download(new BiddingResultExportFromView($cat, $role), "bidding_{$cat->name}.xlsx");

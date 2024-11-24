@@ -45,8 +45,8 @@ class Bb extends Model
     public static function make_bb(int $type, int $pid, int $cid)
     {
         $subs = [
-            1 => "reviewer|metareviewer",
-            2 => "ce|metareviewer|author",
+            1 => "rev|meta",
+            2 => "ec|meta|author",
             3 => "pub|author",
         ];
         $firstmes = [
@@ -113,11 +113,11 @@ class Bb extends Model
                     // 出版掲示板ならば、利害関係者であっても送信してよいという考え方はある。ただ、通常はauthor(cc)で追加されるはずなので、ここで特別な処理をする必要はない。
                     $bcclist[] = $u->email;
                 }
-            } else if ($role=="metareviewer" || $role=="reviewer"){
-                $revuids = Review::where("paper_id", $this->paper_id)->where("category_id",$this->category_id)->where("ismeta", $role=="metareviewer")->pluck("user_id", "id")->toArray();
+            } else if ($role=="meta" || $role=="rev"){
+                $revuids = Review::where("paper_id", $this->paper_id)->where("category_id",$this->category_id)->where("ismeta", $role=="meta")->pluck("user_id", "id")->toArray();
                 $revus = User::whereIn("id", $revuids)->get();
                 foreach($revus as $u){
-                    if ($this->type == 1 && $role=="metareviewer"){ //査読者同士の事前議論掲示板のときは、to:metaになる。 (メタと著者の掲示板のときは、to: author になるので、metaはbccに加わる。)
+                    if ($this->type == 1 && $role=="meta"){ //査読者同士の事前議論掲示板のときは、to:metaになる。 (メタと著者の掲示板のときは、to: author になるので、metaはbccに加わる。)
                         $tolist[] = $u->email;
                     } else {
                         $bcclist[] = $u->email;

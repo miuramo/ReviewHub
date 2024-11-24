@@ -137,7 +137,7 @@
     </div>
 
     {{-- // （おもにインタラクション）メタレビューワーは、査読者の査読結果を途中でも見ることができる(commentpaperを見ることができる) --}}
-    @can('role', 'metareviewer')
+    @can('role', 'meta')
         <div class="mb-4 my-10">
             <x-element.h1>
                 自分が{{$nameofmeta}}を担当している、査読結果を見る

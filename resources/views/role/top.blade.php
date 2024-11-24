@@ -10,7 +10,7 @@
             <x-element.deletebutton action="{{ route('file.delall') }}" color="red" confirm="全部削除してよいですか？"> Delete All
             </x-element.deletebutton> --}}
             <span class="mx-4"></span>
-            @if ($role->name == 'ce')
+            @if ($role->name == 'ec')
                 <x-element.linkbutton
                     href="https://scrapbox.io/reviewhub/"
                     color="cyan" size="sm" target="_blank">

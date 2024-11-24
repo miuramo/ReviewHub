@@ -93,7 +93,7 @@ class AdminController extends Controller
 
     public function paper_edit(int $paper_id, Request $req)
     {
-        if (!auth()->user()->can('role_any', 'ce')) {
+        if (!auth()->user()->can('role_any', 'ec')) {
             if (!auth()->user()->can('manage_paper', $paper_id)) abort(403);
         }
         $paper = Paper::find($paper_id);
@@ -106,7 +106,7 @@ class AdminController extends Controller
 
     public function paperlist(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'ce')) {
+        if (!auth()->user()->can('role_any', 'ec')) {
             if (!auth()->user()->can('manage_cat_any')) abort(403);
         }
         // Formからのカテゴリ選択を配列にいれる
@@ -134,7 +134,7 @@ class AdminController extends Controller
      */
     public function paperlist_excel(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'ce')) {
+        if (!auth()->user()->can('role_any', 'ec')) {
             if (!auth()->user()->can('manage_cat_any')) abort(403);
         }
         // Formからのカテゴリ選択を配列にいれる
@@ -152,7 +152,7 @@ class AdminController extends Controller
      */
     public function deletepaper(int $cat_id, Request $req)
     {
-        if (!auth()->user()->can('role_any', 'ce')) {
+        if (!auth()->user()->can('role_any', 'ec')) {
             if (!auth()->user()->can('manage_cat', $cat_id)) abort(403);
         }
         $all = Paper::withTrashed()->where("category_id", $cat_id)->orderBy('deleted_at', 'asc')->orderBy('id')->get();
@@ -175,7 +175,7 @@ class AdminController extends Controller
         return view('admin.deletepaper')->with(compact("all", "cat_id"));
     }
     public function timestamp(int $cat_id){
-        if (!auth()->user()->can('role_any', 'ce')) {
+        if (!auth()->user()->can('role_any', 'ec')) {
             if (!auth()->user()->can('manage_cat', $cat_id)) abort(403);
         }
         $all = Paper::withTrashed()->where("category_id", $cat_id)->orderBy('deleted_at', 'asc')->orderBy('id')->get();
@@ -188,7 +188,7 @@ class AdminController extends Controller
      */
     public function hiroba_excel()
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
         // Formからのカテゴリ選択を配列にいれる
         $targets =  [1, 2, 3];
         return Excel::download(new PapersExport4Hiroba(), "hiroba.xlsx");
@@ -200,7 +200,7 @@ class AdminController extends Controller
      */
     public function zipdownloadstream(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'ce')) {
+        if (!auth()->user()->can('role_any', 'ec')) {
             if (!auth()->user()->can('manage_cat_any')) abort(403);
         }
         // Formからのカテゴリ選択を配列にいれる
@@ -229,7 +229,7 @@ class AdminController extends Controller
      */
     public function zipdownload(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'ce')) {
+        if (!auth()->user()->can('role_any', 'ec')) {
             if (!auth()->user()->can('manage_cat_any')) abort(403);
         }
         // Formからのカテゴリ選択を配列にいれる
@@ -268,7 +268,7 @@ class AdminController extends Controller
      */
     public function filelist(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
         // Formからのカテゴリ選択を配列にいれる
         $targets = [];
         $filetypes = []; // pdf, video, img, altpdf
@@ -413,7 +413,7 @@ class AdminController extends Controller
      */
     public function crudpost(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ce|pub|demo|web')) abort(403); // Note: 出版担当もbibinfochkから修正できる。
+        if (!auth()->user()->can('role_any', 'admin|manager|ec|pub|demo|web')) abort(403); // Note: 出版担当もbibinfochkから修正できる。
         if ($req->input("dtype") == "tinyint") {
             $row = DB::select("SELECT `{$req->input("field")}` as field FROM {$req->input("table")} WHERE id={$req->input("data_id")} limit 1");
             $currentVal = intval($row[0]->field);
@@ -482,7 +482,7 @@ class AdminController extends Controller
     /** カテゴリごとの査読進行管理設定 */
     public function catsetting(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
         $coldetails = $this->column_details('categories');
         $note = null;
         if ($req->has("toukou")) { // 投稿関係
@@ -548,7 +548,7 @@ class AdminController extends Controller
      */
     public function resetbidding()
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
         RevConflict::truncate();
         return redirect()->route('admin.dashboard')->with('feedback.success', '利害表明とBiddingをすべてリセットしました');
     }
@@ -557,7 +557,7 @@ class AdminController extends Controller
      */
     public function forcedelete()
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
         User::onlyTrashed()->whereNotNull('id')->forceDelete();
         return redirect()->route('admin.dashboard')->with('feedback.success', 'User softDeleted を完全削除しました');
     }
@@ -568,7 +568,7 @@ class AdminController extends Controller
      */
     public function resetpaper()
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
 
         $all = File::all();
         foreach ($all as $f) {
@@ -596,7 +596,7 @@ class AdminController extends Controller
     }
     public function resetaccesslog()
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
         LogAccess::truncate();
         return redirect()->route('admin.dashboard')->with('feedback.success', 'アクセスログをすべてリセットしました');
     }

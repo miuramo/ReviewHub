@@ -2,7 +2,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="mb-4">
-            <x-element.linkbutton href="{{ route('role.top', ['role' => 'ce']) }}" color="gray" size="sm">
+            <x-element.linkbutton href="{{ route('role.top', ['role' => 'ec']) }}" color="gray" size="sm">
                 &larr; PC長 Topに戻る
             </x-element.linkbutton>
         </div>
@@ -92,7 +92,7 @@
     </div>
 
     <div class="py-2 px-6">
-        @can('role', 'ce')
+        @can('role', 'ec')
         <x-element.h1>PC長のみ <span class="mx-2"></span>
                 <x-element.linkbutton href="{{ route('enq.maptoroles') }}" color="pink" size="md">
                     アンケート管理権限の設定
@@ -101,7 +101,7 @@
         @endcan
 
         <div class="mb-4 my-10">
-            <x-element.linkbutton href="{{ route('role.top', ['role' => 'ce']) }}" color="gray" size="sm">
+            <x-element.linkbutton href="{{ route('role.top', ['role' => 'ec']) }}" color="gray" size="sm">
                 &larr; PC長 Topに戻る
             </x-element.linkbutton>
         </div>

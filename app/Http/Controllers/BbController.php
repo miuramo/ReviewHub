@@ -30,7 +30,7 @@ class BbController extends Controller
 
     public function index_for_pub()
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ce|pub')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin|manager|ec|pub')) abort(403);
 
         $i = 3;
         $bbs[$i] = Bb::with("paper")->with("category")->where("type", $i)->get();
@@ -131,7 +131,7 @@ class BbController extends Controller
      * 種別ごとに削除
      */
     public function destroy_bytype(Request $req){
-        if (!auth()->user()->can('role_any', 'admin|manager|ce|pub')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin|manager|ec|pub')) abort(403);
         $type = $req->input("type");
         if (!auth()->user()->can('role_any', 'admin|manager|ce')) {
             if ($type != 3) abort(403);

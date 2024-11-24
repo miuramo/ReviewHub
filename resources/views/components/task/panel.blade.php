@@ -12,7 +12,11 @@
     <span class="mx-1"></span>
     {{-- 誰が --}}
     @php
-        $role = App\Models\Role::findByIdOrName($task->workflow->subject);
+        $subRN = $task->workflow->subject;
+        $subRN = str_replace('1', '', $subRN);
+        $subRN = str_replace('2', '', $subRN);
+        $subRN = str_replace('3', '', $subRN);
+        $role = App\Models\Role::findByIdOrName($subRN);
     @endphp
     (Step {{ $task->workflow->id }})
     {{ $role->desc ?? '???' }} ({{ $task->subject->name }}) が、
@@ -41,12 +45,11 @@
             @else
                 No File
             @endif
-            </div>
+        </div>
 
         {{-- もし、割り当てタスクなら --}}
         @if ($task->workflow->task == 'assign')
-            <form action="{{ route('task.update', ['task' => $task]) }}" method="post"
-                class="items-center flex">
+            <form action="{{ route('task.update', ['task' => $task]) }}" method="post" class="items-center flex">
                 @csrf
                 @method('PUT')
 
@@ -103,6 +106,61 @@
         @elseif($task->workflow->task == 'approve')
 
         @elseif($task->workflow->task == 'submit')
+            @php
+                $rev = App\Models\Review::where('paper_id', $task->submit->paper->id)
+                    ->where('user_id', $task->subject->id)
+                    ->first();
+            @endphp
+            @if ($rev->status == 2)
+                <div class="bg-cyan-100 px-3 pt-4">
+                @else
+                    <div class="bg-yellow-50 px-3 pt-4">
+            @endif
+            <x-element.paperid size=1 :paper_id="$rev->paper->id">
+            </x-element.paperid>
+            <span class="mx-2"></span>
+
+            @if ($rev->ismeta)
+                <x-element.linkbutton2 href="{{ route('review.edit', ['review' => $rev]) }}" color="red">
+                    Edit (メタ)
+                </x-element.linkbutton2>
+            @else
+                <x-element.linkbutton href="{{ route('review.edit', ['review' => $rev]) }}" color="blue">
+                    Edit
+                </x-element.linkbutton>
+            @endif
+            <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green">
+                View
+            </x-element.linkbutton>
+            <span class="mx-2"></span>
+
+            {{-- <x-element.bblink :rev="$rev">
+            </x-element.bblink>
+            <span class="mx-2"></span> --}}
+
+            @if ($rev->status == 2)
+                <span class="inline-block border-2 border-blue-600 p-0.5 text-blue-600 font-bold text-sm">
+                    査読完了
+                </span>
+            @endif
+
+            @if ($rev->paper->pdf_file_id != null)
+            <div class="w-1/2">
+                <a href="{{ route('review.edit', ['review' => $rev]) }}">
+            @endif
+            <x-file.paperheadimg :paper="$rev->paper">
+            </x-file.paperheadimg>
+            @if ($rev->paper->pdf_file_id != null)
+                </a>
+            @endif
+            </div>
+
+            {{-- <div class="text-sm mt-2 ml-2">
+                <x-enquete.Rev_enqview :rev="$rev">
+                </x-enquete.Rev_enqview>
+            </div> --}}
+
+
         @endif
 
     </div>
