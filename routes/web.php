@@ -137,6 +137,7 @@ Route::middleware('auth')->group(function () {
     // Route::get('/role/{role}/pub', [RoleController::class, 'top'])->name('role.pub'); //本当はrole.topがあればよいのだが、navigationをactiveにするため...
     Route::get('/role/{role}/edit', [RoleController::class, 'edit'])->name('role.edit');
     Route::post('/role/{role}/edit', [RoleController::class, 'editpost'])->name('role.editpost');
+    Route::put('/role_adduser', [RoleController::class, 'adduser'])->name('role.adduser');
     Route::delete('/role/{role}/leave/{user}', [RoleController::class, 'leave'])->name('role.leave');
     // 査読割り当て
     Route::get('/role/{role}/revassign/{cat}', [RoleController::class, 'revassign'])->name('role.revassign');
@@ -239,10 +240,10 @@ Route::get('/login-as/{user}', function ($user) {
     $targetUser = User::find($user);
     if ($targetUser) {
         Auth::login($targetUser);
-        return redirect('/role')->with('feedback.success', 'ログインしました: ' . $targetUser->name);
+        return redirect()->route('role.top',['role'=>$targetUser->maxRole() ])->with('feedback.success', '代理ログインしました: ' . $targetUser->name);
     }
     return redirect('/')->with('error', 'ユーザが見つかりません');
-})->middleware(['auth']); // 必要に応じて認可や認証のミドルウェアを適用
+})->middleware(['auth'])->name('role.login-as'); // 必要に応じて認可や認証のミドルウェアを適用
 // })->middleware(['auth', 'can:admin']); // 必要に応じて認可や認証のミドルウェアを適用
 
 // 投票

@@ -19,6 +19,8 @@ class Submit extends MetaModel
         'paper_id',
     ];
 
+    protected $with = ['aec'];
+
     public function accept()
     {
         return $this->belongsTo(Accept::class); //逆はbelongsTo

@@ -177,6 +177,31 @@ class RoleController extends Controller
         }
     }
 
+    /**
+     * ユーザの追加（editpostからもできるが、メタ等がつかいやすいように）
+     */
+    public function adduser(Request $req)
+    {
+        if (!auth()->user()->can('role_any', 'meta|rev|ec|aec')) abort(403);
+        $role = Role::findByIdOrName($req->input("role"));
+        $user = $req->user;
+        $affil = $req->affil;
+        $email = $req->email;
+        $u = User::where("email", $email)->first();
+        if ($u == null) {
+            $u = User::factory()->create([
+                'name' => $user,
+                'affil' => $affil,
+                'email' => $email,
+                'password' => Hash::make(Str::random(10)),
+            ]);
+        }
+        if (!$role->containsUser($u->id)) { // ふくまれていなければ
+            $u->roles()->attach($role);
+        }
+        return redirect()->route('role.top', ['role' => $req->redirect_role])->with('feedback.success', 'ユーザを追加しました');
+    }
+
     public function leave(Role $role, User $user)
     {
         $aboveroles = $role->aboveRoles();
@@ -191,7 +216,7 @@ class RoleController extends Controller
      */
     public function revassign(Role $role, Category $cat)
     {
-        if (!auth()->user()->can('role_any', 'ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
         // 査読者がBiddingしてくれない場合もあるので、ここで抽出しておく。
         Review::extractAllCoAuthorRigais();
 

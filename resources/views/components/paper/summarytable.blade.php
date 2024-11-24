@@ -1,6 +1,6 @@
 @props([
     'all' => [],
-    'heads' => ['カテゴリ','id', 'status', 'title', 'pdf', '投稿日', '投稿者', '所属', 'AEC', 'メタ', '1査','2査'],
+    'heads' => ['カテゴリ', 'id', 'status', 'title', '投稿日', '投稿者', '幹事', 'メタ', '1査', '2査'],
     'enqans' => [],
 ])
 <!-- components.paper.summarytable -->
@@ -23,22 +23,23 @@
                 <td class="p-1 text-center">
                     <a href="{{ route('paper.show', ['paper' => $paper]) }}"
                         class="underline text-blue-600 hover:bg-lime-200" target="_blank">
-                    {{ $paper->id_03d() }}
+                        {{ $paper->id_03d() }}
                     </a>
                 </td>
                 <td class="p-1 text-center">
                     @php
                         $sub = $paper->currentsubmit;
                     @endphp
-                    <a href="{{ route('sub.show', ['sub' => $sub]) }}"
-                        class="underline text-blue-600 hover:bg-lime-200" target="_blank">
-                    {{$paper->currentsubmit->round}}回目 
-                    {{ $paper->currentstatus->name }}</td>
-                    </a>
-                <td class="p-1 text-center block break-all">{{ $paper->title }}</td>
-                <td class="p-1 text-center">
+                    <a href="{{ route('sub.show', ['sub' => $sub]) }}" class="underline text-blue-600 hover:bg-lime-200"
+                        target="_blank">
+                        {{ $paper->currentsubmit->round }}回目
+                        {{ $paper->currentstatus->name }}
+                </td>
+                </a>
+                <td class="p-1 text-center block break-all">{{ $paper->title }}
                     @if ($paper->pdf_file_id != 0)
-                        <a class="underline text-blue-600 hover:bg-lime-200" href="{{ route('file.showhash', ['file' => $paper->pdf_file_id, 'hash' => substr($paper->pdf_file->key, 0, 8)]) }}"
+                        <a class="underline text-blue-600 hover:bg-lime-200"
+                            href="{{ route('file.showhash', ['file' => $paper->pdf_file_id, 'hash' => substr($paper->pdf_file->key, 0, 8)]) }}"
                             target="_blank">
                             {{ $paper->pdf_file->pagenum }}page
                         </a>
@@ -48,21 +49,21 @@
                 </td>
 
                 <td class="p-1 text-center">{{ $paper->currentsubmit->submitted_at ?? '---' }}</td>
-                <td class="p-1 text-center">{{ $paper->paperowner->name }}
+                <td class="p-1 text-center">{{ $paper->paperowner->name }} ({{ $paper->paperowner->affil }})
                 </td>
-                <td class="p-1 text-center">{{ $paper->paperowner->affil }}
+                <td class="p-1">
+                    <x-element.login_as :user="$paper->currentsubmit->aec" />
                 </td>
-                <td class="p-1">{{ $paper->currentsubmit->aec->name ?? '---' }}
+                <td class="p-1">
+                    <x-element.login_as :user="$paper->currentsubmit->meta()->user" />
                 </td>
-                <td class="p-1">{{ $paper->currentsubmit->meta()->user->name ?? '---' }}
+                <td class="p-1">
+                    <x-element.login_as :user="$paper->currentsubmit->rev1()->user" />
                 </td>
-                <td class="p-1">{{ $paper->currentsubmit->rev1()->user->name ?? '---' }}
+                <td class="p-1">
+                    <x-element.login_as :user="$paper->currentsubmit->rev2()->user" />
                 </td>
-                <td class="p-1">{{ $paper->currentsubmit->rev2()->user->name ?? '---' }}
-                </td>
-
             </tr>
         @endforeach
     </tbody>
 </table>
-

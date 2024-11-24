@@ -168,6 +168,8 @@ class Paper extends Model
         return $count;
     }
 
+    protected $with = ['currentstatus', 'currentsubmit', 'category', 'contacts', 'paperowner', 'submits', 'pdf_file', 'enqans'];
+    
     public function files()
     {
         return $this->hasMany(File::class, 'paper_id')->where('valid', 1)->where('deleted', 0);

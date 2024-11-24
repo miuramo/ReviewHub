@@ -67,6 +67,19 @@ class User extends Authenticatable implements MustVerifyEmail
         // return $this->belongsToMany(User::class, $tbl, 'role_id', 'user_id');// ->withPivot($table_fields)->using(RolesUser::class);
         return $this->belongsToMany(Role::class, $tbl)->orderBy('orderint')->orderBy('id'); //->using(RolesUser::class);
     }
+    // エディターの最高権限を文字列で返す
+    public function maxRole()
+    {
+        $roles = $this->roles;
+        foreach($roles as $role){
+            if ($role->name == "ec") return "ec";
+            if ($role->name == "aec") return "aec";
+            if ($role->name == "meta") return "meta";
+            if ($role->name == "rev") return "rev";
+        }
+        return "author";
+    }
+
     public function contact()
     {
         return $this->belongsTo(Contact::class, "contact_id");

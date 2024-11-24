@@ -55,14 +55,20 @@ class TaskController extends Controller
     public function update(Request $req, Task $task)
     {
         // 本来は、Taskを通じて、Workflowに従って処理してほしい
-        $task = Task::with(['workflow', 'submit','next','next2'])->find($task->id);
+        $task = Task::with(['workflow', 'submit','tnext','tnext2'])->find($task->id);
         $ret = $task->process($req);
+
+        $jumprole = $req->redirect_role;
+        $jumprole = str_replace('1','',$jumprole);
+        $jumprole = str_replace('2','',$jumprole);
+        $jumprole = str_replace('3','',$jumprole);
+
         if ($ret) {
-            return redirect()->route('role.top', ['role' => $req->redirect_role])->with('feedback.success', 'Task completed successfully');
+            return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.success', 'Task completed successfully');
         } else {
-            return redirect()->route('role.top', ['role' => $req->redirect_role])->with('feedback.error', 'タスク処理に失敗しました');
+            return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.error', 'タスク処理に失敗しました');
         }
-        return redirect()->route('role.top', ['role' => $req->redirect_role])->with('feedback.success', 'Task completed successfully');
+        return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.success', 'Task completed successfully');
     }
 
     /**
@@ -70,13 +76,17 @@ class TaskController extends Controller
      */
     public function approve(Request $req, Task $task)
     {
+        $jumprole = $req->redirect_role;
+        $jumprole = str_replace('1','',$jumprole);
+        $jumprole = str_replace('2','',$jumprole);
+        $jumprole = str_replace('3','',$jumprole);
         if ($req->approve){
             $task->approve($req, true);
-            return redirect()->route('role.top', ['role' => $req->redirect_role])->with('feedback.success', 'タスクを承認しました');
+            return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.success', 'タスクを承認しました');
         } else {
             // 不承認メールを送る
             $task->approve($req, false);
-            return redirect()->route('role.top', ['role' => $req->redirect_role])->with('feedback.success', 'タスクを辞退しました');
+            return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.success', 'タスクを辞退しました');
         }
     }
     /**

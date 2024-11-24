@@ -19,6 +19,14 @@
         ->where('require_approve', 1)
         ->where('approved', 0)
         ->get();
+
+    $recentapproved = App\Models\Task::with('submit')
+        ->where('object_id', auth()->id())
+        ->where('completed', 1)
+        ->where('require_approve', 1)
+        ->where('approved', 1)
+        ->orderBy('updated_at', 'desc')
+        ->get();
 @endphp
 <!-- components.role.pc -->
 @if (count($tasks) > 0)
@@ -46,8 +54,19 @@
 
 @if (count($recent) > 0)
     <div class="px-6 py-4">
-        <x-element.h1>最近完了したタスク</x-element.h1>
+        <x-element.h1>最近依頼したタスク</x-element.h1>
         @foreach ($recent as $task)
+            <div class="mx-6">
+                <x-task.abstpanel :task="$task" />
+            </div>
+        @endforeach
+    </div>
+@endif
+
+@if (count($recentapproved) > 0)
+    <div class="px-6 py-4">
+        <x-element.h1>最近承諾したタスク</x-element.h1>
+        @foreach ($recentapproved as $task)
             <div class="mx-6">
                 <x-task.abstpanel :task="$task" />
             </div>
@@ -60,7 +79,7 @@
 
     <x-element.h1>投稿論文</x-element.h1>
 
-    <div class="px-6">
+    <div>
         <x-paper.summarytable />
     </div>
 

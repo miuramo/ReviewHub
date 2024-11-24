@@ -12,6 +12,8 @@ class Workflow extends Model
     /** @use HasFactory<\Database\Factories\WorkflowFactory> */
     use HasFactory;
 
+    // protected $with = [];
+
     /**
      * 新しいタスクを、submitに対して作成する
      */
@@ -67,6 +69,7 @@ class Workflow extends Model
             $task->object_id = $req->object_id;
             $task->completed = 1;
             $task->completed_at = now();
+            $task->logappend($req->comment, $task->subject_id, $req->object_id, 0);
             $task->save();
 
             // もし、approve必要なら
@@ -74,13 +77,12 @@ class Workflow extends Model
                 $task->require_approve = 1; // 承認が必要
                 $task->save();
 
-                $this->assign_forward($task, $req->object_id); // 割り当て（暫定）
                 // メールを送る
-                $task->sendApproveMail();
+                $task->sendApproveMail(0,0);//打診メールを送る。第2引数はあまり意味がないが、まだ承認されていないので0
             } else {
                 // 承認不要で進める
                 $this->assign_forward($task, $req->object_id); // 割り当て
-                $task->sendApproveMail();
+                $task->sendApproveMail(0,1); // 進行メールを送る
                 $this->proceed_workflow($task, $req); //ワークフローを介して、次のタスクに進む
             }
             return true;

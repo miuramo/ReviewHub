@@ -12,6 +12,8 @@ class Task extends Model
     /** @use HasFactory<\Database\Factories\TaskFactory> */
     use HasFactory;
 
+    protected $with = ['subject', 'object', 'submit', 'workflow', 'tnext', 'tnext2'];
+
     protected $fillable = [
         'submit_id',
         'workflow_id',
@@ -32,11 +34,11 @@ class Task extends Model
     {
         return $this->belongsTo(Workflow::class);
     }
-    public function next()
+    public function tnext()
     {
         return $this->belongsTo(Task::class, 'next');
     }
-    public function next2()
+    public function tnext2()
     {
         return $this->belongsTo(Task::class, 'next2');
     }
@@ -78,8 +80,9 @@ class Task extends Model
 
     /**
      * 承認要求メールを送信する
+     * @param bool $isApprove 要求=0 か承認返信=1か
      */
-    public function sendApproveMail()
+    public function sendApproveMail(bool $isApprove, bool $approved)
     {
         // ここにメール送信処理を書く TODO:
     }
@@ -87,22 +90,17 @@ class Task extends Model
     /**
      * タスクの承認または辞退
      */
-    public function approve(Request $req, bool $approved,)
+    public function approve(Request $req, bool $approved)
     {
-        //     '_method' => 'PUT',
-        //     'task' => '1',
-        //     'redirect_role' => 'aec',
-        //     'approve' => '1',
-        //     'comment' => 'aa',
-        //     'action' => 'approve',
-        $this->logappend($req->comment, $this->object_id, $req->approve);
+        $this->logappend($req->comment, $this->subject_id, $this->object_id, $req->approve);
         if ($approved) {
             $this->approved = 1;
             $this->approved_at = now();
             $this->save();
+            $this->workflow->assign_forward($this, $this->object_id); // 割り当て（暫定）
             $this->workflow->proceed_workflow($this, $req); //承認が得られたので、ワークフローを介して、次のタスクに進む
             // 承認メールを送る・進行メールを送る
-            $this->sendApproveMail();
+            $this->sendApproveMail(1, 1);
         } else {
             // 承認されなかったので、差し戻す
             $this->require_approve = 0;
@@ -112,13 +110,13 @@ class Task extends Model
             $this->save();
             $this->workflow->assign_backward($this);
             // 不承認メールを送る
-            $this->sendApproveMail();
+            $this->sendApproveMail(1, 0);
         }
     }
-    public function logappend($comment, $object_id, $approved)
+    public function logappend($comment, $subject_id, $object_id, $approved)
     {
-        $curlog = $this->log;
-        $newMes = ['object_id' => $object_id, 'comment' => $comment, 'approved' => $approved, 'datetime' => now()];
+        $curlog = json_decode($this->log, true);
+        $newMes = ['workflow_id' => $this->workflow->id, 'subject_id' => $subject_id, 'object_id' => $object_id, 'comment' => $comment, 'approved' => $approved, 'datetime' => now()];
         $curlog[] = $newMes;
         $this->log = $curlog;
         $this->save();
@@ -130,10 +128,10 @@ class Task extends Model
         $this->due_date = $this->addDaysToDate($this->workflow->num_of_days, $ymd);
         $this->save();
         if ($this->workflow->next_workflow_id) {
-            Task::find($this->next)->recursive_set_due_date($this->due_date);
+            $this->tnext->recursive_set_due_date($this->due_date);
         }
         if ($this->workflow->next_workflow_id2) {
-            Task::find($this->next2)->recursive_set_due_date($this->due_date);
+            $this->tnext2->recursive_set_due_date($this->due_date);
         }
     }
     public function addDaysToDate(int $days, string $currentDate = null)
@@ -151,8 +149,18 @@ class Task extends Model
         return $currentDate->format('Y-m-d');
     }
 
+    /**
+     * TaskController.update から呼ばれる。ワークフローを進める。
+     */
     public function process(Request $req)
     {
         return $this->workflow->process($this, $req);
+    }
+
+    public function log_comment_last()
+    {
+        $ary = json_decode($this->log, true);
+        // 配列の最後の要素を取得
+        return $ary[count($ary) - 1]['comment'];
     }
 }
