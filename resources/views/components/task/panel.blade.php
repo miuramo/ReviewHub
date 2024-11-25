@@ -104,10 +104,42 @@
                 を先に行ってください。
             </div>
         @elseif($task->workflow->task == 'confirm')
+            @php
+                $rev = App\Models\Review::where('paper_id', $task->submit->paper->id)
+                    ->where('user_id', $task->object->id)
+                    ->first();
+            @endphp
+            <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green" target="_blank">
+                View
+            </x-element.linkbutton>
 
+
+            <form action="{{ route('task.update', ['task' => $task]) }}" method="post" class="items-center flex">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="task" value="{{ $task->id }}">
+                <input type="hidden" name="redirect_role" value="{{ $task->workflow->subject }}">
+                <x-element.submitbutton color="lime" value="assign"
+                    confirm='このタスクを完了し、次のワークフローに移行すると、戻ることはできません。本当に進めてよいですか？'>確認したことを通知する</x-element.submitbutton>
+            </form>
         @elseif($task->workflow->task == 'approve')
-
+            <form action="{{ route('task.update', ['task' => $task]) }}" method="post" class="items-center flex">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="task" value="{{ $task->id }}">
+                <input type="hidden" name="redirect_role" value="{{ $task->workflow->subject }}">
+                <x-element.submitbutton color="lime" value="assign"
+                    confirm='このタスクを完了し、次のワークフローに移行すると、戻ることはできません。本当に進めてよいですか？'>最終承認する</x-element.submitbutton>
+            </form>
         @elseif($task->workflow->task == 'submit')
+            <form action="{{ route('task.update', ['task' => $task]) }}" method="post" class="items-center flex">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="task" value="{{ $task->id }}">
+                <input type="hidden" name="redirect_role" value="{{ $task->workflow->subject }}">
+                <x-element.submitbutton color="purple" value="assign"
+                    confirm='このタスクを完了し、次のワークフローに移行すると、戻ることはできません。本当に進めてよいですか？'>査読完了を報告する</x-element.submitbutton>
+            </form>
             @php
                 $rev = App\Models\Review::where('paper_id', $task->submit->paper->id)
                     ->where('user_id', $task->subject->id)

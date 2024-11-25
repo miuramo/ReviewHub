@@ -20,7 +20,7 @@ class WorkflowSeeder extends Seeder
             'object' => 'aec',
             'description' => '幹事・副編集長を割り当てる',
             'num_of_days' => 2,
-            'next_workflow_id' => [2],
+            'next_workflow_id' => [2,11],
         ]);
         Workflow::create([ //2
             'name' => 'Assign Meta Reviewer',
@@ -96,7 +96,7 @@ class WorkflowSeeder extends Seeder
             'object' => 'aec',
             'need_approve' => false,
             'description' => 'メタ査読を提出する',
-            'num_of_days' => 34,
+            'num_of_days' => 44,
             'join' => [2,5,8],
             'next_workflow_id' => [10],
         ]);
@@ -107,21 +107,22 @@ class WorkflowSeeder extends Seeder
             'object' => 'meta',
             'need_approve' => false,
             'description' => 'メタ査読を確認する',
-            'num_of_days' => 3,
+            'num_of_days' => 2,
             'next_workflow_id' => [11],
         ]);
         Workflow::create([ //11
-            'name' => 'Submit Meta Review',
+            'name' => 'Submit Report',
             'subject' => 'aec',
             'task' => 'submit',
             'object' => 'ec',
             'need_approve' => false,
             'description' => '総合判定結果を提出する',
-            'num_of_days' => 1,
+            'num_of_days' => 51,
             'next_workflow_id' => [12],
+            'join' => [1,10],
         ]);
         Workflow::create([ //12
-            'name' => 'Approve Meta Review',
+            'name' => 'Approve Report',
             'subject' => 'ec',
             'task' => 'approve',
             'object' => 'aec',

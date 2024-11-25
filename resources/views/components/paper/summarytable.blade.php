@@ -52,7 +52,7 @@
                 <td class="p-1 text-center">{{ $paper->paperowner->name }} ({{ $paper->paperowner->affil }})
                 </td>
                 <td class="p-1 text-center">
-                    <x-element.login_as :user="$paper->currentsubmit->aec" />
+                    <x-element.login_as :user="$paper->currentsubmit->aecrep()->user" />
                         {{ $paper->currentsubmit->isAssigned('aec') ? '' : '?' }}
                     </td>
                 <td class="p-1 text-center">

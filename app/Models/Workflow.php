@@ -84,6 +84,15 @@ class Workflow extends Model
     // ワークフローを進める from TaskController.update => Task.process => ココ
     public function process(Task $task, Request $req)
     {
+        // TODO: joinでがあるとき、joinのタスクが終了していない場合は、失敗して、進めない
+        if ($task->join) {
+            foreach ($task->join as $jtid) {
+                $jtask = Task::find($jtid);
+                if (!$jtask->completed) {
+                    return false;
+                }
+            }
+        }
         if ($this->task == 'assign') {
             $task->object_id = $req->object_id;
             $task->completed = 1;
@@ -100,14 +109,53 @@ class Workflow extends Model
                 $task->sendApproveMail(0, 0); //打診メールを送る。第2引数はあまり意味がないが、まだ承認されていないので0
             } else {
                 // 承認不要で進める
+                $task->task_approved();
                 $this->assign_forward($task, $req->object_id); // 割り当て
                 $task->sendApproveMail(0, 1); // 進行メールを送る
                 $this->proceed_workflow($task, $req); //承認が得られたことになっているので、ワークフローを介して、次のタスクに進む
             }
             return true;
         } else if ($this->task == 'submit') {
+
+            $task->completed = 1;
+            $task->completed_at = now();
+            $task->logappend($req->comment, $task->subject_id, $req->object_id, 0);
+            $task->save();
+
+            $task->task_approved();
+            $this->submit_forward($task); // 査読報告の次のタスクにすすむ、前準備をする
+            $task->sendApproveMail(0, 1); // 進行メールを送る
+            return $this->proceed_workflow($task, $req); //承認が得られたことになっているので、ワークフローを介して、次のタスクに進む
         } else if ($this->task == 'confirm') {
+            $task->completed = 1;
+            $task->completed_at = now();
+            $task->logappend($req->comment, $task->subject_id, $req->object_id, 0);
+            $task->save();
+
+            $task->task_approved();
+            $this->confirm_forward($task); // 査読報告の次のタスクにすすむ、前準備をする
+            $task->sendApproveMail(0, 1); // 進行メールを送る
+            $this->proceed_workflow($task, $req); //承認が得られたことになっているので、ワークフローを介して、次のタスクに進む
+
         } else if ($this->task == 'approve') {
+            $task->completed = 1;
+            $task->completed_at = now();
+            $task->logappend($req->comment, $task->subject_id, $req->object_id, 0);
+            $task->save();
+
+            $task->task_approved();
+            $task->sendApproveMail(0, 1); // 進行メールを送る
+            // 採録・不採録なら、終了
+            // それ以外なら、次のラウンドの準備をする
+
+            // Submit::factory()->create([
+            //     'paper_id' => $task->submit->paper->id,
+            //     'category_id' => $task->submit->category_id,
+            //     'round' => $task->submit->round + 1,
+            //     'resubmit_until' => date('Y-m-d', strtotime('+40 days')),
+            // ])->init_reviews();
+            $task->submit->paper->status_id = 9; //査読結果通知済み
+            $task->submit->paper->save();
         }
         return true;
     }
@@ -119,9 +167,22 @@ class Workflow extends Model
         // 次のタスクのsubjectを設定
         foreach ($task->next as $nextid) {
             $ntask = Task::find($nextid);
-            $ntask->subject_id = $task->object_id;
-            $ntask->started = $started;
-            $ntask->save();
+            if (!$ntask->subject_id) {
+                $ntask->subject_id = $task->object_id;
+                $ntask->started = $started;
+                $ntask->save();
+            }
+
+            // もし、次のタスクがsubmit or confirmタスクなら、object_id　を設定する
+            if (
+                $ntask->workflow->task == 'submit' || $ntask->workflow->task == 'confirm'
+                || $ntask->workflow->task == 'approve'
+            ) {
+                if ($ntask->object_id == null) {
+                    $ntask->object_id = $task->subject_id;
+                    $ntask->save();
+                }
+            }
         }
     }
     /**
@@ -135,6 +196,9 @@ class Workflow extends Model
         if ($this->object == "aec") {
             $task->submit->aec_id = $oid;
             $task->submit->save();
+            $rev = $task->submit->aecrep();
+            $rev->user_id = $oid;
+            $rev->save();
         } else if ($this->object == "meta") {
             $rev = $task->submit->meta();
             $rev->user_id = $oid;
@@ -166,6 +230,15 @@ class Workflow extends Model
         }
         // submitのstatusを更新
         $task->submit->updateStatus();
+    }
+
+    public function submit_forward(Task $task)
+    {
+        // 次のタスクのsubjectを設定
+    }
+    public function confirm_forward(Task $task)
+    {
+        // 次のタスクのsubjectを設定
     }
 }
 

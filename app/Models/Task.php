@@ -50,18 +50,6 @@ class Task extends Model
     {
         return $this->belongsTo(Workflow::class);
     }
-    // public function tnext()
-    // {
-    //     return $this->belongsTo(Task::class, 'next');
-    // }
-    // public function tnext2()
-    // {
-    //     return $this->belongsTo(Task::class, 'next2');
-    // }
-    // public function tnext3()
-    // {
-    //     return $this->belongsTo(Task::class, 'next3');
-    // }
 
     public function subject()
     {
@@ -88,7 +76,7 @@ class Task extends Model
             $difference = $currentDate->diff($givenDate);
             // 差分の日数を返す（符号を考慮）
             if ($difference->days >= 0) {
-                return $prefix . $difference->days . '日';
+                return $prefix . $difference->days+1 . '日';
             } else {
                 return $difference->days . '日' . $postfix;
             }
@@ -106,6 +94,12 @@ class Task extends Model
     {
         // ここにメール送信処理を書く TODO:
     }
+    public function task_approved()
+    {
+        $this->approved = 1;
+        $this->approved_at = now();
+        $this->save();
+    }
 
     /**
      * タスクの承認または辞退
@@ -114,9 +108,7 @@ class Task extends Model
     {
         $this->logappend($req->comment, $this->subject_id, $this->object_id, $req->approve);
         if ($approved) {
-            $this->approved = 1;
-            $this->approved_at = now();
-            $this->save();
+            $this->task_approved();
             $this->workflow->assign_forward($this, $this->object_id); // 割り当て（暫定）
             $this->workflow->proceed_workflow($this, $req); //承認が得られたので、ワークフローを介して、次のタスクに進む
             // 承認メールを送る・進行メールを送る

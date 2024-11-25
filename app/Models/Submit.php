@@ -39,6 +39,10 @@ class Submit extends MetaModel
     {
         return $this->belongsTo(User::class, 'aec_id');
     }
+    public function aecrep()
+    {
+        return $this->reviews()->where('target', 2)->first();
+    }
     public function meta()
     {
         return $this->reviews()->where('target', 1)->first();
