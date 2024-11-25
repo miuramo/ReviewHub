@@ -52,7 +52,7 @@ class SubmitController extends Controller
     public function show(Submit $sub)
     {
         if (!auth()->user()->can('role_any', 'ec')) {
-            if (!auth()->user()->can('manage_paper', $sub->paper_id)) abort(403);
+            if (!auth()->user()->can('review_paper', $sub->paper_id)) abort(403);
         }
 
         return view('submit.show')->with(compact("sub"));

@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tasks', function (Blueprint $table) {
-            $table->unsignedBigInteger('next3')->nullable()->after('next2');
+            $table->boolean('started')->default(false)->after('workflow_id');
+            $table->boolean('has_trouble')->default(false)->after('started');
+            $table->json('issues')->nullable()->after('has_trouble');
             //
         });
     }
@@ -23,7 +25,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('tasks', function (Blueprint $table) {
-            $table->dropColumn('next3');
+            $table->dropColumn('started');
+            $table->dropColumn('has_trouble');
+            $table->dropColumn('issues');
             //
         });
     }

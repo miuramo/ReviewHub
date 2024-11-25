@@ -68,13 +68,13 @@
                     選択してください→
                 </label>
                 <input type="radio" name="approve" id="approve" value="1" checked="checked">
-                <label for="approve" class="text-sm bg-lime-200 hover:bg-lime-300 p-1">承認する</label>
+                <label for="approve" class="text-sm bg-lime-200 hover:bg-lime-300 p-1">承諾する</label>
                 <span class="mx-2"></span>
                 <input type="radio" name="approve" id="reject" value="0">
-                <label for="reject" class="text-sm bg-pink-200 hover:bg-pink-300 p-1">承認しない</label>
+                <label for="reject" class="text-sm bg-pink-200 hover:bg-pink-300 p-1">承諾しない</label>
                 <span class="mx-2"></span>
                 <input type="text" name="comment" id="comment" class="text-sm bg-slate-100 font-thin p-2"
-                    size="30" placeholder="不承認の理由・コメント">
+                    size="40" placeholder="コメント・不承諾の理由">
                 <x-element.submitbutton color="blue" value="approve"
                     confirm='本当に送信してよいですか？'>送信する</x-element.submitbutton>
             </form>

@@ -182,13 +182,16 @@ class RoleController extends Controller
      */
     public function adduser(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'meta|rev|ec|aec')) abort(403);
+        if (!auth()->user()->can('role_any', 'meta|ec|aec|rev')) abort(403);
         $role = Role::findByIdOrName($req->input("role"));
         $user = $req->user;
         $affil = $req->affil;
         $email = $req->email;
         $u = User::where("email", $email)->first();
         if ($u == null) {
+            if ($user == "" || $affil == "" || $email == "") {
+                return redirect()->route('role.top', ["role" => $req->redirect_role])->with('feedback.error', 'ユーザ情報が不足しています (査読者の新規作成に失敗しました)');
+            }
             $u = User::factory()->create([
                 'name' => $user,
                 'affil' => $affil,

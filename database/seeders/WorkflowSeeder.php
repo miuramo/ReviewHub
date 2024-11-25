@@ -20,7 +20,7 @@ class WorkflowSeeder extends Seeder
             'object' => 'aec',
             'description' => '幹事・副編集長を割り当てる',
             'num_of_days' => 2,
-            'next_workflow_id' => 2,
+            'next_workflow_id' => [2],
         ]);
         Workflow::create([ //2
             'name' => 'Assign Meta Reviewer',
@@ -29,9 +29,7 @@ class WorkflowSeeder extends Seeder
             'object' => 'meta',
             'description' => 'メタ査読者を割り当てる',
             'num_of_days' => 3,
-            'next_workflow_id' => 3,
-            'next_workflow_id2' => 6,
-            'next_workflow_id3' => 9,
+            'next_workflow_id' => [3,6,9],
         ]);
         Workflow::create([ //3 
             'name' => 'Assign Reviewer',
@@ -40,7 +38,7 @@ class WorkflowSeeder extends Seeder
             'object' => 'rev1',
             'description' => '査読者1を割り当てる',
             'num_of_days' => 7,
-            'next_workflow_id' => 4,
+            'next_workflow_id' => [4],
         ]);
         Workflow::create([ //4
             'name' => 'Report Review1',
@@ -50,7 +48,7 @@ class WorkflowSeeder extends Seeder
             'need_approve' => false,
             'description' => '査読報告1を提出する',
             'num_of_days' => 24,
-            'next_workflow_id' => 5,
+            'next_workflow_id' => [5],
         ]);
         Workflow::create([ //5
             'name' => 'Confirm Review1',
@@ -60,7 +58,7 @@ class WorkflowSeeder extends Seeder
             'need_approve' => false,
             'description' => '査読報告1を確認する',
             'num_of_days' => 3,
-            // 'next_workflow_id' => 9,
+            'next_workflow_id' => [9],
         ]);
         Workflow::create([ //6
             'name' => 'Assign Reviewer',
@@ -69,7 +67,7 @@ class WorkflowSeeder extends Seeder
             'object' => 'rev2',
             'description' => '査読者2を割り当てる',
             'num_of_days' => 7,
-            'next_workflow_id' => 7,
+            'next_workflow_id' => [7],
         ]);
         Workflow::create([ //7
             'name' => 'Report Review2',
@@ -79,7 +77,7 @@ class WorkflowSeeder extends Seeder
             'need_approve' => false,
             'description' => '査読報告2を提出する',
             'num_of_days' => 24,
-            'next_workflow_id' => 8,
+            'next_workflow_id' => [8],
         ]);
         Workflow::create([ //8
             'name' => 'Confirm Review2',
@@ -89,7 +87,7 @@ class WorkflowSeeder extends Seeder
             'need_approve' => false,
             'description' => '査読報告2を確認する',
             'num_of_days' => 3,
-            // 'next_workflow_id' => 9,
+            'next_workflow_id' => [9],
         ]);
         Workflow::create([ //9
             'name' => 'Report Meta Review',
@@ -99,7 +97,8 @@ class WorkflowSeeder extends Seeder
             'need_approve' => false,
             'description' => 'メタ査読を提出する',
             'num_of_days' => 34,
-            'next_workflow_id' => 10,
+            'join' => [2,5,8],
+            'next_workflow_id' => [10],
         ]);
         Workflow::create([ //10
             'name' => 'Confirm Meta Review',
@@ -109,7 +108,7 @@ class WorkflowSeeder extends Seeder
             'need_approve' => false,
             'description' => 'メタ査読を確認する',
             'num_of_days' => 3,
-            'next_workflow_id' => 11,
+            'next_workflow_id' => [11],
         ]);
         Workflow::create([ //11
             'name' => 'Submit Meta Review',
@@ -117,9 +116,9 @@ class WorkflowSeeder extends Seeder
             'task' => 'submit',
             'object' => 'ec',
             'need_approve' => false,
-            'description' => 'メタ査読を提出する',
+            'description' => '総合判定結果を提出する',
             'num_of_days' => 1,
-            'next_workflow_id' => 12,
+            'next_workflow_id' => [12],
         ]);
         Workflow::create([ //12
             'name' => 'Approve Meta Review',
@@ -127,7 +126,7 @@ class WorkflowSeeder extends Seeder
             'task' => 'approve',
             'object' => 'aec',
             'need_approve' => false,
-            'description' => 'メタ査読を承認する',
+            'description' => '総合判定結果を承認する',
             'num_of_days' => 3,
             // 'next_workflow_id' => ,
         ]);

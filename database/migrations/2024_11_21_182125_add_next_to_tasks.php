@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tasks', function (Blueprint $table) {
-            $table->unsignedBigInteger('next')->nullable()->after('workflow_id');
-            $table->unsignedBigInteger('next2')->nullable()->after('next');
+            $table->json('next')->nullable()->after('workflow_id');
+            $table->json('join')->nullable()->after('next');
             //
         });
     }
@@ -25,7 +25,7 @@ return new class extends Migration
     {
         Schema::table('tasks', function (Blueprint $table) {
             $table->dropColumn('next');
-            $table->dropColumn('next2');
+            $table->dropColumn('join');
             //
         });
     }

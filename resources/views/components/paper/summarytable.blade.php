@@ -51,18 +51,22 @@
                 <td class="p-1 text-center">{{ $paper->currentsubmit->submitted_at ?? '---' }}</td>
                 <td class="p-1 text-center">{{ $paper->paperowner->name }} ({{ $paper->paperowner->affil }})
                 </td>
-                <td class="p-1">
+                <td class="p-1 text-center">
                     <x-element.login_as :user="$paper->currentsubmit->aec" />
-                </td>
-                <td class="p-1">
+                        {{ $paper->currentsubmit->isAssigned('aec') ? '' : '?' }}
+                    </td>
+                <td class="p-1 text-center">
                     <x-element.login_as :user="$paper->currentsubmit->meta()->user" />
-                </td>
-                <td class="p-1">
+                        {{ $paper->currentsubmit->isAssigned('meta') ? '' : '?' }}
+                    </td>
+                <td class="p-1 text-center">
                     <x-element.login_as :user="$paper->currentsubmit->rev1()->user" />
-                </td>
-                <td class="p-1">
+                        {{ $paper->currentsubmit->isAssigned('rev1') ? '' : '?' }}
+                    </td>
+                <td class="p-1 text-center">
                     <x-element.login_as :user="$paper->currentsubmit->rev2()->user" />
-                </td>
+                        {{ $paper->currentsubmit->isAssigned('rev2') ? '' : '?' }}
+                    </td>
             </tr>
         @endforeach
     </tbody>

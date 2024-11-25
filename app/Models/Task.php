@@ -12,15 +12,17 @@ class Task extends Model
     /** @use HasFactory<\Database\Factories\TaskFactory> */
     use HasFactory;
 
-    protected $with = ['subject', 'object', 'submit', 'workflow', 'tnext', 'tnext2', 'tnext3'];
+    protected $with = ['subject', 'object', 'submit', 'workflow'];
 
     protected $fillable = [
         'submit_id',
         'workflow_id',
+        'started',
+        'has_trouble',
+        'issues',
         'due_date',
         'next',
-        'next2',
-        'next3',
+        'join',
         'due_date',
         'completed',
         'completed_at',
@@ -31,22 +33,35 @@ class Task extends Model
         'object_id',
     ];
 
+    protected $casts = [
+        'issues' => 'array',
+        'log' => 'array',
+        'next' => 'array',
+        'join' => 'array',
+    ];
+    protected $attributes = [
+        'issues' => '[]',
+        'log' => '[]',
+        'next' => '[]',
+        'join' => '[]',
+    ];
+
     public function workflow()
     {
         return $this->belongsTo(Workflow::class);
     }
-    public function tnext()
-    {
-        return $this->belongsTo(Task::class, 'next');
-    }
-    public function tnext2()
-    {
-        return $this->belongsTo(Task::class, 'next2');
-    }
-    public function tnext3()
-    {
-        return $this->belongsTo(Task::class, 'next3');
-    }
+    // public function tnext()
+    // {
+    //     return $this->belongsTo(Task::class, 'next');
+    // }
+    // public function tnext2()
+    // {
+    //     return $this->belongsTo(Task::class, 'next2');
+    // }
+    // public function tnext3()
+    // {
+    //     return $this->belongsTo(Task::class, 'next3');
+    // }
 
     public function subject()
     {
@@ -120,10 +135,11 @@ class Task extends Model
     }
     public function logappend($comment, $subject_id, $object_id, $approved)
     {
-        $curlog = json_decode($this->log, true);
-        $newMes = ['workflow_id' => $this->workflow->id, 'subject_id' => $subject_id, 'object_id' => $object_id, 'comment' => $comment, 'approved' => $approved, 'datetime' => now()];
-        $curlog[] = $newMes;
-        $this->log = $curlog;
+        $localLog = $this->log ?? [];
+        $now = (new DateTime())->format('Y-m-d H:i:s');
+        $newMes = ['workflow_id' => $this->workflow->id, 'subject_id' => $subject_id, 'object_id' => $object_id, 'comment' => $comment, 'approved' => $approved, 'datetime' => $now];
+        $localLog[] = $newMes;
+        $this->log = $localLog;
         $this->save();
     }
 
@@ -132,14 +148,8 @@ class Task extends Model
     {
         $this->due_date = $this->addDaysToDate($this->workflow->num_of_days, $ymd);
         $this->save();
-        if ($this->workflow->next_workflow_id) {
-            $this->tnext->recursive_set_due_date($this->due_date);
-        }
-        if ($this->workflow->next_workflow_id2) {
-            $this->tnext2->recursive_set_due_date($this->due_date);
-        }
-        if ($this->workflow->next_workflow_id3) {
-            $this->tnext3->recursive_set_due_date($this->due_date);
+        foreach ($this->next as $nextid) {
+            Task::find($nextid)->recursive_set_due_date($this->due_date);
         }
     }
     public function addDaysToDate(int $days, string $currentDate = null)
@@ -167,7 +177,8 @@ class Task extends Model
 
     public function log_comment_last()
     {
-        $ary = json_decode($this->log, true);
+
+        $ary = $this->log;
         // 配列の最後の要素を取得
         return $ary[count($ary) - 1]['comment'];
     }

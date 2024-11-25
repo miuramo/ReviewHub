@@ -219,18 +219,6 @@ class Paper extends Model
     {
         return $this->belongsTo(File::class, 'pdf_file_id');
     }
-    // public function img_file()
-    // {
-    //     return $this->belongsTo(File::class, 'img_file_id');
-    // }
-    // public function video_file()
-    // {
-    //     return $this->belongsTo(File::class, 'video_file_id');
-    // }
-    // public function altpdf_file()
-    // {
-    //     return $this->belongsTo(File::class, 'altpdf_file_id');
-    // }
     public function enqans()
     {
         return $this->hasMany(EnqueteAnswer::class, 'paper_id');
@@ -238,6 +226,18 @@ class Paper extends Model
     public function enqansByItemId($enq_itm_id)
     {
         return null;
+    }
+
+    public function isReviewer(int $uid)
+    {
+        $submit = $this->currentsubmit;
+        if ($submit == null) return false;
+        if ($submit->aec_id == $uid) return true;
+        if ($submit->meta()->user_id == $uid) return true;
+        if ($submit->rev1()->user_id == $uid) return true;
+        if ($submit->rev2()->user_id == $uid) return true;
+        if ($submit->rev3()->user_id == $uid) return true;
+        return false;
     }
 
     /**

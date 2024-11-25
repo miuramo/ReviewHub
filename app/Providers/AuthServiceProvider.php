@@ -91,15 +91,19 @@ class AuthServiceProvider extends ServiceProvider
         /**
          * カテゴリの管理権限
          */
-        Gate::define('manage_cat', function ($user, $category) {
+        Gate::define('manage_paper', function ($user, $paper) {
             // もし、PC長なら、true
             if ($user->can('role', 'ec')) return true;
-            // そうでなければ、cat_id が0以外のRoleを調べる
-            $catid_roles = Role::where('cat_id', $category)->get();
-            foreach ($catid_roles as $role) {
-                // いずれかのRoleに所属していれば、true
-                if ($role->containsUser($user->id)) return true;
-            }
+            // もし、著者なら、true
+            if ($paper->isCoAuthorEmail($user->email)) return true;
+            return false;
+        });
+        Gate::define('review_paper', function ($user, $paper) {
+            // もし、PC長なら、true
+            if ($user->can('role', 'ec')) return true;
+            // もし、査読者またはメタなら、true
+            $paper = Paper::find($paper);
+            if ($paper->isReviewer($user->id)) return true;
             return false;
         });
         Gate::define('manage_cat_any', function ($user) {

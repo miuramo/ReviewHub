@@ -19,8 +19,8 @@ return new class extends Migration
             $table->enum('task', ['assign', 'approve', 'submit', 'confirm'])->default('assign'); // ワークフローの種類
             $table->enum('object', ['ec', 'aec', 'meta', 'rev1', 'rev2', 'rev3'])->default('meta'); // ワークフローの対象
             $table->integer('num_of_days')->default(7); // 期限日数
-            $table->integer('next_workflow_id')->nullable(); // 次のワークフロー
-            $table->integer('next_workflow_id2')->nullable(); // 次のワークフロー
+            $table->json('next_workflow_id')->nullable(); // 次のワークフロー
+            $table->json('join')->nullable(); // 揃うまで待つワークフロー
 
             $table->timestamps();
             $table->comment("Submitが参照するワークフロー");

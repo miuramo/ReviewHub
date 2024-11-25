@@ -28,7 +28,7 @@
     {{ $task->dueForHumans() }}
     <span class="mx-2"></span>
     @if ($task->workflow->need_approve)
-        <span class="bg-red-200 text-red-800 p-1 rounded">割当後、承認プロセスあり</span>
+        <span class="bg-red-200 text-red-800 p-1 rounded">割当後、承諾プロセスあり</span>
     @endif
     </x-element.h1>
     <div class="mx-2 bg-yellow-100 p-3">
@@ -68,15 +68,17 @@
                 </label>
                 <select name="object_id" id="object_id" class="">
                     @foreach ($objectRole->users as $user)
-                        <option value="{{ $user->id }}" class="text-sm bg-slate-100 font-thin mr-2 p-0 h-5">
-                            {{ $user->name }}
-                        </option>
+                        @if ($user->id != auth()->id())
+                            <option value="{{ $user->id }}" class="text-sm bg-slate-100 font-thin mr-2 p-0 h-5">
+                                {{ $user->name }}
+                            </option>
+                        @endif
                     @endforeach
                 </select>
                 @if ($task->workflow->need_approve)
                     <span class="mx-2"></span>
                     <input type="checkbox" name="skip_approve" id="skip_approve" value="1">
-                    <label for="skip_approve" class="text-sm hover:bg-pink-200 p-1">内諾あり（承認プロセスをスキップ）
+                    <label for="skip_approve" class="text-sm hover:bg-pink-200 p-1">内諾あり（承諾プロセスをスキップ）
                     </label>
                 @endif
                 <textarea class="text-sm m-0 p-1" name="comment" placeholder="特別なメッセージがあれば、ここに書く" cols=50 rows=2></textarea>
@@ -97,7 +99,7 @@
                     を入力して
                     <x-element.submitbutton color="pink">
                         査読者の新規作成
-                        </x-element.linkbutton>
+                    </x-element.submitbutton>
                 </form>
                 を先に行ってください。
             </div>
@@ -145,22 +147,22 @@
             @endif
 
             @if ($rev->paper->pdf_file_id != null)
-            <div class="w-1/2">
-                <a href="{{ route('review.edit', ['review' => $rev]) }}">
+                <div class="w-1/2">
+                    <a href="{{ route('review.edit', ['review' => $rev]) }}">
             @endif
             <x-file.paperheadimg :paper="$rev->paper">
             </x-file.paperheadimg>
             @if ($rev->paper->pdf_file_id != null)
                 </a>
             @endif
-            </div>
+    </div>
 
-            {{-- <div class="text-sm mt-2 ml-2">
+    {{-- <div class="text-sm mt-2 ml-2">
                 <x-enquete.Rev_enqview :rev="$rev">
                 </x-enquete.Rev_enqview>
             </div> --}}
 
 
-        @endif
+    @endif
 
     </div>

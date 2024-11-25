@@ -55,6 +55,18 @@ class Submit extends MetaModel
     {
         return $this->hasMany(Task::class);
     }
+    public function isAssigned(string $rollname)
+    {
+        // まずは、該当するWorkflowを取得
+        $workflow = Workflow::where('object', $rollname)->first();
+        // 次に、そのWorkflowに対応するTaskを取得
+        $task = Task::where('submit_id', $this->id)->where('workflow_id', $workflow->id)->where('approved',1)->first();
+        // Taskが存在しない場合は、割り当てられていない
+        if ($task == null) return false;
+        // Taskが存在する場合は、object_idが設定されているかどうかを返す
+        return true;
+    }
+
     public function updateStatus()
     {
         if ($this->rev1()->user_id != null && $this->rev2()->user_id != null) {
