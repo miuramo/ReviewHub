@@ -251,7 +251,7 @@ class ReviewController extends Controller
         if (!auth()->user()->can('role_any', 'ec|aec|rev|meta')) return abort(403);
         if ($review->user_id != auth()->id()) return abort(403, "THIS IS NOT YOUR REVIEW");
 
-        $query = Viewpoint::where("category_id", $review->category_id)->where("target", $review->target)->orderBy("orderint")->get();
+        $viewpoints = Viewpoint::where("category_id", $review->category_id)->where("target", $review->target)->orderBy("orderint")->get();
         // 既存回答
         $scoreobj = Score::where('review_id', $review->id)->get();
         $scores = [];

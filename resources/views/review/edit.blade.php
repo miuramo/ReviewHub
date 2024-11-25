@@ -17,8 +17,8 @@
             @endphp
             @if ($review->target==1)
                 {{ $nameofmeta }}
-            @else if ($review->target==2)
-                AEC
+            @elseif ($review->target==2)
+                幹事
             @endif
             {{ __('査読（編集）') }}
 
