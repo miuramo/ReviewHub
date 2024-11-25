@@ -44,11 +44,11 @@
                 // Primary用か一般用か（scoreonlyによらず、配列[vp_id]にいれる）
                 $vpsismeta[1] = App\Models\Viewpoint::where('category_id', $cat_id)
                     ->orderBy('orderint')
-                    ->pluck('formeta', 'id')
+                    ->pluck('target', 'id')
                     ->toArray();
                 $vpsismeta[0] = App\Models\Viewpoint::where('category_id', $cat_id)
                     ->orderBy('orderint')
-                    ->pluck('forrev', 'id')
+                    ->pluck('target', 'id')
                     ->toArray();
                 if (count($subs) > 0) {
                     $sub = $subs[0];

@@ -109,7 +109,7 @@ Route::middleware('auth')->group(function () {
     // Route::resource('review', ReviewController::class);
     // put /review/{review} -> review.update
     // get review.index で仮に作成
-    Route::get('/review/{cat}/edit_dummy/{ismeta}', [ReviewController::class, 'edit_dummy'])->name('review.edit_dummy');
+    Route::get('/review/{cat}/edit_dummy/{target}', [ReviewController::class, 'edit_dummy'])->name('review.edit_dummy');
 
     // admin
     Route::get('/admin_dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');

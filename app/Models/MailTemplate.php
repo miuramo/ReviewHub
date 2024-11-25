@@ -289,13 +289,13 @@ class MailTemplate extends Model
     /**
      * 査読未完了
      */
-    public static function mt_norev_catmeta($catid, $ismeta)
+    public static function mt_norev_catmeta($catid, $target)
     {
         Review::validateAllRev(); // statusを更新
         $norev_userids = Review::select(["user_id"])
             ->whereNot("status", 2)
             ->where('category_id', $catid)
-            ->where('ismeta', $ismeta)
+            ->where('target', $target)
             ->groupBy("user_id")
             ->pluck("user_id")
             ->toArray();
@@ -308,7 +308,7 @@ class MailTemplate extends Model
     {
         // submit→review->uid->user
         $subids = Submit::whereIn('accept_id', $accids)->pluck('id')->toArray();
-        $revs = Review::whereIn('submit_id', $subids)->where('ismeta', 1)->get();
+        $revs = Review::whereIn('submit_id', $subids)->where('target', 1)->get();
         $uids = $revs->pluck('user_id')->toArray();
         return User::whereIn('id', $uids)->get();
     }
@@ -319,7 +319,7 @@ class MailTemplate extends Model
     {
         // submit→review->uid->user
         $subids = Submit::whereIn('paper_id', $pids)->pluck('id')->toArray();
-        $revs = Review::whereIn('submit_id', $subids)->where('ismeta', 1)->get();
+        $revs = Review::whereIn('submit_id', $subids)->where('target', 1)->get();
         $uids = $revs->pluck('user_id')->toArray();
         return User::whereIn('id', $uids)->get();
     }

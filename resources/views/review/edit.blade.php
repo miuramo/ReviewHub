@@ -15,8 +15,10 @@
             @php
                 $nameofmeta = App\Models\Setting::findByIdOrName('NAME_OF_META', 'value');
             @endphp
-            @if ($review->ismeta)
+            @if ($review->target==1)
                 {{ $nameofmeta }}
+            @else if ($review->target==2)
+                AEC
             @endif
             {{ __('査読（編集）') }}
 

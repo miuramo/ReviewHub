@@ -70,21 +70,21 @@ class RevConflictController extends Controller
         Review::validateAllRev(); // statusを更新
         
         $cats = Category::select('id', 'name')->get()->pluck('name', 'id')->toArray();
-        $sum_cm_tmp = Review::select(DB::raw("count(id) as count, category_id, ismeta"))
+        $sum_cm_tmp = Review::select(DB::raw("count(id) as count, category_id, target"))
             ->groupBy("category_id")
-            ->groupBy("ismeta")
+            ->groupBy("target")
             ->get();
         $sum_cm = [];
         foreach ($sum_cm_tmp as $t) {
-            $sum_cm[$t->category_id][$t->ismeta] = $t->count;
+            $sum_cm[$t->category_id][$t->target] = $t->count;
         }
 
-        $cmsc = Review::select(DB::raw("count(id) as count, category_id,ismeta, status"))
+        $cmsc = Review::select(DB::raw("count(id) as count, category_id,target, status"))
             ->groupBy("category_id")
-            ->groupBy("ismeta")
+            ->groupBy("target")
             ->groupBy("status")
             ->orderBy("category_id")
-            ->orderBy("ismeta")
+            ->orderBy("target")
             ->orderByDesc("status")
             ->get();
         $us = Review::select(DB::raw("count(id) as count, user_id, status"))

@@ -53,7 +53,7 @@
                             <th class="bg-slate-300 border-4 border-slate-300">
                                 査読者 {{ $count }}
 
-                                @if ($rev->ismeta)
+                                @if ($rev->ismet)
                                     <span class="mx-2 text-blue-500">（{{$nameofmeta}}査読者） </span>
                                 @endif
                             </th>

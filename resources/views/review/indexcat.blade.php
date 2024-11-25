@@ -74,7 +74,7 @@
                     <span class="mx-2"></span>
 
                     @if (!$revoff[$rev->category_id])
-                        @if ($rev->ismeta)
+                        @if ($rev->target==1)
                             <x-element.linkbutton2 href="{{ route('review.edit', ['review' => $rev]) }}" color="red">
                                 Edit ({{ $nameofmeta }})
                             </x-element.linkbutton2>
@@ -153,7 +153,7 @@
 
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach ($reviews as $rev)
-                            @if ($rev->ismeta)
+                            @if ($rev->target == 1)
                                 <tr
                                     class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-300' : 'bg-white dark:bg-slate-500' }}">
                                     <td class="p-1 text-center">

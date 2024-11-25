@@ -21,7 +21,7 @@
     @endif
 
     @php
-        $aismeta = ['一般', 'メタ'];
+        $ismeta = ['一般', 'メタ', 'AEC'];
         $astatus = ['' => '未着手', '0' => '未入力', '1' => '途中（未完了あり）', '2' => '完了'];
         $cstatus = ['' => 'red', '0' => 'orange', '1' => 'lime', '2' => 'cyan'];
         $catspans = App\Models\Category::spans();
@@ -47,14 +47,14 @@
 
                         <td class="px-1 text-center">{{ $cats[$msc->category_id] }}
                         </td>
-                        <td class="px-1 text-center">{{ $aismeta[$msc->ismeta] }}
+                        <td class="px-1 text-center">{{ $ismeta[$msc->target] }}
                         </td>
                         <td class="px-1 text-center bg-{{ $cstatus[$msc->status] }}-100">{{ $astatus[$msc->status] }}
                         </td>
                         <td class="px-1 text-right bg-{{ $cstatus[$msc->status] }}-100">{{ $msc->count }}
                         </td>
                         <td class="px-1 text-right bg-{{ $cstatus[$msc->status] }}-100">
-                            {{ sprintf('%4.2f', ($msc->count * 100) / $sum_cm[$msc->category_id][$msc->ismeta]) }}
+                            {{ sprintf('%4.2f', ($msc->count * 100) / $sum_cm[$msc->category_id][$msc->target]) }}
                         </td>
                     </tr>
                 @endforeach

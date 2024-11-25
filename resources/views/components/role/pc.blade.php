@@ -279,7 +279,7 @@
         @foreach ($cats as $catid => $catname)
             @isset($cat_arrange_review[$catid])
                 @foreach (['一般', $nameofmeta] as $ismeta => $revtype)
-                    <x-element.linkbutton2 href="{{ route('review.edit_dummy', ['cat' => $catid, 'ismeta' => $ismeta]) }}"
+                    <x-element.linkbutton2 href="{{ route('review.edit_dummy', ['cat' => $catid, 'target' => $ismeta]) }}"
                         color="blue" size="sm" target="_blank">
                         {{ $catname }}({{ $revtype }})
                     </x-element.linkbutton2>

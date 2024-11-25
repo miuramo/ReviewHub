@@ -15,10 +15,10 @@ return new class extends Migration
             $table->comment('査読割り当て');
             $table->id();
             $table->integer('submit_id')->nullable();
-            $table->integer('paper_id')->nullable()->comment("本来はsubmit_idのみでよいが、実装の都合で");
+            $table->integer('paper_id')->nullable();
+            $table->integer('category_id')->nullable();
             $table->integer('user_id')->nullable()->comment("ReviewerID");
-            $table->integer('category_id')->nullable()->comment("本来はsubmit_idのみでよい、実装の都合で");
-            $table->boolean('ismeta')->default(false);
+            $table->integer('target')->default(0)->comment("0は普通の査読、1はメタ査読、2は担当幹事");
             $table->integer('status')->nullable()->comment("0は未回答、1は回答中、2は完了");
             $table->timestamps();
         });

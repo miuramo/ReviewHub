@@ -196,11 +196,7 @@ class ReviewController extends Controller
         if (!auth()->user()->can('role_any', 'ec|aec|rev|meta',)) return abort(403);
         if ($review->user_id != auth()->id()) return abort(403, "THIS IS NOT YOUR REVIEW");
 
-        if ($review->ismeta) {
-            $viewpoints = Viewpoint::where("category_id", $review->category_id)->where("formeta", 1)->orderBy("orderint")->get();
-        } else {
-            $viewpoints = Viewpoint::where("category_id", $review->category_id)->where("forrev", 1)->orderBy("orderint")->get();
-        }
+        $viewpoints = Viewpoint::where("category_id", $review->category_id)->where("target", $review->target)->orderBy("orderint")->get();
         // 既存回答
         $scoreobj = Score::where('review_id', $review->id)->get();
         $scores = [];
@@ -219,11 +215,7 @@ class ReviewController extends Controller
         if (!auth()->user()->can('role_any', 'ec|aec|rev|meta',)) return abort(403);
         if ($review->token() != $token) return abort(403, "Review Browse TOKEN ERROR");
 
-        if ($review->ismeta) {
-            $viewpoints = Viewpoint::where("category_id", $review->category_id)->where("formeta", 1)->orderBy("orderint")->get();
-        } else {
-            $viewpoints = Viewpoint::where("category_id", $review->category_id)->where("forrev", 1)->orderBy("orderint")->get();
-        }
+        $viewpoints = Viewpoint::where("category_id", $review->category_id)->where("target", $review->target)->orderBy("orderint")->get();
         // 既存回答
         $scoreobj = Score::where('review_id', $review->id)->get();
         $scores = [];
@@ -236,14 +228,14 @@ class ReviewController extends Controller
     /**
      * for test (dummy)
      */
-    public function edit_dummy($cat_id, $ismeta = 0)
+    public function edit_dummy($cat_id, $target = 0)
     {
         if (!auth()->user()->can('role', 'ec')) return abort(403);
         $rev = new Review();
         $rev->category_id = $cat_id;
         $rev->submit_id = 9999;
         $rev->user_id = auth()->id();
-        $rev->ismeta = $ismeta;
+        $rev->target = $target;
         $rev->paper = new Paper();
         $rev->paper->id = 9999;
         $rev->paper->category_id = $cat_id;
@@ -259,13 +251,7 @@ class ReviewController extends Controller
         if (!auth()->user()->can('role_any', 'ec|aec|rev|meta')) return abort(403);
         if ($review->user_id != auth()->id()) return abort(403, "THIS IS NOT YOUR REVIEW");
 
-        $query = Viewpoint::where("category_id", $review->category_id);
-        if ($review->ismeta) {
-            $query->where("formeta", 1);
-        } else {
-            $query->where("forrev", 1);
-        }
-        $viewpoints = $query->orderBy("orderint")->get();
+        $query = Viewpoint::where("category_id", $review->category_id)->where("target", $review->target)->orderBy("orderint")->get();
         // 既存回答
         $scoreobj = Score::where('review_id', $review->id)->get();
         $scores = [];

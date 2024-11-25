@@ -468,7 +468,7 @@ class SubmitController extends Controller
         $vps = Viewpoint::select("name","id")->where("formeta", 1)->where("forrev",0)->where("doReturn", 1)->where("doReturnAcceptOnly",1)->pluck("name","id")->toArray();
         // 
         $accepted_subs = Submit::subs_accepted($catid);
-        $revid2pid = Review::where("category_id", $catid)->where("ismeta", 1)->whereIn("paper_id", $accepted_subs->pluck("paper_id"))->pluck("paper_id","id")->toArray();
+        $revid2pid = Review::where("category_id", $catid)->where("tar", 1)->whereIn("paper_id", $accepted_subs->pluck("paper_id"))->pluck("paper_id","id")->toArray();
         $scores = Score::whereIn("review_id", array_keys($revid2pid))->whereIn("viewpoint_id", array_keys($vps))->get();
 
         if (count($scores) == 0) {

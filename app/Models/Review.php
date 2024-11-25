@@ -15,7 +15,7 @@ class Review extends Model
         'paper_id',
         'user_id',
         'category_id',
-        'ismeta',
+        'target',
         'status',
     ];
 
@@ -64,7 +64,7 @@ class Review extends Model
                 if ($rev != null) {
                     $rev->submit_id = $paper->submits->first()->id;
                     $rev->category_id = $paper->category_id;
-                    $rev->ismeta = ($status == 2);
+                    $rev->target = ($status == 2) ? 1 : 0;
                     $rev->save();
                 } else {
                     Review::firstOrCreate([
@@ -72,7 +72,7 @@ class Review extends Model
                         'paper_id' => $paper->id,
                         'user_id' => $user_id,
                         'category_id' => $paper->category_id,
-                        'ismeta' => ($status == 2),
+                        'target' => ($status == 2) ? 1 : 0,
                     ]);
                 }
             });
@@ -89,29 +89,29 @@ class Review extends Model
      */
     public static function revass_stat($catid, $field = "user_id")
     {
-        $tmp = Review::select(DB::raw("count(id) as count, {$field}, ismeta"))
+        $tmp = Review::select(DB::raw("count(id) as count, {$field}, target"))
             ->where('category_id', $catid)
             ->groupBy($field)
-            ->groupBy("ismeta")
+            ->groupBy("target")
             ->orderBy($field)
             ->get();
         $ret = [];
         foreach ($tmp as $n => $t) {
-            $ret[$t->{$field}][$t->ismeta] = $t->count;
+            $ret[$t->{$field}][$t->target] = $t->count;
         }
         return $ret;
     }
     public static function revass_stat_allcategory()
     {
         $field = "user_id";
-        $tmp = Review::select(DB::raw("count(id) as count, {$field}, ismeta"))
+        $tmp = Review::select(DB::raw("count(id) as count, {$field}, target"))
             ->groupBy($field)
-            ->groupBy("ismeta")
+            ->groupBy("target")
             ->orderBy($field)
             ->get();
         $ret = [];
         foreach ($tmp as $n => $t) {
-            $ret[$t->{$field}][$t->ismeta] = $t->count;
+            $ret[$t->{$field}][$t->target] = $t->count;
         }
         return $ret;
     }
@@ -136,7 +136,7 @@ class Review extends Model
     {
         $ret = [];
         foreach (Review::all() as $a) {
-            $ret[$a->paper_id][$a->user_id] = ($a->ismeta) ? 2 : 1;
+            $ret[$a->paper_id][$a->user_id] = $a->target + 1;
         }
         return $ret;
     }
@@ -149,7 +149,7 @@ class Review extends Model
         $ret = [];
         $colors = ["teal", "cyan", "red"];
         foreach (Review::all() as $a) {
-            $status = ($a->ismeta) ? 2 : 1;
+            $status = $a->target + 1;
             $span = "<span class=\"text-2xl text-{$colors[$status]}-500\">★</span>";
             $ret[$a->paper_id][$a->user_id] = $span;
         }
@@ -158,13 +158,13 @@ class Review extends Model
 
     /**
      * 査読者名を取得する
-     * ret[paper_id][ismeta][user_id] = name
+     * ret[paper_id][target][user_id] = name
      */
     public static function arr_pu_revname()
     {
         $ret = [];
         foreach (Review::all() as $a) {
-            $ret[$a->paper_id][$a->ismeta][$a->user_id] = $a->user->name;
+            $ret[$a->paper_id][$a->target][$a->user_id] = $a->user->name;
         }
         return $ret;
     }
@@ -203,12 +203,7 @@ class Review extends Model
     public function validateOneRev()
     {
         $finish_vpids = Score::where('review_id', $this->id)->whereNotNull('valuestr')->get()->pluck('viewpoint_id')->count();
-        // 自分が　ismeta なら、formetaの項目を数える。そうでなければ、forrev の項目を数える。
-        $all_vpids = Viewpoint::where('category_id', $this->category_id)->count();
-        if (!$this->ismeta) {
-            $all_vpids = Viewpoint::where('category_id', $this->category_id)->where('forrev', 1)->count();
-        }
-        // ->whereNotIn('id', $finish_vpids)->
+        $all_vpids = Viewpoint::where('category_id', $this->category_id)->where('target', $this->target)->count();
         if ($finish_vpids == 0) {
             $this->status = 0;
         } else if ($finish_vpids == $all_vpids) {
@@ -232,9 +227,8 @@ class Review extends Model
         foreach ($vps as $vp) {
             if ($only_doreturn && !$vp->doReturn) continue;
             if ($only_score && strpos($vp->content, "number") === false) continue;
-            // Primaryじゃないとき(ismeta=0)、forrev=0のときは表示しない
-            if (!$this->ismeta && !$vp->forrev) continue;
-            if ($this->ismeta && !$vp->formeta) continue;
+            // Primaryじゃないとき(target=0)、forrev=0のときは表示しない
+            if ($this->target != $vp->target) continue;
             if (!$accepted && $vp->doReturnAcceptOnly) continue;
 
             $ret[$vp->desc] = (isset($aryscores[$vp->id])) ? $aryscores[$vp->id] : "(未入力)";
@@ -247,7 +241,7 @@ class Review extends Model
      */
     public static function urllink($txt)
     {
-        $txt = preg_replace_callback("/(<a [^>]+?>.+?<\/a>)|(https?:\/\/[a-zA-Z0-9_\.\/\~\%\:\#\?=&\;\-]+)/i", ["App\Models\Review","urllink_callback"], $txt);
+        $txt = preg_replace_callback("/(<a [^>]+?>.+?<\/a>)|(https?:\/\/[a-zA-Z0-9_\.\/\~\%\:\#\?=&\;\-]+)/i", ["App\Models\Review", "urllink_callback"], $txt);
         $txt = strip_tags($txt, "<a>");
         return $txt;
     }
@@ -339,17 +333,17 @@ class Review extends Model
     public static function get_scores($paper_id, $cat_id)
     {
         $sql1 =
-            'select reviews.id, paper_id, title, name, affil, ismeta, status from reviews ' .
+            'select reviews.id, paper_id, title, name, affil, target, status from reviews ' .
             'left join papers on reviews.paper_id = papers.id ' .
             'left join users on reviews.user_id = users.id ' .
             'where reviews.paper_id = ' . $paper_id .
-            " and reviews.category_id = $cat_id order by ismeta desc, id";
+            " and reviews.category_id = $cat_id order by target desc, id";
         $res1 = DB::select($sql1);
         $names = [];
-        $ismeta = [];
+        $target = [];
         foreach ($res1 as $res) {
             $names[$res->id] = $res->name . " (" . $res->affil . ")";
-            $ismeta[$res->id] = $res->ismeta;
+            $target[$res->id] = $res->target;
         }
         $sql2 =
             'select scores.review_id, viewpoint_id, value, orderint, viewpoints.formeta, viewpoints.forrev, viewpoints.`desc` from scores ' .
@@ -366,7 +360,7 @@ class Review extends Model
             $descs[$res->viewpoint_id] = $res->desc;
         }
         $ret['names'] = $names;
-        $ret['ismeta'] = $ismeta;
+        $ret['target'] = $target;
         $ret['scores'] = $scores;
         $ret['descs'] = $descs;
         return $ret;

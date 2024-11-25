@@ -7,7 +7,7 @@
 @php
     $ret = App\Models\Review::get_scores($paper_id, $cat_id);
     $scores = $ret['scores'];
-    $ismeta = $ret['ismeta'];
+    $target = $ret['target'];
     $names = $ret['names'];
     $descs = $ret['descs'];
 
@@ -42,7 +42,7 @@
                         @if (isset($ismeta_myself) && $ismeta_myself)
                             {{ $name }}
                         @else
-                            @if ($ismeta[$revid])
+                            @if ($target[$revid])
                                 @if (isset($ismeta_myself))
                                     {{ $name }}
                                 @else

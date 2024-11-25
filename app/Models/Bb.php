@@ -114,7 +114,7 @@ class Bb extends Model
                     $bcclist[] = $u->email;
                 }
             } else if ($role=="meta" || $role=="rev"){
-                $revuids = Review::where("paper_id", $this->paper_id)->where("category_id",$this->category_id)->where("ismeta", $role=="meta")->pluck("user_id", "id")->toArray();
+                $revuids = Review::where("paper_id", $this->paper_id)->where("category_id",$this->category_id)->where("target", $role=="meta"?1:0)->pluck("user_id", "id")->toArray();
                 $revus = User::whereIn("id", $revuids)->get();
                 foreach($revus as $u){
                     if ($this->type == 1 && $role=="meta"){ //査読者同士の事前議論掲示板のときは、to:metaになる。 (メタと著者の掲示板のときは、to: author になるので、metaはbccに加わる。)
@@ -134,24 +134,24 @@ class Bb extends Model
 
     public function get_reviewers()
     {
-        $revuids = Review::where("paper_id", $this->paper_id)->where("category_id",$this->category_id)->where("ismeta", 0)->pluck("user_id", "id")->toArray();
+        $revuids = Review::where("paper_id", $this->paper_id)->where("category_id",$this->category_id)->where("target", 0)->pluck("user_id", "id")->toArray();
         return User::whereIn("id", $revuids)->get();
     }
     public function revuid2rev()
     {
-        $revuid2rev = Review::where("paper_id", $this->paper_id)->where("category_id",$this->category_id)->where("ismeta", 0)->pluck("id", "user_id")->toArray();
+        $revuid2rev = Review::where("paper_id", $this->paper_id)->where("category_id",$this->category_id)->where("target", 0)->pluck("id", "user_id")->toArray();
         return $revuid2rev;
     }
     public function ismeta_myself()
     {
         // 自分がメタ査読者かどうかを返す
-        $rev = Review::where("paper_id", $this->paper_id)->where("category_id", $this->category_id)->where("user_id", auth()->id())->where("ismeta", 1)->first();
+        $rev = Review::where("paper_id", $this->paper_id)->where("category_id", $this->category_id)->where("user_id", auth()->id())->where("target", 1)->first();
         return $rev != null;
     }
     public function metauser()
     {
         // メタ査読者を返す
-        $rev = Review::where("paper_id", $this->paper_id)->where("category_id", $this->category_id)->where("ismeta", 1)->first();
+        $rev = Review::where("paper_id", $this->paper_id)->where("category_id", $this->category_id)->where("target", 1)->first();
         return $rev->user;
     }
 
@@ -161,7 +161,7 @@ class Bb extends Model
     public static function getShepherdingBbs($user_id)
     {
         // get all meta reviews
-        $metarev_pids = Review::where('user_id', $user_id)->where('ismeta', 1)->get()->pluck('paper_id')->toArray();
+        $metarev_pids = Review::where('user_id', $user_id)->where('target', 1)->get()->pluck('paper_id')->toArray();
         return Bb::whereIn('paper_id', $metarev_pids)->where('type', 2)->get();
     }
 

@@ -122,7 +122,7 @@
             </x-element.paperid>
             <span class="mx-2"></span>
 
-            @if ($rev->ismeta)
+            @if ($rev->tar)
                 <x-element.linkbutton2 href="{{ route('review.edit', ['review' => $rev]) }}" color="red">
                     Edit (メタ)
                 </x-element.linkbutton2>

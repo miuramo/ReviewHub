@@ -33,7 +33,7 @@ class Submit extends MetaModel
 
     public function reviews()
     {
-        return $this->hasMany(Review::class, "submit_id")->orderBy('ismeta', 'desc');
+        return $this->hasMany(Review::class, "submit_id")->orderBy('target', 'desc');
     }
     public function aec()
     {
@@ -41,15 +41,15 @@ class Submit extends MetaModel
     }
     public function meta()
     {
-        return $this->reviews()->where('ismeta', 1)->first();
+        return $this->reviews()->where('target', 1)->first();
     }
     public function rev1()
     {
-        return $this->reviews()->where('ismeta', 0)->first();
+        return $this->reviews()->where('target', 0)->first();
     }
     public function rev2()
     {
-        return $this->reviews()->where('ismeta', 0)->skip(1)->first();
+        return $this->reviews()->where('target', 0)->skip(1)->first();
     }
     public function tasks()
     {
@@ -84,13 +84,19 @@ class Submit extends MetaModel
             'submit_id' => $this->id,
             'category_id' => $this->category_id,
             'paper_id' => $this->paper_id,
-            'ismeta' => 1,
+            'target' => 2,
+        ]);
+        $revs = Review::factory(1)->create([
+            'submit_id' => $this->id,
+            'category_id' => $this->category_id,
+            'paper_id' => $this->paper_id,
+            'target' => 1,
         ]);
         $revs = Review::factory(2)->create([
             'submit_id' => $this->id,
             'category_id' => $this->category_id,
             'paper_id' => $this->paper_id,
-            'ismeta' => 0,
+            'target' => 0,
         ]);
     }
 
