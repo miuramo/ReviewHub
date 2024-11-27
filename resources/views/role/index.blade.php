@@ -29,13 +29,13 @@
             <tbody>
                 @foreach ($roles as $role)
                     <tr>
-                        <td class="border px-4 py-2">{{ $role->name }}</td>
-                        <td class="border px-4 py-2">{{ $role->desc }}</td>
-                        <td class="border px-4 py-2">
+                        <td class="border px-2 py-1 text-center">{{ $role->name }}</td>
+                        <td class="border px-2 py-1 text-center">{{ $role->desc }}</td>
+                        <td class="border px-2 py-1">
                             @foreach ($role->users as $user)
                                 <a href="/login-as/{{ $user->id }}">
                                     <span
-                                        class="p-2 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        class="p-2 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800 hover:bg-yellow-200 hover:underline">
                                         {{ $user->name }} ({{ $user->id }})
                                     </span>
                                 </a>

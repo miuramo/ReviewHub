@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('category_id')->nullable();
             $table->double('score')->nullable()->comment('トータルスコア');
             $table->double('stddevscore')->nullable()->comment('スコアの標準偏差');
-            $table->integer('accept_id')->default(20)->comment('Acceptの---が初期値');
+            $table->integer('accept_id')->default(5)->comment('Acceptの---が初期値');
             $table->boolean('canceled')->default(0)->comment('キャンセルされたら1');
             $table->string('booth')->nullable();
             $table->integer('orderint')->default(0);

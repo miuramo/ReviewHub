@@ -37,7 +37,7 @@ class ViewpointSeeder extends Seeder
                 'orderint' => 3,
                 'name' => 'for_meta_aec',
                 'desc' => '編集委員向けコメント',
-                'content' => "編集委員向けコメントは著者に帰りません。\n;textarea ; 60 ; 5 ; (編集委員会向け) ",
+                'content' => "編集委員向けコメントは著者に返りません。\n;textarea ; 60 ; 5 ; (編集委員会向け) ",
             ]);
 
 
@@ -65,7 +65,7 @@ class ViewpointSeeder extends Seeder
                 'orderint' => 3,
                 'name' => 'for_meta_aec',
                 'desc' => '編集委員向けコメント',
-                'content' => "編集委員向けコメントは著者に帰りません。\n;textarea ; 60 ; 5 ; (編集委員会向け) ",
+                'content' => "編集委員向けコメントは著者に返りません。\n;textarea ; 60 ; 5 ; (編集委員会向け) ",
                 'target' => 1,
             ]);
 
@@ -74,7 +74,7 @@ class ViewpointSeeder extends Seeder
                 'orderint' => 1,
                 'name' => 'result',
                 'desc' => '措置',
-                'content' => "1：不採択、2：条件付き、3：採択\n; number ; 1 ; 3 ",
+                'content' => "; selection ; 採択 ; 条件付き ; 不採択",
                 'doReturn' => true,
                 'target' => 2,
             ]);
@@ -92,7 +92,7 @@ class ViewpointSeeder extends Seeder
                 'orderint' => 3,
                 'name' => 'for_ec_by_aec',
                 'desc' => '編集委員向けコメント',
-                'content' => "編集委員向けコメントは著者に帰りません。\n;textarea ; 60 ; 5 ; (編集委員会向け) ",
+                'content' => "編集委員向けコメントは著者に返りません。\n;textarea ; 60 ; 5 ; (編集委員会向け) ",
                 'target' => 2,
             ]);
 

@@ -2,10 +2,12 @@
     <!-- review.edit -->
     @php
         $catspans = App\Models\Category::spans();
+
+        $roleofreview = ['rev', 'meta', 'aec'];
     @endphp
     <x-slot name="header">
         <div class="mb-4">
-            <x-element.linkbutton href="{{ route('role.top', ['role' => 'rev']) }}"
+            <x-element.linkbutton href="{{ route('role.top', ['role' => $roleofreview[$review->target]]) }}"
                 color="gray" size="sm">
                 &larr; 担当査読一覧に戻る
             </x-element.linkbutton>
@@ -79,7 +81,7 @@
         </div>
 
         <div class="mb-4 my-10">
-            <x-element.linkbutton href="{{ route('role.top', ['role' => 'rev']) }}"
+            <x-element.linkbutton href="{{ route('role.top', ['role' => $roleofreview[$review->target]]) }}"
                 color="gray" size="sm">
                 &larr; 担当査読一覧に戻る
             </x-element.linkbutton>

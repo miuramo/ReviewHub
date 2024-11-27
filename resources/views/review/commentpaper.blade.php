@@ -90,9 +90,9 @@
         </div>
     </div>
     {{-- 査読スコアのサマリー表示 bb_id=null にすると、掲示板に表示したもののプライマリの名前も表示しない。 --}}
-    <div class="mx-6 mt-4">
+    {{-- <div class="mx-6 mt-4">
         <x-review.paperscores :paper_id="$paper->id" :cat_id="$paper->category_id" :bb_id=null size="lg"></x-review.paperscores>
-    </div>
+    </div> --}}
     {{-- //    プライマリの査読結果（Primary部分のみ6項目）を表示する。 --}}
     @foreach ($sub->reviews as $rev)
         <div class="m-6">

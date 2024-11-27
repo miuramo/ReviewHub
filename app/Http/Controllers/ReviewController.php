@@ -153,13 +153,6 @@ class ReviewController extends Controller
     // 査読会議でみる、詳細
     public function comment_paper(Category $cat, Paper $paper, string $token)
     {
-        if (!Category::isShowReview($cat->id)) {
-            return abort(403, 'review comment');
-        }
-        $rigais = RevConflict::arr_pu_rigai();
-        if ($rigais[$paper->id][auth()->id()] < 3) {
-            return abort(403, 'authors conflict');
-        }
         $sub = Submit::where('paper_id', $paper->id)
             ->where('category_id', $cat->id)
             ->first();
@@ -269,7 +262,7 @@ class ReviewController extends Controller
     public function update(UpdateReviewRequest $request, int $reviewid)
     {
         if ($reviewid == 0) return $request->shori_dummy(); // ダミーはかならずReviewID = 0 にする。
-        if (!auth()->user()->can('role_any', 'rev|meta')) return abort(403);
+        if (!auth()->user()->can('role_any', 'rev|meta|aec|ec')) return abort(403);
         $review = Review::find($reviewid);
         if ($review->user_id != auth()->id()) return abort(403, "THIS IS NOT YOUR REVIEW");
 

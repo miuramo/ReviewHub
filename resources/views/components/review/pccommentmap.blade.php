@@ -29,44 +29,29 @@
             <th class="p-1 bg-slate-300"> num finish</th>
             <th class="p-1 bg-slate-300"> num assign</th>
             @php
-                if ($scoreonly) {
-                    $vps = App\Models\Viewpoint::where('category_id', $cat_id)
-                        ->where('content', 'like', '%number%')
-                        ->orderBy('orderint')
-                        ->pluck('desc', 'id')
-                        ->toArray();
-                } else {
-                    $vps = App\Models\Viewpoint::where('category_id', $cat_id)
-                        ->orderBy('orderint')
-                        ->pluck('desc', 'id')
-                        ->toArray();
-                }
-                // Primary用か一般用か（scoreonlyによらず、配列[vp_id]にいれる）
-                $vpsismeta[1] = App\Models\Viewpoint::where('category_id', $cat_id)
-                    ->orderBy('orderint')
-                    ->pluck('target', 'id')
-                    ->toArray();
-                $vpsismeta[0] = App\Models\Viewpoint::where('category_id', $cat_id)
-                    ->orderBy('orderint')
-                    ->pluck('target', 'id')
-                    ->toArray();
+                $rt = ['査読者','メタ','幹事'];
                 if (count($subs) > 0) {
                     $sub = $subs[0];
                 }
                 // タイトルにリンクをつけるかどうか
-                $enableTitleLink = App\Models\Category::isShowReview($cat_id);
+                $enableTitleLink = true;
             @endphp
             @isset($sub)
                 {{--  Reviewerの数にあわせて、繰り返す。 --}}
                 @foreach ($sub->reviews as $rev)
-                    <th class="p-1 bg-slate-300"> Rev {{ $loop->index + 1 }}</th>
-                    @foreach ($vps as $id => $desc)
-                        @if ($scoreonly == 1 && strpos($desc, 'コメント') > 0)
+                    @php
+                        $vps = App\Models\Viewpoint::where('category_id', $cat_id)->where('target', $rev->target);
+                        if ($scoreonly) {
+                            $vps = $vps->where('content', 'like', '%number%');
+                        }
+                        $vps = $vps->orderBy('orderint')->get();
+                    @endphp
+                    <th class="p-1 bg-slate-300"> {{$rt[$rev->target] }}</th>
+                    @foreach ($vps as $vp)
+                        @if ($scoreonly == 1 && strpos($vp->desc, 'コメント') > 0)
                             {{-- // TODO: コメントではなく、scoreonlyなvpかどうかで判断すべき。 --}}
                         @else
-                            @if ($vpsismeta[$rev->ismeta][$id] == 1)
-                                <th class="p-1 bg-slate-300">{{ $desc }}</th>
-                            @endif
+                                <th class="p-1 bg-slate-300">{{ $vp->desc }}</th>
                         @endif
                     @endforeach
                 @endforeach
@@ -90,7 +75,7 @@
                             {{ $sub->paper->id_03d() }}
                         </td>
                         <td class="p-1 text-sm">
-                            @if ($enableTitleLink && isset($rigais[$sub->paper->id][auth()->id()]) && $rigais[$sub->paper->id][auth()->id()] > 2)
+                            @if ($enableTitleLink)
                                 <x-review.commentpaper_link :sub="$sub"></x-element.commentpaper_link>
                                 @else
                                     <span class="text-gray-400">
@@ -135,17 +120,16 @@
                     </td>
                     @foreach ($rev->scores_and_comments(0, $scoreonly) as $vpdesc => $valstr)
                         <td class="hover:bg-lime-50 transition-colors
-                            @php
-                            $colors = ['white'];
+                                                    @php
+$colors = ['white'];
                             foreach($scoremap_colors as $key => $value){
                                 if (preg_match('/'.$key.'/', $vpdesc)){
                                     $colors = $value;
                                     break;
                                 }
-                            }
-                            @endphp
-                            @if (is_numeric($valstr)) text-center @else text-xs @endif
-                            @isset($colors[intval($valstr)])) 
+                            } @endphp
+                                                    @if (is_numeric($valstr)) text-center @else text-xs @endif
+                                                    @isset($colors[intval($valstr)])) 
                             bg-{{ $colors[intval($valstr)] }}-200
                             @endif
                         ">
@@ -155,7 +139,7 @@
                 @endforeach
             </tr>
         @endisset
-    @endisset
-    @endforeach
-    </tbody>
-    </table>
+                    @endisset
+                      @endforeach
+            </tbody>
+        </table>
