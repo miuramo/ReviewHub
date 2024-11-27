@@ -8,7 +8,7 @@
 
 <x-element.h1c color="yellow" dark=300 :options="['font-bold', 'mb-0']">
     {{-- 論文 --}}
-    <x-element.paperid :paper_id="$task->submit->paper->id" />
+    <x-element.paperid size=1 :paper_id="$task->submit->paper->id" />
     <span class="mx-1"></span>
     {{-- 誰が --}}
     @php
@@ -120,8 +120,9 @@
                 <input type="hidden" name="task" value="{{ $task->id }}">
                 <input type="hidden" name="redirect_role" value="{{ $task->workflow->subject }}">
                 <x-element.submitbutton color="lime" value="assign"
-                    confirm='このタスクを完了し、次のワークフローに移行すると、戻ることはできません。本当に進めてよいですか？'>確認したことを通知する</x-element.submitbutton>
+                    confirm='このタスクを完了し、次のワークフローに移行すると、戻ることはできません。本当に進めてよいですか？'>報告者に、確認したことを通知する</x-element.submitbutton>
             </form>
+            （予定：査読報告をロックする機能をつける、再度査読を修正してもらうための掲示板をつくる）
         @elseif($task->workflow->task == 'approve')
             <form action="{{ route('task.update', ['task' => $task]) }}" method="post" class="items-center flex">
                 @csrf
@@ -144,6 +145,9 @@
                 $rev = App\Models\Review::where('paper_id', $task->submit->paper->id)
                     ->where('user_id', $task->subject->id)
                     ->first();
+                $rev1obj = $task->submit->rev1();
+                $rev2obj = $task->submit->rev2();
+                $metaobj = $task->submit->meta();
             @endphp
             @if ($rev->status == 2)
                 <div class="bg-cyan-100 px-3 pt-4">
@@ -154,18 +158,45 @@
             </x-element.paperid>
             <span class="mx-2"></span>
 
-            @if ($rev->tar)
+            @if ($rev->target == 2)
+                <x-element.linkbutton2 href="{{ route('review.edit', ['review' => $rev]) }}" color="red">
+                    Edit (総合報告)
+                </x-element.linkbutton2>
+                <span class="mx-2"></span>
+                <x-element.linkbutton href="{{ route('review.show', ['review' => $metaobj]) }}" color="green"
+                    target="meta">
+                    View Meta
+                </x-element.linkbutton>
+                <span class="mx-2"></span>
+                <x-element.linkbutton href="{{ route('review.show', ['review' => $rev1obj]) }}" color="green"
+                    target="rev1">
+                    View Rev1
+                </x-element.linkbutton>
+                <x-element.linkbutton href="{{ route('review.show', ['review' => $rev2obj]) }}" color="green"
+                    target="rev2">
+                    View Rev2
+                </x-element.linkbutton>
+            @elseif ($rev->target == 1)
                 <x-element.linkbutton2 href="{{ route('review.edit', ['review' => $rev]) }}" color="red">
                     Edit (メタ)
                 </x-element.linkbutton2>
+                <span class="mx-2"></span>
+                <x-element.linkbutton href="{{ route('review.show', ['review' => $rev1obj]) }}" color="green"
+                    target="rev1">
+                    View Rev1
+                </x-element.linkbutton>
+                <x-element.linkbutton href="{{ route('review.show', ['review' => $rev2obj]) }}" color="green"
+                    target="rev2">
+                    View Rev2
+                </x-element.linkbutton>
             @else
                 <x-element.linkbutton href="{{ route('review.edit', ['review' => $rev]) }}" color="blue">
                     Edit
                 </x-element.linkbutton>
+                <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green">
+                    View
+                </x-element.linkbutton>
             @endif
-            <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green">
-                View
-            </x-element.linkbutton>
             <span class="mx-2"></span>
 
             {{-- <x-element.bblink :rev="$rev">

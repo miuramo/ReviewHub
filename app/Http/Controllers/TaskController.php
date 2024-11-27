@@ -64,7 +64,7 @@ class TaskController extends Controller
         $jumprole = str_replace('3', '', $jumprole);
 
         if ($ret) {
-            return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.success', 'Task completed successfully');
+            return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.success', 'タスク完了しました。ご協力ありがとうございました。');
         } else {
             return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.error', 'タスク処理に失敗しました');
         }

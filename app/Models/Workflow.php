@@ -184,6 +184,7 @@ class Workflow extends Model
                 }
             }
         }
+        return true;
     }
     /**
      * 無事、承認された場合や、承認不要でプロセスが進んだ場合

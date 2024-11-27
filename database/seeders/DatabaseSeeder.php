@@ -71,25 +71,22 @@ class DatabaseSeeder extends Seeder
         ]);
 
         if (true){
-            User::factory(10)->create();
+            User::factory(20)->create();
             Role::findByIdOrName('admin')->users()->attach(2);
-            Role::findByIdOrName('ec')->users()->attach(2);
-            Role::findByIdOrName('ec')->users()->attach(3);
-            Role::findByIdOrName('aec')->users()->attach(2);
-            Role::findByIdOrName('aec')->users()->attach(3);
-            Role::findByIdOrName('aec')->users()->attach(4);
-            Role::findByIdOrName('aec')->users()->attach(5);
-            Role::findByIdOrName('manager')->users()->attach(4);
-            Role::findByIdOrName('manager')->users()->attach(5);
-            Role::findByIdOrName('meta')->users()->attach(6);
-            Role::findByIdOrName('meta')->users()->attach(7);
-            Role::findByIdOrName('meta')->users()->attach(8);
-            Role::findByIdOrName('rev')->users()->attach(7);
-            Role::findByIdOrName('rev')->users()->attach(8);
-            Role::findByIdOrName('rev')->users()->attach(9);
-            Role::findByIdOrName('rev')->users()->attach(10);
+            for($i=2;$i<=5;$i++){
+                Role::findByIdOrName('ec')->users()->attach($i);
+            }
+            for($i=4;$i<=7;$i++){
+                Role::findByIdOrName('aec')->users()->attach($i);
+            }
+            for($i=8;$i<=12;$i++){
+                Role::findByIdOrName('meta')->users()->attach($i);
+            }
+            for($i=13;$i<=20;$i++){
+                Role::findByIdOrName('rev')->users()->attach($i);
+            }
 
-            for($i=2; $i<=10; $i++){
+            for($i=2; $i<=12; $i++){
                 Paper::factory()->cat(1)->owner($i)->create();
             }
         }

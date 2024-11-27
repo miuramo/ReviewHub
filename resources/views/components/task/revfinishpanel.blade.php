@@ -3,15 +3,13 @@
 ])
 @php
     $bgcolor = ($task->approved) ? 'cyan' : 'yellow';
+    $revrole = ['rev1'=>'査読者1', 'rev2'=>'査読者2', 'rev3'=>'査読者3', 'meta'=>'メタ査読者'];
 @endphp
 <!-- components.paper.summarytable -->
 
 <div class="bg-{{$bgcolor}}-100 p-2 text-sm">
     {{-- 誰が --}}
-    @php
-        $role = App\Models\Role::findByIdOrName($task->workflow->subject);
-    @endphp
-    {{ $role->desc ?? '???' }}
+    {{ $revrole[$task->workflow->subject] }}
     <x-element.login_as :user="$task->subject" />
     が
     {{-- 何を --}}
@@ -44,3 +42,4 @@
     <span class="mx-2"></span>
     TaskID: {{ $task->id }}
 </div>
+

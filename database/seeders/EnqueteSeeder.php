@@ -15,7 +15,7 @@ class EnqueteSeeder extends Seeder
         \App\Models\Enquete::factory()->create([
             'name' => '投稿申請',
             'showonpaperindex' => true,
-            'showonreviewerindex' => true,
+            'showonreviewerindex' => false,
         ]);
 
     }
