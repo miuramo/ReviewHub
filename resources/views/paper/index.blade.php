@@ -45,33 +45,27 @@
                     <span class="text-lg font-bold text-gray-800 dark:text-slate-400">
                         {{ $paper->currentstatus->name }}
                     </span>
-                    {{-- <span class="mx-1"></span>
-                    <x-element.linkbutton href="{{ route('paper.edit', ['paper' => $paper->id]) }}" color="blue">
-                        Edit </x-element.linkbutton>
-                    <span class="mx-1"></span>
-                    <x-element.linkbutton2 href="{{ route('paper.show', ['paper' => $paper->id]) }}" color="green">
-                        View </x-element.linkbutton2> --}}
 
-                    @if ($revreturn[$paper->category_id])
+                    @if ($paper->currentsubmit->ec_decision_at != null)
                         <span class="mx-1"></span>
                         <x-element.linkbutton
                             href="{{ route('paper.review', ['paper' => $paper->id, 'token' => $paper->token()]) }}"
                             color="orange" target="_blank">
                             結果 </x-element.linkbutton>
-                        {{-- 議論掲示板があれば、ここにもリンクを表示する --}}
-                        @php
-                            $bb = App\Models\Bb::where('paper_id', $paper->id)
-                                ->where('category_id', $paper->category_id)
-                                ->where('type', 2) // 2: メタと著者 この条件を忘れると、議論用が表示されてしまうため注意
-                                ->first();
-                        @endphp
-                        @isset($bb)
-                            <span class="mx-1"></span>
-                            <x-element.linkbutton href="{{ route('bb.show', ['bb' => $bb, 'key' => $bb->key]) }}"
-                                color="pink" target="_blank">
-                                掲示板 </x-element.linkbutton>
-                        @endisset
                     @endif
+
+                    @php
+                        $bb = App\Models\Bb::where('paper_id', $paper->id)
+                            ->where('category_id', $paper->category_id)
+                            ->where('type', 2) // 2: メタと著者 この条件を忘れると、議論用が表示されてしまうため注意
+                            ->first();
+                    @endphp
+                    @isset($bb)
+                        <span class="mx-1"></span>
+                        <x-element.linkbutton href="{{ route('bb.show', ['bb' => $bb, 'key' => $bb->key]) }}" color="pink"
+                            target="_blank">
+                            掲示板 </x-element.linkbutton>
+                    @endisset
 
                     <a href="{{ route('paper.edit', ['paper' => $paper->id]) }}">
                         <x-file.paperheadimg :paper=$paper>
@@ -132,8 +126,8 @@
                     @isset($bb)
                         &nbsp;
                         &nbsp;
-                        <x-element.linkbutton href="{{ route('bb.show', ['bb' => $bb, 'key' => $bb->key]) }}"
-                            color="pink" target="_blank">
+                        <x-element.linkbutton href="{{ route('bb.show', ['bb' => $bb, 'key' => $bb->key]) }}" color="pink"
+                            target="_blank">
                             掲示板 </x-element.linkbutton>
                     @endisset
                 @endif
