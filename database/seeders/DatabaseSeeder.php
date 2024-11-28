@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
             ]);
             User::factory()->create([
                 'name' => "当麻 哲哉",   //'First User',
-                'email' => "jcs-editorial@googlegroups.com", //'firstuser@example.com',
+                'email' => "miura@moto.qee.jp", //'firstuser@example.com',
                 'affil' => "慶應義塾大学", //'Example',
                 'password' => Hash::make('jcs'),
             ]);
