@@ -261,32 +261,3 @@ class Workflow extends Model
     }
 }
 
-    // /**
-    //  * 割り当てた人に打診する。
-    //  */
-    // public function approved(Task $task, Request $req)
-    // {
-    //     $task->object_id = $req->object_id;
-    //     $task->completed = 1;
-    //     $task->completed_at = now();
-    //     $task->save();
-    //     // submitのstatusを更新
-    //     $task->submit->updateStatus();
-
-    //     // 次のタスクのsubjectを設定
-    //     $ntask = Task::find($task->next);
-    //     $ntask->subject_id = $task->object_id;
-    //     $ntask->save();
-
-    //     if ($task->next2) {
-    //         $ntask = Task::find($task->next2);
-    //         $ntask->subject_id = $task->object_id;
-    //         $ntask->save();
-    //     }
-    //     if ($task->next3) {
-    //         $ntask = Task::find($task->next3);
-    //         $ntask->subject_id = $task->object_id;
-    //         $ntask->save();
-    //     }
-    //     return true;
-    // }

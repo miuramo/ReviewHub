@@ -11,11 +11,19 @@ class Bb extends Model
 {
     use HasFactory;
 
+    protected $attributes = [
+        'members' => '[]',
+    ];
+    protected $casts = [
+        'members' => 'array',
+    ];
+
     protected $fillable = [
         'name',
         'paper_id',
         'category_id',
         'type',
+        'member',
         'key',
         'needreply',
         'isopen',
@@ -42,32 +50,27 @@ class Bb extends Model
         
         return $this->hasMany(BbMes::class, 'bb_id')->count();
     }
-    public static function make_bb(int $type, int $pid, int $cid)
+    public static function make_bb($uids, int $pid, int $cid)
     {
-        $subs = [
-            1 => "rev|meta",
-            2 => "ec|meta|author",
-            3 => "pub|author",
-        ];
-        $firstmes = [
-            1 => "ここは査読者同士の事前議論掲示板です。\n査読者は自身を名乗らないでください。必要があればRevIDを用いてください。RevIDは送信フォームに表示されています。\n（RevIDが表示されていない場合は、査読を担当していません。）\n注：RevIDは査読者のIDではなく、査読割当てごとに異なるIDです。",
-            2 => "ここはメタ査読者と著者の掲示板です。（プログラム委員長も閲覧できます。）",
-            3 => "ここは出版担当と著者の掲示板です。",
-        ];
+
+        // $firstmes = [
+        //     1 => "ここは査読者同士の事前議論掲示板です。\n査読者は自身を名乗らないでください。必要があればRevIDを用いてください。RevIDは送信フォームに表示されています。\n（RevIDが表示されていない場合は、査読を担当していません。）\n注：RevIDは査読者のIDではなく、査読割当てごとに異なるIDです。",
+        //     2 => "ここはメタ査読者と著者の掲示板です。（プログラム委員長も閲覧できます。）",
+        //     3 => "ここは出版担当と著者の掲示板です。",
+        // ];
         $bb = Bb::firstOrCreate([
             'paper_id' => $pid,
             'category_id' => $cid,
-            'type' => $type,
+            'members' => $uids,
         ], [
             'key' => Str::random(30),
-            'subscribers' => $subs[$type],
         ]);
         $mes = BbMes::firstOrCreate([
             'bb_id' => $bb->id,
         ], [
             'user_id' => 0,
             'subject' => 'ごあんない',
-            'mes' => $firstmes[$type],
+            'mes' => "掲示板を開設しました。",
         ]);
         return Bb::with("messages")->with("paper")->with("category")->find($bb->id);
     }
@@ -96,73 +99,44 @@ class Bb extends Model
     {
         $tolist = [];
         $bcclist = [];
-        $subary = explode("|", trim($this->subscribers));
 
-        //利害関係配列
-        $rigais = RevConflict::arr_pu_rigai();
-
-        foreach($subary as $role){
-            if ($role=="author"){
-                $to_cc_list = $this->paper->get_mail_to_cc();
-                $tolist[] = $to_cc_list['to'];
-                $bcclist = array_merge($bcclist, $to_cc_list['cc']);
-            } else if ($role=="pc" || $role=="pub"){
-                $role = Role::findByIdOrName($role);
-                foreach($role->users as $u){
-                    if ( isset($rigais[$this->paper_id][$u->id]) && $rigais[$this->paper_id][$u->id]<3 ) continue; //利害or共著
-                    // 出版掲示板ならば、利害関係者であっても送信してよいという考え方はある。ただ、通常はauthor(cc)で追加されるはずなので、ここで特別な処理をする必要はない。
-                    $bcclist[] = $u->email;
-                }
-            } else if ($role=="meta" || $role=="rev"){
-                $revuids = Review::where("paper_id", $this->paper_id)->where("category_id",$this->category_id)->where("target", $role=="meta"?1:0)->pluck("user_id", "id")->toArray();
-                $revus = User::whereIn("id", $revuids)->get();
-                foreach($revus as $u){
-                    if ($this->type == 1 && $role=="meta"){ //査読者同士の事前議論掲示板のときは、to:metaになる。 (メタと著者の掲示板のときは、to: author になるので、metaはbccに加わる。)
-                        $tolist[] = $u->email;
-                    } else {
-                        $bcclist[] = $u->email;
-                    }
-                }
-            }
-        }
-        // 保険のため、もしtolistが空だった場合は、個別に送信する
-        if (count($tolist)==0){
-            return ["separate_to" => $bcclist];
+        foreach($this->members as $u){
+            $tolist[] = $u->email;
         }
         return ["to" => $tolist, "bcc" => $bcclist ];
     }
 
-    public function get_reviewers()
-    {
-        $revuids = Review::where("paper_id", $this->paper_id)->where("category_id",$this->category_id)->where("target", 0)->pluck("user_id", "id")->toArray();
-        return User::whereIn("id", $revuids)->get();
-    }
-    public function revuid2rev()
-    {
-        $revuid2rev = Review::where("paper_id", $this->paper_id)->where("category_id",$this->category_id)->where("target", 0)->pluck("id", "user_id")->toArray();
-        return $revuid2rev;
-    }
-    public function ismeta_myself()
-    {
-        // 自分がメタ査読者かどうかを返す
-        $rev = Review::where("paper_id", $this->paper_id)->where("category_id", $this->category_id)->where("user_id", auth()->id())->where("target", 1)->first();
-        return $rev != null;
-    }
-    public function metauser()
-    {
-        // メタ査読者を返す
-        $rev = Review::where("paper_id", $this->paper_id)->where("category_id", $this->category_id)->where("target", 1)->first();
-        return $rev->user;
-    }
+    // public function get_reviewers()
+    // {
+    //     $revuids = Review::where("paper_id", $this->paper_id)->where("category_id",$this->category_id)->where("target", 0)->pluck("user_id", "id")->toArray();
+    //     return User::whereIn("id", $revuids)->get();
+    // }
+    // public function revuid2rev()
+    // {
+    //     $revuid2rev = Review::where("paper_id", $this->paper_id)->where("category_id",$this->category_id)->where("target", 0)->pluck("id", "user_id")->toArray();
+    //     return $revuid2rev;
+    // }
+    // public function ismeta_myself()
+    // {
+    //     // 自分がメタ査読者かどうかを返す
+    //     $rev = Review::where("paper_id", $this->paper_id)->where("category_id", $this->category_id)->where("user_id", auth()->id())->where("target", 1)->first();
+    //     return $rev != null;
+    // }
+    // public function metauser()
+    // {
+    //     // メタ査読者を返す
+    //     $rev = Review::where("paper_id", $this->paper_id)->where("category_id", $this->category_id)->where("target", 1)->first();
+    //     return $rev->user;
+    // }
 
-    /**
-     * ユーザIDから、シェファーディング掲示板を取得する
-     */
-    public static function getShepherdingBbs($user_id)
-    {
-        // get all meta reviews
-        $metarev_pids = Review::where('user_id', $user_id)->where('target', 1)->get()->pluck('paper_id')->toArray();
-        return Bb::whereIn('paper_id', $metarev_pids)->where('type', 2)->get();
-    }
+    // /**
+    //  * ユーザIDから、シェファーディング掲示板を取得する
+    //  */
+    // public static function getShepherdingBbs($user_id)
+    // {
+    //     // get all meta reviews
+    //     $metarev_pids = Review::where('user_id', $user_id)->where('target', 1)->get()->pluck('paper_id')->toArray();
+    //     return Bb::whereIn('paper_id', $metarev_pids)->where('type', 2)->get();
+    // }
 
 }
