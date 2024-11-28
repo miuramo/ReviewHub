@@ -53,23 +53,12 @@ class BbController extends Controller
     public function store(Request $req)
     {
         if (!auth()->user()->can('role_any', 'admin|manager|ce')) abort(403);
-        $catid = $req->input("catid");
-        $type = $req->input("type");
+        // $catid = $req->input("catid");
+        // $type = $req->input("type");
         $pids = trim($req->input("pids"));
-        if ($pids == "all") {
-            $ary = MailTemplate::mt_category($catid); // return: array of paperobj
-        } else if ($pids == "accepted") {
-            $ary = MailTemplate::mt_accept($catid); // return: array of paperobj
-        } else {
-            $ary = Paper::whereIn('id', explode(",", $pids))->get();
-        }
+        $ary = Paper::whereIn('id', explode(",", $pids))->get();
         foreach ($ary as $n => $paper) {
-            Bb::make_bb($type, $paper->id, $catid);
-        }
-        // 出版担当からの作成のとき 1
-        $for_pub = $req->input("for_pub");
-        if ($for_pub){
-            return redirect()->route('bb.index_for_pub')->with('feedback.success', "作成しました。");
+            Bb::make_bb($paper->currentsubmit);
         }
         return redirect()->route('bb.index')->with('feedback.success', "作成しました。");
     }

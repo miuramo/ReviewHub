@@ -21,7 +21,7 @@ class Bb extends Model
     protected $fillable = [
         'name',
         'paper_id',
-        'category_id',
+        'submit_id',
         'type',
         'member',
         'key',
@@ -35,9 +35,9 @@ class Bb extends Model
     {
         return $this->belongsTo(Paper::class, 'paper_id');
     }
-    public function category()
+    public function submit()
     {
-        return $this->belongsTo(Category::class, 'category_id');
+        return $this->belongsTo(Category::class, 'submit_id');
     }
     public function messages()
     {
@@ -46,22 +46,18 @@ class Bb extends Model
 
     public function nummessages()
     {
-        // メッセージの数を返す
-        
+        // メッセージの数を返す        
         return $this->hasMany(BbMes::class, 'bb_id')->count();
     }
-    public static function make_bb($uids, int $pid, int $cid)
+    public static function make_bb(Submit $sub)
     {
-
-        // $firstmes = [
         //     1 => "ここは査読者同士の事前議論掲示板です。\n査読者は自身を名乗らないでください。必要があればRevIDを用いてください。RevIDは送信フォームに表示されています。\n（RevIDが表示されていない場合は、査読を担当していません。）\n注：RevIDは査読者のIDではなく、査読割当てごとに異なるIDです。",
         //     2 => "ここはメタ査読者と著者の掲示板です。（プログラム委員長も閲覧できます。）",
         //     3 => "ここは出版担当と著者の掲示板です。",
-        // ];
         $bb = Bb::firstOrCreate([
-            'paper_id' => $pid,
-            'category_id' => $cid,
-            'members' => $uids,
+            'paper_id' => $sub->paper_id,
+            'submit_id' => $sub->id,
+            // 'members' => $uids,
         ], [
             'key' => Str::random(30),
         ]);

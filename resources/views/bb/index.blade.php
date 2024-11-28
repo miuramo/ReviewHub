@@ -60,18 +60,6 @@
         <form action="{{ route('bb.createnew') }}" method="post" id="bb_new">
             @csrf
             @method('post')
-            <div class="">
-                <label>掲示板をまとめて作成する発表の対象カテゴリ</label>
-            </div>
-            <div class="px-2 py-2">
-                @php
-                    $cats = App\Models\Category::select('id', 'name')->get()->pluck('name', 'id')->toArray();
-                @endphp
-                @foreach ($cats as $val => $lbl)
-                    <input type="radio" name="catid" value="{{ $val }}" id="cat{{ $val }}">
-                    <label for="cat{{ $val }}" class="mr-3">{{ $lbl }}</label>
-                @endforeach
-            </div>
             <div class="mb-1">
                 <label for="pids">掲示板をまとめて作成する Paper ID List (カンマ区切り) / all / accepted</label>
             </div>
@@ -85,7 +73,6 @@
                     <input type="radio" name="type" value="{{ $val }}" id="rad{{ $val }}">
                     <label for="rad{{ $val }}" class="mr-3">{{ $lbl }}</label>
                 @endforeach
-
             </div>
             <div>
                 <x-element.submitbutton value="submit" color="yellow">作成
