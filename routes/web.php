@@ -88,7 +88,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/paper/{paper}/enq/{enq}', [EnqueteController::class, 'show'])->name('enquete.pageview');
     Route::put('/paper/{paper}/enq/{enq}', [EnqueteController::class, 'update'])->name('enquete.update');
     //査読結果
-    Route::get('/paper/{paper}/review/{token}', [PaperController::class, 'review'])->name('paper.review'); // 著者に返る査読結果
+    Route::get('/paper_reviewresult/{sub}/{token}', [PaperController::class, 'review'])->name('paper.review'); // 著者に返る査読結果
+    Route::get('/paper_confirmreviewresult/{sub}/{token}', [PaperController::class, 'confirmreview'])->name('paper.confirmreview'); // 著者に返る査読結果の確認
     //ドラッグ範囲選択
     Route::get('/paper/{paper}/dt', [PaperController::class, 'dragontext'])->name('paper.dragontext');
     Route::post('/paper/{paper}/dtpost', [PaperController::class, 'dragontextpost'])->name('paper.dragontextpost');
@@ -125,6 +126,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin_hiroba_excel', [AdminController::class, 'hiroba_excel'])->name('admin.hiroba_excel');
     Route::get('/admin_filelist', [AdminController::class, 'filelist'])->name('admin.filelist');
     Route::get('admin_paper/{paper}/edit', [AdminController::class, 'paper_edit'])->name('admin.paper_edit'); //ECが操作
+    Route::put('/admin_submit_proceed/{sub}', [ManagerController::class, 'submit_proceed'])->name('manage.submit_proceed');
 
     Route::get('sub/{sub}/show', [SubmitController::class, 'show'])->name('sub.show'); // 査読管理
 

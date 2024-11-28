@@ -3,7 +3,7 @@
 ])
 @php
     $bgcolor = $task->approved ? 'cyan' : 'yellow';
-    $revrole = ['rev1' => '査読者1', 'rev2' => '査読者2', 'rev3' => '査読者3', 'meta' => 'メタ査読者'];
+    $revrole = ['rev1' => '査読者1', 'rev2' => '査読者2', 'rev3' => '査読者3', 'meta' => 'メタ査読者', 'ec'=>'編集長', 'aec'=>'幹事'];
 @endphp
 <!-- components.paper.summarytable -->
 

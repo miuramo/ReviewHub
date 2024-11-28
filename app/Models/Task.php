@@ -174,4 +174,73 @@ class Task extends Model
         // 配列の最後の要素を取得
         return $ary[count($ary) - 1]['comment'];
     }
+
+    public function random_proceed()
+    {
+        // いい感じに進める
+        // もし割り当てタスクなら
+        if ($this->workflow->task == "assign"){
+            $rolename = $this->workflow->obj_role_name();
+            while(true){
+                $u_random = Role::findByIdOrName($rolename)->users()->get()->random();
+                if ($u_random->id > 2) break;
+            }
+            $this->object_id = $u_random->id;
+            $this->completed = 1;
+            $this->completed_at = $now = (new DateTime())->format('Y-m-d H:i:s');
+            $this->require_approve = 0;
+            $this->save();
+            $this->task_approved();
+            $this->refresh();
+            $this->workflow->assign_forward($this, $this->object_id); // 割り当て
+            $this->workflow->proceed_workflow($this); //承認が得られたので、ワークフローを介して、次のタスクに進む
+        } else if ($this->workflow->task == "submit"){
+            $this->completed = 1;
+            $this->completed_at = $now = (new DateTime())->format('Y-m-d H:i:s');
+            $this->require_approve = 0;
+            $this->save();
+            $this->task_approved();
+            $this->refresh();
+            $this->workflow->assign_forward($this, $this->object_id); // 割り当て
+            $this->workflow->proceed_workflow($this); //承認が得られたので、ワークフローを介して、次のタスクに進む
+        } else if ($this->workflow->task == "confirm"){
+            $this->completed = 1;
+            $this->completed_at = $now = (new DateTime())->format('Y-m-d H:i:s');
+            $this->require_approve = 0;
+            $this->save();
+            $this->task_approved();
+            $this->refresh();
+            $this->workflow->assign_forward($this, $this->object_id); // 割り当て
+            $this->workflow->proceed_workflow($this); //承認が得られたので、ワークフローを介して、次のタスクに進む
+        } else { // approved 最後のタスク
+            $this->completed = 1;
+            $this->completed_at = $now = (new DateTime())->format('Y-m-d H:i:s');
+            $this->require_approve = 0;
+            $this->approved_at = $now;
+            $this->approved = 1;
+            $this->save();
+            $this->refresh();
+            $this->submit->ec_decision_at = (new DateTime())->format('Y-m-d');
+            $this->submit->save();
+            $this->workflow->proceed_workflow($this); //承認が得られたので、ワークフローを介して、次のタスクに進む ここで submit->paper->status_id = 9 にする。
+        }
+    }
+
+    public function setDecision()
+    {
+        // 自動タスク進行で、もし幹事の措置が空の場合、または、条件付きの場合、査読結果を条件付きにする
+        $result = $this->submit->getReviewResult("result");
+        if ($result == null || strpos($result,"条件付き") !== false){
+            $this->submit->accept_id = 2; //条件付き
+        } elseif (strpos($result,"採") === 0){
+            $this->submit->accept_id = 1; //採録
+        } elseif (strpos($result,"不") === 0){
+            $this->submit->accept_id = 6; //不採録
+        }
+        $this->submit->save();
+
+        $this->submit->paper->status_id = 9; //査読結果通知済み
+        $this->submit->paper->save();
+    }
+
 }

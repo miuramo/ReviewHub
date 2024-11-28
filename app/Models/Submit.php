@@ -71,16 +71,23 @@ class Submit extends MetaModel
         return true;
     }
 
-    public function updateStatus()
-    {
-        if ($this->rev1()->user_id != null && $this->rev2()->user_id != null) {
-            $this->paper->status_id = 5;
-            $this->paper->save();
-        } else if ($this->meta()->user_id != null) {
-            $this->paper->status_id = 4;
-            $this->paper->save();
-        }
+    public function getReviewResult($key){
+        $vpid = Viewpoint::where('name', $key)->first()->id;
+        $score = Score::where('viewpoint_id', $vpid)->first();
+        if ($score == null) return null;
+        return $score->valuestr;
     }
+
+    // public function updateStatus()
+    // {
+        // if ($this->rev1()->user_id != null && $this->rev2()->user_id != null) {
+        //     $this->paper->status_id = 5;
+        //     $this->paper->save();
+        // } else if ($this->meta()->user_id != null) {
+        //     $this->paper->status_id = 4;
+        //     $this->paper->save();
+        // }
+    // }
 
     public function init_reviews()
     {

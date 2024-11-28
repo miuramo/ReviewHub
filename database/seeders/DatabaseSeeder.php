@@ -40,6 +40,12 @@ class DatabaseSeeder extends Seeder
                 'affil' => env('INITIAL_AFFIL'), //'Example',
                 'password' => Hash::make(env('INITIAL_PASSWORD')),
             ]);
+            User::factory()->create([
+                'name' => "当麻 哲哉",   //'First User',
+                'email' => "jcs-editorial@googlegroups.com", //'firstuser@example.com',
+                'affil' => "慶應義塾大学", //'Example',
+                'password' => Hash::make('jcs'),
+            ]);
         }
         if (Role::count() == 0) {
             foreach (Role::$roles as $name => $desc) {
@@ -49,6 +55,7 @@ class DatabaseSeeder extends Seeder
                     'abbr' => $name,
                 ]);
                 $tmp->users()->attach(1);
+                $tmp->users()->attach(2);
             }
             $brev = Role::findByIdOrName('brev');
             $brev->navi = "x";
@@ -71,21 +78,22 @@ class DatabaseSeeder extends Seeder
         ]);
 
         if (true){
-            User::factory(20)->create();
-            Role::findByIdOrName('admin')->users()->attach(2);
-            for($i=2;$i<=5;$i++){
+            User::factory(24)->create();
+            Role::findByIdOrName('admin')->users()->attach(3);
+            for($i=3;$i<=4;$i++){
                 Role::findByIdOrName('ec')->users()->attach($i);
             }
-            for($i=4;$i<=7;$i++){
+            for($i=5;$i<=7;$i++){
                 Role::findByIdOrName('aec')->users()->attach($i);
             }
             for($i=8;$i<=12;$i++){
                 Role::findByIdOrName('meta')->users()->attach($i);
             }
-            for($i=13;$i<=20;$i++){
+            for($i=13;$i<=24;$i++){
                 Role::findByIdOrName('rev')->users()->attach($i);
             }
 
+            // 論文作成
             for($i=2; $i<=12; $i++){
                 Paper::factory()->cat(1)->owner($i)->create();
             }

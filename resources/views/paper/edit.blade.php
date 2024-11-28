@@ -20,6 +20,9 @@
             <span class="mx-1"></span>
 
             <span class="text-lg font-bold text-gray-800 dark:text-slate-400">
+                @if( $paper->currentsubmit->round > 1)
+                （{{ $paper->currentsubmit->round}}回目）
+                @endif
                 {{ $paper->currentstatus->name }}
             </span>
 
@@ -73,58 +76,46 @@
             </x-alert.error>
         @endif
 
-
-        @php
-            $submit_finished = false;
-
-            // 査読結果が採択、または、デモ希望がある場合は、カメラレディ提出が必要(WISS)
-            $result_accepted = $paper->submits->where('status', 'accepted')->count();
-            // ただし、デモ希望があっても、査読前に申請したものの場合は、通らない場合がある。
-            $demo_ifaccepted = $paper->demo_ifaccepted();
-            $need_camera_ready = ($result_accepted || $demo_ifaccepted) && $revreturn[$paper->category_id];
-        @endphp
-        {{-- 最初のsuccess がなく、かつ、エラーがあれば --}}
-        @if ((count($fileerrors) > 0 || count($enqerrors) > 0) && !session('feedback.success'))
-            {{-- もし、査読結果を返している段階なら、投稿は完了しているので、違うメッセージを表示する --}}
-            @if ($revreturn[$paper->category_id])
-                @if ($need_camera_ready)
-                    <x-alert.warning>{{ $cat->name_of_cameraready }}提出期限までに必要となる以下の入力・操作について、ご確認ください。</x-alert.warning>
-                @else
-                    <x-alert.warning>投稿いただき、ありがとうございました。（{{ $cat->name_of_cameraready }}の提出をされない場合、以下の指示への対応は基本的に不要です。）</x-alert.warning>
-                @endif
-            @else
-                @if ($revedit_on[$paper->category_id])
-                    <x-alert.warning>現在査読中です。</x-alert.warning>
-                @else
-                    <x-alert.error2>投稿はまだ完了していません。</x-alert.error2>
-                @endif
-            @endif
-        @endif
-
         {{-- ファイルエラーは、投稿フェーズに関係なく、表示して大丈夫 --}}
         @foreach ($fileerrors as $er)
             <x-alert.error>{{ $er }}</x-alert.error>
         @endforeach
         {{-- アンケートエラーは、査読中は表示しない。査読中とは、revedit_on が true かつ、revreturn が false のとき。 --}}
-        @php
-            // 査読中かどうか
-            $is_reviewing = $revedit_on[$paper->category_id] && !$revreturn[$paper->category_id];
-        @endphp
+
         @if (count($fileerrors) == 0)
             @if (count($enqerrors) > 0)
                 {{-- 査読中ではなく、かつ、（査読後で採択があるか、またはまだ査読前）なら、エラーを表示する --}}
-                @if (!$is_reviewing && ($need_camera_ready || !$revedit_on[$paper->category_id]))
-                    @foreach ($enqerrors as $er)
-                        @if ($loop->iteration < 4)
-                            <x-alert.error>{{ $er }}</x-alert.error>
-                        @endif
-                    @endforeach
-                    @if (count($enqerrors) > 3)
-                        <x-alert.error>（このほかに、ご回答いただく項目が、{{ count($enqerrors) - 3 }}項目あります。）</x-alert.error>
+                @foreach ($enqerrors as $er)
+                    @if ($loop->iteration < 4)
+                        <x-alert.error>{{ $er }}</x-alert.error>
                     @endif
+                @endforeach
+                @if (count($enqerrors) > 3)
+                    <x-alert.error>（このほかに、ご回答いただく項目が、{{ count($enqerrors) - 3 }}項目あります。）</x-alert.error>
                 @endif
             @else
-                <x-alert.success>投稿に必要なファイルと情報は、そろっています。<br>さいごに「投稿完了通知メールを送信」を押してください。</x-alert.success>
+                @if ($paper->currentsubmit->ec_decision_at)
+                    <x-alert.success>
+                        @php
+                            $sub = $paper->currentsubmit;
+                        @endphp
+                        <x-element.linkbutton
+                            href="{{ route('paper.review', ['sub' => $sub->id, 'token' => $paper->token()]) }}"
+                            color="orange" target="_blank">
+                            第{{ $sub->round }}回 査読結果 </x-element.linkbutton>
+                        をご確認ください。
+
+                        @if ($sub->notify_at == null)
+                            確認がおわったら、
+                            <x-sub.confirm_review_link :sub="$sub">査読結果を確認した</x-sub.confirm_review_link>
+                            をおしてください。
+                        @endif
+                    </x-alert.success>
+                @elseif ($paper->locked)
+                    <x-alert.success>投稿はロックされています。編集はできませんが、情報の確認は可能です。</x-alert.success>
+                @else
+                    <x-alert.success>投稿に必要なファイルと情報は、そろっています。<br>さいごに「投稿完了通知メールを送信」を押してください。</x-alert.success>
+                @endif
                 @php
                     $submit_finished = true;
                 @endphp
@@ -133,20 +124,23 @@
 
         <div class="py-2 px-6">
             <div class="m-6">
-                <x-element.h1>ファイルをアップロードするには <span class="bg-lime-200 text-green-700 px-1 dark:bg-lime-500">Drop Files
-                        Here</span> にドラッグ＆ドロップしてください。
-                    <div class="text-sm mx-4 mt-2">
-                        複数のファイルをまとめてアップロードできます。ファイル種別（論文／回答書／etc.）はアップロード後に選択していただきます。
-                        @php
-                            $gendo = array_map('intval', explode('-', $cat->pdf_accept_end));
-                        @endphp
-                        {{-- <x-element.gendospan>{{ $gendo[0] }}月{{ $gendo[1] }}日まで修正可</x-element.gendospan> --}}
-                    </div>
-                </x-element.h1>
+                @if (!$paper->locked)
+                    <x-element.h1>ファイルをアップロードするには <span class="bg-lime-200 text-green-700 px-1 dark:bg-lime-500">Drop
+                            Files
+                            Here</span> にドラッグ＆ドロップしてください。
+                        <div class="text-sm mx-4 mt-2">
+                            複数のファイルをまとめてアップロードできます。ファイル種別（論文／回答書／etc.）はアップロード後に選択していただきます。
+                            @php
+                                $gendo = array_map('intval', explode('-', $cat->pdf_accept_end));
+                            @endphp
+                            {{-- <x-element.gendospan>{{ $gendo[0] }}月{{ $gendo[1] }}日まで修正可</x-element.gendospan> --}}
+                        </div>
+                    </x-element.h1>
 
-                <div class="py-4 px-6">
-                    <x-element.filedropzone color="lime" :paper_id="$id"></x-element.filedropzone>
-                </div>
+                    <div class="py-4 px-6">
+                        <x-element.filedropzone color="lime" :paper_id="$id"></x-element.filedropzone>
+                    </div>
+                @endif
 
                 <form action="{{ route('file.updateinfo') }}" method="post" id="file_updateinfo_form">
                     @csrf
@@ -163,92 +157,78 @@
             </div>
 
             @if (!$paper->locked)
-            <x-paper.authorlist :paper="$paper">
-            </x-paper.authorlist>
-        @endif
-
-
-        @if ($cat->show_bibinfo_btn && !$is_reviewing)
-                <div class="m-6">
-
-
-
-                    <x-element.h1>
-                        PDFファイルをアップロードしたあとで、 <x-element.linkbutton
-                            href="{{ route('paper.dragontext', ['paper' => $paper->id]) }}" color="blue"
-                            size="md">
-                            書誌情報の設定
-                        </x-element.linkbutton>
-                        から、題名（和文・英文）を設定してください。
-                        @if ($paper->locked)
-                            <span class="text-red-500 dark:text-red-400">（現在、投稿はロックされているため、書誌情報の設定はできません。）</span>
-                        @endif
-                        <div
-                            class="text-lg mt-2 ml-6 p-1 bg-slate-200 rounded-lg dark:bg-slate-800 dark:text-slate-400">
-                            現在設定されている書誌情報の確認
-                            {{-- <x-element.gendospan>採択後に入力</x-element.gendospan> --}}
-                        </div>
-                        <div class="text-md mx-6 mt-0">
-                            <table class="border-cyan-500 border-2">
-                                @foreach ($koumoku as $k => $v)
-                                    <tr
-                                        class="{{ $loop->iteration % 2 === 1 ? 'bg-cyan-50' : 'bg-white dark:bg-cyan-100' }}">
-                                        <td class="px-2 py-1 whitespace-nowrap">{{ $v }}</td>
-                                        @if (strlen($paper->{$k}) < 2)
-                                            <td class="px-2 py-1 text-red-600 font-bold"
-                                                id="confirm_{{ $k }}">（未設定）</td>
-                                        @else
-                                            <td class="px-2 py-1" id="confirm_{{ $k }}">
-                                                {!! nl2br($paper->{$k}) !!}</td>
-                                        @endif
-                                    </tr>
-                                @endforeach
-                            </table>
-
-                            {{-- <div class="mt-2 text-sm px-2  dark:text-gray-400">注：和文著者名の書き方は、以下の例に合わせてください。詳細は
-                                [書誌情報の設定]→[和文著者名の設定方法を表示] を参照してください。</div>
-                            <textarea id="jpex" name="jpexample" rows="3"
-                                class="inline-flex mb-1 block p-2.5 w-full text-md text-gray-900 bg-gray-200 rounded-lg border border-gray-300
-                             focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400
-                              dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                placeholder="投稿 太郎 (投稿大学)&#10;和布蕪 二郎 (和布蕪大学)&#10;昆布 巻子 (ダシ大学/昆布研究所)" readonly></textarea> --}}
-
-                        </div>
-                    </x-element.h1>
-                </div>
+                <x-paper.authorlist :paper="$paper">
+                </x-paper.authorlist>
             @endif
 
 
             <div class="m-6">
+
+
+
+                <x-element.h1>
+                    PDFファイルをアップロードしたあとで、 <x-element.linkbutton
+                        href="{{ route('paper.dragontext', ['paper' => $paper->id]) }}" color="blue" size="md">
+                        書誌情報の設定
+                    </x-element.linkbutton>
+                    から、題名（和文・英文）を設定してください。
+                    @if ($paper->locked)
+                        <span class="text-red-500 dark:text-red-400">（現在、投稿はロックされているため、書誌情報の設定はできません。）</span>
+                    @endif
+                    <div class="text-lg mt-2 ml-6 p-1 bg-slate-200 rounded-lg dark:bg-slate-800 dark:text-slate-400">
+                        現在設定されている書誌情報の確認
+                        {{-- <x-element.gendospan>採択後に入力</x-element.gendospan> --}}
+                    </div>
+                    <div class="text-md mx-6 mt-0">
+                        <table class="border-cyan-500 border-2">
+                            @foreach ($koumoku as $k => $v)
+                                <tr
+                                    class="{{ $loop->iteration % 2 === 1 ? 'bg-cyan-50' : 'bg-white dark:bg-cyan-100' }}">
+                                    <td class="px-2 py-1 whitespace-nowrap">{{ $v }}</td>
+                                    @if (strlen($paper->{$k}) < 2)
+                                        <td class="px-2 py-1 text-red-600 font-bold" id="confirm_{{ $k }}">
+                                            （未設定）</td>
+                                    @else
+                                        <td class="px-2 py-1" id="confirm_{{ $k }}">
+                                            {!! nl2br($paper->{$k}) !!}</td>
+                                    @endif
+                                </tr>
+                            @endforeach
+                        </table>
+
+                    </div>
+                </x-element.h1>
+            </div>
+
+
+            <div class="m-6">
                 {{-- 査読中は、編集可能なアンケートは表示しない。（査読結果を返すタイミングでの設定変更が難しいため） --}}
-                @if (!$is_reviewing)
-                    @foreach ($enqs['canedit'] as $enq)
-                        <div class="text-lg mt-5 mb-1 p-3 bg-slate-200 rounded-lg dark:bg-slate-800 dark:text-gray-400">
-                            {{ $enq->name }}
-                            @if (!$enq->showonpaperindex)
-                                &nbsp; → <x-element.linkbutton
-                                    href="{{ route('enquete.pageedit', ['paper' => $paper, 'enq' => $enq]) }}"
-                                    color="cyan">
-                                    ここをクリックして回答
-                                </x-element.linkbutton>
-                            @endif
-                            {{-- <x-element.gendospan>{{ $enqs['until'][$enq->id] }}まで修正可</x-element.gendospan> --}}
-                        </div>
-                        @if ($enq->showonpaperindex)
-                            <form action="{{ route('enquete.update', ['paper' => $paper->id, 'enq' => $enq]) }}"
-                                method="post" id="enqform{{ $enq->id }}">
-                                @csrf
-                                @method('put')
-                                <input type="hidden" name="paper_id" value="{{ $paper->id }}">
-                                <input type="hidden" name="enq_id" value="{{ $enq->id }}">
-                                <div class="mx-10">
-                                    <x-enquete.edit :enq="$enq" :enqans="$enqans">
-                                    </x-enquete.edit>
-                                </div>
-                            </form>
+                @foreach ($enqs['canedit'] as $enq)
+                    <div class="text-lg mt-5 mb-1 p-3 bg-slate-200 rounded-lg dark:bg-slate-800 dark:text-gray-400">
+                        {{ $enq->name }}
+                        @if (!$enq->showonpaperindex)
+                            &nbsp; → <x-element.linkbutton
+                                href="{{ route('enquete.pageedit', ['paper' => $paper, 'enq' => $enq]) }}"
+                                color="cyan">
+                                ここをクリックして回答
+                            </x-element.linkbutton>
                         @endif
-                    @endforeach
-                @endif
+                        {{-- <x-element.gendospan>{{ $enqs['until'][$enq->id] }}まで修正可</x-element.gendospan> --}}
+                    </div>
+                    @if ($enq->showonpaperindex)
+                        <form action="{{ route('enquete.update', ['paper' => $paper->id, 'enq' => $enq]) }}"
+                            method="post" id="enqform{{ $enq->id }}">
+                            @csrf
+                            @method('put')
+                            <input type="hidden" name="paper_id" value="{{ $paper->id }}">
+                            <input type="hidden" name="enq_id" value="{{ $enq->id }}">
+                            <div class="mx-10">
+                                <x-enquete.edit :enq="$enq" :enqans="$enqans">
+                                </x-enquete.edit>
+                            </div>
+                        </form>
+                    @endif
+                @endforeach
                 @foreach ($enqs['readonly'] as $enq)
                     <div class="text-lg mt-5 mb-1 p-3 bg-slate-200 rounded-lg dark:bg-slate-800 dark:text-slate-400">
                         {{ $enq->name }}

@@ -84,7 +84,7 @@
                             </x-dropdown-link>
 
                             <x-responsive-nav-link :href="route('role.index')">
-                                {{ __('Roles') }}
+                                {{ __('Switch User') }}
                             </x-responsive-nav-link>
 
                             

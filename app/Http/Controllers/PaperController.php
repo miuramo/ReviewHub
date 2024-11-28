@@ -12,7 +12,9 @@ use App\Models\EnqueteAnswer;
 use App\Models\File;
 use App\Models\Paper;
 use App\Models\Setting;
+use App\Models\Submit;
 use App\Models\User;
+use DateTime;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -344,19 +346,54 @@ class PaperController extends Controller
         return redirect()->route('paper.index')->with('feedback.success', '投稿情報と関連ファイルを削除しました');
     }
 
+    /**
+     * Subからの、査読結果の表示
+     * @param string $id Submit ID
+     */
     public function review(string $id, string $token)
     {
-        $paper = Paper::findOrFail($id);
+        $sub = Submit::findOrFail($id);
         if (!auth()->user()->can('role_any', 'ec|aec|rev|meta')) {
-            if (!Gate::allows('show_paper', $paper)) {
+            if (!Gate::allows('show_paper', $sub->paper)) {
                 abort(403, 'forbidden_for_others');
             }
         }
-        if ($paper->token() != $token) return abort(403, "Review Browse TOKEN ERROR");
-        $subs = $paper->submits;
+        if ($sub->paper->token() != $token) return abort(403, "Review Browse TOKEN ERROR");
         $accepts = Accept::select('name', 'id')->get()->pluck('name', 'id')->toArray();
-        return view('paper.review', ['paper' => $id])->with(compact("subs", "paper", "accepts"));
+        return view('paper.review', ['sub' => $id])->with(compact("sub", "accepts"));
     }
+
+    public function confirmreview(string $id, string $token)
+    {
+        $sub = Submit::findOrFail($id);
+        if ($sub->paper->owner != Auth::user()->id) {
+            abort(403, 'forbidden_for_others');
+        }
+        if ($sub->paper->token() != $token) return abort(403, "Review Confirm TOKEN ERROR");
+
+        // review result を確認済みにする
+        $sub->notify_at = ((new DateTime())->format('Y-m-d'));
+        $sub->save();
+        // sub->accept_id が 2であれば次のSubmitをつくる。
+        if ($sub->accept_id == 2) {
+            $sub->paper->lockAll(false); // ファイルロックも解除
+            $sub->paper->status_id = 1; //投稿準備中に戻す。ラウンドは以下で1つ増える
+            $sub->paper->save();
+
+            Submit::factory()->create([
+                'paper_id' => $sub->paper->id,
+                'category_id' => $sub->paper->category_id,
+                'round' => $sub->round + 1,
+                'resubmit_until' => date('Y-m-d', strtotime('+40 days')),
+                'previous_submit_id' => $sub->id,
+            ])->init_reviews();
+
+        }
+
+        $accepts = Accept::select('name', 'id')->get()->pluck('name', 'id')->toArray();
+        return view('paper.review', ['sub' => $id])->with(compact("sub", "accepts"));
+    }
+
 
     /**
      * PDFテキストをドラッグして選択、書誌情報(アブストラクトや英文タイトル)の設定

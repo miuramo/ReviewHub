@@ -58,7 +58,7 @@
             @endisset
         @endisset
         <span class="mx-2"></span>
-        <x-element.linkbutton href="{{ route('paper.review', ['paper' => $paper->id, 'token' => $paper->token()]) }}"
+        <x-element.linkbutton href="{{ route('paper.review', ['sub' => $sub->id, 'token' => $paper->token()]) }}"
             color="orange" target="_blank" size="sm">
             著者がみる査読結果 </x-element.linkbutton>
 

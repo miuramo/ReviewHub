@@ -18,7 +18,7 @@
         $subRN = str_replace('3', '', $subRN);
         $role = App\Models\Role::findByIdOrName($subRN);
     @endphp
-    (Step {{ $task->workflow->id }})
+    (R{{ $task->submit->round}}-step{{ $task->workflow->id }})
     {{ $role->desc ?? '???' }} ({{ $task->subject->name }}) が、
     {{-- 何を --}}
     {{ $task->workflow->description }}

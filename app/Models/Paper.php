@@ -109,6 +109,7 @@ class Paper extends Model
         'status_id',
     ];
 
+
     public static function mandatory_bibs()
     {
         $koumoku = [
@@ -692,5 +693,17 @@ class Paper extends Model
             $title = mb_substr($title, 0, $pos1);
         }
         return $title;
+    }
+
+    public function lockAll(bool $b){
+        $this->locked = $b;
+        $this->save();
+        // 現在アップロードされているすべてのファイル（削除済みを除く）をロックする
+        foreach($this->files as $file){
+            if (!$file->deleted){
+                $file->locked = $b;
+                $file->save();
+            }
+        }
     }
 }

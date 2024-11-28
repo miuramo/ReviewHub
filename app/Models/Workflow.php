@@ -81,14 +81,27 @@ class Workflow extends Model
         }
     }
 
+    public function obj_role_name()
+    {
+        if ($this->object == "rev1") {
+            return "rev";
+        } else if ($this->object == "rev2") {
+            return "rev";
+        } else if ($this->object == "rev3") {
+            return "rev";
+        } else {
+            return $this->object;
+        }
+    }
+
     // ワークフローを進める from TaskController.update => Task.process => ココ
     public function process(Task $task, Request $req)
     {
-        // TODO: joinでがあるとき、joinのタスクが終了していない場合は、失敗して、進めない
+        // TODO: joinであるとき、joinのタスクが終了していない場合は、失敗して、進めない
         if ($task->join) {
             foreach ($task->join as $jtid) {
                 $jtask = Task::find($jtid);
-                if (!$jtask->completed) {
+                if (!$jtask->approved) {
                     return false;
                 }
             }
@@ -147,23 +160,28 @@ class Workflow extends Model
             $task->sendApproveMail(0, 1); // 進行メールを送る
             // 採録・不採録なら、終了
             // それ以外なら、次のラウンドの準備をする
-
-            // Submit::factory()->create([
-            //     'paper_id' => $task->submit->paper->id,
-            //     'category_id' => $task->submit->category_id,
-            //     'round' => $task->submit->round + 1,
-            //     'resubmit_until' => date('Y-m-d', strtotime('+40 days')),
-            // ])->init_reviews();
-            $task->submit->paper->status_id = 9; //査読結果通知済み
-            $task->submit->paper->save();
+            $this->proceed_workflow($task, $req); // このなかで、setDecisionを呼び出す
         }
         return true;
     }
     /**
      * 承認が得られたので、次のタスクに進む from Task.approve
      */
-    public function proceed_workflow(Task $task, Request $req, bool $started = true)
+    public function proceed_workflow(Task $task, Request $req = null, bool $started = true)
     {
+        // タスク終了時に、Paperのstatusを更新
+        if ($task->workflow->status_id_at_ended){
+            $task->submit->paper->status_id = $task->workflow->status_id_at_ended;
+            $task->submit->paper->save();
+        }
+        // PaperとFileをロックする
+        if ($task->workflow->id == 1) {
+            $task->submit->paper->lockAll(true);
+        } else if ($task->workflow->id == 12) {
+            $task->setDecision();
+        }
+
+
         // 次のタスクのsubjectを設定
         foreach ($task->next as $nextid) {
             $ntask = Task::find($nextid);
@@ -211,8 +229,8 @@ class Workflow extends Model
         } else if ($this->object == "rev3") {
             $task->submit->rev3()->save_user_id($oid);
         }
-        // submitのstatusを更新
-        $task->submit->updateStatus();
+        // // submitのstatusを更新
+        // $task->submit->updateStatus();
     }
     public function assign_backward(Task $task)
     {
@@ -229,8 +247,8 @@ class Workflow extends Model
         } else if ($this->object == "rev3") {
             $task->submit->rev3()->save_user_id(null);
         }
-        // submitのstatusを更新
-        $task->submit->updateStatus();
+        // // submitのstatusを更新
+        // $task->submit->updateStatus();
     }
 
     public function submit_forward(Task $task)

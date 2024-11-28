@@ -15,7 +15,7 @@ class StatusSeeder extends Seeder
         $data = [
             "投稿準備中",
             "投稿完了",
-            "メタ確認中",
+            "メタ割り当て中",
             "査読者割り当て中",
             "査読中",
             "査読修正中",
