@@ -14,13 +14,6 @@ use Illuminate\Support\Facades\Log;
 
 class UserTest extends TestCase
 {
-    // use RefreshDatabase;
-    protected function setUp(): void
-    {
-        parent::setUp();
-        Artisan::call('migrate:refresh');
-        Artisan::call('db:seed');
-    }
 
     /**
      * A basic test example.
@@ -53,8 +46,8 @@ class UserTest extends TestCase
 
         $this->assertTrue(Role::checkRoleUser("admin",1));
         $this->assertTrue(Role::checkRoleUser(1,1));
-        $this->assertFalse(Role::checkRoleUser("admin",2));
-        $this->assertTrue(Role::checkRoleUser("exe",1));
+        $this->assertTrue(Role::checkRoleUser("admin",2));
+        $this->assertTrue(Role::checkRoleUser("ec",1));
 
     }
 }

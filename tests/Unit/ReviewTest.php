@@ -19,13 +19,6 @@ use Illuminate\Support\Facades\Log;
 
 class ReviewTest extends TestCase
 {
-    // use RefreshDatabase;
-    protected function setUp(): void
-    {
-        parent::setUp();
-        Artisan::call('migrate:refresh');
-        Artisan::call('db:seed');
-    }
 
     /**
      *

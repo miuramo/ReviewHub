@@ -11,6 +11,10 @@ class Contact extends Model
     use HasFactory;
     use FindByIdOrNameTrait;
 
+    protected $attributes = [
+        'email' => "",
+    ];
+
     protected $fillable = [
         'email',
     ];

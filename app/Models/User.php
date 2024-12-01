@@ -26,6 +26,13 @@ class User extends Authenticatable implements MustVerifyEmail
     //     'updated' => UserUpdated::class,
     // ];
 
+    protected $attributes = [
+        'name' => "",
+        'affil' => "",
+        'email' => "test@test.com",
+        'password' => "",
+    ];
+
     // 初期状態のName
     public static string $initialName = ""; // "投稿 太郎";
     /**
