@@ -58,7 +58,6 @@
 
                     @php
                         $bb = App\Models\Bb::where('paper_id', $paper->id)
-                            ->where('category_id', $paper->category_id)
                             ->where('type', 2) // 2: メタと著者 この条件を忘れると、議論用が表示されてしまうため注意
                             ->first();
                     @endphp
