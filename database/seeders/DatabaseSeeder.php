@@ -66,7 +66,7 @@ class DatabaseSeeder extends Seeder
         }
         Paper::firstOrCreate([
             'category_id' => 1,
-            'owner' => 1,
+            'owner' => 3,
             'contactemails' => "miura@istlab.info",
             'title' => "サンプル論文",
             'etitle' => "Sample Paper",

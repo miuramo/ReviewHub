@@ -119,8 +119,13 @@ class AuthServiceProvider extends ServiceProvider
          * 査読管理 TODO: 一旦managerが設定されたら、それに従う。
          */
         Gate::define('manage_review', function ($user, $paper) {
-            // もし、ECなら、true
-            if ($user->can('role', 'ec')) return true;
+            $paper = Paper::find($paper);
+            if ($paper->managers()->count() > 0) {
+                return $paper->isManager($user->id);
+            } else {
+                // もし、PC長なら、true
+                if ($user->can('role', 'ec')) return true;
+            }
             return false;
         });
 

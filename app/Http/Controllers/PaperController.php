@@ -521,7 +521,7 @@ class PaperController extends Controller
     public function manage(Request $req, int $paper_id)
     {
         $paper = Paper::findOrFail($paper_id);
-        if (!auth()->user()->can('manage_review', auth()->id())) abort(403);
+        if (!auth()->user()->can('manage_review', $paper_id)) abort(403, "you are not a manager");
         return view('paper.manage')->with(compact("paper"));
     }
 }

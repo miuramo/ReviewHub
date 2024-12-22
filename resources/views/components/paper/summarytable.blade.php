@@ -5,7 +5,8 @@
 ])
 <!-- components.paper.summarytable -->
 @php
-    $papers = App\Models\Paper::get();
+    // $papers = App\Models\Paper::get();
+    $papers = App\Models\User::with('managed_papers')->find(auth()->id())->managed_papers;
 @endphp
 
 <table class="min-w-full divide-y divide-gray-200">
@@ -21,7 +22,7 @@
             <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200' : 'bg-white' }}">
                 <td class="p-1 text-center">{{ $paper->category->name }}</td>
                 <td class="p-1 text-center">
-                    <a href="{{ route('paper.show', ['paper' => $paper]) }}"
+                    <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
                         class="underline text-blue-600 hover:bg-lime-200" target="_blank">
                         {{ $paper->id_03d() }}
                     </a>

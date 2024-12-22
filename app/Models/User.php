@@ -67,6 +67,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'password' => 'hashed',
     ];
 
+    // protected $with = ['roles', 'managed_papers'];
+
     public function roles()
     {
         $tbl = 'role_user';
@@ -90,6 +92,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function contact()
     {
         return $this->belongsTo(Contact::class, "contact_id");
+    }
+
+    public function managed_papers()
+    {
+        return $this->belongsToMany(Paper::class, 'paper_manager');//->withPivot('priority')->orderBy('id');
     }
 
     /**

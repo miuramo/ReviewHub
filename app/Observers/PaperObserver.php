@@ -22,7 +22,7 @@ class PaperObserver
     {
         $this->meta_created($paper);
         $paper->updateContacts();
-
+        $paper->setDefaultManagers();
         /**  すべてのPaperに対して、デフォルトのSubmit（査読結果）を作成する
          * デフォルトのSubmitとは、当初の投稿カテゴリに対応するもの
          *  */

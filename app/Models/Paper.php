@@ -64,6 +64,8 @@ class Paper extends Model
     // protected $table = 'papers';
     // public $timestamps = false;
 
+    protected $with = ['currentstatus', 'currentsubmit', 'category', 'contacts', 'paperowner', 'submits', 'pdf_file', 'enqans', 'managers'];
+
     protected $casts = [
         'category_id' => 'int',
         'owner' => 'int',
@@ -169,11 +171,15 @@ class Paper extends Model
         return $count;
     }
 
-    protected $with = ['currentstatus', 'currentsubmit', 'category', 'contacts', 'paperowner', 'submits', 'pdf_file', 'enqans'];
     
     public function files()
     {
         return $this->hasMany(File::class, 'paper_id')->where('valid', 1)->where('deleted', 0);
+    }
+
+    public function managers()
+    {
+        return $this->belongsToMany(User::class, 'paper_manager');
     }
 
     public function currentstatus()
@@ -239,6 +245,10 @@ class Paper extends Model
         if ($submit->rev2()->user_id == $uid) return true;
         if ($submit->rev3()->user_id == $uid) return true;
         return false;
+    }
+    public function isManager(int $uid)
+    {
+        return $this->managers()->where('user_id', $uid)->exists();
     }
 
     /**
@@ -704,6 +714,18 @@ class Paper extends Model
                 $file->locked = $b;
                 $file->save();
             }
+        }
+    }
+
+    /**
+     * 初期状態のマネージャを設定する
+     */
+    public function setDefaultManagers()
+    {
+        $role = Role::findByIdOrName("ec");
+        foreach($role->users as $user){
+            if ($user->id == $this->owner) continue;
+            $this->managers()->attach($user->id);
         }
     }
 }
