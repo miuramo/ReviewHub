@@ -21,5 +21,10 @@
         </x-element.h1>
     </div>
 
+    <div class="py-2 px-6">
+        <x-element.h1>
+        査読者の状況と割り当て：
+        </x-element.h1>
+    </div>
 
 </x-app-layout>
