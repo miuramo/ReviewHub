@@ -517,4 +517,11 @@ class PaperController extends Controller
         }
         return view('admin.paperlock')->with(compact("cols", "pids"));
     }
+
+    public function manage(Request $req, int $paper_id)
+    {
+        $paper = Paper::findOrFail($paper_id);
+        if (!auth()->user()->can('manage_review', auth()->id())) abort(403);
+        return view('paper.manage')->with(compact("paper"));
+    }
 }

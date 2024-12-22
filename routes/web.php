@@ -75,6 +75,11 @@ Route::middleware('auth')->group(function () {
     Route::put('/paper/{paper}/update_authorlist', [PaperController::class, 'update_authorlist'])->name('paper.update_authorlist');
 
     Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile.edit');
+    //査読管理者による査読者の割り当て等の操作
+    Route::get('/paper/{paper}/manage', [PaperController::class, 'manage'])->name('paper.manage');
+    Route::post('/paper/{paper}/manage', [PaperController::class, 'manage'])->name('paper.managepost');
+
+
     //アンケート回答
     Route::resource('enq', EnqueteController::class); // ここはenq.index, enq.store 等。
     Route::get('/enq/{enq}/answers', [EnqueteController::class, 'answers'])->name('enq.answers');
