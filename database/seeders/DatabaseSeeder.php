@@ -99,9 +99,6 @@ class DatabaseSeeder extends Seeder
             }
         }
         
-
-
-
         $this->call([
             EnqueteSeeder::class,
             EnqueteConfigSeeder::class,

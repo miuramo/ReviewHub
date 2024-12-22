@@ -52,21 +52,21 @@
                 <td class="p-1 text-center">{{ $paper->paperowner->name }} ({{ $paper->paperowner->affil }})
                 </td>
                 <td class="p-1 text-center">
-                    <x-element.login_as :user="$paper->currentsubmit->aecrep()->user" />
-                        {{ $paper->currentsubmit->isAssigned('aec') ? '' : '?' }}
-                    </td>
+                    {{-- <x-element.login_as :user="$paper->currentsubmit->aecrep()->user" />
+                        {{ $paper->currentsubmit->isAssigned('aec') ? '' : '?' }} --}}
+                </td>
                 <td class="p-1 text-center">
-                    <x-element.login_as :user="$paper->currentsubmit->meta()->user" />
-                        {{ $paper->currentsubmit->isAssigned('meta') ? '' : '?' }}
-                    </td>
+                    {{-- <x-element.login_as :user="$paper->currentsubmit->meta()->user" />
+                    {{ $paper->currentsubmit->isAssigned('meta') ? '' : '?' }} --}}
+                </td>
                 <td class="p-1 text-center">
-                    <x-element.login_as :user="$paper->currentsubmit->rev1()->user" />
-                        {{ $paper->currentsubmit->isAssigned('rev1') ? '' : '?' }}
-                    </td>
+                    {{-- <x-element.login_as :user="$paper->currentsubmit->rev1()->user" />
+                    {{ $paper->currentsubmit->isAssigned('rev1') ? '' : '?' }} --}}
+                </td>
                 <td class="p-1 text-center">
-                    <x-element.login_as :user="$paper->currentsubmit->rev2()->user" />
-                        {{ $paper->currentsubmit->isAssigned('rev2') ? '' : '?' }}
-                    </td>
+                    {{-- <x-element.login_as :user="$paper->currentsubmit->rev2()->user" />
+                    {{ $paper->currentsubmit->isAssigned('rev2') ? '' : '?' }} --}}
+                </td>
             </tr>
         @endforeach
     </tbody>

@@ -38,7 +38,7 @@ class FileSeeder extends Seeder
                 $paper->save();
 
                 //newSubmit_newTasks from workflow (すでに、Submitは作成済み)
-                $paper->currentsubmit->newTasks();
+                // $paper->currentsubmit->newTasks();
             }
             (new Submitted($paper))->process_send();
         }

@@ -91,24 +91,24 @@ class Submit extends MetaModel
 
     public function init_reviews()
     {
-        $revs = Review::factory(1)->create([
-            'submit_id' => $this->id,
-            'category_id' => $this->category_id,
-            'paper_id' => $this->paper_id,
-            'target' => 2,
-        ]);
-        $revs = Review::factory(1)->create([
-            'submit_id' => $this->id,
-            'category_id' => $this->category_id,
-            'paper_id' => $this->paper_id,
-            'target' => 1,
-        ]);
-        $revs = Review::factory(2)->create([
-            'submit_id' => $this->id,
-            'category_id' => $this->category_id,
-            'paper_id' => $this->paper_id,
-            'target' => 0,
-        ]);
+        // $revs = Review::factory(1)->create([
+        //     'submit_id' => $this->id,
+        //     'category_id' => $this->category_id,
+        //     'paper_id' => $this->paper_id,
+        //     'target' => 2,
+        // ]);
+        // $revs = Review::factory(1)->create([
+        //     'submit_id' => $this->id,
+        //     'category_id' => $this->category_id,
+        //     'paper_id' => $this->paper_id,
+        //     'target' => 1,
+        // ]);
+        // $revs = Review::factory(2)->create([
+        //     'submit_id' => $this->id,
+        //     'category_id' => $this->category_id,
+        //     'paper_id' => $this->paper_id,
+        //     'target' => 0,
+        // ]);
     }
 
     /**

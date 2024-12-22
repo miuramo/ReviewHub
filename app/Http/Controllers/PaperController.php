@@ -34,7 +34,7 @@ class PaperController extends Controller
     {
         $aT = $this->author_check($id);
         if ($aT > 0) {
-            $paper = Paper::with(["contacts","currentsubmit"])->find($id);
+            $paper = Paper::with(["contacts", "currentsubmit"])->find($id);
             if ($paper->pdf_file_id != 0 && count($paper->validateFiles()) == 0) {
                 // status_id が 1 だったら、 2 にする
                 if ($paper->status_id <= 2) {
@@ -44,7 +44,9 @@ class PaperController extends Controller
                     $paper->save();
 
                     //newSubmit_newTasks from workflow (すでに、Submitは作成済み)
-                    $paper->currentsubmit->newTasks();
+                    // $paper->currentsubmit->newTasks(); // 新規投稿完了時のタスク
+                    // 暫定の、査読管理者を設定する。掲示板を作成し、投稿する。
+
                 }
                 (new Submitted($paper))->process_send();
                 // $mail->send();
@@ -387,7 +389,6 @@ class PaperController extends Controller
                 'resubmit_until' => date('Y-m-d', strtotime('+40 days')),
                 'previous_submit_id' => $sub->id,
             ])->init_reviews();
-
         }
 
         $accepts = Accept::select('name', 'id')->get()->pluck('name', 'id')->toArray();
