@@ -25,6 +25,7 @@
         <x-element.h1>
         査読者の状況と割り当て：
         </x-element.h1>
+        <x-review.assign :paper_id="$paper->id"></x-review.assign>
     </div>
 
 </x-app-layout>
