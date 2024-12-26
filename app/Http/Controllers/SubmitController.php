@@ -482,4 +482,13 @@ class SubmitController extends Controller
         // return $out;
         return json_encode($out, JSON_THROW_ON_ERROR);
     }
+
+
+    public function review_assign(Request $req, int $sub_id)
+    {
+        $sub = Submit::findOrFail($sub_id);
+        if (!auth()->user()->can('manage_review', $sub->paper->id)) abort(403, "you are not a manager (manage_review)");
+        Review::review_assign($sub->paper->id, $req->input("reviewer_id"), 1);
+        return redirect($req->input("redirect_page"));
+    }
 }

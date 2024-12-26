@@ -134,6 +134,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/admin_submit_proceed/{sub}', [ManagerController::class, 'submit_proceed'])->name('manage.submit_proceed');
 
     Route::get('sub/{sub}/show', [SubmitController::class, 'show'])->name('sub.show'); // 査読管理
+    Route::post('sub/{sub}/review_assign', [SubmitController::class, 'review_assign'])->name('sub.review_assign'); // 査読者の割り当て
 
     Route::resource('task', TaskController::class);
     Route::put('/task/{task}/approve', [TaskController::class, 'approve'])->name('task.approve');

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class Review extends Model
+class Review extends MetaModel
 {
     use HasFactory;
 
@@ -53,18 +53,18 @@ class Review extends Model
      * 査読割り当て
      * status 2がメタ 1が通常 0が解除
      */
-    public static function review_assign($paper_id, $user_id, $status)
+    public static function review_assign($paper_id, $user_id, $ismeta2)
     {
         $paper = Paper::find($paper_id);
-        $status = intval($status);
-        if ($status > 0) {
-            DB::transaction(function () use ($paper, $user_id, $status) {
+        $ismeta2 = intval($ismeta2);
+        if ($ismeta2 > 0) {
+            DB::transaction(function () use ($paper, $user_id, $ismeta2) {
                 // 既存のデータがあれば、それを読み取って修正する
                 $rev = Review::where('user_id', $user_id)->where('paper_id', $paper->id)->first();
                 if ($rev != null) {
                     $rev->submit_id = $paper->submits->first()->id;
                     $rev->category_id = $paper->category_id;
-                    $rev->target = ($status == 2) ? 1 : 0;
+                    $rev->target = ($ismeta2 == 2) ? 1 : 0;
                     $rev->save();
                 } else {
                     Review::firstOrCreate([
@@ -72,7 +72,8 @@ class Review extends Model
                         'paper_id' => $paper->id,
                         'user_id' => $user_id,
                         'category_id' => $paper->category_id,
-                        'target' => ($status == 2) ? 1 : 0,
+                        'target' => ($ismeta2 == 2) ? 1 : 0,
+                        'status' => 0, // 開始前
                     ]);
                 }
             });
@@ -364,5 +365,16 @@ class Review extends Model
         $ret['scores'] = $scores;
         $ret['descs'] = $descs;
         return $ret;
+    }
+
+    public function heads(){
+        $fs = ['target','status'];
+        // $fs に該当する、schema comment を取得
+        $heads = [];
+        $comments = $this->get_table_comments();
+        foreach ($fs as $f) {
+            $heads[$f] = $comments[$f] ?? $f;
+        }
+        return $heads;
     }
 }

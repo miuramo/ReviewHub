@@ -87,7 +87,7 @@
                     confirm='このタスクを完了し、次のワークフローに移行すると、戻ることはできません。本当に進めてよいですか？'>依頼する（割り当てる）</x-element.submitbutton>
             </form>
             <div class="m-2 p-2 bg-pink-100 text-sm text-gray-500">
-                リストにないユーザに依頼したい場合は、
+                リストにないユーザを割り当てたい場合は、
                 <form action="{{ route('role.adduser') }}" method="post" class="inline-block">
                     @csrf
                     @method('PUT')
