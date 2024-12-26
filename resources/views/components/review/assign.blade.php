@@ -17,7 +17,7 @@
 
     <select name="reviewer_id" id="reviewer_id">
         @foreach ($reviewers as $reviewer)
-            <option value="{{ $reviewer->id }}">{{ $reviewer->name }}</option>
+            <option value="{{ $reviewer->id }}">{{ $reviewer->name }} （{{$reviewer->affil}}）</option>
         @endforeach
     </select>
     さんを

@@ -179,6 +179,7 @@ class RoleController extends Controller
 
     /**
      * ユーザの追加（editpostからもできるが、メタ等がつかいやすいように）
+     * 必要事項：role, user, affil, email, redirect_page
      */
     public function adduser(Request $req)
     {
@@ -202,7 +203,7 @@ class RoleController extends Controller
         if (!$role->containsUser($u->id)) { // ふくまれていなければ
             $u->roles()->attach($role);
         }
-        return redirect()->route('role.top', ['role' => $req->redirect_role])->with('feedback.success', 'ユーザを追加しました');
+        return redirect($req->input("redirect_page"))->with('feedback.success', 'ユーザを追加しました');
     }
 
     public function leave(Role $role, User $user)

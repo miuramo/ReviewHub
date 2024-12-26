@@ -15,6 +15,7 @@ return new class extends Migration
             $table->date('request_at')->nullable()->comment("査読打診日");
             $table->date('start_at')->nullable()->comment("査読開始日");
             $table->date('end_at')->nullable()->comment("査読終了日");
+            $table->softDeletes();
             //
         });
     }

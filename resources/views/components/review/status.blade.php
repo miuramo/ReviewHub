@@ -21,7 +21,8 @@
         @endforeach
         <tr class="bg-white">
             <td class="p-1 text-center">
-                <x-element.deletebutton :id="$review->id" color="orange" size="sm" confirm="本当に{{$review->user->name}}さんを査読者から外してよいですか？">
+                <x-element.deletebutton action="{{ route('review.destroy', ['review' => $review]) }}"
+                    color="orange" confirm="本当に{{$review->user->name}}さんを査読者から外してよいですか？">
                     査読者から外す
                 </x-element.deletebutton>
             </td>

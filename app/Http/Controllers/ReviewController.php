@@ -279,6 +279,9 @@ class ReviewController extends Controller
      */
     public function destroy(Review $review)
     {
+        if (!auth()->user()->can('manage_review', $review->paper->id)) abort(403, "you are not a manager");
+        Review::destroy($review->id);
+        return redirect()->route('paper.manage',['paper'=>$review->paper->id])->with('feedback.success', '査読割り当てから外しました');
         //
     }
 

@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
 class Review extends MetaModel
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'submit_id',
@@ -368,7 +370,7 @@ class Review extends MetaModel
     }
 
     public function heads(){
-        $fs = ['target','status'];
+        $fs = ['target','status','request_at','start_at','end_at','created_at','updated_at'];
         // $fs に該当する、schema comment を取得
         $heads = [];
         $comments = $this->get_table_comments();
