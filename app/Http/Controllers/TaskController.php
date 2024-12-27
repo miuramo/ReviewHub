@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Models\Paper;
+use App\Models\Review;
 use App\Models\Task;
 use Illuminate\Http\Request;
 
@@ -20,8 +22,14 @@ class TaskController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $req)
     {
+        info($req->all());
+        $review = Review::find($req->review);
+        $paper = Paper::find($review->paper->id);
+        $revuid = $req->revuid;
+        Task::createReviewTask($paper->currentSubmit, $revuid);
+        return redirect()->route('paper.manage',['paper' => $paper])->with('feedback.success', '査読タスクを作成しました');
         //
     }
 

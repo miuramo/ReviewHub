@@ -10,7 +10,9 @@
 
     $tasks = App\Models\Task::where('submit_');
 @endphp
-
+<x-element.component_name>
+    subsummarytable
+</x-element.component_name>
 <table class="min-w divide-y divide-gray-200">
     <thead>
         <tr>

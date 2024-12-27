@@ -46,6 +46,19 @@ class Task extends Model
         'join' => '[]',
     ];
 
+    /**
+     * 柔軟な査読者の割り当てと査読タスク生成
+     */
+    public static function createReviewTask(Submit $sub, int $revuid){
+        // ここに柔軟な査読者の割り当てと査読タスク生成の処理を書く
+        $task = Task::create([
+            'submit_id' => $sub->id,
+            'workflow_id' => 4,
+            'subject_id' => $revuid,
+            'object_id' => auth()->user()->id,
+        ]);
+    }
+
     public function workflow()
     {
         return $this->belongsTo(Workflow::class);

@@ -5,7 +5,9 @@
     $sub = App\Models\Submit::find($submit_id);
     $reviewers = App\Models\Role::findByIdOrName('rev')->users;
 @endphp
-
+<x-element.component_name>
+    rassign
+</x-element.component_name>
 <!-- components.review.assign  -->
 
 <form action="{{ route('sub.review_assign', ['sub' => $sub]) }}" method="post" class="">
@@ -21,7 +23,6 @@
         @endforeach
     </select>
     さんを
-    <x-element.submitbutton color="blue" value="assign"
-        confirm='本当に割り当ててよいですか？'>割り当てる</x-element.submitbutton>
+    <x-element.submitbutton color="blue" value="assign">割り当てる</x-element.submitbutton>
 </form>
 

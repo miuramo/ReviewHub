@@ -10,7 +10,7 @@
     <x-element.h1>投稿論文</x-element.h1>
 
     <div class="px-6 py-2 flex">
-    <x-paper.summarytable width='' />
+    <x-paper.psummarytable width='' />
 
     @php
         $role = App\Models\Role::where('name', 'demo')->first();

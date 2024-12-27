@@ -17,7 +17,7 @@
     <x-element.h1>投稿論文</x-element.h1>
 
     <div class="px-6 py-2 flex">
-        <x-paper.summarytable />
+        <x-paper.psummarytable />
 
         {{-- <div class="px-6 py-2 flex-grow">
             <x-element.linkbutton href="{{ route('admin.paperlist') }}" color="green">

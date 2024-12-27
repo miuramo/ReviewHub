@@ -4,6 +4,10 @@
 @php
     $sub = App\Models\Submit::find($submit_id);
 @endphp
+<x-element.component_name>
+    add_rev
+</x-element.component_name>    
+
 <!-- components.role.add_rev -->
 <div class="m-0 p-2 bg-pink-100 text-sm text-gray-500">
     リストにないユーザを割り当てたい場合は、

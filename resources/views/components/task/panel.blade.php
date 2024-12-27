@@ -1,10 +1,11 @@
 @props([
     'task' => null,
 ])
-<!-- components.paper.summarytable -->
+<!-- components.task.panel -->
 @php
 
 @endphp
+<x-element.component_name>panel</x-element.component_name>
 
 <x-element.h1c color="yellow" dark=300 :options="['font-bold', 'mb-0']">
     {{-- 論文 --}}

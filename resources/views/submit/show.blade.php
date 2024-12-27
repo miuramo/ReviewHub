@@ -19,9 +19,11 @@
         <x-alert.success>{{ session('feedback.success') }}</x-alert.success>
     @endif
 
-
+    <x-element.component_name>
+        subshow
+    </x-element.component_name>
     <div class="mx-6">
-            <x-sub.summarytable :sub="$sub" />
+            <x-sub.subsummarytable :sub="$sub" />
     </div>
 
     <div class="m-6">

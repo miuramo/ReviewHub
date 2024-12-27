@@ -14,7 +14,7 @@
     @endif
 
     <div>
-        <x-paper.summarytable />
+        <x-paper.psummarytable />
     </div>
 
     <div class="mx-6">

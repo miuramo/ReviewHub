@@ -159,8 +159,8 @@ class ReviewController extends Controller
         if ($sub->token() != $token) return abort(403, "TOKEN ERROR FOR SUBMIT");
         $cat_id = $cat->id;
         // 掲示板
-        $bb = Bb::where('category_id', $cat_id)->where('paper_id', $paper->id)->where('type', 1)->first();
-        $bb2 = Bb::where('category_id', $cat_id)->where('paper_id', $paper->id)->where('type', 2)->first();
+        $bb = Bb::where('paper_id', $paper->id)->where('type', 1)->first();
+        $bb2 = Bb::where('paper_id', $paper->id)->where('type', 2)->first();
         return view("review.commentpaper")->with(compact("sub", "cat_id", "cat", "paper", "bb", "bb2"));
     }
 

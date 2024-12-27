@@ -8,7 +8,9 @@
     // $papers = App\Models\Paper::get();
     $papers = App\Models\User::with('managed_papers')->find(auth()->id())->managed_papers;
 @endphp
-
+<x-element.component_name>
+    psummarytable
+</x-element.component_name>
 <table class="min-w-full divide-y divide-gray-200">
     <thead>
         <tr>

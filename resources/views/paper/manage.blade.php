@@ -7,27 +7,50 @@
             <x-element.paperid size=2 :paper_id="$paper->id"></x-element.paperid>
         </h2>
     </x-slot>
+    <style>
+        .hidden-content {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+    </style>
     @if (session('feedback.success'))
         <x-alert.success>{{ session('feedback.success') }}</x-alert.success>
     @endif
+    @if (session('feedback.error'))
+        <x-alert.error>{{ session('feedback.error') }}</x-alert.error>
+    @endif
 
-
+    <x-element.component_name>
+        manage
+    </x-element.component_name>
 
     <div class="py-2 px-6">
         <x-element.h1>
             現在の査読ラウンド
         </x-element.h1>
         <div class="block">
-            <x-sub.status :submit_id="$paper->currentsubmit->id"></x-sub.status>
+            <x-sub.substatus :submit_id="$paper->currentsubmit->id"></x-sub.substatus>
         </div>
-        <div class="p-2 bg-cyan-100">
+
+        <x-element.button id="toggleButton" value="査読者の割り当て画面をひらく" color="blue" onclick="openclose('div_rassign')">
+        </x-element.button>
+
+        <div class="hidden-content p-2 bg-cyan-100" style="display:none" id="div_rassign">
             <div class="py-2 px-6">
-                査読者の割り当て：
-                <x-review.assign :submit_id="$paper->currentsubmit->id"></x-review.assign>
+                <x-review.rassign :submit_id="$paper->currentsubmit->id"></x-review.rassign>
             </div>
             <div class="py-2 px-6">
                 <x-role.add_rev :submit_id="$paper->currentsubmit->id"></x-role.add_rev>
             </div>
+        </div>
+
+        <div class="block">
+            @php
+                $tasks = $paper->currentsubmit->tasks;
+            @endphp
+            @foreach($tasks as $task)
+                <x-task.taskstatus :task="$task"></x-task.taskstatus>
+            @endforeach
         </div>
 
     </div>
@@ -36,11 +59,14 @@
     <div class="py-2 px-6">
         <x-element.h1>投稿管理者：
             @foreach ($paper->managers as $user)
-                {{ $user->name }}
+                <x-element.login_as :user="$user"></x-element.login_as>
                 <span class="mx-2"></span>
             @endforeach
         </x-element.h1>
     </div>
 
-
+    @push('localjs')
+        <script src="/js/jquery.min.js"></script>
+        <script src="/js/openclose.js"></script>
+    @endpush
 </x-app-layout>

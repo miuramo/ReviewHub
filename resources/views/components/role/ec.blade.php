@@ -81,7 +81,7 @@
     <x-element.h1>投稿論文</x-element.h1>
 
     <div>
-        <x-paper.summarytable />
+        <x-paper.psummarytable />
     </div>
 
     <div class="my-20"></div>

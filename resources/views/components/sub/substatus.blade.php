@@ -2,9 +2,12 @@
     'submit_id' => null,
 ])
 @php
-$sub = App\Models\Submit::find($submit_id);
+    $sub = App\Models\Submit::find($submit_id);
 @endphp
 <!-- components.sub.status  親は -->
+<x-element.component_name>
+    substatus
+</x-element.component_name>
 <table class="min-w divide-y divide-gray-200 inline-block">
     <thead>
         <tr>
@@ -18,17 +21,20 @@ $sub = App\Models\Submit::find($submit_id);
                 <td class="p-1 text-center">{{ $hc }}</td>
                 <td class="p-1 text-center">{{ $sub->{$h} ?? '--' }}</td>
         @endforeach
+        <tr>
+            <td colspan=2 class="p-1 text-center">
+                <x-review.commentpaper_link :sub="$sub" color="purple" label="査読報告"></x-element.commentpaper_link>
+            </td>
+        </tr>
     </tbody>
 </table>
 
-@if(count($sub->reviews) > 0)
-@foreach($sub->reviews as $review)
-    <x-review.status :review="$review"></x-review.status>
-@endforeach
+@if (count($sub->reviews) > 0)
+    @foreach ($sub->reviews as $review)
+        <x-review.rstatus :review="$review"></x-review.rstatus>
+    @endforeach
 @else
-<div class="m-6 p-4 bg-yellow-200 inline-block align-top">
-    <p class="text-center">査読者はまだ登録されていません。</p>
-</div>
+    <div class="m-6 p-4 bg-yellow-200 inline-block align-top">
+        <p class="text-center">査読者はまだ登録されていません。</p>
+    </div>
 @endif
-
-
