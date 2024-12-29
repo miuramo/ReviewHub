@@ -370,7 +370,8 @@ class Review extends MetaModel
     }
 
     public function heads(){
-        $fs = ['target','status','request_at','start_at','end_at','created_at','updated_at'];
+        // $fs = ['target','status','request_at','start_at','end_at','created_at','updated_at'];
+        $fs = ['status', 'request_at', 'start_at', 'end_at'];
         // $fs に該当する、schema comment を取得
         $heads = [];
         $comments = $this->get_table_comments();
@@ -378,5 +379,13 @@ class Review extends MetaModel
             $heads[$f] = $comments[$f] ?? $f;
         }
         return $heads;
+    }
+    public function deleteTask()
+    {
+        // この査読に関連するタスクを削除する
+        $task = Task::where('submit_id', $this->submit_id)->where('subject_id', $this->user_id)->first();
+        if ($task) {
+            Task::destroy($task->id);
+        }
     }
 }

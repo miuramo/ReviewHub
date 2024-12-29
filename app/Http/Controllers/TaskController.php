@@ -21,6 +21,7 @@ class TaskController extends Controller
 
     /**
      * Show the form for creating a new resource.
+     * 査読開始ボタンを押したとき
      */
     public function create(Request $req)
     {
@@ -29,6 +30,8 @@ class TaskController extends Controller
         $paper = Paper::find($review->paper->id);
         $revuid = $req->revuid;
         Task::createReviewTask($paper->currentSubmit, $revuid);
+        $review->request_at = now();
+        $review->save();
         return redirect()->route('paper.manage',['paper' => $paper])->with('feedback.success', '査読タスクを作成しました');
         //
     }

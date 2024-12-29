@@ -23,6 +23,7 @@ return new class extends Migration
             $table->timestamp('approved_at')->nullable(); // 承認日時
             $table->integer('subject_id')->nullable(); // 作業担当者
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
