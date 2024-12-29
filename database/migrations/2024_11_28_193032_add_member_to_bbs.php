@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::table('bbs', function (Blueprint $table) {
             $table->integer('submit_id')->nullable()->comment('SubmitID')->after('paper_id');
-            $table->unsignedBigInteger(('task_id'))->nullable()->comment('TaskID')->after('submit_id');
-            $table->json('members')->nullable()->comment('メンバーUIDs')->after('type');
+            // $table->unsignedBigInteger(('task_id'))->nullable()->comment('TaskID')->after('submit_id');
+            // $table->json('members')->nullable()->comment('メンバーUIDs')->after('type');
             $table->dropColumn('category_id');
             //
         });
@@ -27,8 +27,8 @@ return new class extends Migration
     {
         Schema::table('bbs', function (Blueprint $table) {
             $table->dropColumn('submit_id');
-            $table->dropColumn('task_id');
-            $table->dropColumn('members');
+            // $table->dropColumn('task_id');
+            // $table->dropColumn('members');
             $table->integer('category_id')->nullable()->comment('カテゴリID')->after('paper_id');
             //
         });

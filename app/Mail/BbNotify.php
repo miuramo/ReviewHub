@@ -29,7 +29,7 @@ class BbNotify extends RetryMailable
      */
     public function __construct($_bb, $_bbmes)
     {
-        $names = [1 => "査読議論", 2 => "メタと著者の", 3 => "出版担当と著者の"];
+        $names = [1=>"著者との", 2=>"査読者との", 3=>"全査読者との", 4=>"投稿管理者同士の"];
         $this->bb = $_bb;
         $this->bbmes = $_bbmes;
         $this->paper = $_bb->paper;

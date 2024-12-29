@@ -25,7 +25,7 @@ class TaskController extends Controller
      */
     public function create(Request $req)
     {
-        info($req->all());
+        // info($req->all());
         $review = Review::find($req->review);
         $paper = Paper::find($review->paper->id);
         $revuid = $req->revuid;
@@ -62,6 +62,7 @@ class TaskController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * 査読完了を報告する
      */
     public function update(Request $req, Task $task)
     {
@@ -75,7 +76,7 @@ class TaskController extends Controller
         $jumprole = str_replace('3', '', $jumprole);
 
         if ($ret) {
-            return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.success', 'タスク完了しました。ご協力ありがとうございました。');
+            return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.success', '査読へのご協力ありがとうございました。');
         } else {
             return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.error', 'タスク処理に失敗しました');
         }

@@ -33,8 +33,8 @@
     {{-- 締切 --}}
 
     <span class="mx-2"></span>
-    （依頼日時: {{ $task->completed_at }}）
-    <span class="mx-2"></span>
+    （報告完了日時: {{ $task->completed_at }}）
+    {{-- <span class="mx-2"></span>
 
     （承認日時：{{ $task->approved_at }}）
     <span class="mx-2"></span>
@@ -45,5 +45,5 @@
     @endforeach
 
     <span class="mx-2"></span>
-    TaskID: {{ $task->id }}
+    TaskID: {{ $task->id }} --}}
 </div>

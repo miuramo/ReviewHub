@@ -27,11 +27,17 @@
         @endforeach
         <tr class="bg-white">
             <td class="p-1 text-center" colspan=2>
-                <x-element.linkbutton2 href="{{ route('task.create', ['review' => $review, 'revuid' => $review->user->id]) }}" color="green">
+                <div>
+                    <x-task.tswitch :review="$review"></x-task.tswitch>
+                {{-- <x-element.linkbutton href="{{ route('task.create', ['review' => $review, 'revuid' => $review->user->id]) }}" color="blue">
                     査読開始
-                </x-element.linkbutton2>
+                </x-element.linkbutton> --}}
+            </div>
+                {{-- <span class="mx-2"></span> --}}
+                {{-- {{$review->id}} {{$review->user->name}} --}}
+                <x-bb.bb_link :submit="$review->submit" type="2" :rev_id="$review->id" size="sm"></x-bb.bb_link>
                 <span class="mx-2"></span>
-                <x-element.deletebutton action="{{ route('review.destroy', ['review' => $review]) }}" color="orange"
+                <x-element.deletebutton action="{{ route('review.destroy', ['review' => $review]) }}" color="orange" size="sm"
                     confirm="本当に{{ $review->user->name }}さんを査読者から外してよいですか？（復元はできます）">
                     査読者から外す
                 </x-element.deletebutton>

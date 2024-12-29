@@ -42,9 +42,11 @@ class BbController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(string $serial)
     {
-        //
+        if (!auth()->user()->can('role_any', 'admin|manager|ce')) abort(403);
+        $bb = Bb::gen_from_serial($serial);
+        return redirect()->route('bb.show', ['bb' => $bb->id, 'key' => $bb->key]);
     }
 
     /**
@@ -68,7 +70,7 @@ class BbController extends Controller
      */
     public function show(int $bbid, string $key)
     {
-        $bb = Bb::with("messages")->with("paper")->with("category")->where('id', $bbid)->where('key', $key)->first();
+        $bb = Bb::with("messages")->with("paper")->where('id', $bbid)->where('key', $key)->first();
         if ($bb == null) abort(403, 'bb not found');
         // type=1(査読掲示板) のとき、ユーザのrevid をセット
         if ($bb->type == 1) {

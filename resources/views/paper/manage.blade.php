@@ -19,6 +19,10 @@
     @if (session('feedback.error'))
         <x-alert.error>{{ session('feedback.error') }}</x-alert.error>
     @endif
+    <div class="mx-6 my-2">
+        <x-paper.shoshi_list :paper="$paper">
+        </x-paper.shoshi_list>    
+    </div>
 
     <x-element.component_name>
         manage
@@ -62,6 +66,7 @@
                 <x-element.login_as :user="$user"></x-element.login_as>
                 <span class="mx-2"></span>
             @endforeach
+            <x-bb.bb_link :submit="$paper->currentsubmit" type="4"></x-bb.bb_link>
         </x-element.h1>
     </div>
 

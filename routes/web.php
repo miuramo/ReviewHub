@@ -107,6 +107,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/review/{review}/edit', [ReviewController::class, 'edit'])->name('review.edit');
     Route::put('/review/{review}', [ReviewController::class, 'update'])->name('review.update'); //査読フォームの変更を受けとる
     Route::get('/review/{review}', [ReviewController::class, 'show'])->name('review.show');
+    Route::put('/review/{review}/start', [ReviewController::class, 'start'])->name('review.start');
+    
     Route::get('/review/pubkey/{review}/{token}', [ReviewController::class, 'pubshow'])->name('review.pubshow'); // 査読者同士の相互参照用
 
     Route::get('/review', [ReviewController::class, 'index'])->name('review.index');
@@ -229,6 +231,7 @@ Route::middleware('auth')->group(function () {
     // 掲示板
     Route::get('bb', [BbController::class, 'index'])->name('bb.index');
     Route::get('bb_for_pub', [BbController::class, 'index_for_pub'])->name('bb.index_for_pub');
+    Route::get('bb_gen/{serial}', [BbController::class, 'create'])->name('bb.gen'); // シリアル（sub_id, type, rev_id）から作成
     Route::post('bb', [BbController::class, 'store'])->name('bb.createnew'); // まとめて作成
     Route::delete('bb', [BbController::class, 'destroy'])->name('bb.destroy'); // 全削除
     Route::delete('bb_destroy_bytype', [BbController::class, 'destroy_bytype'])->name('bb.destroy_bytype'); // 種別ごとに削除

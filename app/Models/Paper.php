@@ -375,6 +375,10 @@ class Paper extends Model
         }
         return ["to" => $this->paperowner->email, "cc" => $cclist, "bcc" => $bcclist];
     }
+    public function get_mail_manager()
+    {
+        return $this->managers->pluck("email")->toArray();
+    }
 
     /**
      * 共著者ならtrue

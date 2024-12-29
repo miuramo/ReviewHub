@@ -23,7 +23,7 @@
         @endforeach
         <tr>
             <td colspan=2 class="p-1 text-center">
-                <x-review.commentpaper_link :sub="$sub" color="purple" label="査読報告"></x-element.commentpaper_link>
+                <x-review.commentpaper_link :sub="$sub" color="purple" label="査読報告をみる"></x-element.commentpaper_link>
             </td>
         </tr>
     </tbody>

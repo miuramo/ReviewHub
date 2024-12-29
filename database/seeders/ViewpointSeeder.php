@@ -38,6 +38,7 @@ class ViewpointSeeder extends Seeder
                 'name' => 'for_meta_aec',
                 'desc' => '編集委員向けコメント',
                 'content' => "編集委員向けコメントは著者に返りません。\n;textarea ; 60 ; 5 ; (編集委員会向け) ",
+                'mandatory' => false,
             ]);
 
 

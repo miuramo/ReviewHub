@@ -19,7 +19,8 @@
         $subRN = str_replace('3', '', $subRN);
         $role = App\Models\Role::findByIdOrName($subRN);
     @endphp
-    (R{{ $task->submit->round}}-step{{ $task->workflow->id }})
+    {{-- (R{{ $task->submit->round}}-step{{ $task->workflow->id }}) --}}
+    (R{{ $task->submit->round }})
     {{ $role->desc ?? '???' }} ({{ $task->subject->name }}) が、
     {{-- 何を --}}
     {{ $task->workflow->description }}
@@ -35,7 +36,6 @@
     <div class="mx-2 bg-yellow-100 p-3">
 
         <div class="mx-3">
-
             論文ファイル：
             @if ($task->submit->paper->pdf_file_id != 0)
                 <a class="underline text-blue-600 hover:bg-lime-200"
@@ -125,8 +125,7 @@
             </form>
             （予定：査読報告をロックする機能をつける、再度査読を修正してもらうための掲示板をつくる）
         @elseif($task->workflow->task == 'approve')
-
-        <x-review.commentpaper_link :sub="$task->submit" label="総合判定結果"></x-element.commentpaper_link>
+            <x-review.commentpaper_link :sub="$task->submit" label="総合判定結果"></x-element.commentpaper_link>
 
                 <form action="{{ route('task.update', ['task' => $task]) }}" method="post" class="items-center flex">
                     @csrf
@@ -137,91 +136,111 @@
                         confirm='このタスクを完了し、次のワークフローに移行すると、戻ることはできません。本当に進めてよいですか？'>最終承認する</x-element.submitbutton>
                 </form>
             @elseif($task->workflow->task == 'submit')
-                <form action="{{ route('task.update', ['task' => $task]) }}" method="post" class="items-center flex">
-                    @csrf
-                    @method('PUT')
-                    <input type="hidden" name="task" value="{{ $task->id }}">
-                    <input type="hidden" name="redirect_role" value="{{ $task->workflow->subject }}">
-                    <x-element.submitbutton color="purple" value="assign"
-                        confirm='このタスクを完了し、次のワークフローに移行すると、戻ることはできません。本当に進めてよいですか？'>査読完了を報告する</x-element.submitbutton>
-                </form>
                 @php
-                    $rev = App\Models\Review::where('paper_id', $task->submit->paper->id)
+                    $rev = App\Models\Review::where('submit_id', $task->submit->id)
                         ->where('user_id', $task->subject->id)
                         ->first();
                     $rev1obj = $task->submit->rev1();
                     $rev2obj = $task->submit->rev2();
                     $metaobj = $task->submit->meta();
                 @endphp
-                @if ($rev->status == 2)
-                    <div class="bg-cyan-100 px-3 pt-4">
+
+                @isset($rev->start_at)
+                    @if ($rev->status == 2)
+                        <div class="bg-cyan-100 px-3 pt-4">
+                        @else
+                            <div class="bg-yellow-50 px-3 pt-4">
+                    @endif
+                    <x-element.paperid size=1 :paper_id="$rev->paper->id">
+                    </x-element.paperid>
+                    <span class="mx-2"></span>
+
+                    @if ($rev->target == 2)
+                        <x-element.linkbutton2 href="{{ route('review.edit', ['review' => $rev]) }}" color="red">
+                            Edit (総合報告)
+                        </x-element.linkbutton2>
+                        <span class="mx-2"></span>
+                        <x-element.linkbutton href="{{ route('review.show', ['review' => $metaobj]) }}" color="green"
+                            target="meta">
+                            View Meta
+                        </x-element.linkbutton>
+                        <span class="mx-2"></span>
+                        <x-element.linkbutton href="{{ route('review.show', ['review' => $rev1obj]) }}" color="green"
+                            target="rev1">
+                            View Rev1
+                        </x-element.linkbutton>
+                        <x-element.linkbutton href="{{ route('review.show', ['review' => $rev2obj]) }}" color="green"
+                            target="rev2">
+                            View Rev2
+                        </x-element.linkbutton>
+                    @elseif ($rev->target == 1)
+                        <x-element.linkbutton2 href="{{ route('review.edit', ['review' => $rev]) }}" color="red">
+                            Edit (メタ)
+                        </x-element.linkbutton2>
+                        <span class="mx-2"></span>
+                        <x-element.linkbutton href="{{ route('review.show', ['review' => $rev1obj]) }}" color="green"
+                            target="rev1">
+                            View Rev1
+                        </x-element.linkbutton>
+                        <x-element.linkbutton href="{{ route('review.show', ['review' => $rev2obj]) }}" color="green"
+                            target="rev2">
+                            View Rev2
+                        </x-element.linkbutton>
                     @else
-                        <div class="bg-yellow-50 px-3 pt-4">
-                @endif
-                <x-element.paperid size=1 :paper_id="$rev->paper->id">
-                </x-element.paperid>
-                <span class="mx-2"></span>
+                        <x-element.linkbutton href="{{ route('review.edit', ['review' => $rev]) }}" color="blue">
+                            査読報告の編集
+                        </x-element.linkbutton>
+                        <span class="mx-2"></span>
+                        <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green">
+                            査読報告の参照
+                        </x-element.linkbutton>
+                    @endif
+                    <span class="mx-2"></span>
 
-                @if ($rev->target == 2)
-                    <x-element.linkbutton2 href="{{ route('review.edit', ['review' => $rev]) }}" color="red">
-                        Edit (総合報告)
-                    </x-element.linkbutton2>
-                    <span class="mx-2"></span>
-                    <x-element.linkbutton href="{{ route('review.show', ['review' => $metaobj]) }}" color="green"
-                        target="meta">
-                        View Meta
-                    </x-element.linkbutton>
-                    <span class="mx-2"></span>
-                    <x-element.linkbutton href="{{ route('review.show', ['review' => $rev1obj]) }}" color="green"
-                        target="rev1">
-                        View Rev1
-                    </x-element.linkbutton>
-                    <x-element.linkbutton href="{{ route('review.show', ['review' => $rev2obj]) }}" color="green"
-                        target="rev2">
-                        View Rev2
-                    </x-element.linkbutton>
-                @elseif ($rev->target == 1)
-                    <x-element.linkbutton2 href="{{ route('review.edit', ['review' => $rev]) }}" color="red">
-                        Edit (メタ)
-                    </x-element.linkbutton2>
-                    <span class="mx-2"></span>
-                    <x-element.linkbutton href="{{ route('review.show', ['review' => $rev1obj]) }}" color="green"
-                        target="rev1">
-                        View Rev1
-                    </x-element.linkbutton>
-                    <x-element.linkbutton href="{{ route('review.show', ['review' => $rev2obj]) }}" color="green"
-                        target="rev2">
-                        View Rev2
-                    </x-element.linkbutton>
-                @else
-                    <x-element.linkbutton href="{{ route('review.edit', ['review' => $rev]) }}" color="blue">
-                        Edit
-                    </x-element.linkbutton>
-                    <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green">
-                        View
-                    </x-element.linkbutton>
-                @endif
-                <span class="mx-2"></span>
-
-                {{-- <x-element.bblink :rev="$rev">
+                    {{-- <x-element.bblink :rev="$rev">
             </x-element.bblink>
             <span class="mx-2"></span> --}}
 
-                @if ($rev->status == 2)
-                    <span class="inline-block border-2 border-blue-600 p-0.5 text-blue-600 font-bold text-sm">
-                        査読完了
-                    </span>
-                @endif
+                    @if ($rev->status == 2)
+                        <span class="inline-block border-2 border-blue-600 p-0.5 text-blue-600 font-bold text-sm">
+                            査読完了
+                        </span>
+                        <span class="mx-1"></span>
+                        <form action="{{ route('task.update', ['task' => $task]) }}" method="post"
+                            class="inline-block">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="task" value="{{ $task->id }}">
+                            <input type="hidden" name="redirect_role" value="{{ $task->workflow->subject }}">
+                            <x-element.submitbutton color="cyan" value="assign">査読完了を報告する</x-element.submitbutton>
+                        </form>
+                    @endif
 
-                @if ($rev->paper->pdf_file_id != null)
+                    @if ($rev->paper->pdf_file_id != null)
+                        <div class="w-1/2">
+                            <a href="{{ route('review.edit', ['review' => $rev]) }}">
+                    @endif
+                    <x-file.paperheadimg :paper="$rev->paper">
+                    </x-file.paperheadimg>
+                    @if ($rev->paper->pdf_file_id != null)
+                        </a>
+                    @endif
+                @else
+                    まだ査読が始まっていません。
+                    最初のページだけを表示することができる。
+                    <form action="{{ route('review.start', ['review' => $rev]) }}" method="post" class="inline-block">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="task" value="{{ $task->id }}">
+                        <input type="hidden" name="redirect_page" value="{{ route('role.top',['role'=>'rev']) }}">
+
+                        <x-element.submitbutton color="cyan" value="assign">査読を開始する</x-element.submitbutton>
+                    </form>
                     <div class="w-1/2">
-                        <a href="{{ route('review.edit', ['review' => $rev]) }}">
-                @endif
-                <x-file.paperheadimg :paper="$rev->paper">
-                </x-file.paperheadimg>
-                @if ($rev->paper->pdf_file_id != null)
-                    </a>
-                @endif
+                        <x-file.paperheadimg :paper="$rev->paper">
+                        </x-file.paperheadimg>
+                    </div>
+                @endisset
     </div>
 
     {{-- <div class="text-sm mt-2 ml-2">

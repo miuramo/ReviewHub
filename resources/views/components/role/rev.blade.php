@@ -28,7 +28,7 @@
 
     @if (count($tasks) > 0)
         <div class="px-6 py-4">
-            <x-element.h1>未完了のタスクがあります</x-element.h1>
+            <x-element.h1>以下の査読について、ご対応をお願いします。</x-element.h1>
             @foreach ($tasks as $task)
                 <div class="mx-6">
                     <x-task.panel :task="$task" />
@@ -68,15 +68,18 @@
 
                 {{ $rev->paper->title }}
 
-                <span class="mx-4"></span>
-                <x-element.linkbutton href="{{ route('review.edit', ['review' => $rev]) }}" color="blue">
-                    Edit
-                </x-element.linkbutton>
                 <span class="mx-2"></span>
 
                 <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green">
-                    View
+                    査読の参照
                 </x-element.linkbutton>
+                <span class="mx-4"></span>
+                <x-element.linkbutton href="{{ route('review.edit', ['review' => $rev]) }}" color="blue">
+                    査読の修正
+                </x-element.linkbutton>
+                <span class="mx-4"></span>
+                <x-bb.bb_link :submit="$rev->submit" type="2" :rev_id="$rev->id" size="sm" label="投稿管理者との掲示板">
+                </x-bb.bb_link>
             </div>
         @endforeach
     </div>

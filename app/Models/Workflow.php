@@ -129,6 +129,7 @@ class Workflow extends Model
             }
             return true;
         } else if ($this->task == 'submit') {
+            // 査読完了を報告する on Workflow.process
 
             $task->completed = 1;
             $task->completed_at = now();
@@ -138,6 +139,15 @@ class Workflow extends Model
             $task->task_approved();
             $this->submit_forward($task); // 査読報告の次のタスクにすすむ、前準備をする
             $task->sendApproveMail(0, 1); // 進行メールを送る
+
+            // Reviewのstatusを更新
+            $review = Review::where("submit_id", $task->submit->id)->where("user_id", $task->subject_id)->first();
+            if ($review) {
+                $review->end_at = now();
+                $review->save();
+            }
+
+
             return $this->proceed_workflow($task, $req); //承認が得られたことになっているので、ワークフローを介して、次のタスクに進む
         } else if ($this->task == 'confirm') {
             $task->completed = 1;

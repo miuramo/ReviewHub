@@ -7,28 +7,27 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class Bb extends Model
+class Bb extends MetaModel
 {
     use HasFactory;
 
-    protected $attributes = [
-        'members' => '[]',
-    ];
-    protected $casts = [
-        'members' => 'array',
-    ];
+    // protected $attributes = [
+    //     'members' => '[]',
+    // ];
+    // protected $casts = [
+    //     'members' => 'array',
+    // ];
 
     protected $fillable = [
         'name',
         'paper_id',
         'submit_id',
         'type',
-        'member',
+        'rev_id',
         'key',
         'needreply',
         'isopen',
         'isclose',
-        'subscribers',
     ];
 
     public function paper()
@@ -49,15 +48,19 @@ class Bb extends Model
         // メッセージの数を返す        
         return $this->hasMany(BbMes::class, 'bb_id')->count();
     }
-    public static function make_bb(Submit $sub)
+    public static function make_bb(Submit $sub, int $type = 1, int $rev_id = 0)
     {
-        //     1 => "ここは査読者同士の事前議論掲示板です。\n査読者は自身を名乗らないでください。必要があればRevIDを用いてください。RevIDは送信フォームに表示されています。\n（RevIDが表示されていない場合は、査読を担当していません。）\n注：RevIDは査読者のIDではなく、査読割当てごとに異なるIDです。",
-        //     2 => "ここはメタ査読者と著者の掲示板です。（プログラム委員長も閲覧できます。）",
-        //     3 => "ここは出版担当と著者の掲示板です。",
+        $firstmes = [
+            1 => "ここは投稿管理者と著者の掲示板です。",
+            2 => "ここは投稿管理者と査読者の掲示板です。他の査読者の方はメンバーに含まれていません。",
+            3 => "ここは投稿管理者と全査読者の掲示板です。\n査読者は自身を名乗らないでください。必要があればRevIDを用いてください。RevIDは送信フォームに表示されています。\n（RevIDが表示されていない場合は、査読を担当していません。）\n注：RevIDは査読者のIDではなく、査読割当てごとに異なるIDです。",
+            4 => "ここは投稿管理者同士の掲示板です。\n査読者はメンバーに含まれていません。",
+        ];
         $bb = Bb::firstOrCreate([
             'paper_id' => $sub->paper_id,
             'submit_id' => $sub->id,
-            // 'members' => $uids,
+            'type' => $type,
+            'rev_id' => $rev_id, // type=2のときのみ
         ], [
             'key' => Str::random(30),
         ]);
@@ -66,9 +69,20 @@ class Bb extends Model
         ], [
             'user_id' => 0,
             'subject' => 'ごあんない',
-            'mes' => "掲示板を開設しました。",
+            'mes' => $firstmes[$type],
         ]);
-        return Bb::with("messages")->with("paper")->with("category")->find($bb->id);
+        return Bb::with("messages")->with("paper")->find($bb->id);
+    }
+    public static function gen_make_url(int $sub_id, int $type, int $rev_id = 0)
+    {
+        $serial = MetaModel::ary2serial(["sub_id" => $sub_id, "type"=>$type, "rev_id"=>$rev_id]);
+        return route('bb.gen', ['serial' => $serial]);
+    }
+    public static function gen_from_serial(string $serial)
+    {
+        $ary = MetaModel::serial2ary($serial);
+        $sub = Submit::with('paper')->find($ary["sub_id"]);
+        return Bb::make_bb($sub, $ary["type"], $ary["rev_id"]);
     }
 
     /**
@@ -78,28 +92,53 @@ class Bb extends Model
     {
         // pcのみ利害関係に注意する。
         (new BbNotify($bb, $bbmes))->process_send();
-
     }
     public function url()
     {
         return route('bb.show', ['bb' => $this->id, 'key' => $this->key]);
     }
-    public static function url_from_rev(Review $rev, int $type=1)
+    public static function url_from_bbid(int $bbid)
+    {
+        $bb = Bb::find($bbid);
+        if ($bb==null) return null;
+        return $bb->url();
+    }
+    public static function url_from_rev(Review $rev, int $type = 1)
     {
         $bb = Bb::where("paper_id", $rev->paper_id)->where("category_id", $rev->category_id)->where("type", $type)->first();
-        if ($bb==null) return null;
+        if ($bb == null) return null;
         return $bb->url();
     }
 
     public function get_mail_to_cc()
     {
         $tolist = [];
+        $cclist = [];
         $bcclist = [];
 
-        foreach($this->members as $u){
-            $tolist[] = $u->email;
+        $manager_list = $this->paper->get_mail_manager();
+        if ($this->type == 4 || $this->type == 3){
+            $tolist = array_merge($tolist, $manager_list);
+        } else {
+            $bcclist = array_merge($bcclist, $manager_list);
         }
-        return ["to" => $tolist, "bcc" => $bcclist ];
+
+        if ($this->type == 1) {
+            $to_cc_list = $this->paper->get_mail_to_cc();
+            $tolist[] = $to_cc_list['to'];
+            $bcclist = array_merge($bcclist, $to_cc_list['cc']);
+        } else if ($this->type == 2) {
+            $review = Review::with('user')->find($this->rev_id);
+            $tolist[] = $review->user->email;
+        } else if ($this->type == 3) {
+            $reviews = Review::with('user')->where("paper_id", $this->paper_id)->where("submit_id", $this->submit_id)->get();
+            foreach($reviews as $review){
+                $bcclist[] = $review->user->email;
+            }
+        } else if ($this->type == 4) {
+        }
+
+        return ["to" => $tolist, "cc"=>$cclist, "bcc" => $bcclist];
     }
 
     // public function get_reviewers()

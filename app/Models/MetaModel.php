@@ -56,7 +56,8 @@ class MetaModel extends Model
         sort($tables);
         return $tables;
     }
-    public function get_table_comments(){
+    public function get_table_comments()
+    {
         $domain = config('database.default');
         $db_name = config('database.connections.' . str_replace('.', '_', $domain) . '.database');
         $tableName = $this->getTable();
@@ -82,4 +83,26 @@ class MetaModel extends Model
         return $coldetails;
     }
 
+    public static function ary2serial($ary)
+    {
+        $s = serialize($ary);
+        $k = md5($s . env('APP_KEY'));
+        $master = $s . substr($k, 0, 8);
+        $gz = gzdeflate($master);
+        $val = base64_encode($gz);
+        return str_replace(['+', '/', '='], ['_', '-', '.'], $val);
+    }
+    public static function serial2ary($serial)
+    {
+        $val = str_replace(['_', '-', '.'], ['+', '/', '='], $serial);
+        $gz = base64_decode($val);
+        $master = gzinflate($gz);
+        $k = substr($master, -8);
+        $s = substr($master, 0, -8);
+        $m = md5($s . env('APP_KEY'));
+        if (substr($m, 0, 8) != $k) {
+            return false;
+        }
+        return unserialize($s);
+    }
 }

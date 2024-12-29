@@ -255,6 +255,16 @@ class ReviewController extends Controller
         //
     }
 
+    public function start(Request $req, Review $review)
+    {
+        if ($review->user_id != auth()->id()) return abort(403, "THIS IS NOT YOUR REVIEW");
+        // info($req->all());
+        $review->start_at = now();
+        $review->save();
+        return redirect($req->redirect_page)->with('feedback.success', '査読を開始しました');
+        //
+    }
+
     /**
      * Update the specified resource in storage.
      * じっさいにはScoreを作成する

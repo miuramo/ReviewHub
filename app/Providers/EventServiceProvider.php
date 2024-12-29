@@ -23,9 +23,9 @@ class EventServiceProvider extends ServiceProvider
         ForbiddenErrorEvent::class => [
             LogForbiddenErrorEvent::class,
         ],
-        \Illuminate\Mail\Events\MessageSending::class => [
-            \App\Listeners\BlockSpecificDomainListener::class,
-        ],
+        // \Illuminate\Mail\Events\MessageSending::class => [
+        //     \App\Listeners\BlockSpecificDomainListener::class,
+        // ],
     ];
 
     /**

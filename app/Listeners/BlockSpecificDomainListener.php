@@ -18,7 +18,8 @@ class BlockSpecificDomainListener
 
     public function handle(MessageSending $event)
     {
-        $blockedDomains = ['example.net', 'test.com', 'googlegroups.com'];
+        // $blockedDomains = ['example.net', 'test.com', 'googlegroups.com'];
+        $blockedDomains = ['googlegroups.com'];
 
         // 宛先のメールアドレスを取得
         $toAddresses = $event->message->getTo(); // Symfony\Component\Mime\Address オブジェクトの配列

@@ -59,6 +59,8 @@ class Task extends Model
             'subject_id' => $revuid,
             'object_id' => auth()->user()->id,
         ]);
+        $task->due_date = $task->addDaysToDate(24);
+        $task->save();
     }
 
     public function workflow()

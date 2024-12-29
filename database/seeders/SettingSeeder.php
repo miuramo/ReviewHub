@@ -15,7 +15,7 @@ class SettingSeeder extends Seeder
     {
         $confname = "日本創造学会論文誌";
         $confabb = "JCS";
-        $mailfrom = "jcs-editorial@googlegroups.com"; // "toukouadmin@interaction-ipsj.org"
+        $mailfrom = "jcs-editorial@istlab.info"; // "toukouadmin@interaction-ipsj.org"
         Setting::factory()->create([
             'name' => "CONFTITLE",
             'value' => $confname,

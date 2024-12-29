@@ -22,6 +22,17 @@
 <tr
     class="border-4 border-slate-300 {{ $loop->iteration % 2 === 0 ? 'bg-neutral-200' : 'bg-white-50 dark:bg-slate-400' }}">
     <td nowrap class="p-4">
+        @php
+            if($itm->mandatory){
+                $noinputcolor = "red";
+                $descmanda = "【必須】";
+            }else{
+                $noinputcolor = "blue";
+                $descmanda = "【任意】";
+            }
+        @endphp
+            <span class="text-{{$noinputcolor}}-600 font-extrabold">{{$descmanda}}</span>
+        <br>
         {{ $itm->desc }} →</td>
     @if ($type == 'selection')
         <td id="{{ $itm->name }}_answer" class="text-xl p-4">
