@@ -13,16 +13,8 @@
     <x-element.paperid size=1 :paper_id="$paper->id" />
     <span class="mx-1"></span>
     {{-- 誰が --}}
-    @php
-        $subRN = $task->workflow->subject;
-        $subRN = str_replace('1', '', $subRN);
-        $subRN = str_replace('2', '', $subRN);
-        $subRN = str_replace('3', '', $subRN);
-        $role = App\Models\Role::findByIdOrName($subRN);
-    @endphp
-    {{-- (R{{ $task->submit->round}}-step{{ $task->workflow->id }}) --}}
-    (R{{ $task->submit->round }})
-    {{ $role->desc ?? '???' }} ({{ $task->subject->name }}) が、
+    (R{{ $task->submit->round }}) &nbsp; 
+    {{ $task->subject->name }} が、
     {{-- 何を --}}
     {{ $task->workflow->description }}
     <span class="mx-2"></span>
@@ -35,19 +27,6 @@
     @endif
     </x-element.h1>
     <div class="mx-2 bg-yellow-100 p-3">
-
-        {{-- <div class="mx-3">
-            論文ファイル：
-            @if ($task->submit->paper->pdf_file_id != 0)
-                <a class="underline text-blue-600 hover:bg-lime-200"
-                    href="{{ route('file.showhash', ['file' => $task->submit->paper->pdf_file_id, 'hash' => substr($task->submit->paper->pdf_file->key, 0, 8)]) }}"
-                    target="_blank">
-                    {{ $task->submit->paper->pdf_file->origname }}
-                </a>
-            @else
-                No File
-            @endif
-        </div> --}}
 
         {{-- もし、割り当てタスクなら --}}
         @if ($task->workflow->task == 'assign')
@@ -245,12 +224,6 @@
         </div>
     @endisset
     </div>
-
-    {{-- <div class="text-sm mt-2 ml-2">
-                <x-enquete.Rev_enqview :rev="$rev">
-                </x-enquete.Rev_enqview>
-            </div> --}}
-
 
     @endif
 

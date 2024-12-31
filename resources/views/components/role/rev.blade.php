@@ -58,13 +58,17 @@
 
 
     @php
-        $myreviews = App\Models\Review::where('user_id', auth()->id())->whereNotNull('end_at')->get();
+        $myreviews = App\Models\Review::where('user_id', auth()->id())
+            ->whereNotNull('end_at')
+            ->orderBy('created_at', 'desc')
+            ->get();
     @endphp
     <div class="px-6 py-4">
         <x-element.h1>最近担当した査読</x-element.h1>
         @foreach ($myreviews as $rev)
             <div class="mx-6 border-2 px-3 py-4 pb-3 bg-white">
                 <x-element.paperid size=1 :paper_id="$rev->paper->id" />
+                R{{ $rev->submit->round }}
 
                 {{ $rev->paper->title }}
 

@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::table('submits', function (Blueprint $table) {
             $table->integer('round')->nullable()->comment("査読ラウンド 1,2,3...")->after('category_id');
             $table->date('resubmit_until')->nullable()->comment("再投稿期限");
-            $table->date('submitted_at')->nullable()->comment("投稿日");
+            $table->datetime('submitted_at')->nullable()->comment("投稿日時");
             $table->date('review_until')->nullable()->comment("査読期限");
-            $table->date('ec_decision_at')->nullable()->comment("判定通知日");
-            $table->date('notify_at')->nullable()->comment("(著者)判定確認日");
+            $table->datetime('ec_decision_at')->nullable()->comment("判定通知日時");
+            $table->datetime('notify_at')->nullable()->comment("(著者)判定確認日時");
             //
         });
     }

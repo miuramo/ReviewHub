@@ -68,6 +68,7 @@ class ViewpointSeeder extends Seeder
                 'desc' => '編集委員向けコメント',
                 'content' => "編集委員向けコメントは著者に返りません。\n;textarea ; 60 ; 5 ; (編集委員会向け) ",
                 'target' => 1,
+                'mandatory' => false,
             ]);
 
             Viewpoint::factory()->create([
@@ -87,6 +88,7 @@ class ViewpointSeeder extends Seeder
                 'content' => "幹事コメントは著者に返ります。\n; textarea ; 60 ; 5 ; （著者に返ります）",
                 'doReturn' => true,
                 'target' => 2,
+                'mandatory' => false,
             ]);
             Viewpoint::factory()->create([
                 'category_id' => $cat,
@@ -95,6 +97,7 @@ class ViewpointSeeder extends Seeder
                 'desc' => '編集委員向けコメント',
                 'content' => "編集委員向けコメントは著者に返りません。\n;textarea ; 60 ; 5 ; (編集委員会向け) ",
                 'target' => 2,
+                'mandatory' => false,
             ]);
 
         }

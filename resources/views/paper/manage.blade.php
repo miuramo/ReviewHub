@@ -71,6 +71,8 @@
                 <span class="mx-2"></span>
             @endforeach
             <x-bb.bb_link :submit="$paper->currentsubmit" type="4"></x-bb.bb_link>
+            <span class="mx-2"></span>
+            <x-bb.bb_link :submit="$paper->currentsubmit" type="3"></x-bb.bb_link>
         </x-element.h1>
     </div>
 
@@ -79,7 +81,7 @@
             過去の査読ラウンド
         </x-element.h1>
 
-        @foreach ($paper->submits as $sub)
+        @foreach ($paper->submits_desc as $sub)
             @if ($sub->ec_decision_at != null)
                 <div class="block">
                     <x-sub.substatus :submit_id="$sub->id" readonly="1"></x-sub.substatus>

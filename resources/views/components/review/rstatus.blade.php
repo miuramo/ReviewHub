@@ -7,9 +7,9 @@
     $setumei = [
         'target' => '種別',
         'status' => '状況',
-        'request_at' => '依頼日',
-        'start_at' => '開始日',
-        'end_at' => '終了日',
+        'request_at' => '依頼日時',
+        'start_at' => '開始日時',
+        'end_at' => '終了日時',
     ];
 @endphp
 
@@ -20,9 +20,6 @@
             <th class="p-1 bg-slate-300" colspan=2>
                 <x-element.login_as :user="$review->user"></x-element.login_as>
                 （{{ $review->user->affil }}）
-                <x-element.component_name type="span">
-                    rstatus
-                </x-element.component_name>
             </th>
             {{-- <th class="p-1 bg-slate-300"></th> --}}
         </tr>
@@ -60,6 +57,10 @@
                         査読担当から外す
                     </x-element.deletebutton>
                 @endif
+                <x-element.component_name>
+                    rstatus
+                </x-element.component_name>
+
             </td>
             <td class="p-1 text-left"></td>
         </tr>

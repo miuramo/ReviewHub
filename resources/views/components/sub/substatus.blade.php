@@ -37,7 +37,7 @@
                     <x-review.commentsubmit_link :sub="$sub" color="purple"
                         label="査読報告をみる"></x-element.commentsubmit_link>
                         <br>
-                        @if (!$readonly)
+                        @if (!$readonly  && $sub->accept_id != 5)
                             <x-sub.disclose :sub="$sub"></x-sub.disclose>
                         @endif
                 </td>

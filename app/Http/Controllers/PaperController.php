@@ -391,8 +391,8 @@ class PaperController extends Controller
             ])->init_reviews();
         }
 
-        $accepts = Accept::select('name', 'id')->get()->pluck('name', 'id')->toArray();
-        return view('paper.review', ['sub' => $id])->with(compact("sub", "accepts"));
+        // $accepts = Accept::select('name', 'id')->get()->pluck('name', 'id')->toArray();
+        return redirect()->route('paper.edit', ['paper' => $sub->paper])->with('feedback.success', '査読結果の確認ありがとうございました。');
     }
 
 
