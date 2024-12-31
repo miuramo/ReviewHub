@@ -58,11 +58,11 @@
             @endisset
         @endisset
         <span class="mx-2"></span>
-        <x-element.linkbutton href="{{ route('paper.review', ['sub' => $sub->id, 'token' => $paper->token()]) }}"
-            color="orange" target="_blank" size="sm">
-            著者がみる査読結果 </x-element.linkbutton>
+        <x-element.linkbutton2 href="{{ route('paper.review', ['sub' => $sub->id, 'token' => $paper->token()]) }}"
+            color="purple" target="_blank" size="sm">
+            著者がみる査読結果 </x-element.linkbutton2>
 
-        @if($bb2 && $bb2->ismeta_myself() )
+        {{-- @if($bb2 && $bb2->ismeta_myself() )
             <span class="mx-4"></span>
             @isset($bb2->paper)
                 <x-element.linkbutton href="{{ route('bb.show', ['bb' => $bb2->id, 'key' => $bb2->key]) }}" color="pink"
@@ -73,7 +73,7 @@
             @else
                 <div>Error: No Paper associated {{ $bb2->id }}</div>
             @endisset
-        @endif
+        @endif --}}
 
     </div>
 

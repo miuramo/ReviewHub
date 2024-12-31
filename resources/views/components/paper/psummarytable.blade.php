@@ -1,6 +1,6 @@
 @props([
     'all' => [],
-    'heads' => ['カテゴリ', 'id', 'status', 'title', '投稿日', '投稿者', '幹事', 'メタ', '1査', '2査'],
+    'heads' => ['カテゴリ', 'id', 'status', 'title', '投稿日', '投稿者', '1査', '2査'],
     'enqans' => [],
 ])
 <!-- components.paper.summarytable -->
@@ -24,21 +24,23 @@
             <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200' : 'bg-white' }}">
                 <td class="p-1 text-center">{{ $paper->category->name }}</td>
                 <td class="p-1 text-center">
-                    <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
-                        class="underline text-blue-600 hover:bg-lime-200" target="_blank">
+                    {{-- <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
+                        class="underline text-blue-600 hover:bg-lime-200" target="_blank"> --}}
                         {{ $paper->id_03d() }}
-                    </a>
+                    {{-- </a> --}}
                 </td>
                 <td class="p-1 text-center">
                     @php
                         $sub = $paper->currentsubmit;
                     @endphp
-                    <a href="{{ route('sub.show', ['sub' => $sub]) }}" class="underline text-blue-600 hover:bg-lime-200"
-                        target="_blank">
-                        {{ $paper->currentsubmit->round }}回目
+                    {{-- <a href="{{ route('sub.show', ['sub' => $sub]) }}" class="underline text-blue-600 hover:bg-lime-200"
+                        target="_blank"> --}}
+                        <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
+                            class="underline text-blue-600 hover:bg-lime-200" target="_blank">
+                            {{ $paper->currentsubmit->round }}回目
                         {{ $paper->currentstatus->name }}
+                    </a>
                 </td>
-                </a>
                 <td class="p-1 text-center block break-all">{{ $paper->title }}
                     @if ($paper->pdf_file_id != 0)
                         <a class="underline text-blue-600 hover:bg-lime-200"
@@ -52,7 +54,8 @@
                 </td>
 
                 <td class="p-1 text-center">{{ $paper->currentsubmit->submitted_at ?? '---' }}</td>
-                <td class="p-1 text-center">{{ $paper->paperowner->name }} ({{ $paper->paperowner->affil }})
+                <td class="p-1 text-center">
+                    <x-element.login_as :user="$paper->paperowner"></x-element.login_as> ({{ $paper->paperowner->affil }})
                 </td>
                 <td class="p-1 text-center">
                     {{-- <x-element.login_as :user="$paper->currentsubmit->aecrep()->user" />
@@ -61,14 +64,6 @@
                 <td class="p-1 text-center">
                     {{-- <x-element.login_as :user="$paper->currentsubmit->meta()->user" />
                     {{ $paper->currentsubmit->isAssigned('meta') ? '' : '?' }} --}}
-                </td>
-                <td class="p-1 text-center">
-                    {{-- <x-element.login_as :user="$paper->currentsubmit->rev1()->user" />
-                    {{ $paper->currentsubmit->isAssigned('rev1') ? '' : '?' }} --}}
-                </td>
-                <td class="p-1 text-center">
-                    {{-- <x-element.login_as :user="$paper->currentsubmit->rev2()->user" />
-                    {{ $paper->currentsubmit->isAssigned('rev2') ? '' : '?' }} --}}
                 </td>
             </tr>
         @endforeach

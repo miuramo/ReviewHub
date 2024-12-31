@@ -6,6 +6,7 @@ use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Paper;
 use App\Models\Review;
+use App\Models\Submit;
 use App\Models\Task;
 use Illuminate\Http\Request;
 
@@ -25,9 +26,10 @@ class TaskController extends Controller
      */
     public function create(Request $req)
     {
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
         // info($req->all());
         $review = Review::find($req->review);
-        $paper = Paper::find($review->paper->id);
+        $paper = Paper::find($review->paper_id);
         $revuid = $req->revuid;
         Task::createReviewTask($paper->currentSubmit, $revuid);
         $review->request_at = now();
@@ -35,6 +37,30 @@ class TaskController extends Controller
         return redirect()->route('paper.manage',['paper' => $paper])->with('feedback.success', '査読タスクを作成しました');
         //
     }
+
+    // public function createhantei(int $sub_id)
+    // {
+    //     if (!auth()->user()->can('role_any', 'ec')) abort(403);
+    //     $sub = Submit::find($sub_id);
+    //     // info($sub);
+    //     // ここに柔軟な査読者の割り当てと査読タスク生成の処理を書く
+    //     $task = Task::create([
+    //         'submit_id' => $sub->id,
+    //         'workflow_id' => 11,
+    //         'subject_id' => auth()->user()->id, 
+    //         'object_id' => auth()->user()->id,
+    //     ]);
+    //     $rev = Review::firstOrCreate([
+    //         'submit_id' => $sub->id,
+    //         'paper_id' => $sub->paper->id,
+    //         'category_id' => $sub->paper->category_id,
+    //         'target' => 2,
+    //         'user_id' => auth()->user()->id,
+    //     ]);
+        
+    //     $paper = Paper::find($sub->paper->id);
+    //     return redirect()->route('paper.manage',['paper' => $paper])->with('feedback.success', '判定タスクを作成しました');
+    // }
 
     /**
      * Store a newly created resource in storage.

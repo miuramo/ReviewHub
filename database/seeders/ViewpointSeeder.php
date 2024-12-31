@@ -75,7 +75,7 @@ class ViewpointSeeder extends Seeder
                 'orderint' => 1,
                 'name' => 'result',
                 'desc' => '措置',
-                'content' => "; selection ; 採択 ; 条件付き ; 不採択",
+                'content' => "; selection ; 採録 ; 条件付き採録 ; 不採録",
                 'doReturn' => true,
                 'target' => 2,
             ]);

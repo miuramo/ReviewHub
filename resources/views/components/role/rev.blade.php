@@ -58,7 +58,7 @@
 
 
     @php
-        $myreviews = App\Models\Review::where('user_id', auth()->id())->where('status', 2)->get();
+        $myreviews = App\Models\Review::where('user_id', auth()->id())->whereNotNull('end_at')->get();
     @endphp
     <div class="px-6 py-4">
         <x-element.h1>最近担当した査読</x-element.h1>
@@ -71,11 +71,11 @@
                 <span class="mx-2"></span>
 
                 <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green">
-                    査読の参照
+                    査読・報告の参照
                 </x-element.linkbutton>
                 <span class="mx-4"></span>
                 <x-element.linkbutton href="{{ route('review.edit', ['review' => $rev]) }}" color="blue">
-                    査読の修正
+                    査読・報告の修正
                 </x-element.linkbutton>
                 <span class="mx-4"></span>
                 <x-bb.bb_link :submit="$rev->submit" type="2" :rev_id="$rev->id" size="sm" label="投稿管理者との掲示板">

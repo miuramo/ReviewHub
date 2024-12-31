@@ -51,6 +51,7 @@
                         <input type="hidden" name="review_id" value="{{ $review->id }}">
                         <input type="hidden" name="viewpoint_id" value="{{ $vpt->id }}">
                         <input type="hidden" name="mandatory" value="{{ $vpt->mandatory }}">
+                        <input type="hidden" name="is_mandatory" value="{{ $vpt->is_mandatory }}">
                         @php
                             $formid = "revform{$vpt->id}";
                             $current = isset($scores[$vpt->id]) ? $scores[$vpt->id]->valuestr : null;

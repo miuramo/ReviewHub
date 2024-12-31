@@ -1,46 +1,65 @@
 @props([
     'review' => null,
+    'readonly' => false,
 ])
 @php
     // $review = App\Models\Review::find($review);
+    $setumei = [
+        'target' => '種別',
+        'status' => '状況',
+        'request_at' => '依頼日',
+        'start_at' => '開始日',
+        'end_at' => '終了日',
+    ];
 @endphp
 
 <!-- components.review.rstatus  -->
-<x-element.component_name type="span">
-    rstatus
-</x-element.component_name>
 <table class="min-w divide-y divide-gray-200 inline-block align-top">
     <thead>
         <tr>
             <th class="p-1 bg-slate-300" colspan=2>
                 <x-element.login_as :user="$review->user"></x-element.login_as>
                 （{{ $review->user->affil }}）
+                <x-element.component_name type="span">
+                    rstatus
+                </x-element.component_name>
             </th>
-            <th class="p-1 bg-slate-300"></th>
+            {{-- <th class="p-1 bg-slate-300"></th> --}}
         </tr>
     </thead>
     <tbody class="bg-white divide-y divide-gray-200">
         @foreach ($review->heads() as $h => $hc)
             <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200' : 'bg-white' }}">
-                <td class="p-1 text-center">{{ $h }} <br><span class="text-xs">{{ $hc }}</span></td>
-                <td class="p-1 text-center">{{ $review->{$h} ?? '--' }}</td>
+                {{-- もし、hcに、が含まれていたら、分割して表示する。 --}}
+                <td class="p-1 text-center">{{ $setumei[$h] }} → </td>
+                @if (strpos($hc, '、') !== false)
+                    @php
+                        $hcs = explode('、', $hc);
+                        $kv = [];
+                        foreach ($hcs as $ichi_wa_hogehoge) {
+                            $suuji_hogehoge = explode('は', $ichi_wa_hogehoge);
+                            $kv[$suuji_hogehoge[0]] = $suuji_hogehoge[1];
+                        }
+                    @endphp
+                    <td class="p-1 text-center">{{ $kv[$review->{$h}] }}</td>
+                @else
+                    <td class="p-1 text-center">{{ $review->{$h} }}</td>
+                @endif
+            </tr>
         @endforeach
-        <tr class="bg-white">
+        <tr class="bg-slate-200">
             <td class="p-1 text-center" colspan=2>
                 <div>
                     <x-task.tswitch :review="$review"></x-task.tswitch>
-                {{-- <x-element.linkbutton href="{{ route('task.create', ['review' => $review, 'revuid' => $review->user->id]) }}" color="blue">
-                    査読開始
-                </x-element.linkbutton> --}}
-            </div>
-                {{-- <span class="mx-2"></span> --}}
-                {{-- {{$review->id}} {{$review->user->name}} --}}
+                </div>
                 <x-bb.bb_link :submit="$review->submit" type="2" :rev_id="$review->id" size="sm"></x-bb.bb_link>
-                <span class="mx-2"></span>
-                <x-element.deletebutton action="{{ route('review.destroy', ['review' => $review]) }}" color="orange" size="sm"
-                    confirm="本当に{{ $review->user->name }}さんを査読者から外してよいですか？（復元はできます）">
-                    査読者から外す
-                </x-element.deletebutton>
+                @if (!$readonly)
+                    <span class="mx-1"></span>
+                    <x-element.deletebutton action="{{ route('review.destroy', ['review' => $review]) }}" color="orange"
+                        size="sm" confirm="本当に{{ $review->user->name }}さんを査読担当から外してよいですか？（復元はできます）">
+                        査読担当から外す
+                    </x-element.deletebutton>
+                @endif
             </td>
             <td class="p-1 text-left"></td>
         </tr>

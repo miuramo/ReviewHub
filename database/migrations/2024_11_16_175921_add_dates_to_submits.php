@@ -16,8 +16,8 @@ return new class extends Migration
             $table->date('resubmit_until')->nullable()->comment("再投稿期限");
             $table->date('submitted_at')->nullable()->comment("投稿日");
             $table->date('review_until')->nullable()->comment("査読期限");
-            $table->date('ec_decision_at')->nullable()->comment("編集委員会判定日");
-            $table->date('notify_at')->nullable()->comment("通知日");
+            $table->date('ec_decision_at')->nullable()->comment("判定通知日");
+            $table->date('notify_at')->nullable()->comment("(著者)判定確認日");
             //
         });
     }

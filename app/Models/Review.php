@@ -53,34 +53,37 @@ class Review extends MetaModel
     }
     /**
      * 査読割り当て
-     * status 2がメタ 1が通常 0が解除
+     * status 3が最終判定 2がメタ 1が通常 0以下が解除
      */
-    public static function review_assign($paper_id, $user_id, $ismeta2)
+    public static function review_assign($submit_id, $user_id, $ismeta2)
     {
-        $paper = Paper::find($paper_id);
         $ismeta2 = intval($ismeta2);
+        $submit = Submit::find($submit_id);
         if ($ismeta2 > 0) {
-            DB::transaction(function () use ($paper, $user_id, $ismeta2) {
+            DB::transaction(function () use ($submit, $user_id, $ismeta2) {
                 // 既存のデータがあれば、それを読み取って修正する
-                $rev = Review::where('user_id', $user_id)->where('paper_id', $paper->id)->first();
+                $rev = Review::where('user_id', $user_id)->where('submit_id', $submit->id)->first();
                 if ($rev != null) {
-                    $rev->submit_id = $paper->submits->first()->id;
-                    $rev->category_id = $paper->category_id;
-                    $rev->target = ($ismeta2 == 2) ? 1 : 0;
+                    $rev->submit_id = $submit->id;
+                    $rev->category_id = $submit->category_id;
+                    $rev->target = $ismeta2 - 1;
                     $rev->save();
                 } else {
                     Review::firstOrCreate([
-                        'submit_id' => $paper->submits->first()->id,
-                        'paper_id' => $paper->id,
+                        'submit_id' => $submit->id,
+                        'paper_id' => $submit->paper->id,
                         'user_id' => $user_id,
-                        'category_id' => $paper->category_id,
-                        'target' => ($ismeta2 == 2) ? 1 : 0,
+                        'category_id' => $submit->category_id,
+                        'target' => $ismeta2 - 1,
                         'status' => 0, // 開始前
                     ]);
                 }
             });
+            // Paperをロックする（最初に1回やればよいが、査読者割り当て時に行う。）
+            $paper = Paper::find($submit->paper_id);
+            $paper->lockAll(true);
         } else {
-            $dat = Review::where([['user_id', $user_id], ['paper_id', $paper_id]])->get();
+            $dat = Review::where([['user_id', $user_id], ['submit_id', $submit_id]])->get();
             foreach ($dat as $r) {
                 $r->delete();
             }
@@ -209,7 +212,7 @@ class Review extends MetaModel
             $query->where('mandatory', 1);
         })->get()->pluck('viewpoint_id')->toArray();
         $finish_vpids = count($finish_vpids_ary);
-        $all_vpids = Viewpoint::where('category_id', $this->category_id)->where('target', $this->target)->where('mandatory',1)->pluck('id')->toArray();
+        $all_vpids = Viewpoint::where('category_id', $this->category_id)->where('target', $this->target)->where('mandatory', 1)->pluck('id')->toArray();
         if ($finish_vpids == 0) {
             $this->status = 0;
         } else if ($finish_vpids == count($all_vpids)) {
@@ -381,9 +384,10 @@ class Review extends MetaModel
         return $ret;
     }
 
-    public function heads(){
+    public function heads()
+    {
         // $fs = ['target','status','request_at','start_at','end_at','created_at','updated_at'];
-        $fs = ['status', 'request_at', 'start_at', 'end_at'];
+        $fs = ['target', 'status', 'request_at', 'start_at', 'end_at'];
         // $fs に該当する、schema comment を取得
         $heads = [];
         $comments = $this->get_table_comments();

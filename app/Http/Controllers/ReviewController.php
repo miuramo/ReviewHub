@@ -163,6 +163,18 @@ class ReviewController extends Controller
         $bb2 = Bb::where('paper_id', $paper->id)->where('type', 2)->first();
         return view("review.commentpaper")->with(compact("sub", "cat_id", "cat", "paper", "bb", "bb2"));
     }
+    // 査読会議でみる、詳細
+    public function comment_submit(Submit $sub, string $token)
+    {
+        if ($sub->token() != $token) return abort(403, "TOKEN ERROR FOR SUBMIT");
+        $cat_id = $sub->category_id;
+        $cat = Category::find($cat_id);
+        $paper = $sub->paper;
+        // 掲示板
+        $bb = Bb::where('paper_id', $paper->id)->where('type', 1)->first();
+        $bb2 = Bb::where('paper_id', $paper->id)->where('type', 2)->first();
+        return view("review.commentpaper")->with(compact("sub", "cat_id", "cat", "paper", "bb", "bb2"));
+    }
 
 
     /**

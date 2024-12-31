@@ -138,9 +138,12 @@ Route::middleware('auth')->group(function () {
 
     Route::get('sub/{sub}/show', [SubmitController::class, 'show'])->name('sub.show'); // 査読管理
     Route::post('sub/{sub}/review_assign', [SubmitController::class, 'review_assign'])->name('sub.review_assign'); // 査読者の割り当て
+    Route::post('sub/{sub}/review_assign_again', [SubmitController::class, 'review_assign_again'])->name('sub.review_assign_again'); // 査読者の割り当て
+    Route::get('sub/{sub}/disclose', [SubmitController::class, 'disclose'])->name('sub.disclose'); // 査読結果の公開
 
     Route::resource('task', TaskController::class);
     Route::put('/task/{task}/approve', [TaskController::class, 'approve'])->name('task.approve');
+    // Route::get('/task/{submit}/createhantei', [TaskController::class, 'createhantei'])->name('task.createhantei');
 
     Route::get('/role', [RoleController::class, 'index'])->name('role.index');
     Route::get('/role/{role}/top', [RoleController::class, 'top'])->name('role.top');
@@ -161,6 +164,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/reviewcomment/{cat}', [ReviewController::class, 'comment'])->name('review.comment'); // ?excel=dl でExcel
     Route::get('/reviewcomment_scoreonly/{cat}', [ReviewController::class, 'comment_scoreonly'])->name('review.comment_scoreonly'); // ?excel=dl でExcel
     Route::get('/reviewcomment/cat/{cat}/paper/{paper}/{token}', [ReviewController::class, 'comment_paper'])->name('review.commentpaper'); //判定会議で見る用
+    Route::get('/reviewcomment_sub/{sub}/{token}', [ReviewController::class, 'comment_submit'])->name('review.commentsubmit'); //ReviewHub 判定はSubmit単位
 
     // 別カテゴリでの採否を追加
     Route::get('addsubmit', [SubmitController::class, 'addsubmit'])->name('pub.addsubmit');

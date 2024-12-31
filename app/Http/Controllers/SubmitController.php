@@ -483,12 +483,38 @@ class SubmitController extends Controller
         return json_encode($out, JSON_THROW_ON_ERROR);
     }
 
-
+    /**
+     * 査読者を割り当てる
+     */
     public function review_assign(Request $req, int $sub_id)
     {
         $sub = Submit::findOrFail($sub_id);
         if (!auth()->user()->can('manage_review', $sub->paper->id)) abort(403, "you are not a manager (manage_review)");
-        Review::review_assign($sub->paper->id, $req->input("reviewer_id"), 1);
+        Review::review_assign($sub->id, $req->input("reviewer_id"),  $req->input('target') );
         return redirect($req->input("redirect_page"))->with('feedback.success', '査読者を割り当てました');
+    }
+    /**
+     * ひとつ前のRoundの査読者を割り当てる
+     */
+    public function review_assign_again(Request $req, int $sub_id)
+    {
+        $sub = Submit::findOrFail($sub_id);
+        if (!auth()->user()->can('manage_review', $sub->paper->id)) abort(403, "you are not a manager (manage_review)");
+        $presub = Submit::where("paper_id", $sub->paper->id)->where("round", $sub->round -1 )->first();
+        $previews = Review::where("submit_id", $presub->id)->get();
+        foreach($previews as $pre){
+            Review::review_assign($sub->id, $pre->user_id,  $pre->target+1 );
+        }        
+        return redirect($req->input("redirect_page"))->with('feedback.success', "以前とおなじ査読者を割り当てました");
+    }
+    /**
+     * 査読結果を著者に開示する
+     */
+    public function disclose(Request $req, int $sub_id)
+    {
+        $sub = Submit::findOrFail($sub_id);
+        if (!auth()->user()->can('manage_review', $sub->paper->id)) abort(403, "you are not a manager (manage_review)");
+        $sub->setDecision();
+        return redirect()->route('paper.manage',['paper'=>$sub->paper->id])->with('feedback.success', '査読結果を開示しました');
     }
 }

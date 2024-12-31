@@ -64,29 +64,34 @@ class Submit extends MetaModel
         // まずは、該当するWorkflowを取得
         $workflow = Workflow::where('object', $rollname)->first();
         // 次に、そのWorkflowに対応するTaskを取得
-        $task = Task::where('submit_id', $this->id)->where('workflow_id', $workflow->id)->where('approved',1)->first();
+        $task = Task::where('submit_id', $this->id)->where('workflow_id', $workflow->id)->where('approved', 1)->first();
         // Taskが存在しない場合は、割り当てられていない
         if ($task == null) return false;
         // Taskが存在する場合は、object_idが設定されているかどうかを返す
         return true;
     }
 
-    public function getReviewResult($key){
+    /**
+     * 最終判定のresultを取得する
+     */
+    public function getReviewResult($key)
+    {
         $vpid = Viewpoint::where('name', $key)->first()->id;
-        $score = Score::where('viewpoint_id', $vpid)->first();
+        $revids = $this->reviews->pluck('id');
+        $score = Score::where('viewpoint_id', $vpid)->whereIn('review_id', $revids)->first();
         if ($score == null) return null;
         return $score->valuestr;
     }
 
     // public function updateStatus()
     // {
-        // if ($this->rev1()->user_id != null && $this->rev2()->user_id != null) {
-        //     $this->paper->status_id = 5;
-        //     $this->paper->save();
-        // } else if ($this->meta()->user_id != null) {
-        //     $this->paper->status_id = 4;
-        //     $this->paper->save();
-        // }
+    // if ($this->rev1()->user_id != null && $this->rev2()->user_id != null) {
+    //     $this->paper->status_id = 5;
+    //     $this->paper->save();
+    // } else if ($this->meta()->user_id != null) {
+    //     $this->paper->status_id = 4;
+    //     $this->paper->save();
+    // }
     // }
 
     public function init_reviews()
@@ -120,8 +125,9 @@ class Submit extends MetaModel
         if ($numtasks == 0) Workflow::createTasks($this);
     }
 
-    public function heads(){
-        $fs = ['resubmit_until', 'submitted_at', 'review_until', 'ec_decision_at', 'notify_at'];
+    public function heads()
+    {
+        $fs = ['resubmit_until', 'submitted_at', 'accept_id', 'ec_decision_at', 'notify_at'];
         // $fs に該当する、schema comment を取得
         $heads = [];
         $comments = $this->get_table_comments();
@@ -135,7 +141,7 @@ class Submit extends MetaModel
      */
     public function token()
     {
-        return sha1($this->id . $this->paper_id . $this->category_id. $this->created_at);
+        return sha1($this->id . $this->paper_id . $this->category_id . $this->created_at);
     }
 
     public static function subs_accepted(int $cat_id, string $ord = "orderint")
@@ -147,13 +153,13 @@ class Submit extends MetaModel
     }
     public static function subs_all(int $cat_id, string $ord = "orderint")
     {
-        $subs = Submit::with('paper')->where("category_id", $cat_id)->whereNot("paper_id",0)->orderBy($ord)->get();
+        $subs = Submit::with('paper')->where("category_id", $cat_id)->whereNot("paper_id", 0)->orderBy($ord)->get();
         return $subs;
     }
 
-/**
- * このSubmitに関連するReviewの点数を更新する
- */
+    /**
+     * このSubmitに関連するReviewの点数を更新する
+     */
     public function updateScoreStat()
     {
         // まず、このSubmitに関連するReviewを取得
@@ -173,7 +179,7 @@ class Submit extends MetaModel
         }
         $this->save();
     }
- 
+
     /**
      * すべてのSubmitの点数統計(score, stddevscore)を更新する
      */
@@ -183,5 +189,31 @@ class Submit extends MetaModel
         foreach ($subs as $sub) {
             $sub->updateScoreStat();
         }
+    }
+
+    public function updateCurrentDecision()
+    {
+        $result = $this->getReviewResult("result");
+        if (strpos($result, "条件付き") !== false) {
+            $this->accept_id = 2; //条件付き
+        } elseif (strpos($result, "採") === 0) {
+            $this->accept_id = 1; //採録
+        } elseif (strpos($result, "不") === 0) {
+            $this->accept_id = 6; //不採録
+        }
+        $this->save();
+    }
+
+    public function setDecision()
+    {
+        $this->updateCurrentDecision();
+        if ($this->accept_id == 2) {
+            $this->paper->lockAll(false);
+        }
+        $this->ec_decision_at = now();
+        $this->save();
+
+            $this->paper->status_id = 9; //査読結果通知済み
+            $this->paper->save();
     }
 }

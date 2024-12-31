@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('paper_id')->nullable();
             $table->integer('category_id')->nullable();
             $table->integer('user_id')->nullable()->comment("ReviewerID");
-            $table->integer('target')->default(0)->comment("0は普通の査読、1はメタ査読、2は担当幹事");
+            $table->integer('target')->default(0)->comment("0は通常査読、1はメタ査読、2は最終判定");
             $table->integer('status')->nullable()->comment("0は未回答、1は回答中、2は完了");
             $table->timestamps();
         });

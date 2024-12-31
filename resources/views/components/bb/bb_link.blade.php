@@ -23,6 +23,6 @@
     bb_link
 </x-element.component_name> --}}
 
-<x-element.linkbutton href="{{ $bburl }}" target="_blank" color="pink" size="{{ $size }}">
+<x-element.linkbutton2 href="{{ $bburl }}" target="_blank" color="green" size="{{ $size }}">
     {{$label}}
-</x-element.linkbutton>
+</x-element.linkbutton2>

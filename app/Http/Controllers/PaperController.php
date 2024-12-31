@@ -522,6 +522,10 @@ class PaperController extends Controller
     {
         $paper = Paper::findOrFail($paper_id);
         if (!auth()->user()->can('manage_review', $paper_id)) abort(403, "you are not a manager");
+
+        // 最終判定があれば、それを反映する。本来task complete時にやるが、そのあと修正するかもしれないので。
+        $paper->currentsubmit->updateCurrentDecision();
+
         return view('paper.manage')->with(compact("paper"));
     }
 }

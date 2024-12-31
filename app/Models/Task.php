@@ -243,21 +243,12 @@ class Task extends Model
         }
     }
 
+    /**
+     * Submitに移動したほうがよい
+     */
     public function setDecision()
     {
-        // 自動タスク進行で、もし幹事の措置が空の場合、または、条件付きの場合、査読結果を条件付きにする
-        $result = $this->submit->getReviewResult("result");
-        if ($result == null || strpos($result,"条件付き") !== false){
-            $this->submit->accept_id = 2; //条件付き
-        } elseif (strpos($result,"採") === 0){
-            $this->submit->accept_id = 1; //採録
-        } elseif (strpos($result,"不") === 0){
-            $this->submit->accept_id = 6; //不採録
-        }
-        $this->submit->save();
-
-        $this->submit->paper->status_id = 9; //査読結果通知済み
-        $this->submit->paper->save();
+        $this->submit->setDecision();
     }
 
 }

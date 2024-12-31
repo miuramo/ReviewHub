@@ -1,6 +1,6 @@
 <x-app-layout>
     @php
-        $names = [1 => '著者との', 2 => '査読者との', 3 => '全査読者との', 4 => '投稿管理者同士の'];
+        $names = [1 => '著者と投稿管理者の連絡', 2 => '査読者との', 3 => '全査読者との', 4 => '投稿管理者同士の'];
     @endphp
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400">

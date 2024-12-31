@@ -13,9 +13,9 @@
         <x-alert.error>{{ session('feedback.error') }}</x-alert.error>
     @endif
 
-    <div>
+    {{-- <div>
         <x-paper.psummarytable />
-    </div>
+    </div> --}}
 
     <div class="mx-6">
         <table class="table-auto">

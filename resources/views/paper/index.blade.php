@@ -56,17 +56,8 @@
                         @endif
                     @endforeach
 
-                    @php
-                        $bb = App\Models\Bb::where('paper_id', $paper->id)
-                            ->where('type', 2) // 2: メタと著者 この条件を忘れると、議論用が表示されてしまうため注意
-                            ->first();
-                    @endphp
-                    @isset($bb)
                         <span class="mx-1"></span>
-                        <x-element.linkbutton href="{{ route('bb.show', ['bb' => $bb, 'key' => $bb->key]) }}" color="pink"
-                            target="_blank">
-                            掲示板 </x-element.linkbutton>
-                    @endisset
+                        <x-bb.bb_link :submit="$paper->currentsubmit" type="1" label="投稿管理者に連絡"></x-bb.bb_link>
 
                     <a href="{{ route('paper.edit', ['paper' => $paper->id]) }}">
                         <x-file.paperheadimg :paper=$paper>

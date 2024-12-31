@@ -266,7 +266,7 @@
 
             <div class="m-6">
                 <div class="text-lg my-5 p-1 bg-slate-200 rounded-lg dark:bg-slate-800 dark:text-slate-400">
-                    @if ($submit_finished)
+                    @if (@$submit_finished)
                         <div class="mx-5 my-5 bg-cyan-200 p-5">
                             <x-element.linkbutton href="{{ route('paper.sendsubmitted', ['paper' => $paper->id]) }}"
                                 color="cyan" confirm="本当にメール送信しますか？">
