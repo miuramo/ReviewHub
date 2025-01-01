@@ -25,6 +25,8 @@
         <x-paper.shoshi_list :paper="$paper">
         </x-paper.shoshi_list>
         投稿者：<x-element.login_as :user="$paper->paperowner"></x-element.login_as>
+        <span class="mx-2"></span>
+        <x-bb.bb_link :submit="$paper->currentsubmit" type="1"></x-bb.bb_link>
     </div>
 
 

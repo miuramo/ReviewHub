@@ -11,10 +11,11 @@
     <x-element.paperid :paper_id="$task->submit->paper->id" />
     <span class="mx-1"></span>
     {{-- 誰が --}}
-    @php
+    {{-- @php
         $role = App\Models\Role::findByIdOrName($task->workflow->subject);
-    @endphp
-    {{ $role->desc ?? '???' }} ({{ $task->subject->name }}) が、 あなたに
+    @endphp --}}
+    {{-- {{ $role->desc ?? '???' }}  --}}
+    {{ $task->subject->name }} が、 あなたに
     {{-- 何を --}}
     {{ str_replace('を割り当てる', 'の担当を依頼しています', $task->workflow->description) }}
     <span class="mx-2"></span>

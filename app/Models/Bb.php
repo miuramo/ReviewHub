@@ -109,7 +109,29 @@ class Bb extends MetaModel
         if ($bb == null) return null;
         return $bb->url();
     }
-
+    public function get_participants()
+    {
+        $retuobj = [];
+        foreach($this->paper->managers as $manager){
+            $retuobj[] = $manager;
+        }
+        if ($this->type == 1) {
+            $retuobj[] = $this->paper->paperowner;
+            foreach($this->paper->contacts as $contact){
+                $retuobj[] = $contact;
+            }
+        } else if ($this->type == 2) {
+            $review = Review::with('user')->find($this->rev_id);
+            $retuobj[] = $review->user;
+        } else if ($this->type == 3) {
+            $reviews = Review::with('user')->where("paper_id", $this->paper_id)->where("submit_id", $this->submit_id)->get();
+            foreach($reviews as $review){
+                $retuobj[] = $review->user;
+            }
+        } else if ($this->type == 4) {
+        }
+        return $retuobj;
+    }
     public function get_mail_to_cc()
     {
         $tolist = [];

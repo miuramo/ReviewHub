@@ -29,6 +29,28 @@
 
     <div class="py-2 px-6">
         <x-paper.shoshi_list :paper="$bb->paper"></x-paper.shoshi_list>
+
+
+        <x-element.button id="toggleButton" value="参加者をみる" color="lime" onclick="openclose('div_bbparticipants')">
+        </x-element.button>
+        @php
+            $uclist = $bb->get_participants();
+        @endphp
+        <div class="hidden-content p-2 bg-lime-100" style="display:none" id="div_bbparticipants">
+            @foreach ($uclist as $uc)
+                @if ($uc instanceof App\Models\User)
+                    <div class="inline-block bg-lime-200 p-1 m-1 rounded-md">
+                        <x-element.login_as :user="$uc"></x-element.login_as>
+                    </div>
+                @else
+                    <div class="inline-block bg-lime-200 p-1 m-1 rounded-md">
+                        {{ $uc->email }}
+                    </div>
+                @endif
+            @endforeach
+        </div>
+
+
         @foreach ($bb->messages as $mes)
             <x-bb.mes :mes="$mes"></x-bb.mes>
         @endforeach
