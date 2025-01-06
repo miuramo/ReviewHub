@@ -180,6 +180,7 @@
                             @csrf
                             @method('PUT')
                             <input type="hidden" name="task" value="{{ $task->id }}">
+                            <input type="hidden" name="rev_id" value="{{ $rev->id }}">
                             <input type="hidden" name="redirect_role" value="{{ $task->workflow->subject }}">
                             <x-element.submitbutton color="cyan" value="assign">査読完了を報告する</x-element.submitbutton>
                         </form>

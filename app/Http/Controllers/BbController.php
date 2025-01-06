@@ -44,13 +44,14 @@ class BbController extends Controller
      */
     public function create(string $serial)
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin|manager|ce|rev|meta')) abort(403,'権限がありません');
         $bb = Bb::gen_from_serial($serial);
         return redirect()->route('bb.show', ['bb' => $bb->id, 'key' => $bb->key]);
     }
 
     /**
      * Store a newly created resource in storage.
+     * 掲示板作成
      */
     public function store(Request $req)
     {

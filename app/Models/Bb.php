@@ -11,13 +11,6 @@ class Bb extends MetaModel
 {
     use HasFactory;
 
-    // protected $attributes = [
-    //     'members' => '[]',
-    // ];
-    // protected $casts = [
-    //     'members' => 'array',
-    // ];
-
     protected $fillable = [
         'name',
         'paper_id',
@@ -48,6 +41,29 @@ class Bb extends MetaModel
         // メッセージの数を返す        
         return $this->hasMany(BbMes::class, 'bb_id')->count();
     }
+
+    /**
+     * TaskController.create または
+     * TaskController.update から呼ばれる。
+     */
+    public static function add_message(Submit $sub, $type, $subject, $mes, $rev_id = 0)
+    {
+        $bb = Bb::where('paper_id', $sub->paper->id)->where('type', $type)->where('rev_id', $rev_id)->first();
+        if (!$bb){
+            $bb = Bb::make_bb($sub, $type, $rev_id);
+        }
+        $bbmes = BbMes::create([
+            'bb_id' => $bb->id,
+            'user_id' => auth()->id(),
+            'subject' => $subject,
+            'mes' => $mes,
+        ]);
+        //メール通知
+        (new BbNotify($bb, $bbmes))->process_send();
+
+        return $bb;
+    }
+
     public static function make_bb(Submit $sub, int $type = 1, int $rev_id = 0)
     {
         $firstmes = [
@@ -64,14 +80,13 @@ class Bb extends MetaModel
         ], [
             'key' => Str::random(30),
         ]);
-        $mes = BbMes::firstOrCreate([
+        $mes = BbMes::create([
             'bb_id' => $bb->id,
-        ], [
             'user_id' => 0,
             'subject' => 'ごあんない',
             'mes' => $firstmes[$type],
         ]);
-        return Bb::with("messages")->with("paper")->find($bb->id);
+        return $bb;
     }
     public static function gen_make_url(int $sub_id, int $type, int $rev_id = 0)
     {
@@ -88,11 +103,11 @@ class Bb extends MetaModel
     /**
      * Bb通知メールをおくる
      */
-    public static function send_email_nofity(Bb $bb, BbMes $bbmes)
-    {
-        // pcのみ利害関係に注意する。
-        (new BbNotify($bb, $bbmes))->process_send();
-    }
+    // public static function send_email_nofity(Bb $bb, BbMes $bbmes)
+    // {
+    //     // pcのみ利害関係に注意する。
+    //     (new BbNotify($bb, $bbmes))->process_send();
+    // }
     public function url()
     {
         return route('bb.show', ['bb' => $this->id, 'key' => $this->key]);
@@ -121,8 +136,9 @@ class Bb extends MetaModel
                 $retuobj[] = $contact;
             }
         } else if ($this->type == 2) {
-            $review = Review::with('user')->find($this->rev_id);
-            $retuobj[] = $review->user;
+            $revobj = Review::find($this->rev_id);
+            $revuser = User::find($revobj->user_id);
+            $retuobj[] = $revuser;
         } else if ($this->type == 3) {
             $reviews = Review::with('user')->where("paper_id", $this->paper_id)->where("submit_id", $this->submit_id)->get();
             foreach($reviews as $review){
@@ -150,8 +166,11 @@ class Bb extends MetaModel
             $tolist[] = $to_cc_list['to'];
             $bcclist = array_merge($bcclist, $to_cc_list['cc']);
         } else if ($this->type == 2) {
-            $review = Review::with('user')->find($this->rev_id);
-            $tolist[] = $review->user->email;
+            // reload this from db
+            info("this rev_id ".$this->rev_id);
+            $revobj = Review::find($this->rev_id);
+            $revuser = User::find($revobj->user_id);
+            $tolist[] = $revuser->email;
         } else if ($this->type == 3) {
             $reviews = Review::with('user')->where("paper_id", $this->paper_id)->where("submit_id", $this->submit_id)->get();
             foreach($reviews as $review){

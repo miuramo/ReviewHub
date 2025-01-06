@@ -24,5 +24,5 @@
 </x-element.component_name> --}}
 
 <x-element.linkbutton2 href="{{ $bburl }}" target="_blank" color="green" size="{{ $size }}">
-    {{$label}}
+    {{$label}} {{$rev_id}}
 </x-element.linkbutton2>

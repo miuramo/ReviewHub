@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Models\Bb;
 use App\Models\Paper;
 use App\Models\Review;
 use App\Models\Submit;
@@ -23,18 +24,27 @@ class TaskController extends Controller
     /**
      * Show the form for creating a new resource.
      * 査読開始ボタンを押したとき
+     * 査読開始ボタンは、tswitch (in rstatus)
      */
     public function create(Request $req)
     {
         if (!auth()->user()->can('role_any', 'ec')) abort(403);
         // info($req->all());
         $review = Review::find($req->review);
-        $paper = Paper::find($review->paper_id);
+        $paper = Paper::with('currentSubmit')->find($review->paper_id);
         $revuid = $req->revuid;
         Task::createReviewTask($paper->currentSubmit, $revuid);
         $review->request_at = now();
         $review->save();
-        return redirect()->route('paper.manage',['paper' => $paper])->with('feedback.success', '査読タスクを作成しました');
+        Bb::add_message(
+            $paper->currentSubmit,
+            2,
+            '査読のお願い',
+            "査読者のかたへ\nお忙しいところすみませんが、査読をお願いいたします。\n\n以下のURLから、確認してください。\n" . env('APP_URL') . "/role/rev/top",
+            $review->id,
+        );
+
+        return redirect()->route('paper.manage', ['paper' => $paper])->with('feedback.success', '査読タスクを作成しました');
         //
     }
 
@@ -57,7 +67,7 @@ class TaskController extends Controller
     //         'target' => 2,
     //         'user_id' => auth()->user()->id,
     //     ]);
-        
+
     //     $paper = Paper::find($sub->paper->id);
     //     return redirect()->route('paper.manage',['paper' => $paper])->with('feedback.success', '判定タスクを作成しました');
     // }
@@ -89,6 +99,7 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      * 査読完了を報告する
+     * from: 
      */
     public function update(Request $req, Task $task)
     {
@@ -101,7 +112,15 @@ class TaskController extends Controller
         $jumprole = str_replace('2', '', $jumprole);
         $jumprole = str_replace('3', '', $jumprole);
 
+
         if ($ret) {
+            Bb::add_message(
+                $task->submit,
+                2,
+                '査読完了の報告',
+                "投稿管理者のかたへ\n査読報告の編集が完了しましたことを、報告します。",
+                $req->rev_id,
+            );
             return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.success', '査読へのご協力ありがとうございました。');
         } else {
             return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.error', 'タスク処理に失敗しました');

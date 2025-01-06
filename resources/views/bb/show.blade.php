@@ -56,7 +56,7 @@
         @endforeach
 
         <div class="text-right mt-1">
-            <form action="{{ route('bb.store', ['bb' => $bb->id, 'key' => $bb->key]) }}" method="post" id="post_bbmes"
+            <form action="{{ route('bbmes.store', ['bb' => $bb->id, 'key' => $bb->key]) }}" method="post" id="post_bbmes"
                 enctype="multipart/form-data" onsubmit="return showMessageBeforeSend();">
                 @csrf
                 @method('post')

@@ -240,7 +240,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('bb', [BbController::class, 'destroy'])->name('bb.destroy'); // 全削除
     Route::delete('bb_destroy_bytype', [BbController::class, 'destroy_bytype'])->name('bb.destroy_bytype'); // 種別ごとに削除
     Route::get('bb/{bb}/{key}', [BbController::class, 'show'])->name('bb.show')->where('key', '([0-9A-Za-z]+)');
-    Route::post('bb/{bb}/{key}', [BbMesController::class, 'store'])->name('bb.store')->where('key', '([0-9A-Za-z]+)');
+    Route::post('bb/{bb}/{key}', [BbMesController::class, 'store'])->name('bbmes.store')->where('key', '([0-9A-Za-z]+)');
 
     // 参加登録
     Route::resource('part', ParticipantController::class);

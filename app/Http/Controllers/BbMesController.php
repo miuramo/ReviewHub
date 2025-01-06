@@ -29,6 +29,7 @@ class BbMesController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * 新しい投稿・掲示板への書き込み
      */
     public function store(Request $req, int $bbid, string $key2)
     {
