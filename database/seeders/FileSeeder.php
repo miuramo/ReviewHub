@@ -20,8 +20,7 @@ class FileSeeder extends Seeder
      */
     public function run(): void
     {
-        if (!App::environment('testing')) {
-            // File::factory()->count(1)->create();
+        if (!App::environment('testing') && env('APP_DEBUG')) {
             $file = new UploadedFile('./tests/Feature/_int.pdf', '_int.pdf', 'application/pdf', null, true);
             $f = File::createnew($file, 1, 3);
             $f->filetype_id = 1;
