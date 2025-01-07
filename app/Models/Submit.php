@@ -39,22 +39,22 @@ class Submit extends MetaModel
     {
         return $this->belongsTo(User::class, 'aec_id');
     }
-    public function aecrep()
-    {
-        return $this->reviews()->where('target', 2)->first();
-    }
-    public function meta()
-    {
-        return $this->reviews()->where('target', 1)->first();
-    }
-    public function rev1()
-    {
-        return $this->reviews()->where('target', 0)->first();
-    }
-    public function rev2()
-    {
-        return $this->reviews()->where('target', 0)->skip(1)->first();
-    }
+    // public function aecrep()
+    // {
+    //     return $this->reviews()->where('target', 2)->first();
+    // }
+    // public function meta()
+    // {
+    //     return $this->reviews()->where('target', 1)->first();
+    // }
+    // public function rev1()
+    // {
+    //     return $this->reviews()->where('target', 0)->first();
+    // }
+    // public function rev2()
+    // {
+    //     return $this->reviews()->where('target', 0)->skip(1)->first();
+    // }
     public function tasks()
     {
         return $this->hasMany(Task::class);

@@ -268,10 +268,14 @@
                 <div class="text-lg my-5 p-1 bg-slate-200 rounded-lg dark:bg-slate-800 dark:text-slate-400">
                     @if (@$submit_finished)
                         <div class="mx-5 my-5 bg-cyan-200 p-5">
+                            @if($paper->locked)
+                                投稿は完了しています。査読中のため、投稿はロックされています。
+                            @else
                             <x-element.linkbutton href="{{ route('paper.sendsubmitted', ['paper' => $paper->id]) }}"
                                 color="cyan" confirm="本当にメール送信しますか？">
                                 投稿完了通知メールを送信
                             </x-element.linkbutton> を押すと、投稿完了となります。（編集委員にも通知されます。）
+                            @endif
                         </div>
                     @else
                         @if ($revreturn[$paper->category_id])

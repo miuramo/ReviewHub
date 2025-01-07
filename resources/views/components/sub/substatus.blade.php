@@ -5,6 +5,7 @@
 @php
     $sub = App\Models\Submit::find($submit_id);
     $accepts = App\Models\Accept::pluck('name', 'id')->toArray();
+    $statuses = App\Models\Status::pluck('name', 'id')->toArray();
 @endphp
 <!-- components.sub.status  親は -->
 <div class="bg-pink-100 rounded-lg p-2 inline-block align-top">
@@ -16,8 +17,12 @@
     <table class="min-w divide-y divide-gray-200 inline-block">
         <thead>
             <tr>
-                <th class="p-1 bg-slate-300">ラウンド</th>
-                <th class="p-1 bg-slate-300">{{ $sub->round }} &nbsp; <sub>(subid={{ $sub->id }})</sub></th>
+                <th class="p-1 bg-slate-300">ラウンド {{ $sub->round }} 
+
+                </th>
+                <th class="p-1 bg-slate-300">
+                    {{$sub->paper->currentstatus->name}}
+                </th>
             </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">

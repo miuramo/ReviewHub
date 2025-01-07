@@ -12,6 +12,7 @@ use App\Models\EnqueteAnswer;
 use App\Models\File;
 use App\Models\Paper;
 use App\Models\Setting;
+use App\Models\Status;
 use App\Models\Submit;
 use App\Models\User;
 use DateTime;
@@ -68,6 +69,7 @@ class PaperController extends Controller
         // info($all[0]->currentstatus);
         foreach ($all as $p) {
             $p->validate_accepted();
+            Status::updatePaperStatus($p->currentsubmit);
         }
 
         $coauthor_all = new Collection();
@@ -525,6 +527,7 @@ class PaperController extends Controller
 
         // 最終判定があれば、それを反映する。本来task complete時にやるが、そのあと修正するかもしれないので。
         $paper->currentsubmit->updateCurrentDecision();
+        Status::updatePaperStatus($paper->currentsubmit);
 
         return view('paper.manage')->with(compact("paper"));
     }
