@@ -83,10 +83,11 @@
                                 {{ __('Profile') }}
                             </x-dropdown-link>
 
+                            @if(env('APP_DEBUG'))
                             <x-responsive-nav-link :href="route('role.index')">
                                 {{ __('Switch User') }}
                             </x-responsive-nav-link>
-
+                            @endif
                             
                             <!-- Authentication -->
                             <form method="POST" action="{{ route('logout') }}">
