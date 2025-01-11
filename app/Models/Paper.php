@@ -243,11 +243,12 @@ class Paper extends Model
     {
         $submit = $this->currentsubmit;
         if ($submit == null) return false;
+        if ($submit->reviews()->where('user_id', $uid)->exists()) return true;
         if ($submit->aec_id == $uid) return true;
-        if ($submit->meta()->user_id == $uid) return true;
-        if ($submit->rev1()->user_id == $uid) return true;
-        if ($submit->rev2()->user_id == $uid) return true;
-        if ($submit->rev3()->user_id == $uid) return true;
+        // if ($submit->meta()->user_id == $uid) return true;
+        // if ($submit->rev1()->user_id == $uid) return true;
+        // if ($submit->rev2()->user_id == $uid) return true;
+        // if ($submit->rev3()->user_id == $uid) return true;
         return false;
     }
     public function isManager(int $uid)
