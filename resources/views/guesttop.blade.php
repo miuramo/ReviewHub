@@ -24,7 +24,7 @@
     @isset($cfpurl)
         <div class="my-4 mx-8 px-6">
             <!-- CFPリンクの設定は、Setting:CFP_LINKTEXT CFP_URL -->
-            <a href="{{ $cfpurl->value }}"
+            <a target="_blank" href="{{ $cfpurl->value }}"
                 class="hover:underline hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-500 text-2xl p-2">{{ $cfplinktext }}</a>
         </div>
     @endisset
