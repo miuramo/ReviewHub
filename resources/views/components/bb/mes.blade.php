@@ -3,7 +3,7 @@
 ])
 <!-- components.bb.mes  -->
 @php
-    $mes->mes = App\Models\Review::urllink($mes->mes);
+    $mes->mes = App\Models\Review::urllink(htmlspecialchars($mes->mes, ENT_QUOTES, 'UTF-8'));
     $mes->mes = strip_tags($mes->mes, '<a>');
 @endphp
 
