@@ -2,6 +2,12 @@
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400 ">
             {{ __('新規投稿') }}
+            <span class="mx-6"></span>
+            <x-element.linkbutton
+            href="https://scrapbox.io/reviewhub/%E6%8A%95%E7%A8%BF%E3%83%9E%E3%83%8B%E3%83%A5%E3%82%A2%E3%83%AB"
+            color="lime" size="sm" target="_blank">
+            投稿マニュアル (Cosense/Scrapbox)</x-element.linkbutton>
+
         </h2>
     </x-slot>
     <!-- paper.create -->

@@ -12,9 +12,9 @@
             <span class="mx-4"></span>
             @if ($role->name == 'ec')
                 <x-element.linkbutton
-                    href="https://scrapbox.io/reviewhub/"
+                    href="https://scrapbox.io/reviewhub/%E7%B7%A8%E9%9B%86%E9%95%B7%E3%81%AE%E4%BD%9C%E6%A5%AD"
                     color="cyan" size="sm" target="_blank">
-                    マニュアル (Cosense/Scrapbox)</x-element.linkbutton>
+                    編集管理マニュアル (Cosense/Scrapbox)</x-element.linkbutton>
             @endif
         </h2>
     </x-slot>
