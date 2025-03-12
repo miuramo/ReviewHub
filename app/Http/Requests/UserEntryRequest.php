@@ -38,6 +38,19 @@ class UserEntryRequest extends FormRequest
      */
     public function shori(): object
     {
+        $client = new Client();
+        $response = $client->post('https://www.google.com/recaptcha/api/siteverify', [
+            'form_params' => [
+                'secret' => env('RECAPTCHA_SECRET_KEY'),
+                'response' => $this->input('g-recaptcha-response')
+            ]
+        ]);
+        $body = json_decode($response->getBody());
+
+        if (!$body->success) {
+            return back()->withErrors(['captcha' => 'reCAPTCHA verification failed']);
+        }
+
         $em = $this->input("email");
         try {
             $user = User::create([
