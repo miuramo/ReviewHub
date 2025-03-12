@@ -71,7 +71,7 @@ class UserEntryRequest extends FormRequest
 
         // 初回のみ、パスワード再設定メールを変更している。see User.php
         Password::sendResetLink($this->only('email'));
-        return redirect()->route('entry')->with('feedback.success', "メールで認証URLを送信しました ({$em})");
+        return redirect()->route('entry')->with('feedback.success', "メールで認証URLを送信しました ({$em}) お手数ですが、迷惑メールフォルダも確認してください。");
         // Mail::to($em)->send(new FirstInvitation($em));
     }
 }
