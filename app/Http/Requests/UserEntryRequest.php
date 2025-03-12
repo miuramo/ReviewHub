@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Mail\FirstInvitation;
 use App\Models\User;
+use GuzzleHttp\Client;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Hash;
