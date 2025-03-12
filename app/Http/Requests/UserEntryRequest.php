@@ -49,7 +49,7 @@ class UserEntryRequest extends FormRequest
         $body = json_decode($response->getBody());
 
         if (!$body->success) {
-            return back()->withErrors(['feedback.error' => 'reCAPTCHA verification failed']);
+            return back()->with(['feedback.error' => 'reCAPTCHA verification failed']);
         }
 
         $em = $this->input("email");
