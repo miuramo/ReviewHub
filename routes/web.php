@@ -153,6 +153,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/role/{role}/edit', [RoleController::class, 'editpost'])->name('role.editpost');
     Route::put('/role_adduser', [RoleController::class, 'adduser'])->name('role.adduser');
     Route::delete('/role/{role}/leave/{user}', [RoleController::class, 'leave'])->name('role.leave');
+    Route::put('/role_remove_manager', [RoleController::class, 'remove_manager'])->name('role.remove_manager');
     // 査読割り当て
     Route::get('/role/{role}/revassign/{cat}', [RoleController::class, 'revassign'])->name('role.revassign');
     Route::post('/role/{role}/revassign/{cat}', [RoleController::class, 'revassignpost'])->name('role.revassignpost');

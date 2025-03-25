@@ -70,6 +70,9 @@
         <x-element.h1>投稿管理者：
             @foreach ($paper->managers as $user)
                 <x-element.login_as :user="$user"></x-element.login_as>
+                @if($user->id == Auth::user()->id)
+                    <x-role.remove_manager :submit_id="$paper->currentsubmit->id" :user_id="$user->id"></x-role.remove_manager>
+                @endif
                 <span class="mx-2"></span>
             @endforeach
             <x-bb.bb_link :submit="$paper->currentsubmit" type="4"></x-bb.bb_link>

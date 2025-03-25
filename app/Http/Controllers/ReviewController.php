@@ -339,4 +339,5 @@ class ReviewController extends Controller
             return response()->json(['message' => 'Zipファイルを作成できませんでした。'], 500);
         }
     }
+
 }

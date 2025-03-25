@@ -7,6 +7,7 @@ use App\Exports\RoleMembersExportFromView;
 use App\Models\Category;
 use App\Models\Confirm;
 use App\Models\MailTemplate;
+use App\Models\Paper;
 use App\Models\Review;
 use App\Models\Role;
 use App\Models\Setting;
@@ -264,4 +265,18 @@ class RoleController extends Controller
         $roles = Role::orderBy("id")->get();
         return view('role.index')->with(compact("roles"));
     }
+
+    public function remove_manager(Request $req)
+    {
+        // info($req->all());
+        if (auth()->id() != $req->input('user_id')) {
+            return redirect()->route('role.top',['role'=>'ec'])->with('feedback.error', '他者を査読管理者から外すことはできません');
+        }
+        $paper = Paper::find($req->input('paper_id'));
+        $paper->managers()->detach($req->input('user_id'));
+        $paper->save();
+
+        return redirect()->route('role.top',['role'=>'ec'])->with('feedback.success', '査読管理者を脱退しました。'. sprintf("%04d", $req->input('paper_id'))."の状況は今後参照できなくなります。");
+    }
+
 }
