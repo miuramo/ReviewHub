@@ -25,8 +25,30 @@
         <x-paper.shoshi_list :paper="$paper">
         </x-paper.shoshi_list>
         投稿者：<x-element.login_as :user="$paper->paperowner"></x-element.login_as>
+
+        <span class="mx-2"></span>
+        @if ($paper->pdf_file_id != 0)
+            <a class="underline text-blue-600 hover:bg-lime-200"
+                href="{{ route('file.showhash', ['file' => $paper->pdf_file_id, 'hash' => substr($paper->pdf_file->key, 0, 10)]) }}"
+                target="_blank">
+                論文PDF ({{ $paper->pdf_file->pagenum }}page)
+            </a>
+            ({{ $paper->pdf_file->created_at }})
+        @else
+            No PDF
+        @endif
         <span class="mx-2"></span>
         <x-bb.bb_link :submit="$paper->currentsubmit" type="1"></x-bb.bb_link>
+        <span class="mx-2"></span>
+        <div class="bg-gray-300 text-sm p-2 mx-2">
+        ファイル一覧：
+        @foreach ($files as $file)
+            <a class="underline text-blue-600 hover:bg-lime-200"
+            href="{{ route('file.showhash', ['file' => $file->id, 'hash' => substr($file->key, 0, 10)]) }}"
+                target="_blank"> {{ $file->origname }} </a> {{ $file->created_at }}
+            <span class="mx-2"></span>
+        @endforeach
+            </div>
     </div>
 
 
@@ -70,7 +92,7 @@
         <x-element.h1>投稿管理者：
             @foreach ($paper->managers as $user)
                 <x-element.login_as :user="$user"></x-element.login_as>
-                @if($user->id == Auth::user()->id)
+                @if ($user->id == Auth::user()->id)
                     <x-role.remove_manager :submit_id="$paper->currentsubmit->id" :user_id="$user->id"></x-role.remove_manager>
                 @endif
                 <span class="mx-2"></span>

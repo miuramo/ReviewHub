@@ -523,12 +523,14 @@ class PaperController extends Controller
     public function manage(Request $req, int $paper_id)
     {
         $paper = Paper::findOrFail($paper_id);
+        $files = File::where('paper_id', $paper_id)->get();
+        // dd($files);
         if (!auth()->user()->can('manage_review', $paper_id)) abort(403, "you are not a manager");
 
         // 最終判定があれば、それを反映する。本来task complete時にやるが、そのあと修正するかもしれないので。
         $paper->currentsubmit->updateCurrentDecision();
         Status::updatePaperStatus($paper->currentsubmit);
 
-        return view('paper.manage')->with(compact("paper"));
+        return view('paper.manage')->with(compact("paper", "files"));
     }
 }
