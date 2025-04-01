@@ -40,6 +40,7 @@
         <span class="mx-2"></span>
         <x-bb.bb_link :submit="$paper->currentsubmit" type="1"></x-bb.bb_link>
         <span class="mx-2"></span>
+        <livewire:paper-lock :paper="$paper" />
         <div class="bg-gray-300 text-sm p-2 mx-2">
         ファイル一覧：
         @foreach ($files as $file)

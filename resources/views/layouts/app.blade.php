@@ -21,6 +21,8 @@
     @stack('localcss')
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
+
 </head>
 
 <body class="font-sans antialiased" x-cloak x-data="{darkMode: $persist(false)}" :class="{'dark': darkMode === true }" >
@@ -53,6 +55,7 @@
     </div>
     <!-- 最後に差し込む、個別のJS -->
     @stack('localjs')
+    @livewireScripts
 
     {{-- <script>
         var darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
