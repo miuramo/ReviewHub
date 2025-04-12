@@ -11,7 +11,7 @@
             </x-element.linkbutton> --}}
         </div>
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('投稿とファイルの状況（削除済みを含む）') }}
+            {{ __('投稿の削除と復活') }}
             <span class="mx-2"></span>
             <x-element.category :cat="$cat_id">
             </x-element.category>
@@ -21,6 +21,7 @@
     <div class="py-1">
     </div>
     <div class="px-6 py-2">
+        カテゴリの切り替え：
         @foreach ($cats as $catid => $catname)
             <a href="{{ route('admin.deletepaper', ['cat' => $catid]) }}">
                 <x-element.category :cat="$catid">
@@ -54,4 +55,7 @@
 
         </div>
     </form>
-</x-app-layout>
+    <div class="mx-10 py-4 bg-yellow-100 text-sm">
+        【注】復活・論理削除のどちらを行っても、メールの送信はしません。
+    </div>
+    </x-app-layout>

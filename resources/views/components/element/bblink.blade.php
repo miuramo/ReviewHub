@@ -6,7 +6,7 @@
 @endphp
 <!-- components.element.bblink -->
 @isset($bburl)
-    <x-element.linkbutton href="{{ $bburl }}" target="_blank" color="pink">
+    <x-element.linkbutton href="{{ $bburl }}" color="pink">
         掲示板
     </x-element.linkbutton>
 @else

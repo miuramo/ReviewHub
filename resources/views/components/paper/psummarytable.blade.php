@@ -36,7 +36,7 @@
                     {{-- <a href="{{ route('sub.show', ['sub' => $sub]) }}" class="underline text-blue-600 hover:bg-lime-200"
                         target="_blank"> --}}
                         <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
-                            class="underline text-blue-600 hover:bg-lime-200" target="_blank">
+                            class="underline text-blue-600 hover:bg-lime-200">
                             {{ $paper->currentsubmit->round }}回目
                         {{ $paper->currentstatus->name }}
                     </a>

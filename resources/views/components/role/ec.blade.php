@@ -89,21 +89,24 @@
 
 
     <x-element.h1> <span class="px-2"></span>
-        <x-element.linkbutton href="{{ route('admin.catsetting', ['toukou' => 'on']) }}" color="cyan" target="_blank">
+        <x-element.linkbutton href="{{ route('admin.deletepaper', ['cat' => 1]) }}" color="red">
+            投稿の削除と復活
+        </x-element.linkbutton>
+        <span class="px-2"></span>
+
+        <x-element.linkbutton href="{{ route('admin.catsetting', ['toukou' => 'on']) }}" color="cyan">
             投稿受付管理
         </x-element.linkbutton>
         <span class="px-2"></span>
-        <x-element.linkbutton href="{{ route('admin.catsetting', ['mandatoryfile' => 'on']) }}" color="lime"
-            target="_blank">
+        <x-element.linkbutton href="{{ route('admin.catsetting', ['mandatoryfile' => 'on']) }}" color="lime">
             サプリメントファイル受付管理
         </x-element.linkbutton>
         <span class="px-2"></span>
-        <x-element.linkbutton href="{{ route('admin.catsetting') }}" color="orange" target="_blank">
+        <x-element.linkbutton href="{{ route('admin.catsetting') }}" color="orange">
             査読進行管理
         </x-element.linkbutton>
         <span class="px-2"></span>
-        <x-element.linkbutton2 href="{{ route('admin.catsetting', ['leadtext' => 'on']) }}" color="gray"
-            target="_blank">
+        <x-element.linkbutton2 href="{{ route('admin.catsetting', ['leadtext' => 'on']) }}" color="gray">
             カテゴリ固有の案内(リード文など)
         </x-element.linkbutton2>
     </x-element.h1>

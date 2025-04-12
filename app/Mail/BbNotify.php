@@ -36,7 +36,8 @@ class BbNotify extends RetryMailable
         $this->mail_to_cc = $_bb->get_mail_to_cc();
         $this->name = $names[$_bb->type];
 
-        $this->subject = $this->name . '掲示板に投稿がありました : ' . $this->paper->id_03d();
+        $organization = env('MAIL_ORGANIZATION', '日本創造学会 論文誌編集委員会'); // 環境変数から組織名を取得
+        $this->subject = "【{$organization}】" . $this->name . '掲示板に投稿がありました : ' . $this->paper->id_03d();
 
         $this->content = new Content(
             markdown: 'emails.bbnotify',
