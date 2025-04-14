@@ -344,7 +344,7 @@ class AdminController extends Controller
     }
     public function crud(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin|manager|ec')) abort(403);
         //テーブル指定があるか？
         // $connection = config('database.default');
         $driver = DB::connection()->getDriverName();
@@ -429,7 +429,7 @@ class AdminController extends Controller
     }
     public function crudnew(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin|manager|ec')) abort(403);
         $tableName = $req->input("table");
         $eloModelName = 'App\\Models\\' . Str::studly(Str::singular($tableName)); //　studly でUpperCamelCaseにする
         if (class_exists($eloModelName)) {
@@ -449,7 +449,7 @@ class AdminController extends Controller
     }
     public function crudcopy(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin|manager|ec')) abort(403);
         $tableName = $req->input("table");
         $row = $req->input("row");
         $eloModelName = 'App\\Models\\' . Str::studly(Str::singular($tableName)); //　studly でUpperCamelCaseにする
@@ -465,7 +465,7 @@ class AdminController extends Controller
     }
     public function cruddelete(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin|manager|ec')) abort(403);
         $tableName = $req->input("table");
         $row = $req->input("row");
         $eloModelName = 'App\\Models\\' . Str::studly(Str::singular($tableName)); //　studly でUpperCamelCaseにする

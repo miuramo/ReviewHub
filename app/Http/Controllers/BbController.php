@@ -19,7 +19,7 @@ class BbController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin|manager|ec')) abort(403);
 
         for ($i = 1; $i < 4; $i++) {
             $bbs[$i] = Bb::with("paper")->with("category")->where("type", $i)->get();
@@ -44,7 +44,7 @@ class BbController extends Controller
      */
     public function create(string $serial)
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ce|rev|meta')) abort(403,'権限がありません');
+        if (!auth()->user()->can('role_any', 'admin|manager|ec|rev|meta')) abort(403,'権限がありません');
         $bb = Bb::gen_from_serial($serial);
         return redirect()->route('bb.show', ['bb' => $bb->id, 'key' => $bb->key]);
     }
@@ -55,7 +55,7 @@ class BbController extends Controller
      */
     public function store(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin|manager|ec')) abort(403);
         // $catid = $req->input("catid");
         // $type = $req->input("type");
         $pids = trim($req->input("pids"));
@@ -113,7 +113,7 @@ class BbController extends Controller
      */
     public function destroy(Bb $bb)
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ce')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin|manager|ec')) abort(403);
         Bb::truncate();
         BbMes::truncate();
         return redirect()->route('bb.index')->with('feedback.success', "全削除しました。");
@@ -125,7 +125,7 @@ class BbController extends Controller
     public function destroy_bytype(Request $req){
         if (!auth()->user()->can('role_any', 'admin|manager|ec|pub')) abort(403);
         $type = $req->input("type");
-        if (!auth()->user()->can('role_any', 'admin|manager|ce')) {
+        if (!auth()->user()->can('role_any', 'admin|manager|ec')) {
             if ($type != 3) abort(403);
         }
         $target_bbids = Bb::where("type", $type)->pluck("id");

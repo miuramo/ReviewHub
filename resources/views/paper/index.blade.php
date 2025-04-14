@@ -89,7 +89,7 @@
                 @if ($paper->accepted)
                     <div
                         class="bg-cyan-100 p-3 motion-safe:hover:scale-[1.03] transition-all duration-250  dark:bg-cyan-300">
-                        <span class="border-2 border-blue-600 p-1 text-blue-600 font-bold">投稿完了</span>
+                       <span class="border-2 border-blue-600 p-1 text-blue-600 font-bold">投稿完了</span>
                     @else
                         <div class="bg-slate-200 p-3 motion-safe:hover:scale-[1.03] transition-all duration-250">
                 @endif
