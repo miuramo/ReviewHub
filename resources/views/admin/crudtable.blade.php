@@ -26,6 +26,9 @@
             <table class="divide-y divide-gray-400  dark:text-gray-300">
                 <thead>
                     <tr>
+                        <th>Chk
+                        </th>
+
                         @foreach ($coldetails as $nam => $typ)
                             <th class="px-2 py-0 text-sm my-0">{{ $nam }} ({{ $typ }})</th>
                         @endforeach
@@ -50,6 +53,9 @@
                 <tbody>
                     @foreach ($data as $d)
                         <tr>
+                            <td>
+                                <input type="checkbox" class="chkbox" name="did[]" form="chkdelete" value="{{ $d->id }}">
+                            </td>
                             @foreach ($coldetails as $nam => $typ)
                                 <td class="px-2 hover:text-blue-600 hover:bg-slate-200 clicktoedit  dark:hover:bg-slate-700 dark:hover:text-blue-500"
                                     id="{{ $nam }}__{{ $d->id }}__{{ $typ }}"
@@ -73,6 +79,17 @@
                 <x-element.linkbutton href="{{ route('admin.crudnew',['table'=>$tableName]) }}" color="yellow" size="sm">
                     あたらしい行を追加
                 </x-element.linkbutton>
+            </div>
+
+            <div class="mt-4">
+                <form action="{{ route('admin.crudchkdelete') }}" method="post" id="chkdelete">
+                    @csrf
+                    @method('post')
+                    <input type="hidden" name="table" value="{{ $tableName }}">
+                    <x-element.submitbutton type="submit" color="purple" size="sm" confirm="本当にまとめて削除する？">
+                        選択した行を削除
+                    </x-element.submitbutton>
+                </form>
             </div>
 
             <div class="mt-4">

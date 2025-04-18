@@ -92,7 +92,7 @@ class Task extends Model
             // 差分を計算
             $difference = $currentDate->diff($givenDate);
             // 差分の日数を返す（符号を考慮）
-            if ($difference->days >= 0) {
+            if ($difference->days < 0) {
                 return $prefix . $difference->days+1 . '日';
             } else {
                 return $difference->days . '日' . $postfix;
