@@ -10,6 +10,7 @@
         'request_at' => '依頼日時',
         'start_at' => '開始日時',
         'end_at' => '終了日時',
+        'will_end_at' => '予定終了日時',
     ];
 @endphp
 
@@ -40,7 +41,13 @@
                     @endphp
                     <td class="p-1 text-center">{{ $kv[$review->{$h}] }}</td>
                 @else
-                    <td class="p-1 text-center">{{ $review->{$h} }}</td>
+                    @if ($h == 'end_at' && $review->end_at == null)
+                        <td class="p-1 text-center text-red-500 font-bold text-sm">
+                            {{ date("(参考: 開始日の24日後は m/d )", strtotime($review->start_at." +24 day")) }}
+                        </td>
+                    @else
+                        <td class="p-1 text-center">{{ $review->{$h} }}</td>
+                    @endif
                 @endif
             </tr>
         @endforeach
