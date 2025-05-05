@@ -7,6 +7,9 @@
 @php
     // $papers = App\Models\Paper::get();
     $papers = App\Models\User::with('managed_papers')->find(auth()->id())->managed_papers;
+    $papers = $papers->sortByDesc(function ($paper) {
+        return $paper->currentsubmit->submitted_at ?? null;
+    });
 @endphp
 <x-element.component_name>
     psummarytable
