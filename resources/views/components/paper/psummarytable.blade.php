@@ -14,7 +14,7 @@
 <x-element.component_name>
     psummarytable
 </x-element.component_name>
-<table class="min-w-full divide-y divide-gray-200">
+<table class="min-w-full divide-y divide-gray-200 sortable" id="psummarytable">
     <thead>
         <tr>
             @foreach ($heads as $h)
@@ -72,3 +72,7 @@
         @endforeach
     </tbody>
 </table>
+
+@push('localjs')
+<script src="/js/sortable.js"></script>
+@endpush
