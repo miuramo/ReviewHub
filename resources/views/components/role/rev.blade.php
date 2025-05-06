@@ -28,7 +28,7 @@
 
     @if (count($tasks) > 0)
         <div class="px-6 py-4">
-            <x-element.h1>以下の査読について、ご対応をお願いします。</x-element.h1>
+            <x-element.h1>以下の査読について、ご対応をお願いします。<br>（「査読報告の編集」が完了したあとに表示される「査読完了を報告する」ボタンを押してください。）</x-element.h1>
             @foreach ($tasks as $task)
                 <div class="mx-6">
                     <x-task.panel :task="$task" />
@@ -68,11 +68,11 @@
         @foreach ($myreviews as $rev)
             <div class="mx-6 border-2 px-3 py-4 pb-3 bg-white">
                 <x-element.paperid size=1 :paper_id="$rev->paper->id" />
-                R{{ $rev->submit->round }}
+                第{{ $rev->submit->round }}回査読<br>
 
-                {{ $rev->paper->title }}
+                {{ $rev->paper->title }}<br>
 
-                <span class="mx-2"></span>
+                {{-- <span class="mx-2"></span> --}}
 
                 <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green">
                     査読・報告の参照

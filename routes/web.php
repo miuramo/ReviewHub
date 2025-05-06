@@ -6,6 +6,7 @@ use App\Http\Controllers\BbMesController;
 use App\Http\Controllers\EnqueteAnswerController;
 use App\Http\Controllers\EnqueteController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\LogAccessController;
 use App\Http\Controllers\MailTemplateController;
 use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\PaperController;
@@ -145,6 +146,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/task/{task}/approve', [TaskController::class, 'approve'])->name('task.approve');
     // Route::get('/task/{submit}/createhantei', [TaskController::class, 'createhantei'])->name('task.createhantei');
 
+    Route::get('/logac/paper/{paper}', [LogAccessController::class, 'index'])->name('logac.index');
+    Route::post('/logac/paper/{paper}', [LogAccessController::class, 'index'])->name('logac.index');
+    Route::get('/logac/review/{review}', [LogAccessController::class, 'show'])->name('logac.show');
+    
     Route::get('/role', [RoleController::class, 'index'])->name('role.index');
     Route::get('/role/{role}/top', [RoleController::class, 'top'])->name('role.top');
     // Route::get('/role/{role}/pc', [RoleController::class, 'top'])->name('role.pc'); //本当はrole.topがあればよいのだが、navigationをactiveにするため...

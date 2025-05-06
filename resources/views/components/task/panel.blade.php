@@ -13,10 +13,11 @@
     <x-element.paperid size=1 :paper_id="$paper->id" />
     <span class="mx-1"></span>
     {{-- 誰が --}}
-    (R{{ $task->submit->round }}) &nbsp; 
-    {{ $task->subject->name }} が、
+    {{ $task->subject->name }} 様が、
     {{-- 何を --}}
     {{ $task->workflow->description }}
+    &nbsp; 
+    (第{{ $task->submit->round }}回目の査読) 
     <span class="mx-2"></span>
     締切: {{ $task->due_date }}
     <span class="mx-2"></span>

@@ -43,7 +43,7 @@
                 @else
                     @if ($h == 'end_at' && $review->end_at == null)
                         <td class="p-1 text-center text-red-500 font-bold text-sm">
-                            {{ date("(参考: 開始日の24日後は m/d )", strtotime($review->start_at." +24 day")) }}
+                            {{ date('(参考: 開始日の24日後は m/d )', strtotime($review->start_at . ' +24 day')) }}
                         </td>
                     @else
                         <td class="p-1 text-center">{{ $review->{$h} }}</td>
@@ -64,6 +64,12 @@
                         査読担当から外す
                     </x-element.deletebutton>
                 @endif
+                <div class="p-2">
+                    <x-element.linkbutton href="{{ route('logac.show', ['review' => $review]) }}" color="gray"
+                        size="xs" target="_blank">
+                        査読活動ログ参照（別タブで開きます）
+                    </x-element.linkbutton>
+                </div>
                 <x-element.component_name>
                     rstatus
                 </x-element.component_name>
