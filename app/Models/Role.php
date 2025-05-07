@@ -27,10 +27,22 @@ class Role extends Model
         'desc'
     ];
 
-    public function users()
+    public function users(string $desc='users.id')
     {
         $tbl = 'role_user';
         return $this->belongsToMany(User::class, $tbl)->orderBy('users.id');//->using(RolesUser::class);
+    }
+    public function users_desc(string $desc='users.id')
+    {
+        $tbl = 'role_user';
+        return $this->belongsToMany(User::class, $tbl)->orderByDesc($desc);//->using(RolesUser::class);
+    }
+
+    public function uids()
+    {
+        // get user ids of this role
+        $tbl = 'role_user';
+        return $this->belongsToMany(User::class, $tbl)->pluck('user_id')->toArray();
     }
 
     public function containsUser(int $user_id): bool

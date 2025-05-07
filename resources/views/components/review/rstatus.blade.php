@@ -41,7 +41,7 @@
                     @endphp
                     <td class="p-1 text-center">{{ $kv[$review->{$h}] }}</td>
                 @else
-                    @if ($h == 'end_at' && $review->end_at == null)
+                    @if ($h == 'end_at' && $review->end_at == null && $review->start_at != null)
                         <td class="p-1 text-center text-red-500 font-bold text-sm">
                             {{ date('(参考: 開始日の24日後は m/d )', strtotime($review->start_at . ' +24 day')) }}
                         </td>

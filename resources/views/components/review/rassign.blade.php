@@ -3,7 +3,7 @@
 ])
 @php
     $sub = App\Models\Submit::find($submit_id);
-    $reviewers = App\Models\Role::findByIdOrName('rev')->users;
+    $reviewers = App\Models\Role::findByIdOrName('rev')->users_desc;
 @endphp
 <x-element.component_name>
     rassign

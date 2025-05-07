@@ -72,6 +72,9 @@
                 <x-review.rassign :submit_id="$paper->currentsubmit->id"></x-review.rassign>
             </div>
             <div class="py-2 px-6">
+                <livewire:review-assign :submit_id="$paper->currentsubmit->id" :paper_id="$paper->id"></livewire:review-assign>
+            </div>
+            <div class="py-2 px-6">
                 <x-role.add_rev :submit_id="$paper->currentsubmit->id"></x-role.add_rev>
             </div>
         </div>

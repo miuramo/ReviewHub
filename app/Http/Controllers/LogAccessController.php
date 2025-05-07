@@ -58,14 +58,16 @@ class LogAccessController extends Controller
             ->where('subject_id', $user)
             ->first();
         if ($user) {
-            $logs = LogAccess::where('uid', $user)->where(function($query) use ($fileid, $review, $task) {
+            $logs = LogAccess::where('uid', $user)->where(function ($query) use ($fileid, $review, $task) {
                 $query->orWhere('url', 'like', "/file/{$fileid}/show/%");
                 $query->orWhere('url', 'like', "/review/{$review}%");
-                $query->orWhere('url', 'like', "/task/{$task->id}%");
+                if ($task) {
+                    $query->orWhere('url', 'like', "/task/{$task->id}%");
+                }
             })->latest()->paginate(1000);
-            
-            $users = User::select('id','name')->get()->pluck('name', 'id')->toArray();
-            return view('log_access.show', compact('logs', 'user','users','review'));
+
+            $users = User::select('id', 'name')->get()->pluck('name', 'id')->toArray();
+            return view('log_access.show', compact('logs', 'user', 'users', 'review'));
         }
         //
     }
