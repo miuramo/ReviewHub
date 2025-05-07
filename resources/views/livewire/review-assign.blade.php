@@ -1,6 +1,6 @@
 <div>または、
     <input type="text" wire:model.live.debounce.500ms="search" wire:keydown.escape="resetSearch"
-        placeholder="名前やメール等で検索" x-init="$el.focus()" /> して、割り当てボタンをおしてください。
+        placeholder="名前やメール等の一部" x-init="$el.focus()" /> で検索して、割り当てボタンをおしてください。
     @php
         $fs = ['氏名', '所属', 'メール','割り当て'];
     @endphp
