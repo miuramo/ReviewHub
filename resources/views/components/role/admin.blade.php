@@ -136,6 +136,10 @@
             test QueueWork
         </x-element.linkbutton>
         <span class="px-3"></span>
+        <x-element.linkbutton href="{{ route('admin.fixusernamespace') }}" color="slate">
+            ユーザ名の全角スペースを半角にする
+        </x-element.linkbutton>
+        <span class="px-3"></span>
         <x-element.linkbutton href="{{ route('mt.index') }}" color="pink">
             メール雛形
         </x-element.linkbutton>

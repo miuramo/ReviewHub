@@ -662,4 +662,18 @@ class AdminController extends Controller
             ]
         );
     }
+
+    public function fixusernamespace()
+    {
+        if (!auth()->user()->can('role_any', 'admin|manager')) abort(403);
+        $users = User::all();
+        foreach ($users as $user) {
+            $ary = explode("　", $user->name);
+            if (count($ary)==2) {
+                $user->name = str_replace("　", " ", $user->name);
+                $user->save();
+            }
+        }
+        return redirect()->route('admin.dashboard')->with('feedback.success', 'ユーザ名にふくまれる全角スペースを半角にしました（氏・名の2要素に分割可能な場合のみ）');
+    }
 }
