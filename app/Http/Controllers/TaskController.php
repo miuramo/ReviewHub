@@ -34,9 +34,9 @@ class TaskController extends Controller
         $paper = Paper::with('currentSubmit')->find($review->paper_id);
         $revuid = $req->revuid;
         $task = Task::createReviewTask($paper->currentSubmit, $revuid);
-        if ($review->target == 2){
+        if ($review->target == 2) {
             $task->due_date = $task->addDaysToDate(5); // 最終判定は5日
-        } else if ($review->target == 0){
+        } else if ($review->target == 0) {
             $task->due_date = $task->addDaysToDate(24); // 通常査読は24日
         } else { // case of 1
             $task->due_date = $task->addDaysToDate(10); // 現在は使用していないが、メタの場合は、10日
@@ -45,14 +45,24 @@ class TaskController extends Controller
 
         $review->request_at = now();
         $review->save();
-        Bb::add_message(
-            $paper->currentSubmit,
-            2,
-            '【日本創造学会論文誌】査読のお願い',
-            "査読者のかたへ\nお忙しいところすみませんが、日本創造学会論文誌に投稿された論文の査読をお願いいたします。\n\n以下のURLから、確認してください。\n" . env('APP_URL') . "/role/rev/top",
-            $review->id,
-        );
-
+        $conftitle = Setting::getval('CONFTITLE');
+        if ($review->target == 2) {
+            Bb::add_message(
+                $paper->currentSubmit,
+                2,
+                "【{$conftitle}】最終判定のお願い",
+                "{$review->user->affil}  {$review->user->name}様\n\nお忙しいところすみませんが、査読結果が揃いましたので、確認および最終判定をお願いいたします。\n\n以下のURLから、確認してください。\n" . env('APP_URL') . "/role/rev/top",
+                $review->id,
+            );
+        } else {
+            Bb::add_message(
+                $paper->currentSubmit,
+                2,
+                "【{$conftitle}】査読のお願い",
+                "{$review->user->affil}  {$review->user->name}様\n\nお忙しいところすみませんが、{$conftitle}に投稿された論文の査読をお願いいたします。\n\n以下のURLから、確認してください。\n" . env('APP_URL') . "/role/rev/top",
+                $review->id,
+            );
+        }
         return redirect()->route('paper.manage', ['paper' => $paper])->with('feedback.success', '査読タスクを作成しました');
         //
     }

@@ -384,6 +384,9 @@ class PaperController extends Controller
             $sub->paper->status_id = 1; //投稿準備中に戻す。ラウンドは以下で1つ増える
             $sub->paper->save();
 
+            // 古いファイルはアーカイブする
+            $sub->paper->archiveFiles();
+
             Submit::factory()->create([
                 'paper_id' => $sub->paper->id,
                 'category_id' => $sub->paper->category_id,
@@ -391,6 +394,8 @@ class PaperController extends Controller
                 'resubmit_until' => date('Y-m-d', strtotime('+40 days')),
                 'previous_submit_id' => $sub->id,
             ])->init_reviews();
+
+            return redirect()->route('paper.edit', ['paper' => $sub->paper])->with('feedback.success', '査読結果の確認ありがとうございました。再投稿は指定期日までに論文PDFと回答書PDFをアップロードしてください。（回答書PDFのフォーマット指定はありません）');
         }
 
         // $accepts = Accept::select('name', 'id')->get()->pluck('name', 'id')->toArray();
@@ -523,7 +528,7 @@ class PaperController extends Controller
     public function manage(Request $req, int $paper_id)
     {
         $paper = Paper::findOrFail($paper_id);
-        $files = File::where('paper_id', $paper_id)->get();
+        $files = File::where('paper_id', $paper_id)->orderByDesc('created_at')->get();
         // dd($files);
         if (!auth()->user()->can('manage_review', $paper_id)) abort(403, "you are not a manager");
 

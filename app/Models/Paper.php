@@ -171,11 +171,21 @@ class Paper extends Model
         return $count;
     }
 
-    
+
     public function files()
     {
         // return $this->hasMany(File::class, 'paper_id');
         return $this->hasMany(File::class, 'paper_id')->where('valid', 1)->where('deleted', 0);
+    }
+    public function archiveFiles()
+    {
+        foreach ($this->files as $file) {
+            if ($file) {
+                $file->locked = true;
+                $file->deleted = true;
+                $file->save();
+            }
+        }
     }
 
     public function managers()
@@ -437,13 +447,13 @@ class Paper extends Model
         if ($cat == null) return []; //通常はありえないが、テストを通すため...
         foreach ($this->files as $file) {
             // if ($file->mime == "application/pdf") {
-                if ($file->deleted) continue;
-                if ($file->pending) continue;
-                $checkary[$file->filetype_id][] = $file->id;
+            if ($file->deleted) continue;
+            if ($file->pending) continue;
+            $checkary[$file->filetype_id][] = $file->id;
             // }
         }
         // それぞれのファイルの数をチェックする
-        if (!isset($checkary[1]) || count($checkary[1]) == 0){
+        if (!isset($checkary[1]) || count($checkary[1]) == 0) {
             $errorary[] = "論文PDFは必須です。";
         } else if (count($checkary[1]) > 1) {
             $errorary[] = "論文PDFは1つのファイルのみ受け付けます。";
@@ -501,11 +511,11 @@ class Paper extends Model
         }
 
         // 著者名(所属) のチェック
-        foreach($koumoku as $key=>$expr){
-            if ($key == "authorlist" || $key == "eauthorlist"){
+        foreach ($koumoku as $key => $expr) {
+            if ($key == "authorlist" || $key == "eauthorlist") {
                 $ret = $this->authorlist_check($key);
                 if (!$ret) {
-                    $errors[$key] = ($key=="authorlist"? "和文著者名(所属)":"英文Authors(所属)")." の書式が正しくありません。";
+                    $errors[$key] = ($key == "authorlist" ? "和文著者名(所属)" : "英文Authors(所属)") . " の書式が正しくありません。";
                 }
             }
         }
@@ -529,7 +539,7 @@ class Paper extends Model
             // info("note: category->extract_title is 0. SKIPPING.");
             return;
         }
-        if ($this->locked){
+        if ($this->locked) {
             return;
         }
 
@@ -715,12 +725,13 @@ class Paper extends Model
         return $title;
     }
 
-    public function lockAll(bool $b){
+    public function lockAll(bool $b)
+    {
         $this->locked = $b;
         $this->save();
         // 現在アップロードされているすべてのファイル（削除済みを除く）をロックする
-        foreach($this->files as $file){
-            if (!$file->deleted){
+        foreach ($this->files as $file) {
+            if (!$file->deleted) {
                 $file->locked = $b;
                 $file->save();
             }
@@ -733,7 +744,7 @@ class Paper extends Model
     public function setDefaultManagers()
     {
         $role = Role::findByIdOrName("ec");
-        foreach($role->users as $user){
+        foreach ($role->users as $user) {
             if ($user->id == $this->owner) continue;
             $this->managers()->attach($user->id);
         }
