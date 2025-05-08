@@ -16,6 +16,9 @@
             {!! $catspans[$cat_id] !!}
 
         </h2>
+        <x-element.component_name>
+            commentpaper
+        </x-element.component_name>
     </x-slot>
 
     <div class="py-2 px-6">
@@ -23,9 +26,9 @@
             <a class="underline text-blue-600 hover:bg-lime-200 p-2"
                 href="{{ route('file.showhash', ['file' => $paper->pdf_file_id, 'hash' => substr($paper->pdf_file->key, 0, 8)]) }}"
                 target="_blank">
-                PDF ({{ $paper->pdf_file->pagenum }}pages) 
+                PDF ({{ $paper->pdf_file->pagenum }}pages)
             </a>
-            <span class="text-sm text-gray-500">{{substr($paper->pdf_file->created_at,0,16)}}</span>
+            <span class="text-sm text-gray-500">{{ substr($paper->pdf_file->created_at, 0, 16) }}</span>
         @endif
         @if ($paper->video_file_id != 0 && $paper->video_file != null)
             <span class="mx-2"></span>
@@ -34,7 +37,7 @@
                 target="_blank">
                 Video
             </a>
-            <span class="text-sm text-gray-500">{{substr($paper->video_file->created_at,0,16)}}</span>
+            <span class="text-sm text-gray-500">{{ substr($paper->video_file->created_at, 0, 16) }}</span>
         @endif
         @if ($paper->img_file_id != 0 && $paper->img_file != null)
             <span class="mx-2"></span>
@@ -43,16 +46,16 @@
                 target="_blank">
                 Image
             </a>
-            <span class="text-sm text-gray-500">{{substr($paper->img_file->created_at,0,16)}}</span>
+            <span class="text-sm text-gray-500">{{ substr($paper->img_file->created_at, 0, 16) }}</span>
         @endif
         @isset($bb)
             <span class="mx-2"></span>
             @isset($bb->paper)
-                <x-element.linkbutton href="{{ route('bb.show', ['bb' => $bb->id, 'key' => $bb->key]) }}" color="cyan"
+                <x-element.linkbutton2 href="{{ route('bb.show', ['bb' => $bb->id, 'key' => $bb->key]) }}" color="green"
                     target="_blank" size="sm">
-                    掲示板
+                    著者との掲示板
                     ({{ $bb->nummessages() }} messages)
-                </x-element.linkbutton>
+                </x-element.linkbutton2>
             @else
                 <div>Error: No Paper associated {{ $bb->id }}</div>
             @endisset
@@ -62,7 +65,7 @@
             color="purple" target="_blank" size="sm">
             著者がみる査読結果 </x-element.linkbutton2>
 
-        {{-- @if($bb2 && $bb2->ismeta_myself() )
+        {{-- @if ($bb2 && $bb2->ismeta_myself())
             <span class="mx-4"></span>
             @isset($bb2->paper)
                 <x-element.linkbutton href="{{ route('bb.show', ['bb' => $bb2->id, 'key' => $bb2->key]) }}" color="pink"
@@ -124,6 +127,13 @@
                                 @else --}}
                                 {!! nl2br(App\Models\Review::urllink($valstr)) !!}
                                 {{-- @endif --}}
+                                @if(strlen($valstr)<2)
+                                    @php
+                                        $item_title = App\Models\Viewpoint::firstContent($vpdesc);
+                                        $item_title = str_replace('で評価してください．', '', $item_title);
+                                    @endphp
+                                    <span class="text-gray-400 text-sm pl-8">（{{$item_title}}）</span>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
