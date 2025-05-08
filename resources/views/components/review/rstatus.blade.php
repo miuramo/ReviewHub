@@ -41,9 +41,14 @@
                     @endphp
                     <td class="p-1 text-center">{{ $kv[$review->{$h}] }}</td>
                 @else
-                    @if ($h == 'end_at' && $review->end_at == null && $review->start_at != null)
-                        <td class="p-1 text-center text-red-500 font-bold text-sm">
-                            {{ date('(参考: 開始日の24日後は m/d )', strtotime($review->start_at . ' +24 day')) }}
+                    @if ($h == 'end_at' && $review->end_at == null )
+                        <td class="p-1 text-center text-red-400 font-bold text-sm">
+                            @php
+                                $task = App\Models\Task::where('submit_id', $review->submit->id)
+                                    ->where('subject_id', $review->user_id)
+                                    ->first();
+                            @endphp
+                            予定締切：{{$task->due_date}}
                         </td>
                     @else
                         <td class="p-1 text-center">{{ $review->{$h} }}</td>
