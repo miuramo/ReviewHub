@@ -49,21 +49,20 @@
             }
         @endphp
         @foreach ($sub->reviews as $rev)
-            <table class="table-auto">
+            <table class="table-auto my-2">
                 @php
                     $count++;
                 @endphp
                 <thead>
                     <tr>
-                        <th class="bg-slate-300 border-4 border-slate-300">
-                            査読者 {{ $count }}
+                        <th colspan="2" class="bg-slate-300 border-4 border-slate-300 text-left pl-6">査読者 {{ $count }}
 
                             @if ($rev->ismet)
                                 <span class="mx-2 text-blue-500">（{{ $nameofmeta }}査読者） </span>
                             @endif
                         </th>
-                        <th class="bg-slate-300 border-4 border-slate-300">
-                        </th>
+                        {{-- <th class="bg-slate-300 border-4 border-slate-300">
+                        </th> --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -78,6 +77,14 @@
                                     （とくにお伝えする事項は、ありません）
                                 @else
                                     {!! nl2br(htmlspecialchars($valstr)) !!}
+                                    @if(strlen($valstr)<2)
+                                    @php
+                                        $item_title = App\Models\Viewpoint::firstContent($vpdesc);
+                                        $item_title = str_replace('で評価してください．', '', $item_title);
+                                    @endphp
+                                    <span class="text-gray-400 text-sm pl-8">〈参考〉{{$item_title}}</span>
+                                @endif
+
                                 @endif
                                 {{-- vpsubdesc スコアの意味などを表示する --}}
                                 @isset($vpsubdescs[$vpdesc])
