@@ -25,6 +25,13 @@
     <td id="{{ $itm->name }}_answer" class="text-lg p-2">
         @if (isset($current) && !is_array($current))
             {!! $current !!}
+            @if (strlen($current) < 2)
+                @php
+                    $item_title = App\Models\Viewpoint::firstContent($itm->desc);
+                    $item_title = str_replace('で評価してください．', '', $item_title);
+                @endphp
+                <span class="text-gray-400 text-sm pl-8">（{{ $item_title }}）</span>
+            @endif
         @else
             <span class="text-red-600 font-extrabold text-sm">(未入力)</span>
         @endif

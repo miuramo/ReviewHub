@@ -3,7 +3,7 @@
     @php
         $catspans = App\Models\Category::spans();
 
-        $roleofreview = ['rev', 'meta', 'aec'];
+        $roleofreview = ['rev', 'meta', 'rev'];
     @endphp
     <x-slot name="header">
         <div class="mb-4">
