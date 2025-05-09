@@ -391,7 +391,7 @@ class PaperController extends Controller
                 'paper_id' => $sub->paper->id,
                 'category_id' => $sub->paper->category_id,
                 'round' => $sub->round + 1,
-                'resubmit_until' => date('Y-m-d', strtotime('+40 days')),
+                'resubmit_until' => date('Y-m-d', strtotime('+30 days')),
                 'previous_submit_id' => $sub->id,
             ])->init_reviews();
 
