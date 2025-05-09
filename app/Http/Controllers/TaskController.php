@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Bb;
 use App\Models\Paper;
 use App\Models\Review;
+use App\Models\Setting;
 use App\Models\Submit;
 use App\Models\Task;
 use Illuminate\Http\Request;
