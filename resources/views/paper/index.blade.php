@@ -54,6 +54,10 @@
                                 color="orange" target="_blank">
                                 第{{$sub->round}}回 査読結果 </x-element.linkbutton>
                         @endif
+                        @if ($sub->resubmit_until != null)
+                        <br>
+                            <span class="border-2 border-orange-500 bg-orange-200 hover:bg-yellow-200 p-2 font-extrabold">再投稿期限：{{$sub->resubmit_until}}</span>
+                        @endif
                     @endforeach
 
                         <span class="mx-1"></span>
