@@ -61,7 +61,7 @@ class TaskController extends Controller
                 $paper->currentSubmit,
                 2,
                 "【{$conftitle}】査読を開始してください",
-                "{$review->user->affil}  {$review->user->name}様\n\nお忙しいところすみませんが、{$conftitle}に投稿された論文の査読を開始してください。\n\n以下のURLから、確認してください。\n" . env('APP_URL') . "/role/rev/top",
+                "{$review->user->affil}  {$review->user->name}様\n\nお忙しいところすみませんが、{$conftitle}に投稿された論文の査読を開始してください。\n\n以下のURLから、「査読を開始する」ボタンを押してください。\n" . env('APP_URL') . "/role/rev/top",
                 $review->id,
             );
         }
