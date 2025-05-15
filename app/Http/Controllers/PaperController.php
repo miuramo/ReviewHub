@@ -376,7 +376,7 @@ class PaperController extends Controller
         if ($sub->paper->token() != $token) return abort(403, "Review Confirm TOKEN ERROR");
 
         // review result を確認済みにする
-        $sub->notify_at = ((new DateTime())->format('Y-m-d'));
+        $sub->notify_at = ((new DateTime())->format('Y-m-d H:i:s'));
         $sub->save();
         // sub->accept_id が 2であれば次のSubmitをつくる。
         if ($sub->accept_id == 2) {
