@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Mail\ReviewRequest;
 use App\Models\Bb;
 use App\Models\Paper;
 use App\Models\Review;
@@ -59,13 +60,24 @@ class TaskController extends Controller
             Bb::add_message(
                 $paper->currentSubmit,
                 2,
-                "【{$conftitle}】査読のお願い",
-                "{$review->user->affil}  {$review->user->name}様\n\nお忙しいところすみませんが、{$conftitle}に投稿された論文の査読をお願いいたします。\n\n以下のURLから、確認してください。\n" . env('APP_URL') . "/role/rev/top",
+                "【{$conftitle}】査読を開始してください",
+                "{$review->user->affil}  {$review->user->name}様\n\nお忙しいところすみませんが、{$conftitle}に投稿された論文の査読を開始してください。\n\n以下のURLから、確認してください。\n" . env('APP_URL') . "/role/rev/top",
                 $review->id,
             );
         }
         return redirect()->route('paper.manage', ['paper' => $paper])->with('feedback.success', '査読タスクを作成しました');
         //
+    }
+
+    public function sendrequest(int $review, int $revuid)
+    {
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
+        $review = Review::find($review);
+        $reviewer = $review->user;
+        $paper = Paper::with('currentSubmit')->find($review->paper_id);
+        (new ReviewRequest($paper, $reviewer))->process_send();
+
+        return redirect()->route('paper.manage', ['paper' => $paper])->with('feedback.success', '査読依頼メールを送信しました');
     }
 
     // public function createhantei(int $sub_id)

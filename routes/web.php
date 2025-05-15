@@ -143,6 +143,7 @@ Route::middleware('auth')->group(function () {
     Route::get('sub/{sub}/disclose', [SubmitController::class, 'disclose'])->name('sub.disclose'); // 査読結果の公開
 
     Route::resource('task', TaskController::class);
+    Route::get('/task_sendrequest/{review}/{revuid}', [TaskController::class, 'sendrequest'])->name('task.sendrequest');
     Route::put('/task/{task}/approve', [TaskController::class, 'approve'])->name('task.approve');
     // Route::get('/task/{submit}/createhantei', [TaskController::class, 'createhantei'])->name('task.createhantei');
 

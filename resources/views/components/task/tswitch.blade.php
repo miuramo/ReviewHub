@@ -19,9 +19,14 @@
     @endif
 @else
 <span class="text-red-500 font-extrabold">まだ開始していません</span>
+    <x-element.linkbutton href="{{ route('task.sendrequest', ['review' => $review, 'revuid' => $review->user->id]) }}"
+        color="pink">
+        査読依頼メール送信 
+        {{-- {{$review->id}} {{$review->user->id}} --}}
+    </x-element.linkbutton><br>
     <x-element.linkbutton href="{{ route('task.create', ['review' => $review, 'revuid' => $review->user->id]) }}"
         color="blue">
-        査読開始 
+        査読開始（内諾が得られてから押す） 
         {{-- {{$review->id}} {{$review->user->id}} --}}
     </x-element.linkbutton>
 @endisset

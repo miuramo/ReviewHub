@@ -20,7 +20,7 @@
         <tr>
             <th class="p-1 bg-slate-300" colspan=2>
                 <x-element.login_as :user="$review->user"></x-element.login_as>
-                （{{ $review->user->affil }}）
+                （{{ $review->user->affil }}）<sub>uid={{ $review->user->id }}</sub>
             </th>
             {{-- <th class="p-1 bg-slate-300"></th> --}}
         </tr>
