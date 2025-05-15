@@ -20,7 +20,7 @@
 @else
 <span class="text-red-500 font-extrabold">まだ開始していません</span>
     <x-element.linkbutton href="{{ route('task.sendrequest', ['review' => $review, 'revuid' => $review->user->id]) }}"
-        color="pink">
+        color="pink" confirm="本当に{{ $review->user->name }}さんに査読依頼メールを送信してよいですか？">
         査読依頼メール送信 
         {{-- {{$review->id}} {{$review->user->id}} --}}
     </x-element.linkbutton><br>
