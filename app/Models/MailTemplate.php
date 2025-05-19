@@ -29,6 +29,15 @@ class MailTemplate extends Model
             (new ForAuthor($target, $mt))->process_send();
         }
     }
+    /**
+     * 査読者への最初のメッセージ：パスワード設定について
+     */
+    public static function send_first_message($uid)
+    {
+        $mt = MailTemplate::find(7); // TODO: 7を設定で変えられるようにする
+        $target = User::find($uid);
+        (new ForAuthor($target, $mt))->process_send();
+    }
 
     public function getreplacetxt(Paper|User $p_or_u)
     {

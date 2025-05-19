@@ -144,6 +144,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('task', TaskController::class);
     Route::get('/task_sendrequest/{review}/{revuid}', [TaskController::class, 'sendrequest'])->name('task.sendrequest');
+    Route::get('/task_sendfirstmessage/{review}/{revuid}', [TaskController::class, 'sendfirstmessage'])->name('task.sendfirstmessage');
     Route::put('/task/{task}/approve', [TaskController::class, 'approve'])->name('task.approve');
     // Route::get('/task/{submit}/createhantei', [TaskController::class, 'createhantei'])->name('task.createhantei');
 

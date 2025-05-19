@@ -6,6 +6,7 @@ use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Mail\ReviewRequest;
 use App\Models\Bb;
+use App\Models\MailTemplate;
 use App\Models\Paper;
 use App\Models\Review;
 use App\Models\Setting;
@@ -78,6 +79,15 @@ class TaskController extends Controller
         (new ReviewRequest($paper, $reviewer))->process_send();
 
         return redirect()->route('paper.manage', ['paper' => $paper])->with('feedback.success', '査読依頼メールを送信しました');
+    }
+
+    public function sendfirstmessage(int $review, int $revuid)
+    {
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
+        MailTemplate::send_first_message($revuid);
+        $review = Review::find($review);
+        $paper = Paper::with('currentSubmit')->find($review->paper_id);
+        return redirect()->route('paper.manage', ['paper' => $paper])->with('feedback.success', 'パスワード設定方法（最初のログインの方法）を送信しました');
     }
 
     // public function createhantei(int $sub_id)

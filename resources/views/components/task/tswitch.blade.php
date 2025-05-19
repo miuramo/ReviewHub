@@ -20,10 +20,17 @@
 @else
 <span class="text-red-500 font-extrabold">まだ開始していません</span>
     <x-element.linkbutton href="{{ route('task.sendrequest', ['review' => $review, 'revuid' => $review->user->id]) }}"
-        color="pink" confirm="本当に{{ $review->user->name }}さんに査読依頼メールを送信してよいですか？">
+        color="pink" size="sm" confirm="本当に{{ $review->user->name }}さんに査読依頼メールを送信してよいですか？">
         査読依頼メール送信 
         {{-- {{$review->id}} {{$review->user->id}} --}}
     </x-element.linkbutton><br>
+
+    <x-element.linkbutton href="{{ route('task.sendfirstmessage', ['review' => $review, 'revuid' => $review->user->id]) }}"
+        color="pink" size="sm" confirm="本当に{{ $review->user->name }}さんにパスワード設定方法（最初のログインの方法）メールを送信してよいですか？">
+        査読者にパスワード設定方法を送信 
+        {{-- {{$review->id}} {{$review->user->id}} --}}
+    </x-element.linkbutton><br>
+
     <x-element.linkbutton href="{{ route('task.create', ['review' => $review, 'revuid' => $review->user->id]) }}"
         color="blue">
         査読開始（内諾が得られてから押す） 
