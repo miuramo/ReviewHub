@@ -14,12 +14,23 @@
         <x-alert.success>{{ session('feedback.success') }}</x-alert.success>
     @endif
 
-    @if($sub->notify_at == null)
+    @if ($sub->notify_at == null)
         <div class="m-10 p-8 bg-orange-200 text-3xl">
             著者のかたへ：査読結果を確認後、
             <x-sub.confirm_review_link :sub="$sub">査読結果を確認した</x-sub.confirm_review_link>
             をおしてください。
         </div>
+    @else
+        @if ($sub->ec_decision_at != null)
+            <div class="mx-6 my-2 p-2 bg-slate-50 hover:bg-lime-200 text-md text-gray-400">
+                査読結果通知日時：{{ $sub->ec_decision_at }}
+            </div>
+        @endif
+        @if ($sub->notify_at != null)
+            <div class="mx-6 my-1 p-2 bg-slate-50 hover:bg-cyan-200 text-md text-gray-400">
+                著者確認日時：{{ $sub->notify_at }}
+            </div>
+        @endif
     @endif
 
 
@@ -55,7 +66,8 @@
                 @endphp
                 <thead>
                     <tr>
-                        <th colspan="2" class="bg-slate-300 border-4 border-slate-300 text-left pl-6">査読者 {{ $count }}
+                        <th colspan="2" class="bg-slate-300 border-4 border-slate-300 text-left pl-6">査読者
+                            {{ $count }}
 
                             @if ($rev->ismet)
                                 <span class="mx-2 text-blue-500">（{{ $nameofmeta }}査読者） </span>
@@ -77,14 +89,13 @@
                                     （とくにお伝えする事項は、ありません）
                                 @else
                                     {!! nl2br(htmlspecialchars($valstr)) !!}
-                                    @if(strlen($valstr)<2)
-                                    @php
-                                        $item_title = App\Models\Viewpoint::firstContent($vpdesc);
-                                        $item_title = str_replace('で評価してください．', '', $item_title);
-                                    @endphp
-                                    <span class="text-gray-400 text-sm pl-8">〈参考〉{{$item_title}}</span>
-                                @endif
-
+                                    @if (strlen($valstr) < 2)
+                                        @php
+                                            $item_title = App\Models\Viewpoint::firstContent($vpdesc);
+                                            $item_title = str_replace('で評価してください．', '', $item_title);
+                                        @endphp
+                                        <span class="text-gray-400 text-sm pl-8">〈参考〉{{ $item_title }}</span>
+                                    @endif
                                 @endif
                                 {{-- vpsubdesc スコアの意味などを表示する --}}
                                 @isset($vpsubdescs[$vpdesc])

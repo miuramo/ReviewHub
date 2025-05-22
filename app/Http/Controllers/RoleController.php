@@ -33,7 +33,8 @@ class RoleController extends Controller
             } else if ($name == "pub" && auth()->user()->can('role', 'web')) {
                 return redirect()->route('role.top', ["role" => "web"]);
             } else {
-                abort(403);
+                return redirect()->route('paper.index');
+                // abort(403);
             }
         }
 
