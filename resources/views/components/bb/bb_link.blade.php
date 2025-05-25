@@ -12,7 +12,7 @@
     if ($bb){
         $bburl = $bb->url();
     } else {
-        $bburl = App\Models\Bb::gen_make_url($submit->paper->id, $type, $rev_id);
+        $bburl = App\Models\Bb::gen_make_url($submit->id, $type, $rev_id);
     }
     if (!$label){
         $ary = [1=>"著者との", 2=>"査読者との", 3=>"全査読者との", 4=>"投稿管理者同士の"];
