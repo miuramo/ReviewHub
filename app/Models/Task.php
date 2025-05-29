@@ -53,11 +53,17 @@ class Task extends Model
      */
     public static function createReviewTask(Submit $sub, int $revuid){
         // ここに柔軟な査読者の割り当てと査読タスク生成の処理を書く
+        if (auth()->user()){
+            $obj_id = auth()->user()->id;
+        } else {
+            // ログインしていない場合は、デフォルトのユーザーIDを使用
+            $obj_id = 1; // ここは適切なデフォルト値に変更してください  
+        }
         $task = Task::create([
             'submit_id' => $sub->id,
             'workflow_id' => 4,
             'subject_id' => $revuid,
-            'object_id' => auth()->user()->id,
+            'object_id' => $obj_id,
         ]);
         return $task;
     }

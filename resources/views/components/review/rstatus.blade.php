@@ -38,6 +38,7 @@
                             $suuji_hogehoge = explode('は', $ichi_wa_hogehoge);
                             $kv[$suuji_hogehoge[0]] = $suuji_hogehoge[1];
                         }
+                        $kv[-1] = '（辞退）';
                     @endphp
                     <td class="p-1 text-center">{{ $kv[$review->{$h}] }}</td>
                 @else

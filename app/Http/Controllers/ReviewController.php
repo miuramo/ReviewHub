@@ -6,9 +6,11 @@ use App\Exports\ReviewCommentExportFromView;
 use App\Exports\ReviewResultExportFromView;
 use App\Http\Requests\StoreReviewRequest;
 use App\Http\Requests\UpdateReviewRequest;
+use App\Mail\ReviewRequestReply;
 use App\Models\Bb;
 use App\Models\Bidding;
 use App\Models\Category;
+use App\Models\MailTemplate;
 use App\Models\Paper;
 use App\Models\RevConflict;
 use App\Models\Review;
@@ -304,7 +306,7 @@ class ReviewController extends Controller
         if (!auth()->user()->can('manage_review', $review->paper->id)) abort(403, "you are not a manager");
         $review->deleteTask();
         Review::destroy($review->id);
-        return redirect()->route('paper.manage',['paper'=>$review->paper->id])->with('feedback.success', '査読割り当てから外しました');
+        return redirect()->route('paper.manage', ['paper' => $review->paper->id])->with('feedback.success', '査読割り当てから外しました');
         //
     }
 
@@ -340,4 +342,51 @@ class ReviewController extends Controller
         }
     }
 
+    /**
+     * 査読依頼への回答
+     */
+    public function req_confirm(Review $review, string $token)
+    {
+        if ($review->token_for_request() != $token) return abort(403, "URLが無効になっています（すでに回答済みの可能性があります）");
+
+        return view("review.req_confirm")->with(compact("review", "token"));
+    }
+
+    public function req_confirm_post(Request $req, Review $review, string $token)
+    {
+        if ($review->token_for_request() != $token) return abort(403, "URLが無効になっています（回答済みの可能性があります）");
+
+        info($req->all());
+        $action = $req->input("action");
+        $comment = $req->input("comment");
+        if ($action == "accept") {
+            $message = "査読をお引き受けいただき、ありがとうございます。<br>" .
+                "早速ではありますが、査読を開始させていただきます。<br>" .
+                "ログイン方法ならびに査読の案内をメールでお送りしますので、ご確認ください。<br>" .
+                "（届かない場合は迷惑メールフォルダもご確認ください。）<br>" .
+                "引き続き、どうぞよろしくお願いいたします。";
+            // ここで、各種処理を行う
+            $revuid = $review->user_id;
+            $ret = $review->do_assign(); // 開始依頼メールも送信する
+            if ($ret) { 
+                // do_assign では、だぶって回答しても、二重にタスク作成しないようにしている
+                // （ただし、ReviewRequestReplyメールは飛ぶ）
+                MailTemplate::send_first_message($revuid);
+                $review->status = 1;
+                $review->save();
+            }
+        } elseif ($action == "deny") {
+            $message = "査読をお引き受けいただけないとのこと、承知いたしました。<br>" .
+                "ご多忙のところご検討いただき、ありがとうございました。";
+            $review->status = -1;
+            $review->save();
+        } else {
+            return abort(400, "不正なリクエストです");
+        }
+        $paper = Paper::with('currentSubmit')->find($review->paper_id);
+        $reviewer = User::find($review->user_id);
+        (new ReviewRequestReply($paper, $reviewer, $message, $comment))->process_send();
+
+        return view("review.req_confirm_post")->with(compact("review", "token", "message"));
+    }
 }

@@ -52,6 +52,69 @@ class Review extends MetaModel
         return sha1($this->id . $this->user_id . $this->paper_id . $this->category_id);
     }
     /**
+     * 査読依頼→回答時のトークン
+     */
+    public function token_for_request()
+    {
+        return sha1($this->id . $this->user_id . $this->paper_id . $this->category_id. "request".$this->status);
+    }
+
+    /**
+     * 査読開始（内諾が得られた！）→ 念の為査読者確認フェーズ
+     */
+    public function do_assign()
+    {
+        $paper = Paper::with('currentSubmit')->find($this->paper_id);
+        $revuid = $this->user_id;
+        // タスクがないか確認
+        $task = Task::where('submit_id', $paper->currentSubmit->id)
+            ->where('subject_id', $revuid)
+            ->first();
+        if ($task) {
+            // 既にタスクがある場合は、何もしない
+            return false;
+        }
+        $task = Task::createReviewTask($paper->currentSubmit, $revuid);
+        if ($this->target == 2) {
+            $task->due_date = $task->addDaysToDate(5); // 最終判定は5日
+        } else if ($this->target == 0) {
+            $task->due_date = $task->addDaysToDate(24); // 通常査読は24日
+        } else { // case of 1
+            $task->due_date = $task->addDaysToDate(10); // 現在は使用していないが、メタの場合は、10日
+        }
+        $task->save();
+
+        $this->request_at = now();
+        $this->save();
+
+        $conftitle = Setting::getval('CONFTITLE');
+        if ($this->target == 2) {
+            Bb::add_message(
+                $paper->currentSubmit,
+                2,
+                "【{$conftitle}】最終判定のお願い",
+                "{$this->user->affil}  {$this->user->name}様\n\nお忙しいところすみませんが、査読結果が揃いましたので、確認および最終判定をお願いいたします。\n\n以下のURLから、確認してください。\n" . env('APP_URL') . "/role/rev/top",
+                $this->id,
+            );
+        } else {
+            Bb::add_message(
+                $paper->currentSubmit,
+                2,
+                "【{$conftitle}】PDFのダウンロードについて",
+                "{$this->user->affil}  {$this->user->name}様\n\n査読のご承諾ありがとうございました。\n\n". 
+                "以下のURL（ログインが要求されます）を開いていただき、「査読を開始する」ボタンを押していただくと、PDFがダウンロードできるようになります。\n [" . 
+                env('APP_URL') . "/role/rev/top](".env('APP_URL')."/role/rev/top)". 
+                "\n\n\n 投稿管理者との連絡は、以下の「掲示板をひらく」ボタンをお使いください。\n\n". 
+                "ご不明な点がありましたら、掲示板からご連絡ください。\n\n" .
+                "よろしくお願いいたします。\n\n" ,
+                $this->id,
+            );
+        }
+        return true;
+    }
+
+
+    /**
      * 査読割り当て
      * status 3が最終判定 2がメタ 1が通常 0以下が解除
      */
