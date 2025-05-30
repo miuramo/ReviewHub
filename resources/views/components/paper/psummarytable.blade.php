@@ -29,7 +29,7 @@
                 <td class="p-1 text-center">
                     {{-- <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
                         class="underline text-blue-600 hover:bg-lime-200" target="_blank"> --}}
-                        {{ $paper->id_03d() }}
+                    {{ $paper->id_03d() }}
                     {{-- </a> --}}
                 </td>
                 <td class="p-1 text-center">
@@ -38,9 +38,9 @@
                     @endphp
                     {{-- <a href="{{ route('sub.show', ['sub' => $sub]) }}" class="underline text-blue-600 hover:bg-lime-200"
                         target="_blank"> --}}
-                        <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
-                            class="underline text-blue-600 hover:bg-lime-200">
-                            {{ $paper->currentsubmit->round }}回目
+                    <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
+                        class="underline text-blue-600 hover:bg-lime-200">
+                        {{ $paper->currentsubmit->round }}回目
                         {{ $paper->currentstatus->name }}
                     </a>
                 </td>
@@ -61,11 +61,11 @@
                     <x-element.login_as :user="$paper->paperowner"></x-element.login_as> ({{ $paper->paperowner->affil }})
                 </td>
                 <td class="p-1 text-center">
-                @foreach($paper->currentsubmit->reviews as $review)
-                    <div>
-                {{$review->id}}{{substr($review->user->email,0,4)}}-{{$review->status}}
-                    </div>
-                @endforeach
+                    @foreach ($paper->currentsubmit->reviews as $review)
+                        <div>
+                            {{ substr($review->user->email, 0, 4) }}-{{ $review->status }}
+                        </div>
+                    @endforeach
                     {{-- <x-element.login_as :user="$paper->currentsubmit->aecrep()->user" />
                         {{ $paper->currentsubmit->isAssigned('aec') ? '' : '?' }} --}}
                 </td>
@@ -79,5 +79,5 @@
 </table>
 
 @push('localjs')
-<script src="/js/sortable.js"></script>
+    <script src="/js/sortable.js"></script>
 @endpush
