@@ -1,6 +1,6 @@
 @props([
     'all' => [],
-    'heads' => ['カテゴリ', 'id', 'status', 'title', '投稿日時', '投稿者', '1査', '2査'],
+    'heads' => ['カテゴリ', 'id', 'status', 'title', '投稿日時', '投稿者', '査-状況'],
     'enqans' => [],
 ])
 <!-- components.paper.summarytable -->
@@ -61,6 +61,11 @@
                     <x-element.login_as :user="$paper->paperowner"></x-element.login_as> ({{ $paper->paperowner->affil }})
                 </td>
                 <td class="p-1 text-center">
+                @foreach($paper->currentsubmit->reviews as $review)
+                    <div>
+                {{$review->id}}{{substr($review->user->email,0,4)}}-{{$review->status}}
+                    </div>
+                @endforeach
                     {{-- <x-element.login_as :user="$paper->currentsubmit->aecrep()->user" />
                         {{ $paper->currentsubmit->isAssigned('aec') ? '' : '?' }} --}}
                 </td>

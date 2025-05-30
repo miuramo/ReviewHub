@@ -17,11 +17,11 @@
     <table class="min-w divide-y divide-gray-200 inline-block">
         <thead>
             <tr>
-                <th class="p-1 bg-slate-300">ラウンド {{ $sub->round }} 
+                <th class="p-1 bg-slate-300">ラウンド {{ $sub->round }}
 
                 </th>
                 <th class="p-1 bg-slate-300">
-                    {{$sub->paper->currentstatus->name}}
+                    {{ $sub->paper->currentstatus->name }}
                 </th>
             </tr>
         </thead>
@@ -42,7 +42,7 @@
                     <x-review.commentsubmit_link :sub="$sub" color="purple"
                         label="査読報告をみる"></x-element.commentsubmit_link>
                         <br>
-                        @if (!$readonly  && $sub->accept_id != 5)
+                        @if (!$readonly && $sub->accept_id != 5)
                             <x-sub.disclose :sub="$sub"></x-sub.disclose>
                         @endif
                 </td>
@@ -61,5 +61,16 @@
         @if ($sub->round > 1)
             <x-review.rassign_again :submit_id="$sub->id"></x-review.rassign_again>
         @endif
+    </div>
+@endif
+
+{{-- 削除済み（辞退） --}}
+@if (count($sub->rejected_reviews()) > 0)
+    <div class="m-2 p-2 bg-gray-200 inline-block align-top">
+        <p class="text-center">辞退→担当外</p>
+        @foreach ($sub->rejected_reviews() as $review)
+            <x-element.login_as :user="$review->user"></x-element.login_as>
+            （{{ $review->user->affil }}）<br>
+        @endforeach
     </div>
 @endif

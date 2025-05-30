@@ -45,6 +45,12 @@ class TaskController extends Controller
     {
         if (!auth()->user()->can('role_any', 'ec')) abort(403);
         $review = Review::find($review);
+        // 依頼日時
+        if ($review->request_at == null) {
+            $review->request_at = now();
+            $review->save();
+        }
+
         $reviewer = $review->user;
         $paper = Paper::with('currentSubmit')->find($review->paper_id);
         (new ReviewRequest($paper, $reviewer, $review))->process_send();

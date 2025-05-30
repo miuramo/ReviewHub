@@ -274,6 +274,7 @@ class ReviewController extends Controller
         if ($review->user_id != auth()->id()) return abort(403, "THIS IS NOT YOUR REVIEW");
         // info($req->all());
         $review->start_at = now();
+        $review->status = 1; // 査読の状況を「開始」にする
         $review->save();
         return redirect($req->redirect_page)->with('feedback.success', '査読を開始しました');
         //
@@ -304,6 +305,8 @@ class ReviewController extends Controller
     public function destroy(Review $review)
     {
         if (!auth()->user()->can('manage_review', $review->paper->id)) abort(403, "you are not a manager");
+        $review->status = -1; // 辞退
+        $review->save();
         $review->deleteTask();
         Review::destroy($review->id);
         return redirect()->route('paper.manage', ['paper' => $review->paper->id])->with('feedback.success', '査読割り当てから外しました');

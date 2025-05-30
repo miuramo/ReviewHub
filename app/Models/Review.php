@@ -84,9 +84,6 @@ class Review extends MetaModel
         }
         $task->save();
 
-        $this->request_at = now();
-        $this->save();
-
         $conftitle = Setting::getval('CONFTITLE');
         if ($this->target == 2) {
             Bb::add_message(

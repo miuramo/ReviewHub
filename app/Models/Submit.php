@@ -35,6 +35,11 @@ class Submit extends MetaModel
     {
         return $this->hasMany(Review::class, "submit_id")->orderBy('target', 'desc');
     }
+    public function rejected_reviews()
+    {
+        $rev = Review::withTrashed()->where('status',-1)->where('submit_id', $this->id)->get();
+        return $rev;
+    }
     public function aec()
     {
         return $this->belongsTo(User::class, 'aec_id');
