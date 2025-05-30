@@ -14,17 +14,17 @@
 <x-element.component_name>
     psummarytable
 </x-element.component_name>
-<table class="min-w-full divide-y divide-gray-200 sortable" id="psummarytable">
+<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-400 sortable" id="psummarytable">
     <thead>
         <tr>
             @foreach ($heads as $h)
-                <th class="p-1 bg-slate-300">{{ $h }}</th>
+                <th class="p-1 bg-slate-300 dark:bg-slate-500">{{ $h }}</th>
             @endforeach
         </tr>
     </thead>
-    <tbody class="bg-white divide-y divide-gray-200">
+    <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-300">
         @foreach ($papers as $paper)
-            <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200' : 'bg-white' }}">
+            <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-400' : 'bg-white dark:bg-slate-300' }}">
                 <td class="p-1 text-center">{{ $paper->category->name }}</td>
                 <td class="p-1 text-center">
                     {{-- <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
@@ -68,10 +68,6 @@
                     @endforeach
                     {{-- <x-element.login_as :user="$paper->currentsubmit->aecrep()->user" />
                         {{ $paper->currentsubmit->isAssigned('aec') ? '' : '?' }} --}}
-                </td>
-                <td class="p-1 text-center">
-                    {{-- <x-element.login_as :user="$paper->currentsubmit->meta()->user" />
-                    {{ $paper->currentsubmit->isAssigned('meta') ? '' : '?' }} --}}
                 </td>
             </tr>
         @endforeach

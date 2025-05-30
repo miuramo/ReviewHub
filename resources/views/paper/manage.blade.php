@@ -21,7 +21,7 @@
     @if (session('feedback.error'))
         <x-alert.error>{{ session('feedback.error') }}</x-alert.error>
     @endif
-    <div class="mx-6 my-2">
+    <div class="mx-6 my-2 dark:text-gray-300">
         <x-paper.shoshi_list :paper="$paper">
         </x-paper.shoshi_list>
         投稿者：<x-element.login_as :user="$paper->paperowner"></x-element.login_as>
@@ -41,7 +41,7 @@
         <x-bb.bb_link :submit="$paper->currentsubmit" type="1"></x-bb.bb_link>
         <span class="mx-2"></span>
         <livewire:paper-lock :paper="$paper" />
-        <div class="bg-gray-300 text-sm p-2 mx-2">
+        <div class="bg-gray-300 text-sm p-2 mx-2 dark:text-gray-300 dark:bg-gray-500">
         ファイル一覧：
         @foreach ($files as $file)
             <a class="underline text-blue-600 hover:bg-lime-200"

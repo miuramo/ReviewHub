@@ -8,7 +8,7 @@
 <x-element.component_name>
     taskstatus
 </x-element.component_name>
-<div class="bg-{{ $bgcolor }}-100 p-2 text-sm">
+<div class="bg-{{ $bgcolor }}-100 p-2 text-sm dark:bg-{{ $bgcolor }}-600">
     {{-- 誰が --}}
     @php
         $role = App\Models\Role::findByIdOrName($task->workflow->subject);

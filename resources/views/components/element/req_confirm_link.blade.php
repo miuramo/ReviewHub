@@ -1,6 +1,6 @@
 @props([
     'rev' => null,
-    'label' => '承諾確認ページ',
+    'label' => '(参考)承諾確認ページ',
 ])
 @php
     $url = route('review.req_confirm', ['review'=>$rev, 'token'=>$rev->token_for_request()]);

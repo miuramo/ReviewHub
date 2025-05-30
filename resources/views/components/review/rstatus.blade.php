@@ -27,7 +27,7 @@
     </thead>
     <tbody class="bg-white divide-y divide-gray-200">
         @foreach ($review->heads() as $h => $hc)
-            <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200' : 'bg-white' }}">
+            <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200' : 'bg-white dark:bg-slate-400' }}">
                 {{-- もし、hcに、が含まれていたら、分割して表示する。 --}}
                 <td class="p-1 text-center">{{ $setumei[$h] }} → </td>
                 @if (strpos($hc, '、') !== false)
@@ -43,7 +43,7 @@
                     <td class="p-1 text-center">{{ $kv[$review->{$h}] }}</td>
                 @else
                     @if ($h == 'end_at' && $review->end_at == null)
-                        <td class="p-1 text-center text-red-400 font-bold text-sm">
+                        <td class="p-1 text-center text-red-400 dark:text-red-700 font-bold text-sm">
                             @php
                                 $task = App\Models\Task::where('submit_id', $review->submit->id)
                                     ->where('subject_id', $review->user_id)
@@ -83,7 +83,6 @@
                 </x-element.component_name>
 
             </td>
-            <td class="p-1 text-left"></td>
         </tr>
     </tbody>
 </table>

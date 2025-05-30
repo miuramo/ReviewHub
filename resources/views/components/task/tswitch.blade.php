@@ -37,7 +37,7 @@
     </x-element.linkbutton><br>
 
     <x-element.linkbutton href="{{ route('task.create', ['review' => $review, 'revuid' => $review->user->id]) }}"
-        color="blue">
+        size="sm" color="blue">
         査読開始（内諾が得られてから押す） 
         {{-- {{$review->id}} {{$review->user->id}} --}}
     </x-element.linkbutton>

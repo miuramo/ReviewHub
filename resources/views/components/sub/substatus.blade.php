@@ -8,7 +8,7 @@
     $statuses = App\Models\Status::pluck('name', 'id')->toArray();
 @endphp
 <!-- components.sub.status  親は -->
-<div class="bg-pink-100 rounded-lg p-2 inline-block align-top">
+<div class="bg-pink-100 rounded-lg p-2 inline-block align-top dark:bg-pink-600">
     <p class="text-center">査読状況
         <x-element.component_name type="span">
             substatus
@@ -27,7 +27,7 @@
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
             @foreach ($sub->heads() as $h => $hc)
-                <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200' : 'bg-white' }}">
+                <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200' : 'bg-white dark:bg-slate-400' }}">
                     @if ($h == 'accept_id')
                         <td class="p-1 text-center">判定</td>
                         <td class="p-1 text-center">{{ $accepts[$sub->accept_id] }}</td>
@@ -66,7 +66,7 @@
 
 {{-- 削除済み（辞退） --}}
 @if (count($sub->rejected_reviews()) > 0)
-    <div class="m-2 p-2 bg-gray-200 inline-block align-top">
+    <div class="m-2 p-2 bg-gray-200 inline-block align-top dark:bg-gray-500">
         <p class="text-center">辞退→担当外</p>
         @foreach ($sub->rejected_reviews() as $review)
             <x-element.login_as :user="$review->user"></x-element.login_as>
