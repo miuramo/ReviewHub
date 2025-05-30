@@ -53,7 +53,7 @@ Route::get('json_review/{cat}/{key?}', [SubmitController::class, 'json_review'])
 
 // 査読依頼の承諾または辞退
 Route::get('/review_request/confirm/{review}/{token}', [ReviewController::class, 'req_confirm'])->name('review.req_confirm');
-Route::post('/review_request/confirm/{review}/{token}', [ReviewController::class, 'req_confirm_post'])->name('review.req_confirm_post'); // 承諾または辞退
+Route::post('/review_request/confirmpost/{review}/{token}', [ReviewController::class, 'req_confirm_post'])->name('review.req_confirm_post'); // 承諾または辞退
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
