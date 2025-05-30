@@ -94,18 +94,18 @@ class Review extends MetaModel
                 $this->id,
             );
         } else {
-            Bb::add_message(
-                $paper->currentSubmit,
-                2,
-                "【{$conftitle}】PDFのダウンロードについて",
-                "{$this->user->affil}  {$this->user->name}様\n\n査読のご承諾ありがとうございました。\n\n". 
-                "以下のURL（ログインが要求されます）を開いていただき、「査読を開始する」ボタンを押していただくと、PDFがダウンロードできるようになります。\n [" . 
-                env('APP_URL') . "/role/rev/top](".env('APP_URL')."/role/rev/top)". 
-                "\n\n\n 投稿管理者との連絡は、以下の「掲示板をひらく」ボタンをお使いください。\n\n". 
-                "ご不明な点がありましたら、掲示板からご連絡ください。\n\n" .
-                "よろしくお願いいたします。\n\n" ,
-                $this->id,
-            );
+            // Bb::add_message(
+            //     $paper->currentSubmit,
+            //     2,
+            //     "【{$conftitle}】PDFのダウンロードについて",
+            //     "{$this->user->affil}  {$this->user->name}様\n\n査読のご承諾ありがとうございました。\n\n". 
+            //     "以下のURL（ログインが要求されます）を開いていただき、「査読を開始する」ボタンを押していただくと、PDFがダウンロードできるようになります。\n [" . 
+            //     env('APP_URL') . "/role/rev/top](".env('APP_URL')."/role/rev/top)". 
+            //     "\n\n\n 投稿管理者との連絡は、以下の「掲示板をひらく」ボタンをお使いください。\n\n". 
+            //     "ご不明な点がありましたら、掲示板からご連絡ください。\n\n" .
+            //     "よろしくお願いいたします。\n\n" ,
+            //     $this->id,
+            // );
         }
         return true;
     }
