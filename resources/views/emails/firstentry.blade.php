@@ -14,7 +14,7 @@
 
 
 ---
-[{{ config('app.name') }}]({{ env('APP_URL') }})
+[{{ env('MAIL_FROM_NAME') }}]({{ env('APP_URL') }})
 
 
 </x-mail::message>
