@@ -56,11 +56,31 @@ class Review extends MetaModel
      */
     public function token_for_request()
     {
-        return sha1($this->id . $this->user_id . $this->paper_id . $this->category_id. "request".$this->status);
+        return sha1($this->id . $this->user_id . $this->paper_id . $this->category_id . "request" . $this->status);
     }
 
     /**
-     * 査読開始（内諾が得られた！）→ 念の為査読者確認フェーズ
+     * メールから承諾リンクを押してくれた
+     */
+    public function do_accept()
+    {
+        // もし、すでに査読者2名開始している場合は、ペンディングにする（メールを送らない）
+        $count = Review::where('paper_id', $this->paper_id)
+            ->where('submit_id', $this->submit_id)
+            ->where('target', $this->target)
+            ->where('status', '>', 0) // 開始前ではない。
+            ->count();
+        if ($count >= 2) {
+            return false; // すでに2名以上の査読者がいるので、何もしない
+        }
+        $this->status = 1; // 承諾状態にする
+        $this->save();
+        return true;
+    }
+
+
+    /**
+     * 査読開始（内諾が得られた！＆まだ人数が2名未満）→ タスクを作る（念の為査読者確認フェーズにはいる）
      */
     public function do_assign()
     {
@@ -108,6 +128,35 @@ class Review extends MetaModel
             // );
         }
         return true;
+    }
+
+    public function message_accept_by_maillink()
+    {
+        $message = "査読をお引き受けいただき、ありがとうございます。<br>" .
+            "早速ではありますが、査読を開始させていただきます。<br>" .
+            "査読の案内をメールでお送りしますので、ご確認ください。<br>" .
+            "（届かない場合は迷惑メールフォルダもご確認ください。）<br><br>" .
+            "◆ ログイン方法について：<br>" .
+            "以下の手順にしたがって、査読システムのパスワードを設定してください。<br>" .
+            "(1) [:URL_FORGETPASS:] にて、<b>[:EMAIL:]</b> を入力してください。<br>" .
+            "しばらくすると、パスワード再設定メールがとどきます。<br>" .
+            "(2) パスワード再設定メールに書かれたURLから、パスワードを設定してください。<br>" .
+            "<br>" .
+            "◆ PDFのダウンロードと、査読の方法について：<br>" .
+            "査読システム [:APP_URL:] をブラウザで開いてください。<br>" .
+            "ログイン後、画面上部の「査読」をおしてください。その後、「査読を開始する」をおしてください。<br>" .
+            "<br>" .
+            "引き続き、どうぞよろしくお願いいたします。";
+        $message = str_replace(
+            ["[:URL_FORGETPASS:]", "[:EMAIL:]", "[:APP_URL:]"],
+            [
+                "<a class=\"underline hover:bg-lime-200 text-blue-500\" target=\"_blank\" href=\"" . route("password.request") . "\">" . route("password.request") . "</a>",
+                $this->user->email,
+                "<a class=\"underline hover:bg-lime-200 text-blue-500\" target=\"_blank\" href=\"" . config('app.url') . "\">" . config('app.url') . "</a>"
+            ],
+            $message
+        );
+        return $message;
     }
 
 

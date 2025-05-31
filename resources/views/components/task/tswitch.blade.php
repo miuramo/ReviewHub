@@ -18,13 +18,17 @@
         査読タスク依頼中
     @endif
 @else
-<span class="text-red-500 font-extrabold">まだ開始していません</span>
+    @if ($review->request_at)
+        <span class="text-cyan-600 font-extrabold">査読依頼送信済み</span>
+    @else
+        <span class="text-red-500 font-extrabold">依頼メール未送信です</span>
+    @endif
     <x-element.linkbutton href="{{ route('task.sendrequest', ['review' => $review, 'revuid' => $review->user->id]) }}"
         color="pink" size="sm" confirm="本当に{{ $review->user->name }}さんに査読依頼メールを送信してよいですか？">
-        査読依頼メール送信 
+        依頼メール送信
         {{-- {{$review->id}} {{$review->user->id}} --}}
     </x-element.linkbutton>
-    
+
     <br>
     <x-element.req_confirm_link :rev="$review">
     </x-element.req_confirm_link>
@@ -32,13 +36,13 @@
 
     <x-element.linkbutton href="{{ route('task.sendfirstmessage', ['review' => $review, 'revuid' => $review->user->id]) }}"
         color="pink" size="sm" confirm="本当に{{ $review->user->name }}さんにパスワード設定方法（最初のログインの方法）メールを送信してよいですか？">
-        査読者にパスワード設定方法を送信 
+        パスワード設定方法を送信
         {{-- {{$review->id}} {{$review->user->id}} --}}
     </x-element.linkbutton><br>
 
     <x-element.linkbutton href="{{ route('task.create', ['review' => $review, 'revuid' => $review->user->id]) }}"
         size="sm" color="blue">
-        査読開始（内諾が得られてから押す） 
+        査読開始（内諾が得られてから押す）
         {{-- {{$review->id}} {{$review->user->id}} --}}
     </x-element.linkbutton>
 @endisset

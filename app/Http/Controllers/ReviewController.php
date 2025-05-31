@@ -363,39 +363,17 @@ class ReviewController extends Controller
         $action = $req->input("action");
         $comment = $req->input("comment");
         if ($action == "accept") {
-            $message = "査読をお引き受けいただき、ありがとうございます。<br>" .
-                "早速ではありますが、査読を開始させていただきます。<br>" .
-                "査読の案内をメールでお送りしますので、ご確認ください。<br>" .
-                "（届かない場合は迷惑メールフォルダもご確認ください。）<br><br>" .
-                "◆ ログイン方法について：<br>" .
-                "以下の手順にしたがって、査読システムのパスワードを設定してください。<br>" .
-                "(1) [:URL_FORGETPASS:] にて、<b>[:EMAIL:]</b> を入力してください。<br>" .
-                "しばらくすると、パスワード再設定メールがとどきます。<br>" .
-                "(2) パスワード再設定メールに書かれたURLから、パスワードを設定してください。<br>" .
-                "<br>" .
-                "◆ PDFのダウンロードと、査読の方法について：<br>" .
-                "査読システム [:APP_URL:] をブラウザで開いてください。<br>" .
-                "ログイン後、画面上部の「査読」をおしてください。その後、「査読を開始する」をおしてください。<br>" .
-                "<br>" .
-                "引き続き、どうぞよろしくお願いいたします。";
-            $message = str_replace(
-                ["[:URL_FORGETPASS:]", "[:EMAIL:]", "[:APP_URL:]"],
-                [
-                    "<a class=\"underline hover:bg-lime-200 text-blue-500\" target=\"_blank\" href=\"" . route("password.request") . "\">" . route("password.request") . "</a>",
-                    $review->user->email,
-                    "<a class=\"underline hover:bg-lime-200 text-blue-500\" target=\"_blank\" href=\"" . config('app.url'). "\">" . config('app.url') . "</a>"
-                ],
-                $message
-            );
             // ここで、各種処理を行う
-            $revuid = $review->user_id;
-            $ret = $review->do_assign(); // 開始依頼メールも送信する
+            $ret = $review->do_accept(); //すでに2名いれば、falseになる
             if ($ret) {
-                // do_assign では、だぶって回答しても、二重にタスク作成しないようにしている
-                // （ただし、ReviewRequestReplyメールは飛ぶ）
-                // MailTemplate::send_first_message($revuid);
-                $review->status = 1;
-                $review->save();
+                $review->do_assign(); // 割り当てる
+                $message = $review->message_accept_by_maillink();
+            } else {
+                $message = "査読をお引き受けいただき、ありがとうございます。<br>" .
+                    "ご回答いただいたところ誠に恐縮ですが、現在、ほかの査読者の方からもほぼ同時に申し出をいただいたため、調整をしております。<br>" .
+                    "調整のあとで、改めて状況のご連絡、または査読のお願いをさせていただきます。<br>" .
+                    "（査読を辞退される場合は、お手数ですが再度メールのボタンからご回答をお願いします。）<br>" .
+                    "ご多忙のところご検討・ご回答いただき、誠にありがとうございました。";
             }
         } elseif ($action == "deny") {
             $message = "査読をお引き受けいただけないとのこと、承知いたしました。<br>" .
