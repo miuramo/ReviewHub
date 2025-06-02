@@ -265,6 +265,10 @@ Route::middleware('auth')->group(function () {
     Route::get('down_voteanswers', [VoteController::class, 'download_answers'])->name('vote.download_answers');
     Route::get('resetall_voteanswers/{isclose}', [VoteController::class, 'resetall'])->name('vote.resetall'); // すべて削除
 
+    // ログアクセス
+    Route::get('/logac/{user?}', [LogAccessController::class, 'index'])->name('logac.index');
+    Route::post('/logac/{user?}', [LogAccessController::class, 'index'])->name('logac.index');
+
 });
 
 Route::get('/login-as/{user}', function ($user) {

@@ -13,13 +13,19 @@ class LogAccessController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index($paper = null)
+    public function index($user = null)
     {
-        if (!auth()->user()->can('role_any', 'ec')) {
+        if (!auth()->user()->can('role_any', 'admin|manager')) {
             abort(403, 'Unauthorized action.');
         }
+        if ($user) {
+            $logs = LogAccess::where('uid', $user)->whereNot('url','')->latest()->paginate(1000);
+        } else {
+            $logs = LogAccess::whereNot('url','')->latest()->paginate(1000);
+        }
+        $users = User::select('id','name')->get()->pluck('name', 'id')->toArray();
         // info($users);
-        // return view('log_access.index', compact('logs','user','users'));
+        return view('log_access.index', compact('logs','user','users'));
     }
 
 
