@@ -79,7 +79,7 @@
                     </x-element.linkbutton>
                 </div>
                 <x-element.component_name>
-                    rstatus
+                    rstatus {{ $review->id }}
                 </x-element.component_name>
 
             </td>

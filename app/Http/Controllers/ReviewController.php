@@ -346,6 +346,21 @@ class ReviewController extends Controller
     }
 
     /**
+     * 復活させる
+     */
+    public function restore(int $revid)
+    {
+        if (!auth()->user()->can('role_any', 'rev|meta')) return abort(403);
+        info($revid);
+        $review = Review::onlyTrashed()->findOrFail($revid);
+        $review->restore();
+        return back()->with('feedback.success', '復活させました。');
+        // redirect()->route('paper.manage',['paper'=>$review->paper_id])->with('feedback.success', '復活させました。');
+        // redirect()->back()->with('feedback.success', '復活させました。');
+    }
+
+
+    /**
      * 査読依頼への回答
      */
     public function req_confirm(Review $review, string $token)

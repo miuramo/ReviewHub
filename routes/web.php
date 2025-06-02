@@ -117,6 +117,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/review/pubkey/{review}/{token}', [ReviewController::class, 'pubshow'])->name('review.pubshow'); // 査読者同士の相互参照用
 
     Route::get('/review', [ReviewController::class, 'index'])->name('review.index');
+    Route::get('/review/{review}/restore', [ReviewController::class, 'restore'])->name('review.restore');//復活
     Route::delete('/review/{review}', [ReviewController::class, 'destroy'])->name('review.destroy');
     Route::get('/review/indexcat/{cat}', [ReviewController::class, 'indexcat'])->name('review.indexcat');
     Route::get('/review_downzip/{cat}', [ReviewController::class, 'zipdownload_for_rev'])->name('review.downzip');

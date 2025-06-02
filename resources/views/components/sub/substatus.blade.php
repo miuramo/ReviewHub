@@ -67,10 +67,21 @@
 {{-- 削除済み（辞退） --}}
 @if (count($sub->rejected_reviews()) > 0)
     <div class="m-2 p-2 bg-gray-200 inline-block align-top dark:bg-gray-500">
-        <p class="text-center">辞退→担当外</p>
+        <p class="text-center">担当外</p>
         @foreach ($sub->rejected_reviews() as $review)
             <x-element.login_as :user="$review->user"></x-element.login_as>
-            （{{ $review->user->affil }}）<br>
+            （{{ $review->user->affil }}）
+            @if ($review->request_at)
+                <span class="text-blue-500">依頼済み</span>
+            @endif
+            @if ($review->status == -1)
+                <span class="text-red-500">辞退</span>
+            @endif
+            <x-element.linkbutton href="{{ route('review.restore', ['review' => $review->id]) }}" color="teal"
+                size="xs">
+                復活
+            </x-element.linkbutton>
+            <br>
         @endforeach
     </div>
 @endif
