@@ -41,7 +41,7 @@
                 <td colspan=2 class="p-1 text-center">
                     {{-- 受領メールを送る --}}
                     <x-element.linkbutton href="{{ route('manage.sendreceipt', ['sub' => $sub->id]) }}" 
-                        color="pink" size="sm">受領メールを送る
+                        color="pink" size="sm" confirm="あなたの名前で、受領通知を送ってよいですか？（著者との掲示板に書き込み、メール送信します）">受領通知を送る
                     </x-element.linkbutton> <span class="mx-2"></span>
 
                     <x-review.commentsubmit_link :sub="$sub" color="purple"
