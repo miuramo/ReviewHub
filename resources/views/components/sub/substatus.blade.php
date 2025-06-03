@@ -39,6 +39,11 @@
             @endforeach
             <tr class="bg-slate-200">
                 <td colspan=2 class="p-1 text-center">
+                    {{-- 受領メールを送る --}}
+                    <x-element.linkbutton href="{{ route('manage.sendreceipt', ['sub' => $sub->id]) }}" 
+                        color="pink" size="sm">受領メールを送る
+                    </x-element.linkbutton> <span class="mx-2"></span>
+
                     <x-review.commentsubmit_link :sub="$sub" color="purple"
                         label="査読報告をみる"></x-element.commentsubmit_link>
                         <br>
