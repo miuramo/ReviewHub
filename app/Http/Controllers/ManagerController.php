@@ -200,17 +200,23 @@ class ManagerController extends Controller
         if (!auth()->user()->can('role_any', 'ec|aec|meta')) abort(403);
         $submit = Submit::find($subid);
         if ($submit->paper->status_id < 2) {
-            return redirect()->route('sub.show', ['sub' => $subid])->with('feedback.error', "この論文はまだ投稿完了していません。");
+            return back()->with('feedback.error', "受領通知を送信しようとしましたが、まだ投稿完了していません。");
         }
         $myname = auth()->user()->name;
         $paper = $submit->paper;
+        $numround = $submit->round;
+        if ($numround > 1) {
+            $mesround = "{$numround}回目の";
+        } else {
+            $mesround = "";
+        }
         Bb::add_message(
             $submit,
             1, // type=1 投稿管理者と著者の掲示板
             "【論文編集委員会より】論文を受領いたしました",
             "{$paper->paperowner->affil}  {$paper->paperowner->name}様\n\n日本創造学会論文編集委員会の {$myname} と申します。\n\n" .
                 "論文「{$submit->paper->title}」を受領いたしました。\n" .
-                "査読に進みますので、しばらくお待ちください。\n\n"
+                "{$mesround}査読に進みますので、しばらくお待ちください。\n\n"
         );
         return back()->with('feedback.success', "受領通知を送信しました。");
     }
