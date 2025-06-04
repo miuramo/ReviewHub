@@ -1,7 +1,10 @@
 @php
     $reviews = App\Models\Review::where('user_id', auth()->id())->get();
 
-    $tasks = App\Models\Task::with('submit')->where('subject_id', auth()->id())->where('completed', 0)->get();
+    $tasks = App\Models\Task::with('submit')
+        ->where('subject_id', auth()->id())
+        ->where('completed', 0)
+        ->get();
 
     $approvetasks = App\Models\Task::with('submit')
         ->where('object_id', auth()->id())
@@ -78,9 +81,15 @@
                     査読・報告の参照
                 </x-element.linkbutton>
                 <span class="mx-4"></span>
-                <x-element.linkbutton href="{{ route('review.edit', ['review' => $rev]) }}" color="blue">
-                    査読・報告の修正
-                </x-element.linkbutton>
+                @if (!$rev->submit->ec_decision_at)
+                    <x-element.linkbutton href="{{ route('review.edit', ['review' => $rev]) }}" color="blue">
+                        査読・報告の修正
+                    </x-element.linkbutton>
+                @else
+                    <span
+                        class="text-sm text-gray-300 hover:text-gray-500">{{ substr($rev->submit->ec_decision_at, 0, 10) }}
+                        通知済み（査読・報告の修正はできません）</span>
+                @endif
                 <span class="mx-4"></span>
                 <x-bb.bb_link :submit="$rev->submit" type="2" :rev_id="$rev->id" size="sm" label="投稿管理者との掲示板">
                 </x-bb.bb_link>
