@@ -52,6 +52,16 @@
                         @endif
                     
                         SubID: {{$sub->id}}
+                        <form class="inline" action="{{ route('admin.crud') }}?table=submits" method="post" target="_blank"
+                    id="admincrudwhereid{{ $sub->id }}">
+                    @csrf
+                    @method('post')
+                    <input id="whereby" type="hidden"
+                        class="whereBy text-sm bg-slate-100 font-thin mr-2 p-0 h-5 w-full" name="whereBy__id"
+                        value={{ $sub->id }}>
+                    <x-element.submitbutton color="white" size="xs">編集(Sub{{ $sub->id }})（別タブ）
+                    </x-element.submitbutton>
+                </form>
                 </td>
             </tr>
         </tbody>
@@ -88,6 +98,16 @@
                 size="xs">
                 復活
             </x-element.linkbutton>
+            <form class="inline" action="{{ route('admin.crud') }}?table=reviews" method="post" target="_blank"
+                    id="admincrudwhereid{{ $review->id }}">
+                    @csrf
+                    @method('post')
+                    <input id="whereby" type="hidden"
+                        class="whereBy text-sm bg-slate-100 font-thin mr-2 p-0 h-5 w-full" name="whereBy__id"
+                        value={{ $review->id }}>
+                    <x-element.submitbutton color="white" size="xs">編集({{ $review->id }})
+                    </x-element.submitbutton>
+                </form>
             <br>
         @endforeach
     </div>

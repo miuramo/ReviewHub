@@ -37,7 +37,7 @@ class Submit extends MetaModel
     }
     public function rejected_reviews()
     {
-        $rev = Review::withTrashed()->where('status',-1)->where('submit_id', $this->id)->whereNotNull('deleted_at')->get();
+        $rev = Review::withTrashed()->where('submit_id', $this->id)->whereNotNull('deleted_at')->get();
         return $rev;
     }
     public function aec()

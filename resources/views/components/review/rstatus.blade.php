@@ -75,9 +75,20 @@
                 <div class="p-2">
                     <x-element.linkbutton href="{{ route('logac.show', ['review' => $review]) }}" color="gray"
                         size="xs" target="_blank">
-                        査読活動ログ参照（別タブで開きます）
+                        査読活動ログ（別タブ）
                     </x-element.linkbutton>
                 </div>
+                <form class="inline" action="{{ route('admin.crud') }}?table=reviews" method="post" target="_blank"
+                    id="admincrudwhereid{{ $review->id }}">
+                    @csrf
+                    @method('post')
+                    <input id="whereby" type="hidden"
+                        class="whereBy text-sm bg-slate-100 font-thin mr-2 p-0 h-5 w-full" name="whereBy__id"
+                        value={{ $review->id }}>
+                    <x-element.submitbutton color="white" size="xs">編集({{ $review->id }})（別タブ）
+                    </x-element.submitbutton>
+                </form>
+
                 <x-element.component_name>
                     rstatus {{ $review->id }}
                 </x-element.component_name>
