@@ -30,6 +30,8 @@
                 $noinputcolor = 'blue';
                 $descmanda = '【任意】';
             }
+            $noinputmessage = '<span class="text-' . $noinputcolor . '-600 font-extrabold">(未入力)</span>';
+
         @endphp
         <span class="text-{{ $noinputcolor }}-600 font-extrabold">{{ $descmanda }}</span>
         <br>
@@ -73,7 +75,7 @@
         </td>
     @elseif($type == 'number')
         <td id="{{ $itm->name }}_answer" class="text-lg p-4">
-            {!! $current ?? '<span class="text-red-600 font-extrabold">(未入力)</span>' !!}</td>
+            {!! $current ?? $noinputmessage !!}</td>
         <td class="p-2 pl-10">
             {!! $item_title !!}<br>
             <input type="number" id="{{ $itm->name }}{{ $loop->iteration }}" name="{{ $itm->name }}"
@@ -86,7 +88,7 @@
         </td>
     @elseif($type == 'text')
         <td id="{{ $itm->name }}_answer" class="text-md p-4">
-            {!! $current ?? '<span class="text-red-600 font-extrabold">(未入力)</span>' !!}</td>
+            {!! $current ?? $noinputmessage !!}</td>
         <td class="p-2 pl-10">
             {!! $item_title !!}<br>
             <input type="hidden" name="{{ $itm->name }}" value="">
@@ -98,7 +100,7 @@
         </td>
     @elseif($type == 'textarea')
         <td id="{{ $itm->name }}_answer" class="text-md p-4">
-            {!! $currentbr ?? '<span class="text-red-600 font-extrabold">(未入力)</span>' !!}</td>
+            {!! $current ?? $noinputmessage !!}</td>
         <td class="p-2 pl-10">
             {!! $item_title !!}<br>
             <input type="hidden" name="{{ $itm->name }}" value="">
