@@ -241,7 +241,7 @@ class ManagerController extends Controller
         if ($submit->accept_id == 2){
             $conditional_accept_message = "再投稿期限は、本日より30日後の " . date('Y年m月d日', strtotime('+30 days')) . " です。\n";
             $conditional_accept_message .= "（再投稿期限は、著者による査読結果確認のあと、投稿一覧画面でも確認することができます。）\n\n";
-            $conditional_accept_message .= "再投稿の方法は、投稿一覧 → 論文サムネイル画像をクリックし、投稿編集画面上部に記載されますので、こちらの指示に従ってください。\n\n";
+            $conditional_accept_message .= "再投稿の方法は、投稿一覧 → 論文サムネイル画像をクリック → 投稿編集画面上部 に記載されますので、こちらの指示に従ってください。\n\n";
         } else {
             $conditional_accept_message = "";
         }
