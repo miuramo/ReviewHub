@@ -89,6 +89,11 @@
                     <span
                         class="text-sm text-gray-300 hover:text-gray-500">{{ substr($rev->submit->ec_decision_at, 0, 10) }}
                         通知済み（査読・報告の修正はできません）</span>
+
+                    <x-element.linkbutton2
+                        href="{{ $rev->submit->url_reviewresult_for_author() }}"
+                        color="purple" target="_blank" size="sm">
+                        著者に通知した査読結果 </x-element.linkbutton2>
                 @endif
                 <span class="mx-4"></span>
                 <x-bb.bb_link :submit="$rev->submit" type="2" :rev_id="$rev->id" size="sm" label="投稿管理者との掲示板">

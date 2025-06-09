@@ -9,7 +9,7 @@
             第{{ $sub->round }}回 {{ __('査読結果') }}
         </h2>
     </x-slot>
-    @section('title', '査読結果')
+    @section('title', '査読結果 '. $sub->paper->id_03d())
     @if (session('feedback.success'))
         <x-alert.success>{{ session('feedback.success') }}</x-alert.success>
     @endif

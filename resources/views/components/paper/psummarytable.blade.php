@@ -56,7 +56,15 @@
                     @endif
                 </td>
 
-                <td class="p-1 text-center">{{ $paper->currentsubmit->submitted_at ?? '---' }}</td>
+                <td class="p-1 text-center">
+                    @if($paper->currentsubmit->submitted_at)
+                        {{ $paper->currentsubmit->submitted_at }}
+                    @elseif($paper->currentsubmit->resubmit_until)
+                        <span class="text-sm text-gray-500">{{ $paper->currentsubmit->resubmit_until }} 再投稿期限</span>
+                    @else
+                        ---
+                    @endif
+                </td>
                 <td class="p-1 text-center">
                     <x-element.login_as :user="$paper->paperowner"></x-element.login_as> ({{ $paper->paperowner->affil }})
                 </td>

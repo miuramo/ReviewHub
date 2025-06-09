@@ -88,6 +88,15 @@ class Submit extends MetaModel
         return $score->valuestr;
     }
 
+    /**
+     * 著者に帰る査読結果のURLを生成する
+     * @return string
+     */
+    public function url_reviewresult_for_author()
+    {
+        return route('paper.review', ['sub' => $this->id, 'token' => $this->paper->token()]);
+    }
+
     // public function updateStatus()
     // {
     // if ($this->rev1()->user_id != null && $this->rev2()->user_id != null) {
