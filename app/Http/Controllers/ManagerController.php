@@ -220,4 +220,42 @@ class ManagerController extends Controller
         );
         return back()->with('feedback.success', "受領通知を送信しました。");
     }
+    /**
+     * 査読結果開示通知を送信する
+     */
+    public function submit_senddisclose(int $subid)
+    {
+        if (!auth()->user()->can('role_any', 'ec|aec|meta')) abort(403);
+        $submit = Submit::find($subid);
+        if ($submit->ec_decision_at == null) {
+            return back()->with('feedback.error', "エラー！このボタンを押すより前に、査読結果を著者に開示してください。");
+        }
+        $myname = auth()->user()->name;
+        $paper = $submit->paper;
+        $numround = $submit->round;
+        if ($numround > 1) {
+            $mesround = "{$numround}回目の";
+        } else {
+            $mesround = "";
+        }
+        if ($submit->accept_id == 2){
+            $conditional_accept_message = "再投稿期限は、本日より30日後の " . date('Y年m月d日', strtotime('+30 days')) . " です。\n";
+            $conditional_accept_message .= "（再投稿期限は、著者による査読結果確認のあと、投稿一覧画面でも確認することができます。）\n\n";
+            $conditional_accept_message .= "再投稿の方法は、投稿一覧 → 論文サムネイル画像をクリックし、投稿編集画面上部に記載されますので、こちらの指示に従ってください。\n\n";
+        } else {
+            $conditional_accept_message = "";
+        }
+        Bb::add_message(
+            $submit,
+            1, // type=1 投稿管理者と著者の掲示板
+            "【論文編集委員会より】第{$numround}回査読結果の開示",
+            "{$paper->paperowner->affil}  {$paper->paperowner->name}様\n\n日本創造学会論文編集委員会の {$myname} と申します。\n\n" .
+                "投稿いただいておりました論文「{$submit->paper->title}」の、\n第{$numround}回査読結果を開示いたしました。\n\n" .
+                "査読結果は、投稿一覧 → 第{$numround}回査読結果（オレンジ色のボタン）から、確認してください。\n" . 
+                "査読結果を確認されましたら、査読結果ページ上部の「査読結果を確認した」ボタンを押してください。\n\n" .
+                $conditional_accept_message .
+                "ご不明な点がありましたら、掲示板にてご質問ください。\n\n"
+        );
+        return back()->with('feedback.success', "査読結果の開示通知を送信しました。");
+    }
 }

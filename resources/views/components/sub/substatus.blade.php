@@ -45,13 +45,20 @@
                     </x-element.linkbutton> <span class="mx-2"></span>
 
                     <x-review.commentsubmit_link :sub="$sub" color="purple"
-                        label="査読報告をみる"></x-element.commentsubmit_link>
+                        label="査読結果をみる"></x-element.commentsubmit_link>
                         <br>
                         @if (!$readonly && $sub->accept_id != 5)
                             <x-sub.disclose :sub="$sub"></x-sub.disclose>
                         @endif
                     
-                        SubID: {{$sub->id}}
+                    <x-element.linkbutton href="{{ route('manage.senddisclose', ['sub' => $sub->id]) }}" color="pink"
+                        size="sm" confirm="査読結果開示通知を送ってよいですか？（著者との掲示板に書き込み、メール送信します）">査読結果開示通知を送る
+                    </x-element.linkbutton> 
+                    <br>
+                    <span class="mx-2"></span>
+
+
+                    SubID: {{$sub->id}}
                         <form class="inline" action="{{ route('admin.crud') }}?table=submits" method="post" target="_blank"
                     id="admincrudwhereid{{ $sub->id }}">
                     @csrf
