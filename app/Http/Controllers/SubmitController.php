@@ -515,6 +515,6 @@ class SubmitController extends Controller
         $sub = Submit::findOrFail($sub_id);
         if (!auth()->user()->can('manage_review', $sub->paper->id)) abort(403, "you are not a manager (manage_review)");
         $sub->setDecision();
-        return redirect()->route('paper.manage',['paper'=>$sub->paper->id])->with('feedback.success', '査読結果を開示しました（通知は送っていません。「開示通知を送る」から、送信してください。）');
+        return redirect()->route('paper.manage',['paper'=>$sub->paper->id])->with('feedback.success', '査読結果を開示しました（通知は送っていません。「査読結果開示通知を送る」から、送信してください。）');
     }
 }
