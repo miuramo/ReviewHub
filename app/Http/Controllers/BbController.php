@@ -89,7 +89,9 @@ class BbController extends Controller
         } else {
             $revid = null;
         }
-        return view("bb.show")->with(compact("bb", "revid"));
+        // $isEC = auth()->user()->can('role_any', 'ec');
+        $isEC = auth()->user()->can('manage_review', $bb->paper_id);
+        return view("bb.show")->with(compact("bb", "revid", "isEC"));
     }
 
     /**

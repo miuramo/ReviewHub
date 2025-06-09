@@ -30,8 +30,9 @@
     <div class="py-2 px-6">
         <x-paper.shoshi_list :paper="$bb->paper"></x-paper.shoshi_list>
 
-
-        <x-element.button id="toggleButton" value="参加者をみる" color="lime" onclick="openclose('div_bbparticipants')">
+        <div class="py-0.5"></div>
+        @if($isEC)
+        <x-element.button id="toggleButton" size="sm" value="参加者をみる（投稿管理者のみ）" color="lime" onclick="openclose('div_bbparticipants')">
         </x-element.button>
         @php
             $uclist = $bb->get_participants();
@@ -49,6 +50,7 @@
                 @endif
             @endforeach
         </div>
+        @endif
 
 
         @foreach ($bb->messages as $mes)
