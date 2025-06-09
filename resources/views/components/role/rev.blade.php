@@ -78,17 +78,17 @@
                 {{-- <span class="mx-2"></span> --}}
 
                 <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green">
-                    査読・報告の参照
+                    査読報告の参照
                 </x-element.linkbutton>
                 <span class="mx-4"></span>
                 @if (!$rev->submit->ec_decision_at)
                     <x-element.linkbutton href="{{ route('review.edit', ['review' => $rev]) }}" color="blue">
-                        査読・報告の修正
+                        査読報告の修正
                     </x-element.linkbutton>
                 @else
                     <span
                         class="text-sm text-gray-300 hover:text-gray-500">{{ substr($rev->submit->ec_decision_at, 0, 10) }}
-                        通知済み（査読・報告の修正はできません）</span>
+                        通知済み（査読報告の修正はできません）</span>
 
                     <x-element.linkbutton2
                         href="{{ $rev->submit->url_reviewresult_for_author() }}"
