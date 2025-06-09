@@ -76,7 +76,7 @@
             </x-alert.error>
         @endif
 
-        @if( $paper->currentsubmit->round > 1)
+        @if( $paper->currentsubmit->round > 1 && !$paper->locked)
             <div class="mx-6 px-4 my-2 p-2 bg-cyan-100 hover:bg-lime-100 text-md text-gray-500 font-bold hover:text-gray-800">
                 再投稿の方法：論文PDF と、回答書PDF をアップロードしてください。<br>
                 なお、回答書 のフォーマット、ページ数は自由です。（とくに指定の形式はありません）。<br>
