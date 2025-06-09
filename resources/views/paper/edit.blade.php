@@ -79,6 +79,7 @@
         @if( $paper->currentsubmit->round > 1 && !$paper->locked)
             <div class="mx-6 px-4 my-2 p-2 bg-cyan-100 hover:bg-lime-100 text-md text-gray-500 font-bold hover:text-gray-800">
                 再投稿の方法：論文PDF と、回答書PDF をアップロードしてください。<br>
+                （必要があれば和文題名、英文題名、連絡先等も変更してください。）<br><br>
                 なお、回答書 のフォーマット、ページ数は自由です。（とくに指定の形式はありません）。<br>
                 再投稿を完了するときも、さいごに画面下の「投稿完了通知メールを送信」を押してください。
             </div>
