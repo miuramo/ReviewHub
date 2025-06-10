@@ -31,25 +31,26 @@
         <x-paper.shoshi_list :paper="$bb->paper"></x-paper.shoshi_list>
 
         <div class="py-0.5"></div>
-        @if($isEC)
-        <x-element.button id="toggleButton" size="sm" value="参加者をみる（投稿管理者のみ）" color="lime" onclick="openclose('div_bbparticipants')">
-        </x-element.button>
-        @php
-            $uclist = $bb->get_participants();
-        @endphp
-        <div class="hidden-content p-2 bg-lime-100" style="display:none" id="div_bbparticipants">
-            @foreach ($uclist as $uc)
-                @if ($uc instanceof App\Models\User)
-                    <div class="inline-block bg-lime-200 p-1 m-1 rounded-md">
-                        <x-element.login_as :user="$uc"></x-element.login_as>
-                    </div>
-                @else
-                    <div class="inline-block bg-lime-200 p-1 m-1 rounded-md">
-                        {{ $uc->email }}
-                    </div>
-                @endif
-            @endforeach
-        </div>
+        @if ($isEC)
+            <x-element.button id="toggleButton" size="sm" value="参加者をみる（投稿管理者のみ）" color="lime"
+                onclick="openclose('div_bbparticipants')">
+            </x-element.button>
+            @php
+                $uclist = $bb->get_participants();
+            @endphp
+            <div class="hidden-content p-2 bg-lime-100" style="display:none" id="div_bbparticipants">
+                @foreach ($uclist as $uc)
+                    @if ($uc instanceof App\Models\User)
+                        <div class="inline-block bg-lime-200 p-1 m-1 rounded-md">
+                            <x-element.login_as :user="$uc"></x-element.login_as>
+                        </div>
+                    @else
+                        <div class="inline-block bg-lime-200 p-1 m-1 rounded-md">
+                            {{ $uc->email }}
+                        </div>
+                    @endif
+                @endforeach
+            </div>
         @endif
 
 
@@ -58,8 +59,8 @@
         @endforeach
 
         <div class="text-right mt-1">
-            <form action="{{ route('bbmes.store', ['bb' => $bb->id, 'key' => $bb->key]) }}" method="post" id="post_bbmes"
-                enctype="multipart/form-data" onsubmit="return showMessageBeforeSend();">
+            <form action="{{ route('bbmes.store', ['bb' => $bb->id, 'key' => $bb->key]) }}" method="post"
+                id="post_bbmes" enctype="multipart/form-data" onsubmit="return showMessageBeforeSend();">
                 @csrf
                 @method('post')
                 <input type="hidden" name="key" value="{{ $bb->key }}">
@@ -87,6 +88,103 @@
                     @endif
                 </div>
             </form>
+            @if ($isEC)
+                <x-element.button id="toggleButton" size="sm" value="定型文の選択画面をひらく（投稿管理者のみ）" color="teal"
+                    onclick="openclose('div_bbtemplate')">
+                </x-element.button>
+                <div class="hidden-content p-2 bg-teal-100" style="display:none" id="div_bbtemplate">
+                    ボタンを押すと、Subject と Message に定型文が入力されます。<br>
+                    @php
+                        if ($bb->type == 2) {
+                            $revobj = App\Models\Review::find($bb->rev_id);
+                            $revuser = App\Models\User::find($revobj->user_id);
+                            $conftitle = App\Models\Setting::getval('CONFTITLE');
+                            // 前回査読の報告を検索
+                            $vpid_score = App\Models\Viewpoint::where('name', 'score')->where('category_id',1)->first()->id;
+                            $score = App\Models\Score::where('review_id', $revobj->id)
+                                ->where('viewpoint_id', $vpid_score)
+                                ->where('user_id', $revuser->id)
+                                ->first()->value;
+                            if ($score == 1){
+                                $revjudgment = '不採録';
+                            } elseif ($score == 2) {
+                                $revjudgment = '条件付き採録';
+                            } elseif ($score == 3) {
+                                $revjudgment = '採録';
+                            } else {
+                                $revjudgment = '不明';
+                            };
+                            // 最終査読結果をsubmitsから取得する
+                            $submit = App\Models\Submit::with('accept')->where('paper_id', $bb->paper_id)
+                                ->whereNotNull('ec_decision_at')
+                                ->where('canceled', 0)
+                                ->orderBy('ec_decision_at', 'desc')
+                                ->first();
+                            if ($submit->accept_id == 1){ // 採録
+                                $lastmes = "引き続き、{$conftitle}編集業務へのご協力、よろしくお願いいたします。";
+                            } else if ($submit->accept_id == 2) { // 条件付き
+                                if ($revjudgment == '不採録') {
+                                    $lastmes = "{$revuser->name}様には前回の査読において{$revjudgment}の判定をいただいており、誠に恐縮ではありますが、\n" .
+                                        "著者から改訂稿が提出されましたら、引き続き、査読をお願いできればと考えております。\n\n";
+                                } else {
+                                    $lastmes = "{$revuser->name}様には、著者から改訂稿が提出されましたら、\n引き続き、査読をお願いできればと考えております。\n\n";
+                                }
+                                $lastmes .= "何卒よろしくお願いいたします。";
+                            } else if ($submit->accept_id == 2){ // 不採録
+                                $lastmes = "査読にご協力いただき、誠にありがとうございました。";
+                            } else {
+                                $lastmes = "査読にご協力いただき、誠にありがとうございました。";
+                            }
+                            // info($submit);
+                            $templates = [
+                                '査読結果の開示報告' => [
+                                    'sub' => '査読結果を著者に通知しました',
+                                    'mes' =>
+                                        $revuser->affil."  ".$revuser->name."様\n\n" . 
+                                        "このたびは、{$conftitle}に投稿された下記の論文\n" . 
+                                        "「{$bb->paper->title}」\n" . 
+                                        "の査読にご協力いただき、ありがとうございました。\n\n" . 
+                                        "編集委員会で審議した結果、本論文は「{$submit['accept']['name']}」となりました。\n\n" . 
+                                        "著者に通知した査読結果は、投稿システムメニューの\n" . 
+                                        "「査読」→「最近担当した査読」→「著者に通知した査読結果」" . 
+                                        "からご確認いただけます。\n". 
+                                        route('role.top',['role' => 'rev'])."\n" .
+                                        "\n" .
+                                        $lastmes
+                                ],
+                            ];
+                        }
+                        $json_templates = json_encode($templates);
+                    @endphp
+                    @foreach ($templates as $tempname => $tempvalue)
+                        <x-element.button id="bbtemplate{{ $loop->index }}" size="sm" value="{{ $tempname }}"
+                            color="teal" onclick="insertTemplate('{{ $tempname }}')">
+                        </x-element.button>
+                    @endforeach
+                </div>
+                <script>
+                    const templates = {!! $json_templates !!};
+
+                    function insertTemplate(tempname) {
+                        let sub = document.getElementById('bbsub');
+                        let mes = document.getElementById('bbmes');
+                        console.log(templates);
+                        sub.value = templates[tempname].sub;
+                        mes.value = templates[tempname].mes;
+                        // if (tempname === '査読結果の開示報告') {
+                        //     sub.value = '査読結果を著者に開示しました';
+                        //     mes.value = '査読者の皆様へ、\n\n';
+                        // } else if (tempname === '査読依頼') {
+                        //     sub.value = '査読依頼: [論文タイトル]';
+                        //     mes.value = '査読者の皆様へ、\n\n';
+                        // } else if (tempname === '査読結果の送付') {
+                        //     sub.value = '査読結果をお送りいたします';
+                        //     mes.value = '査読者の皆様へ、\n\n';
+                        // }
+                        mes.focus();
+                    }
+                </script>
+            @endif
 
         </div>
         <div class="my-10"></div>
