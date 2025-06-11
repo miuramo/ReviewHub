@@ -5,6 +5,10 @@
 @php
     $sub = App\Models\Submit::find($task->submit_id);
     $paper = App\Models\Paper::find($sub->paper_id);
+
+    if($task->submit->round>=2){
+        $answerfile = $paper->answer_file();
+    }
 @endphp
 <x-element.component_name>panel</x-element.component_name>
 
@@ -145,6 +149,13 @@
                         </x-element.linkbutton>
                     @else
                         No File
+                    @endif
+                    @isset($answerfile)
+                        <x-element.linkbutton2
+                            href="{{ route('file.showhash', ['file' => $answerfile->id, 'hash' => substr($answerfile->key, 0, 10)]) }}"
+                            color="orange" target="_blank">
+                            回答書PDFをひらく
+                        </x-element.linkbutton2>
                     @endif
                     <span class="mx-2"></span>
                     <x-element.linkbutton href="{{ route('review.edit', ['review' => $rev]) }}" color="blue">

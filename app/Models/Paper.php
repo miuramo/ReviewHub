@@ -241,6 +241,18 @@ class Paper extends Model
     {
         return $this->belongsTo(File::class, 'pdf_file_id');
     }
+    public function answer_file()
+    {
+        $answer_file = File::where('paper_id', $this->id)
+            ->where('filetype_id', 2) // Answer file
+            ->orderBy('created_at', 'desc')
+            ->where('valid', 1)
+            ->where('deleted', 0)
+            ->where('pending', 0)
+            ->where('locked', 0)
+            ->first();
+        return $answer_file;
+    }
     public function enqans()
     {
         return $this->hasMany(EnqueteAnswer::class, 'paper_id');
