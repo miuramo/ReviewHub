@@ -95,6 +95,7 @@
                 <div class="hidden-content p-2 bg-teal-100" style="display:none" id="div_bbtemplate">
                     ボタンを押すと、Subject と Message に定型文が入力されます。<br>
                     @php
+                        $templates = [];
                         if ($bb->type == 2) {
                             $revobj = App\Models\Review::find($bb->rev_id);
                             $revuser = App\Models\User::find($revobj->user_id);
