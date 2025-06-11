@@ -2,7 +2,8 @@
     <!-- paper.index -->
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400">
-            {{ __('投稿一覧') }}
+            {{ __('投稿一覧') }} 
+            <span class="mx-10 text-sm text-blue-500 dark:text-blue-700">（投稿情報の編集や、ファイルアップロードするには、論文画像をクリックしてください）</span>
         </h2>
     </x-slot>
     @php

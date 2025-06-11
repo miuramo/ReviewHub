@@ -14,6 +14,7 @@ class Bb extends MetaModel
     protected $fillable = [
         'name',
         'paper_id',
+        'category_id',
         'submit_id',
         'type',
         'rev_id',
@@ -26,6 +27,10 @@ class Bb extends MetaModel
     public function paper()
     {
         return $this->belongsTo(Paper::class, 'paper_id');
+    }
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
     }
     public function submit()
     {

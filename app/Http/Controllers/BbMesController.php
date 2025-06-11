@@ -57,6 +57,7 @@ class BbMesController extends Controller
                 $file = File::createnew($tmp);
             }
             $file->bb_mes_id = $bbmes->id;
+            $file->user_id = auth()->id();
             $file->pending = 1;
             $file->save();
         } else {
