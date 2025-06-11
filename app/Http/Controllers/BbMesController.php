@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateBbMesRequest;
 use App\Mail\BbNotify;
 use App\Models\Bb;
 use App\Models\BbMes;
+use App\Models\File;
 use Illuminate\Http\Request;
 
 class BbMesController extends Controller
