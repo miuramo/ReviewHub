@@ -37,8 +37,16 @@ class ReviewRequest extends RetryMailable
         foreach($ec_users as $u){
             $this->mail_to_cc['cc'][] = $u->email;
         }
+        // 1回目？2回目
+        $revobj = \App\Models\Review::find($this->rev->id);
+        $submit = \App\Models\Submit::find($revobj->submit_id);
+        if ($submit->round > 1){
+            $round = "（{$submit->round}回目）";
+        } else {
+            $round = ''; 
+        }
         $organization = env('MAIL_ORGANIZATION', '日本創造学会 論文編集委員会'); // 環境変数から組織名を取得
-        $this->subject = "【{$organization}より】" . $this->reviewer->name.'さまに査読をお願いしたいです (ID : '.$this->paper->id_03d().')';
+        $this->subject = "【{$organization}より】" . $this->reviewer->name."さまに査読{$round}をお願いしたいです (ID : ".$this->paper->id_03d().')';
         
         $conftitle = \App\Models\Setting::getval('CONFTITLE');
 
@@ -51,6 +59,7 @@ class ReviewRequest extends RetryMailable
                 'organization' => $organization,
                 'reviewer' => $this->reviewer,
                 'replyurl' => $url = route('review.req_confirm', ['review'=>$this->rev, 'token'=>$this->rev->token_for_request()]),
+                'round' => $round,
             ],
         );    
     }
