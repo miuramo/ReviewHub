@@ -12,7 +12,7 @@
 </style>
 
 <div class="px-6 py-4">
-    <x-element.h1>
+    {{-- <x-element.h1>
         <x-element.linkbutton2 href="{{ route('pub.accstatus') }}" color="cyan" target="_blank">
             採択状況の確認
         </x-element.linkbutton2>
@@ -34,16 +34,16 @@
                 {{ $cname }}
             </x-element.linkbutton>
         @endforeach
-    </x-element.h1>
+    </x-element.h1> --}}
 
-    <x-element.h1>
+    {{-- <x-element.h1>
         書誌情報を、投稿者が修正できないように設定する
         <span class="mx-2"></span>
         <x-element.linkbutton href="{{ route('paper.adminlock') }}" color="green">
             書誌情報の管理
         </x-element.linkbutton> <span
             class="text-sm mx-2 mr-10">書誌情報（タイトル、著者名と所属、概要など）の投稿者による編集可否をカテゴリ別に設定できる画面が開きます。</span>
-    </x-element.h1>
+    </x-element.h1> --}}
 
 
     <x-element.h1>
@@ -155,8 +155,8 @@
                 </div>
                 <div class="dark:text-gray-400">
                     ファイル名は、Prefix→ <input type="text" name="fn_prefix"
-                        value="{{ env('PUB_DL_PREFIX', 'IPSJ-SSS2024') }}" class="p-1 dark:bg-slate-600"> +
-                    [ブース記番].pdf になります。ファイル名が重複するため、pdf と altpdf は同時に選択しないでください。
+                        value="{{ env('PUB_DL_PREFIX', 'JCS') }}" class="p-1 dark:bg-slate-600"> +
+                    [Paper_ID].pdf になります。ファイル名が重複するため、pdf と altpdf は同時に選択しないでください。
                 </div>
 
                 <x-element.submitbutton value="view" color="yellow">↑選択したカテゴリ・種別の採択ファイルをDownload
@@ -172,12 +172,12 @@
             メール雛形
         </x-element.linkbutton>
 
-        <span class="mx-10"></span>
+        {{-- <span class="mx-10"></span>
         掲示板
         <span class="px-3"></span>
         <x-element.linkbutton href="{{ route('bb.index_for_pub') }}" color="pink">
             出版掲示板の管理
-        </x-element.linkbutton>
+        </x-element.linkbutton> --}}
     </x-element.h1>
 
     <x-element.h1>自分の権限確認（Role一覧）</x-element.h1>

@@ -220,7 +220,7 @@ class SubmitController extends Controller
         // 採択submits→paper_id list
         $accept_papers = Submit::with('paper')->whereIn("category_id", $targets)->whereHas("accept", function ($query) {
             $query->where("judge", ">", 0);
-        })->orderBy("orderint")->pluck("booth", "paper_id")->toArray();
+        })->orderBy("orderint")->pluck("paper_id", "paper_id")->toArray();
 
         $addcount_tozip = 0;
         if (count($targets) > 0) {
@@ -229,7 +229,7 @@ class SubmitController extends Controller
             $zipFN = 'files.zip';
             $zipstream = Zip::create($zipFN);
             foreach ($papers as $paper) {
-                $paper->addFilesToZip_ForPub($zipstream, $filetypes, $req->input("fn_prefix") . $accept_papers[$paper->id]);
+                $paper->addFilesToZip_ForPub($zipstream, $filetypes, $req->input("fn_prefix") . sprintf("%04d", $paper->id));
                 $addcount_tozip++;
             }
 
@@ -258,7 +258,7 @@ class SubmitController extends Controller
             $subs2 = [];
         }
 
-        return view('pub.bibinfochk', ["cat" => $catid])->with(compact("subs", "subs2","catid"));
+        return view('pub.bibinfochk', ["cat" => $catid])->with(compact("subs", "subs2", "catid"));
     }
     /**
      * update maydirty (for reset) 確認済みにする (falseをセットする)
@@ -315,26 +315,28 @@ class SubmitController extends Controller
     /**
      * 採択状況一覧
      */
-    public function accstatus(){
+    public function accstatus()
+    {
         if (!auth()->user()->can('role_any', 'admin|ec|pub|demo|web')) abort(403);
         $stats = Accept::acc_status();
         $paperlist = Accept::acc_status(true);
         $accepts = Accept::select('name', 'id')->get()->pluck('name', 'id')->toArray();
         $acc_judges = Accept::select('judge', 'id')->get()->pluck('judge', 'id')->toArray();
         $cats = Category::select('id', 'name')->get()->pluck('name', 'id')->toArray();
-        return view('pub.accstatus')->with(compact("stats","accepts","cats","paperlist","acc_judges"));
+        return view('pub.accstatus')->with(compact("stats", "accepts", "cats", "paperlist", "acc_judges"));
     }
     /**
      * 採択状況一覧（グラフ）
      */
-    public function accstatusgraph(){
+    public function accstatusgraph()
+    {
         if (!auth()->user()->can('role_any', 'admin|ec|pub|demo|web')) abort(403);
         $stats = Accept::acc_status();
         $paperlist = Accept::acc_status(true);
         $accepts = Accept::select('name', 'id')->get()->pluck('name', 'id')->toArray();
         $acc_judges = Accept::select('judge', 'id')->get()->pluck('judge', 'id')->toArray();
         $cats = Category::select('id', 'name')->get()->pluck('name', 'id')->toArray();
-        return view('pub.accstatusgraph')->with(compact("stats","accepts","cats","paperlist","acc_judges"));
+        return view('pub.accstatusgraph')->with(compact("stats", "accepts", "cats", "paperlist", "acc_judges"));
     }
 
     /**
@@ -465,18 +467,18 @@ class SubmitController extends Controller
         if ($key != $downloadkey) abort(403);
 
         // Viewpointで、formeta = 1 and doReturn = 1 のものを取得
-        $vps = Viewpoint::select("name","id")->where("formeta", 1)->where("forrev",0)->where("doReturn", 1)->where("doReturnAcceptOnly",1)->pluck("name","id")->toArray();
+        $vps = Viewpoint::select("name", "id")->where("formeta", 1)->where("forrev", 0)->where("doReturn", 1)->where("doReturnAcceptOnly", 1)->pluck("name", "id")->toArray();
         // 
         $accepted_subs = Submit::subs_accepted($catid);
-        $revid2pid = Review::where("category_id", $catid)->where("tar", 1)->whereIn("paper_id", $accepted_subs->pluck("paper_id"))->pluck("paper_id","id")->toArray();
+        $revid2pid = Review::where("category_id", $catid)->where("tar", 1)->whereIn("paper_id", $accepted_subs->pluck("paper_id"))->pluck("paper_id", "id")->toArray();
         $scores = Score::whereIn("review_id", array_keys($revid2pid))->whereIn("viewpoint_id", array_keys($vps))->get();
 
         if (count($scores) == 0) {
             return json_encode([], JSON_THROW_ON_ERROR);
         }
         $out = [];
-        foreach($scores as $score){
-            $out[ $vps[$score->viewpoint_id] ][ $revid2pid[$score->review_id] ] = $score->valuestr;
+        foreach ($scores as $score) {
+            $out[$vps[$score->viewpoint_id]][$revid2pid[$score->review_id]] = $score->valuestr;
         }
         // [ viewpoint1 => [ paper11 => コメント1, paper22 => コメント2, ... ] ]
         // return $out;
@@ -490,7 +492,7 @@ class SubmitController extends Controller
     {
         $sub = Submit::findOrFail($sub_id);
         if (!auth()->user()->can('manage_review', $sub->paper->id)) abort(403, "you are not a manager (manage_review)");
-        Review::review_assign($sub->id, $req->input("reviewer_id"),  $req->input('target') );
+        Review::review_assign($sub->id, $req->input("reviewer_id"),  $req->input('target'));
         return redirect($req->input("redirect_page"))->with('feedback.success', '査読者を割り当てました');
     }
     /**
@@ -500,11 +502,11 @@ class SubmitController extends Controller
     {
         $sub = Submit::findOrFail($sub_id);
         if (!auth()->user()->can('manage_review', $sub->paper->id)) abort(403, "you are not a manager (manage_review)");
-        $presub = Submit::where("paper_id", $sub->paper->id)->where("round", $sub->round -1 )->first();
+        $presub = Submit::where("paper_id", $sub->paper->id)->where("round", $sub->round - 1)->first();
         $previews = Review::where("submit_id", $presub->id)->get();
-        foreach($previews as $pre){
-            Review::review_assign($sub->id, $pre->user_id,  $pre->target+1 );
-        }        
+        foreach ($previews as $pre) {
+            Review::review_assign($sub->id, $pre->user_id,  $pre->target + 1);
+        }
         return redirect($req->input("redirect_page"))->with('feedback.success', "以前とおなじ査読者を割り当てました");
     }
     /**
@@ -515,6 +517,6 @@ class SubmitController extends Controller
         $sub = Submit::findOrFail($sub_id);
         if (!auth()->user()->can('manage_review', $sub->paper->id)) abort(403, "you are not a manager (manage_review)");
         $sub->setDecision();
-        return redirect()->route('paper.manage',['paper'=>$sub->paper->id])->with('feedback.success', '査読結果を開示しました（通知は送っていません。「査読結果開示通知を送る」から、送信してください。）');
+        return redirect()->route('paper.manage', ['paper' => $sub->paper->id])->with('feedback.success', '査読結果を開示しました（通知は送っていません。「査読結果開示通知を送る」から、送信してください。）');
     }
 }

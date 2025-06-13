@@ -226,7 +226,7 @@ class Paper extends Model
 
     public function submits()
     {
-        return $this->hasMany(Submit::class)->orderBy('round', 'asc');
+        return $this->hasMany(Submit::class)->orderBy('round', 'desc');
     }
     public function submits_desc()
     {
