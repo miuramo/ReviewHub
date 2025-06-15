@@ -101,12 +101,13 @@
                             $revuser = App\Models\User::find($revobj->user_id);
                             $conftitle = App\Models\Setting::getval('CONFTITLE');
                             // 前回査読の報告を検索
-                            $vpid_score = App\Models\Viewpoint::where('name', 'score')->where('category_id',1)->first()->id;
+                            $vpid_score = App\Models\Viewpoint::where('name', 'score')->where('category_id', 1)->first()
+                                ->id;
                             $score = App\Models\Score::where('review_id', $revobj->id)
                                 ->where('viewpoint_id', $vpid_score)
                                 ->where('user_id', $revuser->id)
                                 ->first()->value;
-                            if ($score == 1){
+                            if ($score == 1) {
                                 $revjudgment = '不採録';
                             } elseif ($score == 2) {
                                 $revjudgment = '条件付き採録';
@@ -114,46 +115,57 @@
                                 $revjudgment = '採録';
                             } else {
                                 $revjudgment = '不明';
-                            };
+                            }
                             // 最終査読結果をsubmitsから取得する
-                            $submit = App\Models\Submit::with('accept')->where('paper_id', $bb->paper_id)
+                            $submit = App\Models\Submit::with('accept')
+                                ->where('paper_id', $bb->paper_id)
                                 ->whereNotNull('ec_decision_at')
                                 ->where('canceled', 0)
                                 ->orderBy('ec_decision_at', 'desc')
                                 ->first();
-                            if ($submit->accept_id == 1){ // 採録
-                                $lastmes = "引き続き、{$conftitle}編集業務へのご協力、よろしくお願いいたします。";
-                            } else if ($submit->accept_id == 2) { // 条件付き
-                                if ($revjudgment == '不採録') {
-                                    $lastmes = "{$revuser->name}様には前回の査読において{$revjudgment}の判定をいただいており、誠に恐縮ではありますが、\n" .
-                                        "著者から改訂稿が提出されましたら、引き続き、査読をお願いできればと考えております。\n\n";
+                            if ($submit != null) {
+                                if ($submit->accept_id == 1) {
+                                    // 採録
+                                    $lastmes = "引き続き、{$conftitle}編集業務へのご協力、よろしくお願いいたします。";
+                                } elseif ($submit->accept_id == 2) {
+                                    // 条件付き
+                                    if ($revjudgment == '不採録') {
+                                        $lastmes =
+                                            "{$revuser->name}様には前回の査読において{$revjudgment}の判定をいただいており、誠に恐縮ではありますが、\n" .
+                                            "著者から改訂稿が提出されましたら、引き続き、査読をお願いできればと考えております。\n\n";
+                                    } else {
+                                        $lastmes = "{$revuser->name}様には、著者から改訂稿が提出されましたら、\n引き続き、査読をお願いできればと考えております。\n\n";
+                                    }
+                                    $lastmes .= '何卒よろしくお願いいたします。';
+                                } elseif ($submit->accept_id == 2) {
+                                    // 不採録
+                                    $lastmes = '査読にご協力いただき、誠にありがとうございました。';
                                 } else {
-                                    $lastmes = "{$revuser->name}様には、著者から改訂稿が提出されましたら、\n引き続き、査読をお願いできればと考えております。\n\n";
+                                    $lastmes = '査読にご協力いただき、誠にありがとうございました。';
                                 }
-                                $lastmes .= "何卒よろしくお願いいたします。";
-                            } else if ($submit->accept_id == 2){ // 不採録
-                                $lastmes = "査読にご協力いただき、誠にありがとうございました。";
-                            } else {
-                                $lastmes = "査読にご協力いただき、誠にありがとうございました。";
+                                // info($submit);
+                                $templates = [
+                                    '査読結果の開示報告' => [
+                                        'sub' => '査読結果を著者に通知しました',
+                                        'mes' =>
+                                            $revuser->affil .
+                                            '  ' .
+                                            $revuser->name .
+                                            "様\n\n" .
+                                            "このたびは、{$conftitle}に投稿された下記の論文\n" .
+                                            "「{$bb->paper->title}」\n" .
+                                            "の査読にご協力いただき、ありがとうございました。\n\n" .
+                                            "編集委員会で審議した結果、本論文は「{$submit['accept']['name']}」となりました。\n\n" .
+                                            "著者に通知した査読結果は、投稿システムメニューの\n" .
+                                            '「査読」→「最近担当した査読」→「著者に通知した査読結果」' .
+                                            "からご確認いただけます。\n" .
+                                            route('role.top', ['role' => 'rev']) .
+                                            "\n" .
+                                            "\n" .
+                                            $lastmes,
+                                    ],
+                                ];
                             }
-                            // info($submit);
-                            $templates = [
-                                '査読結果の開示報告' => [
-                                    'sub' => '査読結果を著者に通知しました',
-                                    'mes' =>
-                                        $revuser->affil."  ".$revuser->name."様\n\n" . 
-                                        "このたびは、{$conftitle}に投稿された下記の論文\n" . 
-                                        "「{$bb->paper->title}」\n" . 
-                                        "の査読にご協力いただき、ありがとうございました。\n\n" . 
-                                        "編集委員会で審議した結果、本論文は「{$submit['accept']['name']}」となりました。\n\n" . 
-                                        "著者に通知した査読結果は、投稿システムメニューの\n" . 
-                                        "「査読」→「最近担当した査読」→「著者に通知した査読結果」" . 
-                                        "からご確認いただけます。\n". 
-                                        route('role.top',['role' => 'rev'])."\n" .
-                                        "\n" .
-                                        $lastmes
-                                ],
-                            ];
                         }
                         $json_templates = json_encode($templates);
                     @endphp
