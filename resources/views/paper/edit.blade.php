@@ -86,6 +86,14 @@
             </div>
         @endif
 
+        @if( $paper->status_id >= 10)
+            <div class="mx-6 px-4 my-2 p-2 bg-cyan-100 hover:bg-cyan-200 text-md text-gray-500 font-bold hover:text-gray-800">
+                採録おめでとうございます。<br>
+                コメントを反映した最終稿PDFファイルと、その編集可能ファイル（Word.docx等）をアップロードしていただきますので、ご準備ください。<br>
+                提出期限につきましては、事務局からの連絡をお待ちください。<br>
+            </div>
+        @endif
+
         {{-- ファイルエラーは、投稿フェーズに関係なく、表示して大丈夫 --}}
         @foreach ($fileerrors as $er)
             <x-alert.error>{{ $er }}</x-alert.error>
