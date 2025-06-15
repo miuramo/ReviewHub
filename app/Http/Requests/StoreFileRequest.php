@@ -118,15 +118,20 @@ class StoreFileRequest extends FormRequest
             shell_exec("ffmpeg -i {$fullpath} -vf thumbnail=100,scale=600:-1 -vframes 1 " . storage_path(File::apf() . '/' . substr($hashname, 0, -4)).".png" );
             // not implemented VideoJob::dispatch($file);
         } else {
-            // PDF以外のとき、すでに同一mimeでのロックファイルが1つでもあれば、Pendingにする
-            // ただし、pngのあとでjpegをアップロードして通らないように、mimeの前半部分がマッチしたらPendingにする。
-            $firstmime = explode("/",$file->mime)[0];
-            info($firstmime);
-            $countlocked_similar = File::where("paper_id",$pid)->where("locked",1)->where("mime", "like", "{$firstmime}%")->count();
-            if ($countlocked_similar > 0){
-                $file->pending = true;
+            // PDF以外のとき
+            // docx のとき
+            if (str_ends_with($file->origname,".docx")){
+                $file->filetype_id = 3; // docx
                 $file->save();
             }
+            // // ただし、pngのあとでjpegをアップロードして通らないように、mimeの前半部分がマッチしたらPendingにする。
+            // $firstmime = explode("/",$file->mime)[0];
+            // info($firstmime);
+            // $countlocked_similar = File::where("paper_id",$pid)->where("locked",1)->where("mime", "like", "{$firstmime}%")->count();
+            // if ($countlocked_similar > 0){
+            //     $file->pending = true;
+            //     $file->save();
+            // }
 
         }
         return redirect()->route('paper.edit', ['paper' => $pid])->with('feedback.success', "ファイルをアップロードしました。");

@@ -737,10 +737,12 @@ class Paper extends Model
         return $title;
     }
 
-    public function lockAll(bool $b)
-    {
+    public function lockMe(bool $b){
         $this->locked = $b;
         $this->save();
+    }
+    public function lockAll(bool $b)
+    {
         // 現在アップロードされているすべてのファイル（削除済みを除く）をロックする
         foreach ($this->files as $file) {
             if (!$file->deleted) {
