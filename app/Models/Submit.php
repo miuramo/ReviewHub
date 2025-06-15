@@ -224,15 +224,15 @@ class Submit extends MetaModel
 
         $this->updateCurrentDecision();
         if ($this->accept_id == 2) { // 条件付きの場合
-            $this->paper->lockAll(false);
+            $this->paper->lockAll(false); // これまでのファイルはロックする。そのうえで、新しいファイルをアップロード可能にする(false=Paperロック解除)
             $this->paper->status_id = 9; //査読結果通知済み
             $this->paper->save();
         } else if ($this->accept_id == 1) { // 採録の場合
-            $this->paper->lockAll(true);
+            $this->paper->lockAll(false); // これまでのファイルはロックする。そのうえで、新しいファイルをアップロード可能にする(false=Paperロック解除)
             $this->paper->status_id = STATUS_ACCEPTED; //採録決定
             $this->paper->save();
         } else { // 不採録の場合
-            // ファイルのロックは不要
+            $this->paper->lockAll(true); // これまでのファイルも、今後のファイル追加も不可にする（ロックする)
             $this->paper->status_id = 9; //査読結果通知済み
             $this->paper->save();
         }
