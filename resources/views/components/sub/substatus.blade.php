@@ -21,7 +21,11 @@
 
                 </th>
                 <th class="p-1 bg-slate-300">
+                    @if ($sub->paper->submits->first == $sub)
                     {{ $sub->paper->currentstatus->name }}
+                    @else
+                    {{ $accepts[$sub->accept_id] }}
+                    @endif
                 </th>
             </tr>
         </thead>
