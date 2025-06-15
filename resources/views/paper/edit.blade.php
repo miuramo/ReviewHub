@@ -76,7 +76,8 @@
             </x-alert.error>
         @endif
 
-        @if( $paper->currentsubmit->round > 1 && !$paper->locked)
+        {{-- 最後の条件submitted_at==null をいれたのは、2回目査読で採択したときに、再投稿方法を非表示にするため。 --}}
+        @if( $paper->currentsubmit->round > 1 && !$paper->locked && $paper->currentsubmit->submitted_at == null)
             <div class="mx-6 px-4 my-2 p-2 bg-cyan-100 hover:bg-lime-100 text-md text-gray-500 font-bold hover:text-gray-800">
                 再投稿の方法：論文PDF と、回答書PDF をアップロードしてください。<br>
                 （必要があれば和文題名、英文題名、連絡先等も変更してください。）<br><br>

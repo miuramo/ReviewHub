@@ -221,13 +221,20 @@ class Submit extends MetaModel
     public function setDecision()
     {
         $this->updateCurrentDecision();
-        if ($this->accept_id == 2) {
+        if ($this->accept_id == 2) { // 条件付きの場合
             $this->paper->lockAll(false);
+            $this->paper->status_id = 9; //査読結果通知済み
+            $this->paper->save();
+        } else if ($this->accept_id == 1) { // 採録の場合
+            $this->paper->lockAll(true);
+            $this->paper->status_id = 10; //採録決定
+            $this->paper->save();
+        } else { // 不採録の場合
+            // ファイルのロックは不要
+            $this->paper->status_id = 9; //査読結果通知済み
+            $this->paper->save();
         }
         $this->ec_decision_at = now();
         $this->save();
-
-            $this->paper->status_id = 9; //査読結果通知済み
-            $this->paper->save();
     }
 }

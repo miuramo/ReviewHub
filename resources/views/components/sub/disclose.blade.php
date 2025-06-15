@@ -3,6 +3,7 @@
 ])
 @php
     // $sub = App\Models\Submit::find($submit_id);
+    // メモ：sub.disclose → コントローラーを経て、submit.setDecision を呼ぶ。
 @endphp
 <!-- components.sub.disclose  -->
 <x-element.linkbutton2 :href="route('sub.disclose', ['sub' => $sub])" color="purple"

@@ -47,6 +47,13 @@
                         {{ $paper->currentstatus->name }}
                     </span>
 
+                    {{-- コメント：submits はラウンド数が大きい順に並んでいます。 --}}
+                    {{-- 第1回の再投稿期限は、第2ラウンド投稿後は、表示しなくてよい --}}
+                    @php
+                        $current_submit = $paper->submits->first();
+                        $current_round = $current_submit->round;
+                        $current_resubmit_until = $current_submit->resubmit_until;
+                    @endphp
                     @foreach ($paper->submits as $sub)
                         @if ($sub->ec_decision_at != null)
                             <span class="mx-1"></span>
@@ -55,7 +62,7 @@
                                 color="orange" target="_blank">
                                 第{{$sub->round}}回 査読結果 </x-element.linkbutton>
                         @endif
-                        @if ($sub->resubmit_until != null)
+                        @if ($sub->resubmit_until != null && $sub->submitted_at == null)
                         <br>
                             <span class="border-2 border-orange-500 bg-orange-200 hover:bg-yellow-200 p-2 font-extrabold">再投稿期限：{{$sub->resubmit_until}}</span>
                         @endif
