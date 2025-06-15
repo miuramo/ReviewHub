@@ -123,6 +123,8 @@
                                 ->where('canceled', 0)
                                 ->orderBy('ec_decision_at', 'desc')
                                 ->first();
+                            // 採録
+                            $lastmes = "引き続き、{$conftitle}編集業務へのご協力、よろしくお願いいたします。";
                             if ($submit != null) {
                                 if ($submit->accept_id == 1) {
                                     // 採録
@@ -144,28 +146,39 @@
                                     $lastmes = '査読にご協力いただき、誠にありがとうございました。';
                                 }
                                 // info($submit);
-                                $templates = [
-                                    '査読結果の開示報告' => [
-                                        'sub' => '査読結果を著者に通知しました',
-                                        'mes' =>
-                                            $revuser->affil .
-                                            '  ' .
-                                            $revuser->name .
-                                            "様\n\n" .
-                                            "このたびは、{$conftitle}に投稿された下記の論文\n" .
-                                            "「{$bb->paper->title}」\n" .
-                                            "の査読にご協力いただき、ありがとうございました。\n\n" .
-                                            "編集委員会で審議した結果、本論文は「{$submit['accept']['name']}」となりました。\n\n" .
-                                            "著者に通知した査読結果は、投稿システムメニューの\n" .
-                                            '「査読」→「最近担当した査読」→「著者に通知した査読結果」' .
-                                            "からご確認いただけます。\n" .
-                                            route('role.top', ['role' => 'rev']) .
-                                            "\n" .
-                                            "\n" .
-                                            $lastmes,
-                                    ],
+                                $templates['査読結果の開示報告'] = [
+                                    'sub' => '査読結果を著者に通知しました',
+                                    'mes' =>
+                                        $revuser->affil .
+                                        '  ' .
+                                        $revuser->name .
+                                        "様\n\n" .
+                                        "このたびは、{$conftitle}に投稿された下記の論文\n" .
+                                        "「{$bb->paper->title}」\n" .
+                                        "の査読にご協力いただき、ありがとうございました。\n\n" .
+                                        "編集委員会で審議した結果、本論文は「{$submit['accept']['name']}」となりました。\n\n" .
+                                        "著者に通知した査読結果は、投稿システムメニューの\n" .
+                                        '「査読」→「最近担当した査読」→「著者に通知した査読結果」' .
+                                        "からご確認いただけます。\n" .
+                                        route('role.top', ['role' => 'rev']) .
+                                        "\n" .
+                                        "\n" .
+                                        $lastmes,
                                 ];
                             }
+                            $templates['査読のお礼'] = [
+                                'sub' => '査読にご協力いただき、ありがとうございました',
+                                'mes' =>
+                                    $revuser->affil .
+                                    '  ' .
+                                    $revuser->name .
+                                    "様\n\n" .
+                                    "このたびは、{$conftitle}に投稿された下記の論文\n" .
+                                    "「{$bb->paper->title}」\n" .
+                                    "の査読にご協力いただき、誠にありがとうございました。\n" .
+                                    "\n" .
+                                    $lastmes,
+                            ];
                         }
                         $json_templates = json_encode($templates);
                     @endphp
