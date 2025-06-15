@@ -220,6 +220,8 @@ class Submit extends MetaModel
 
     public function setDecision()
     {
+        define('STATUS_ACCEPTED', 10); // TODO: 定数を適切な場所に移動、設定を読み込むかDBで「採録」がある行から取得する
+
         $this->updateCurrentDecision();
         if ($this->accept_id == 2) { // 条件付きの場合
             $this->paper->lockAll(false);
@@ -227,7 +229,7 @@ class Submit extends MetaModel
             $this->paper->save();
         } else if ($this->accept_id == 1) { // 採録の場合
             $this->paper->lockAll(true);
-            $this->paper->status_id = 10; //採録決定
+            $this->paper->status_id = STATUS_ACCEPTED; //採録決定
             $this->paper->save();
         } else { // 不採録の場合
             // ファイルのロックは不要

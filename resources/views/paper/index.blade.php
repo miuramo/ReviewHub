@@ -11,6 +11,7 @@
             ->get()
             ->pluck('status__revreturn_on', 'id')
             ->toArray();
+        define('STATUS_ACCEPTED', 10);// TODO: 定数を適切な場所に移動、設定を読み込むかDBで「採録」がある行から取得する
     @endphp
     @if (session('feedback.success'))
         <x-alert.success>{{ session('feedback.success') }}</x-alert.success>
@@ -43,10 +44,6 @@
                     <x-element.category :cat="$paper->category_id">
                     </x-element.category>
                     <span class="mx-2"></span>
-                    <span class="text-lg font-bold text-gray-800 dark:text-slate-400">
-                        {{ $paper->currentstatus->name }}
-                    </span>
-
                     {{-- コメント：submits はラウンド数が大きい順に並んでいます。 --}}
                     {{-- 第1回の再投稿期限は、第2ラウンド投稿後は、表示しなくてよい --}}
                     @php
@@ -54,6 +51,15 @@
                         $current_round = $current_submit->round;
                         $current_resubmit_until = $current_submit->resubmit_until;
                     @endphp
+
+                    <span class="text-lg font-bold text-gray-800 dark:text-slate-400">
+                        {{-- まだ採択ではない場合で、2回目以降の投稿であれば、ラウンド数を表示します。 --}}
+                        @if($current_submit->round > 1 && $paper->status_id < STATUS_ACCEPTED) 
+                        【第{{ $current_submit->round }}回】
+                        @endif
+                        {{ $paper->currentstatus->name }}
+                    </span>
+
                     @foreach ($paper->submits as $sub)
                         @if ($sub->ec_decision_at != null)
                             <span class="mx-1"></span>
