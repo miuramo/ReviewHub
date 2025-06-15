@@ -224,6 +224,7 @@ class Submit extends MetaModel
 
         $this->updateCurrentDecision();
         $this->paper->lockAll(true); // これまでのファイルはロックする。
+        $this->paper->archiveAll(true);
         if ($this->accept_id == 2) { // 条件付きの場合
             // そのうえで、新しいファイルをアップロード可能にする(false=Paperロック解除)
             $this->paper->lockMe(false);

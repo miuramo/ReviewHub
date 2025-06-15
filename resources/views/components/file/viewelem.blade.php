@@ -53,7 +53,7 @@
                         target="_blank">{{ $file->origname }}</a>
                 @endif
             @endif
-            
+
             @if ($file->locked)
                 <span
                     class="mx-4 sm:rounded-lg border-2 border-green-600 bg-lime-200 px-2 py-1 font-bold text-green-600 text-lg">Locked</span>
@@ -63,6 +63,10 @@
             @if ($file->deleted)
                 <span class="mx-4 sm:rounded-lg bg-yellow-200 px-2 py-1 font-bold text-red-600 text-lg">Deleted</span>
             @endif
+            @if ($file->archived)
+                <span class="mx-4 sm:rounded-lg  bg-teal-600 px-2 py-1 font-bold text-white text-lg">Archived</span>
+            @endif
+
             @if ($file->pending)
                 <span class="mx-4 sm:rounded-lg bg-yellow-500 px-2 py-1 font-bold text-yellow-50 text-lg">Pending</span>
             @endif

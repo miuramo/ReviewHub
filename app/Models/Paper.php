@@ -182,7 +182,8 @@ class Paper extends Model
         foreach ($this->files as $file) {
             if ($file) {
                 $file->locked = true;
-                $file->deleted = true;
+                $file->archived = true; // アーカイブフラグを立てる
+                // $file->deleted = true;
                 $file->save();
             }
         }
@@ -461,6 +462,7 @@ class Paper extends Model
             // if ($file->mime == "application/pdf") {
             if ($file->deleted) continue;
             if ($file->pending) continue;
+            if ($file->archived) continue; // アーカイブされたファイルは無視する
             $checkary[$file->filetype_id][] = $file->id;
             // }
         }
@@ -747,6 +749,16 @@ class Paper extends Model
         foreach ($this->files as $file) {
             if (!$file->deleted) {
                 $file->locked = $b;
+                $file->save();
+            }
+        }
+    }
+    public function archiveAll(bool $b)
+    {
+        // 現在アップロードされているすべてのファイル（削除済みを除く）をアーカイブする
+        foreach ($this->files as $file) {
+            if (!$file->deleted) {
+                $file->archived = $b;
                 $file->save();
             }
         }

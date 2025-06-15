@@ -380,7 +380,7 @@ class PaperController extends Controller
         $sub->save();
         // sub->accept_id が 2であれば次のSubmitをつくる。
         if ($sub->accept_id == 2) {
-            $sub->paper->lockAll(false); // ファイルロックも解除
+            $sub->paper->lockMe(false); // Paperロックを解除（じつは開示時点でやっている）
             $sub->paper->status_id = 1; //投稿準備中に戻す。ラウンドは以下で1つ増える
             $sub->paper->save();
 
