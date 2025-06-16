@@ -307,7 +307,7 @@ class SubmitController extends Controller
         foreach ($subs as $sub) {
             $pid2sub[$sub->paper->id] = $sub;
         }
-        $files = File::whereIn('paper_id', array_keys($pid2sub))->where('valid', 1)->where('deleted', 0)->get()->sortByDesc('created_at');
+        $files = File::whereIn('paper_id', array_keys($pid2sub))->where('valid', 1)->get()->sortByDesc('created_at');
 
         return view('pub.fileinfochk', ["cat" => $catid])->with(compact("pid2sub", "files"));
     }

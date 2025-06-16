@@ -132,7 +132,7 @@
     <div class="px-6 py-0 flex">
         <div class="px-2 py-0 flex-grow">
             @php
-                $fts = ['pdf', 'img', 'video', 'altpdf'];
+                $fts = \App\Models\Filetype::all()->pluck('name','id')->toArray();
             @endphp
             <form action="{{ route('pub.zipdownload') }}" method="post" id="pub_zipdownload">
                 @csrf
@@ -146,17 +146,17 @@
                     @endforeach
                 </div>
                 <div>
-                    @foreach ($fts as $ft)
-                        <input type="checkbox" name="filetype{{ $ft }}" value="{{ $ft }}"
-                            id="label{{ $ft }}" @if ($ft == 'pdf') checked="checked" @endif>
-                        <label for="label{{ $ft }}"
+                    @foreach ($fts as $ftid=>$ft)
+                        <input type="checkbox" name="filetype{{ $ft }}" value="{{ $ftid }}"
+                            id="label{{ $ftid }}" @if ($ft == '論文') checked="checked" @endif>
+                        <label for="label{{ $ftid }}"
                             class="dark:text-gray-300">{{ $ft }}</label>&nbsp;
                     @endforeach
                 </div>
                 <div class="dark:text-gray-400">
                     ファイル名は、Prefix→ <input type="text" name="fn_prefix"
                         value="{{ env('PUB_DL_PREFIX', 'JCS') }}" class="p-1 dark:bg-slate-600"> +
-                    [Paper_ID].pdf になります。ファイル名が重複するため、pdf と altpdf は同時に選択しないでください。
+                    [Paper_ID].[拡張子] になります。ファイル名が重複するため、論文 と 回答書 は同時に選択しないでください。
                 </div>
 
                 <x-element.submitbutton value="view" color="yellow">↑選択したカテゴリ・種別の採択ファイルをDownload
