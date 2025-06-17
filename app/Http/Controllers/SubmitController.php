@@ -217,6 +217,7 @@ class SubmitController extends Controller
             if (strpos($k, "targetcat") === 0) $targets[] = $v;
             if (strpos($k, "filetype") === 0) $filetypes[] = $v;
         }
+        // info($filetypes); {  0 => '1', 1 => '3', }
         // 採択submits→paper_id list
         $accept_papers = Submit::with('paper')->whereIn("category_id", $targets)->whereHas("accept", function ($query) {
             $query->where("judge", ">", 0);

@@ -161,9 +161,9 @@ class Paper extends Model
     public function addFilesToZip_ForPub(Builder $zip, array $filetypes, string $fn)
     {
         $count = 0;
-        foreach ($filetypes as $ft) {
-            $fti = "{$ft}_file_id"; // file_id for $ft (filetype)
-            $file = File::find($this->{$fti});
+        foreach ($filetypes as $ftid) {
+            // $fti = "{$ft}_file_id"; // file_id for $ft (filetype)
+            $file = File::where('paper_id', $this->id)->where("filetype_id", $ftid)->where('valid', 1)->where('deleted', 0)->where('archived',0)->first();
             if ($file == null) continue;
             $zip->add(ZipFile::make($file->fullpath(), $fn . "." . $file->extension()));
             $count++;
