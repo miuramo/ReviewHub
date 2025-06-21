@@ -124,7 +124,7 @@ class Paper extends Model
             'ekeyword' => '英文Keyword',
             'eauthorlist' => '英文著者名(所属)'
         ];
-        $skip_bibinfo = Setting::findByIdOrName("SKIP_BIBINFO", "value");
+        $skip_bibinfo = Setting::getval("SKIP_BIBINFO");
         $skip_bibinfo = json_decode($skip_bibinfo);
         foreach ($skip_bibinfo as $key) {
             unset($koumoku[$key]);

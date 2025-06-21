@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 class Setting extends Model
 {
     use HasFactory;
-    use FindByIdOrNameTrait;
+    use FindByIdOrNameTrait, GetValueTrait;
 
     protected $fillable = [
         'name',
@@ -46,14 +46,14 @@ class Setting extends Model
         }
     }
 
-    public static function getval($setting_name)
-    {
-        $setting = Setting::where('name', $setting_name)->first();
-        if ($setting) {
-            return $setting->value;
-        }
-        return null;
-    }
+    // public static function getval($setting_name, $dummy = null)
+    // {
+    //     $setting = Setting::where('name', $setting_name)->first();
+    //     if ($setting) {
+    //         return $setting->value;
+    //     }
+    //     return null;
+    // }
     public static function setval($setting_name, $setting_value)
     {
         $setting = Setting::where('name', $setting_name)->first();
@@ -130,7 +130,7 @@ class Setting extends Model
         }
 
         // 表彰状用JSON のダウンロードキー
-        $temporal_key = Setting::findByIdOrName("CONFTITLE_YEAR", "value") . Str::random(10);
+        $temporal_key = Setting::getval("CONFTITLE_YEAR") . Str::random(10);
         Setting::firstOrCreate([
             'name' => "AWARDJSON_DLKEY",
         ], [

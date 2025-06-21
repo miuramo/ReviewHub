@@ -13,7 +13,7 @@
             </x-element.linkbutton>
             <span class="mx-2"></span>
             <x-element.linkbutton2 href="{{ route('revcon.revstat', ['role' => 'meta']) }}" color="lime" size="sm">
-                {{ App\Models\Setting::findByIdOrName('name_of_meta')->value }}
+                {{ App\Models\Setting::getval('name_of_meta') }}
             </x-element.linkbutton>
         </div>
         <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400">

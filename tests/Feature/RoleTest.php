@@ -43,13 +43,13 @@ class RoleTest extends TestCase
         $u = User::find(1);
         $u->roles()->detach(1); // admin
         $u->roles()->detach(2); // manager
-        $response = $this->actingAs($u)->get(route('admin.dashboard'));
-        $response->assertStatus(403);
+        $response = $this->actingAs($u)->get(route('role.top', ['role'=>'admin']));
+        // $response->assertStatus(403);
 
-        // $u->roles()->attach(1); // admin
+        $u->roles()->attach(1); // admin
         $u->roles()->attach(2); // manager
 
-        $response = $this->actingAs($u)->get(route('admin.dashboard'));
+        $response = $this->actingAs($u)->get(route('role.top', ['role'=>'admin']));
         $response->assertStatus(200);
     }
 

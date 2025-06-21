@@ -3,7 +3,7 @@
 ])
 
 @php
-    $nameofmeta = App\Models\Setting::findByIdOrName('name_of_meta')->value;
+    $nameofmeta = App\Models\Setting::getval('name_of_meta');
     $uid2name = App\Models\User::select('name', 'affil', 'id')->get()->pluck('name', 'id')->toArray();
     $pid2title = App\Models\Paper::select('title', 'id')
         ->where('category_id', $cat_id)

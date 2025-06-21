@@ -56,7 +56,7 @@ class MailTemplate extends Model
             $replacetxt["CATNAME"] = Category::find($p_or_u->category_id)->name;
             $replacetxt["OWNER"] = $p_or_u->paperowner->affil . " " . $p_or_u->paperowner->name . " 様";
         }
-        $replacetxt["CONFTITLE"] = Setting::findByIdOrName("CONFTITLE", "value");
+        $replacetxt["CONFTITLE"] = Setting::getval("CONFTITLE");
         $replacetxt["APP_URL"] = env('APP_URL');
         return $replacetxt;
     }
