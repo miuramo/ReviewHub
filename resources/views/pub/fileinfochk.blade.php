@@ -36,7 +36,7 @@
         <table class="border-lime-400 border-2">
             <tr class="bg-lime-300">
                 @php
-                    $hs = ['PID','Booth','created_at','mime','pages','link','fid','origfn','archived','deleted','valid'];
+                    $hs = ['PID','Booth','created_at','mime','pages','link','fid','origfn','locked','archived','deleted','valid'];
                 @endphp
                 @foreach ($hs as $h)
                     <th class="px-2 py-1">{{$h}}</th>
@@ -70,6 +70,9 @@
                     </td>
                     <td class="text-sm">
                         {{$file->origname}}
+                    </td>
+                    <td class="px-2 py-1 text-center">
+                        {{$file->locked}}
                     </td>
                     <td class="px-2 py-1 text-center">
                         {{$file->archived}}

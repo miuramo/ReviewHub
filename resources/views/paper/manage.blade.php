@@ -45,14 +45,16 @@
         <livewire:paper-lock :paper="$paper" />
 
         <div class="bg-gray-300 text-sm p-2 mx-2 dark:text-gray-300 dark:bg-gray-500">
-        ファイル一覧：
-        @foreach ($files as $file)
-            <a class="underline text-blue-600 hover:bg-lime-200"
-            href="{{ route('file.showhash', ['file' => $file->id, 'hash' => substr($file->key, 0, 10)]) }}"
-                target="_blank"> {{ $file->origname }} </a> {{ $file->created_at }}
-            <span class="mx-2"></span>
-        @endforeach
-            </div>
+            ファイル一覧：
+            @foreach ($files as $file)
+                <a class="underline text-blue-600 hover:bg-lime-200"
+                    href="{{ route('file.showhash', ['file' => $file->id, 'hash' => substr($file->key, 0, 10)]) }}"
+                    target="_blank"> {{ $file->origname }} </a> {{ $file->created_at }}
+                <livewire:file-lock :file="$file" />
+                <span class="mx-4"></span>
+            @endforeach
+        </div>
+
     </div>
 
 

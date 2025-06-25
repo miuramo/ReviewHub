@@ -10,7 +10,20 @@
             {{ __('Crud Table') }} {{ $tableName }} {{ count($data) }}/{{ $numdata }}
         </h2>
     </x-slot>
+    <style>
+        /* CHECKBOX TOGGLE SWITCH */
+        /* @apply rules for documentation, these do not work as inline style */
+        .toggle-checkbox:checked {
+            @apply: right-0 border-green-400;
+            right: 0;
+            border-color: #68D391;
+        }
 
+        .toggle-checkbox:checked+.toggle-label {
+            @apply: bg-green-400;
+            background-color: #68D391;
+        }
+    </style>
     @if (session('feedback.success'))
         <x-alert.success>{{ session('feedback.success') }}</x-alert.success>
     @endif
@@ -55,18 +68,27 @@
                     @foreach ($data as $d)
                         <tr>
                             <td>
-                                <input type="checkbox" class="chkbox" name="did[]" form="chkdelete" value="{{ $d->id }}">
+                                <input type="checkbox" class="chkbox" name="did[]" form="chkdelete"
+                                    value="{{ $d->id }}">
                             </td>
                             @foreach ($coldetails as $nam => $typ)
-                                <td class="px-2 hover:text-blue-600 hover:bg-slate-200 clicktoedit  dark:hover:bg-slate-700 dark:hover:text-blue-500"
-                                    id="{{ $nam }}__{{ $d->id }}__{{ $typ }}"
-                                    >
-                                    @if($nam=='id')
-<a href="{{ route('admin.crud',['table'=>$tableName, 'row'=>$d->id]) }}">{{ $d->$nam }}</a>
+                                @if ($typ == 'tinyint')
+                                    <td class="p-2 hover:text-blue-600 hover:bg-slate-200 dark:hover:bg-slate-700 dark:hover:text-blue-500 text-center"
+                                        id="td__{{ $nam }}__{{ $d->id }}__{{ $typ }}">
+                                        <x-toggle formid="admincrudpost"
+                                            name="name_{{ $nam }}__{{ $d->id }}__{{ $typ }}"
+                                            id="{{ $nam }}__{{ $d->id }}__{{ $typ }}"
+                                            :checked="$d->$nam"></x-toggle>
                                     @else
-                                    {{ $d->$nam }}
-                                    @endif
-                                </td>
+                                    <td class="p-2 hover:text-blue-600 hover:bg-slate-200 clicktoedit  dark:hover:bg-slate-700 dark:hover:text-blue-500"
+                                        id="{{ $nam }}__{{ $d->id }}__{{ $typ }}">
+                                        @if ($nam == 'id')
+                                            <a
+                                                href="{{ route('admin.crud', ['table' => $tableName, 'row' => $d->id]) }}">{{ $d->$nam }}</a>
+                                        @else
+                                            {{ $d->$nam }}
+                                        @endif
+                                @endif
                             @endforeach
                             {{-- <td>
                                 <a href="{{ route('admin.crud') }}?table={{ $table->name }}"> {{ $table->name }}</a>
@@ -77,7 +99,8 @@
             </table>
 
             <div class="mt-4">
-                <x-element.linkbutton href="{{ route('admin.crudnew',['table'=>$tableName]) }}" color="yellow" size="sm">
+                <x-element.linkbutton href="{{ route('admin.crudnew', ['table' => $tableName]) }}" color="yellow"
+                    size="sm">
                     あたらしい行を追加
                 </x-element.linkbutton>
             </div>
@@ -100,7 +123,8 @@
             </div>
 
             <div class="mt-4">
-                <x-element.linkbutton href="{{ route('admin.crudtruncate',['table'=>$tableName]) }}" color="red" size="sm" confirm="本当に、すべての行を削除(truncate)しますか?">
+                <x-element.linkbutton href="{{ route('admin.crudtruncate', ['table' => $tableName]) }}" color="red"
+                    size="sm" confirm="本当に、すべての行を削除(truncate)しますか?">
                     すべての行を削除(truncate)
                 </x-element.linkbutton>
             </div>
