@@ -112,7 +112,7 @@
                     {{ $file->origname }}
                 @else
                     <a href="{{ route('file.showhash', ['file' => $file->id, 'hash' => substr($file->key, 0, 8)]) }}"
-                        target="_blank">{{ $file->origname }}</a>
+                        target="_blank" class="underline font-bold text-lg bg-cyan-100 dark:bg-cyan-600 p-2 hover:bg-lime-200 hover:text-blue-500 dark:hover:text-blue-700 dark:hover:bg-lime-500">{{ $file->origname }}</a>
                 @endif
             @endif
 
