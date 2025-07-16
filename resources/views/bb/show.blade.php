@@ -106,7 +106,7 @@
                             $score = App\Models\Score::where('review_id', $revobj->id)
                                 ->where('viewpoint_id', $vpid_score)
                                 ->where('user_id', $revuser->id)
-                                ->first()->value;
+                                ->first()->value ?? 0;
                             if ($score == 1) {
                                 $revjudgment = '不採録';
                             } elseif ($score == 2) {
