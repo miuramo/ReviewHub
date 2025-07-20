@@ -154,7 +154,7 @@
                         <x-element.linkbutton2
                             href="{{ route('file.showhash', ['file' => $answerfile->id, 'hash' => substr($answerfile->key, 0, 10)]) }}"
                             color="orange" target="_blank">
-                            回答書PDFをひらく
+                            回答書 をひらく
                         </x-element.linkbutton2>
                     @endif
                     <span class="mx-2"></span>
