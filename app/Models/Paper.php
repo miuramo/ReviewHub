@@ -250,7 +250,6 @@ class Paper extends Model
             ->where('valid', 1)
             ->where('deleted', 0)
             ->where('pending', 0)
-            ->where('locked', 0)
             ->first();
         return $answer_file;
     }
