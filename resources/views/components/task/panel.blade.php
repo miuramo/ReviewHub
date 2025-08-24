@@ -202,6 +202,7 @@
                         label="投稿管理者に連絡する"></x-bb.bb_link>
 
                     <span class="mx-2"></span>
+                    
 
                     @if ($rev->paper->pdf_file_id != null)
                         <div class="w-1/2">

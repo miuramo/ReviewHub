@@ -253,6 +253,19 @@ class Paper extends Model
             ->first();
         return $answer_file;
     }
+    /**
+     * 過去の投稿ファイル
+     */
+    public function past_pdf_files()
+    {
+        return File::where('paper_id', $this->id)
+            ->where('filetype_id', 1) // PDF file
+            ->where('valid', 1)
+            ->where('deleted', 0)
+            ->where('pending', 0)
+            ->where('archived', 1)
+            ->orderBy('created_at', 'desc')->get();
+    }
     public function enqans()
     {
         return $this->hasMany(EnqueteAnswer::class, 'paper_id');

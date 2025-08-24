@@ -75,6 +75,16 @@
 
                 {{ $rev->paper->title }}<br>
 
+                <div class="bg-gray-200 text-sm p-2 mx-2 dark:text-gray-300 dark:bg-gray-500">
+                    論文ファイル：
+                    @foreach ($rev->paper->past_pdf_files() as $file)
+                        <a class="underline text-blue-600 hover:bg-lime-200 dark:text-blue-200 dark:hover:bg-lime-500"
+                            href="{{ route('file.showhash', ['file' => $file->id, 'hash' => substr($file->key, 0, 10)]) }}"
+                            target="_blank"> {{ $file->origname }} </a>
+                        <span class="mx-4"></span>
+                    @endforeach
+                </div>
+
                 {{-- <span class="mx-2"></span> --}}
 
                 <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green">
@@ -90,9 +100,8 @@
                         class="text-sm text-gray-300 hover:text-gray-500">{{ substr($rev->submit->ec_decision_at, 0, 10) }}
                         通知済み（査読報告の修正はできません）</span>
 
-                    <x-element.linkbutton2
-                        href="{{ $rev->submit->url_reviewresult_for_author() }}"
-                        color="purple" target="_blank" size="sm">
+                    <x-element.linkbutton2 href="{{ $rev->submit->url_reviewresult_for_author() }}" color="purple"
+                        target="_blank" size="sm">
                         著者に通知した査読結果 </x-element.linkbutton2>
                 @endif
                 <span class="mx-4"></span>
