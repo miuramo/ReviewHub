@@ -108,11 +108,11 @@
     </x-element.h1>
 
     <x-element.h1>
-        アンケート
+        著者連絡先
         <span class="px-3"></span>
         <x-element.linkbutton href="{{ route('enq.index') }}" color="green">
-            （出版Roleおよび自分のRoleで参照可能な）アンケート一覧
-        </x-element.linkbutton>
+            著者連絡先一覧
+        </x-element.linkbutton> のリンク先→投稿申請 を参照してください。
     </x-element.h1>
 
 
