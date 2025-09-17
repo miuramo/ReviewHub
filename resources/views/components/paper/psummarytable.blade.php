@@ -31,7 +31,8 @@
     </thead>
     <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-300">
         @foreach ($papers as $paper)
-            <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-400' : 'bg-white dark:bg-slate-300' }}">
+            <tr
+                class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-400' : 'bg-white dark:bg-slate-300' }}">
                 <td class="p-1 text-center">{{ $paper->category->name }}</td>
                 <td class="p-1 text-center">
                     {{-- <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
@@ -64,7 +65,7 @@
                 </td>
 
                 <td class="p-1 text-center">
-                    @if($paper->currentsubmit->submitted_at)
+                    @if ($paper->currentsubmit->submitted_at)
                         {{ $paper->currentsubmit->submitted_at }}
                     @elseif($paper->currentsubmit->resubmit_until)
                         <span class="text-sm text-gray-500">{{ $paper->currentsubmit->resubmit_until }} 再投稿期限</span>
@@ -75,10 +76,15 @@
                 <td class="p-1 text-center">
                     <x-element.login_as :user="$paper->paperowner"></x-element.login_as> ({{ $paper->paperowner->affil }})
                 </td>
-                <td class="p-1 text-center">
+                <td class="p-1 text-center leading-tight">
                     @foreach ($paper->currentsubmit->reviews as $review)
                         <div>
                             {{ substr($review->user->email, 0, 4) }}-{{ $review->status }}
+                            @if ($review->status < 2)
+                                <span class=" text-red-400 dark:text-red-700 font-bold text-sm">
+                                    {{ $review->task->due_date ?? '' }}
+                                </span>
+                            @endif
                         </div>
                     @endforeach
                     {{-- <x-element.login_as :user="$paper->currentsubmit->aecrep()->user" />

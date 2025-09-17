@@ -44,6 +44,11 @@ class Review extends MetaModel
         $this->save();
     }
 
+    public function task()
+    {
+        return $this->hasOne(Task::class, 'submit_id', 'submit_id')->where('subject_id', $this->user_id);
+    }
+
     /**
      * この査読のトークンを生成（査読者同士の参照用）
      */
