@@ -193,7 +193,7 @@ class ManagerController extends Controller
     }
 
     /**
-     * 受領通知を送信する
+     * 受領通知（査読に進みます）を送信する
      */
     public function submit_sendreceipt(int $subid)
     {
@@ -220,6 +220,31 @@ class ManagerController extends Controller
         );
         return back()->with('feedback.success', "受領通知を送信しました。");
     }
+    /**
+     * 受領通知（最終原稿ありがとう）を送信する
+     */
+    public function submit_sendreceipt_final(int $subid)
+    {
+        if (!auth()->user()->can('role_any', 'ec|aec|meta')) abort(403);
+        $submit = Submit::find($subid);
+        if ($submit->paper->status_id < 2) {
+            return back()->with('feedback.error', "受領通知を送信しようとしましたが、まだ投稿完了していません。");
+        }
+        $myname = auth()->user()->name;
+        $paper = $submit->paper;
+        Bb::add_message(
+            $submit,
+            1, // type=1 投稿管理者と著者の掲示板
+            "【論文編集委員会より】論文を受領いたしました",
+            "{$paper->paperowner->affil}  {$paper->paperowner->name}様\n\n日本創造学会論文編集委員会の {$myname} と申します。\n\n" .
+                "論文「{$submit->paper->title}」の最終原稿を受領いたしました。\n" .
+                "なお、論文誌の発行（J-STAGE掲載）は、年に2回（6月・12月）のスケジュールを予定しております。\n\n" .
+                "出版までしばらくお時間をいただく場合がありますが、どうかご了承ください。\n\n"
+        );
+        return back()->with('feedback.success', "受領通知を送信しました。");
+    }
+
+
     /**
      * 査読結果開示通知を送信する
      */

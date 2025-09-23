@@ -141,7 +141,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin_filelist', [AdminController::class, 'filelist'])->name('admin.filelist');
     Route::get('admin_paper/{paper}/edit', [AdminController::class, 'paper_edit'])->name('admin.paper_edit'); //ECが操作
     Route::put('/admin_submit_proceed/{sub}', [ManagerController::class, 'submit_proceed'])->name('manage.submit_proceed');
-    Route::get('/admin_submit_sendreceipt/{sub}', [ManagerController::class, 'submit_sendreceipt'])->name('manage.sendreceipt'); // 受領通知を送る
+    Route::get('/admin_submit_sendreceipt/{sub}', [ManagerController::class, 'submit_sendreceipt'])->name('manage.sendreceipt'); // 受領通知（査読に進みます）を送る
+    Route::get('/admin_submit_sendreceipt_final/{sub}', [ManagerController::class, 'submit_sendreceipt_final'])->name('manage.sendreceipt_final'); // 受領通知（最終原稿）を送る
     Route::get('/admin_submit_senddisclose/{sub}', [ManagerController::class, 'submit_senddisclose'])->name('manage.senddisclose'); // 結果開示通知を送る
 
     Route::get('sub/{sub}/show', [SubmitController::class, 'show'])->name('sub.show'); // 査読管理

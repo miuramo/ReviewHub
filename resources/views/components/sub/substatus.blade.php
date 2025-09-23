@@ -45,8 +45,11 @@
                 <td colspan=2 class="p-1 text-center">
                     {{-- 受領メールを送る --}}
                     <x-element.linkbutton href="{{ route('manage.sendreceipt', ['sub' => $sub->id]) }}" color="pink"
-                        size="sm" confirm="あなたの名前で、受領通知を送ってよいですか？（著者との掲示板に書き込み、メール送信します）">受領通知を送る
-                    </x-element.linkbutton> <span class="mx-2"></span>
+                        size="sm" confirm="★★注意！！こちらは、受領した原稿に対して、査読をスタートする場合の受領通知です。「〜回目の査読に進みますので、しばらくお待ちください。」といった案内になります。★★（確認）あなたの名前で、受領通知を送ってよいですか？（著者との掲示板に書き込み、メール送信します）">受領通知（査読に進みます）を送る
+                    </x-element.linkbutton> <br>
+                    <x-element.linkbutton href="{{ route('manage.sendreceipt_final', ['sub' => $sub->id]) }}" color="teal"
+                        size="sm" confirm="★★注意！！こちらは、最終原稿を受領した場合の通知です。「最終原稿を受領いたしました。出版までしばらくお時間いただく場合がありますがご了承ください。」といった案内になります。★★（確認）あなたの名前で、受領通知を送ってよいですか？（著者との掲示板に書き込み、メール送信します）">最終原稿受領通知を送る
+                    </x-element.linkbutton> <br>
 
                     <x-review.commentsubmit_link :sub="$sub" color="purple"
                         label="査読結果をみる"></x-element.commentsubmit_link>
