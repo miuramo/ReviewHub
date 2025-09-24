@@ -21,7 +21,7 @@
 @endphp
 <tr
     class="border-4 border-slate-300 {{ $loop->iteration % 2 === 0 ? 'bg-neutral-200' : 'bg-white-50 dark:bg-slate-400' }}">
-    <td nowrap class="p-4">
+    <td class="p-4">
         @php
             if ($itm->mandatory || $itm->is_mandatory) {
                 $noinputcolor = 'red';
@@ -101,10 +101,10 @@
     @elseif($type == 'textarea')
         <td id="{{ $itm->name }}_answer" class="text-md p-4">
             {!! $current ?? $noinputmessage !!}</td>
-        <td class="p-2 pl-10">
+        <td class="p-2 pl-10 w-7/12">
             {!! $item_title !!}<br>
             <input type="hidden" name="{{ $itm->name }}" value="">
-            <textarea class="text-left" id="{{ $itm->name }}{{ $loop->iteration }}" name="{{ $itm->name }}"
+            <textarea class="text-left w-full h-auto-resize" id="{{ $itm->name }}{{ $loop->iteration }}" name="{{ $itm->name }}"
                 onblur="changed('{{ $formid }}','{{ $itm->name }}');" cols="{{ $sel[0] }}"
                 rows="{{ $sel[1] }}" placeholder="{{ $sel[2] }}">{{ $current ?? '' }}</textarea>
             <div class="my-3"></div>

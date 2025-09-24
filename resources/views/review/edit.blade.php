@@ -17,9 +17,9 @@
             @php
                 $nameofmeta = App\Models\Setting::getval('NAME_OF_META');
             @endphp
-            @if ($review->target==1)
+            @if ($review->target == 1)
                 {{ $nameofmeta }}
-            @elseif ($review->target==2)
+            @elseif ($review->target == 2)
                 幹事
             @endif
             {{ __('査読（編集）') }}
@@ -95,5 +95,14 @@
         <script src="/js/jquery.min.js"></script>
         <script src="/js/form_changed.js"></script>
     @endpush
-
+    <script>
+        function resizeTextarea(el) {
+            el.style.height = "auto";
+            el.style.height = el.scrollHeight + "px";
+        }
+        // ページロード時に全てのtextareaを自動リサイズ
+        window.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll("textarea.h-auto-resize").forEach(el => resizeTextarea(el));
+        });
+    </script>
 </x-app-layout>
