@@ -8,8 +8,8 @@
     // $papers = App\Models\Paper::get();
     $papers = App\Models\User::with('managed_papers')->find(auth()->id())->managed_papers;
     $papers = $papers->sortBy([
-        ['status_id','asc'],
-        ['submitted_at','desc'],
+        ['status_id', 'asc'],
+        ['submitted_at', 'desc'],
         // ['id', 'desc'],
     ]);
     //     function ($paper) {
@@ -76,10 +76,24 @@
                 <td class="p-1 text-center">
                     <x-element.login_as :user="$paper->paperowner"></x-element.login_as> ({{ $paper->paperowner->affil }})
                 </td>
-                <td class="p-1 text-center leading-tight">
+                <td class="p-1 text-center leading-tight text-nowrap">
                     @foreach ($paper->currentsubmit->reviews as $review)
                         <div>
-                            {{ substr($review->user->email, 0, 4) }}-{{ $review->status }}
+                            @php
+                                $bb = App\Models\Bb::where('paper_id', $paper->id)
+                                    ->where('type', 2)
+                                    ->where('rev_id', $review->id)
+                                    ->first();
+                            @endphp
+                            @if ($bb)
+                                <a class="hover:underline text-green-600 hover:bg-lime-200" href="{{ $bb->url() }}"
+                                    target="_blank">
+                                    {{ substr($review->user->email, 0, 5) }}
+                                </a>-
+                            @else
+                                {{ substr($review->user->email, 0, 5) }}-
+                            @endif
+                            {{ $review->status }}
                             @if ($review->status < 2)
                                 <span class=" text-red-400 dark:text-red-700 font-bold text-sm">
                                     {{ $review->task->due_date ?? '' }}
