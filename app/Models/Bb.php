@@ -54,7 +54,7 @@ class Bb extends MetaModel
     public static function add_message(Submit $sub, $type, $subject, $mes, $rev_id = 0)
     {
         $bb = Bb::where('paper_id', $sub->paper->id)->where('type', $type)->where('rev_id', $rev_id)->first();
-        if (!$bb){
+        if (!$bb) {
             $bb = Bb::make_bb($sub, $type, $rev_id);
         }
         $bbmes = BbMes::create([
@@ -95,7 +95,7 @@ class Bb extends MetaModel
     }
     public static function gen_make_url(int $sub_id, int $type, int $rev_id = 0)
     {
-        $serial = MetaModel::ary2serial(["sub_id" => $sub_id, "type"=>$type, "rev_id"=>$rev_id]);
+        $serial = MetaModel::ary2serial(["sub_id" => $sub_id, "type" => $type, "rev_id" => $rev_id]);
         return route('bb.gen', ['serial' => $serial]);
     }
     public static function gen_from_serial(string $serial)
@@ -120,7 +120,7 @@ class Bb extends MetaModel
     public static function url_from_bbid(int $bbid)
     {
         $bb = Bb::find($bbid);
-        if ($bb==null) return null;
+        if ($bb == null) return null;
         return $bb->url();
     }
     public static function url_from_rev(Review $rev, int $type = 1)
@@ -132,12 +132,12 @@ class Bb extends MetaModel
     public function get_participants()
     {
         $retuobj = [];
-        foreach($this->paper->managers as $manager){
+        foreach ($this->paper->managers as $manager) {
             $retuobj[] = $manager;
         }
         if ($this->type == 1) {
             $retuobj[] = $this->paper->paperowner;
-            foreach($this->paper->contacts as $contact){
+            foreach ($this->paper->contacts as $contact) {
                 $retuobj[] = $contact;
             }
         } else if ($this->type == 2) {
@@ -146,7 +146,7 @@ class Bb extends MetaModel
             $retuobj[] = $revuser;
         } else if ($this->type == 3) {
             $reviews = Review::with('user')->where("paper_id", $this->paper_id)->where("submit_id", $this->submit_id)->get();
-            foreach($reviews as $review){
+            foreach ($reviews as $review) {
                 $retuobj[] = $review->user;
             }
         } else if ($this->type == 4) {
@@ -160,7 +160,7 @@ class Bb extends MetaModel
         $bcclist = [];
 
         $manager_list = $this->paper->get_mail_manager();
-        if ($this->type == 4 || $this->type == 3){
+        if ($this->type == 4 || $this->type == 3) {
             $tolist = array_merge($tolist, $manager_list);
         } else {
             $bcclist = array_merge($bcclist, $manager_list);
@@ -172,19 +172,149 @@ class Bb extends MetaModel
             $bcclist = array_merge($bcclist, $to_cc_list['cc']);
         } else if ($this->type == 2) {
             // reload this from db
-            info("this rev_id ".$this->rev_id);
+            info("this rev_id " . $this->rev_id);
             $revobj = Review::find($this->rev_id);
             $revuser = User::find($revobj->user_id);
             $tolist[] = $revuser->email;
         } else if ($this->type == 3) {
             $reviews = Review::with('user')->where("paper_id", $this->paper_id)->where("submit_id", $this->submit_id)->get();
-            foreach($reviews as $review){
+            foreach ($reviews as $review) {
                 $bcclist[] = $review->user->email;
             }
         } else if ($this->type == 4) {
         }
 
-        return ["to" => $tolist, "cc"=>$cclist, "bcc" => $bcclist];
+        return ["to" => $tolist, "cc" => $cclist, "bcc" => $bcclist];
+    }
+
+    /**
+     * 定型文を作成する
+     */
+    public function getRevTemplates()
+    {
+        $revobj = Review::find($this->rev_id);
+        $paper_id = $revobj->paper_id;
+        $revuser = User::find($revobj->user_id);
+        $conftitle = Setting::getval('CONFTITLE');
+        // 前回査読の報告を検索
+        $vpid_score = Viewpoint::where('name', 'score')->where('category_id', 1)->first()
+            ->id;
+        // この査読者の、直前の査読の点数を取得する
+        $allscore =
+            Score::with('review')->where('viewpoint_id', $vpid_score)->whereHas('review', function ($q) use ($paper_id, $revuser) {
+                $q->where('paper_id', $paper_id);
+                $q->where('user_id', $revuser->id);
+            })
+            ->orderBy('created_at', 'desc') // この査読者の、この論文に対する査読のうち、最新のものが最初に来る
+            ->get();
+        $score = $allscore->first()->value ?? 0;
+        if ($score == 1) {
+            $revjudgment = '不採録';
+        } elseif ($score == 2) {
+            $revjudgment = '条件付き採録';
+        } elseif ($score == 3) {
+            $revjudgment = '採録';
+        } else {
+            $revjudgment = '不明';
+        }
+        // info("revjudgment: $revjudgment (score=$score)");
+        // 最終（最新）査読結果をsubmitsから取得する
+        $allsubmit = Submit::with('accept')
+            ->where('paper_id', $this->paper_id)
+            // ->whereNotNull('ec_decision_at')
+            ->where('canceled', 0)
+            ->orderBy('ec_decision_at', 'desc') // 最終判断がついたものについて、新しい順にならんだあと、 ec_decision_atがnullのものが最後に来る
+            ->get();
+        info("submit: " . json_encode($allsubmit));
+        info("submit count: " . count($allsubmit));
+        info("allscore: " . json_encode($allscore));
+        info("allscore count: " . count($allscore));
+        /**
+         * お礼メールの場合
+         * 
+         * 開示メールの場合
+         * 
+         * 催促メールの場合
+         */
+
+        $submit = $allsubmit->first();
+        // 採録
+        $lastmes = "引き続き、{$conftitle}編集業務へのご協力、よろしくお願いいたします。";
+        if ($submit != null) {
+            if ($submit->accept_id == 1) {
+                // 採録
+                $lastmes = "引き続き、{$conftitle}編集業務へのご協力、よろしくお願いいたします。";
+            } elseif ($submit->accept_id == 2) {
+                // 条件付き
+                if ($revjudgment == '不採録') {
+                    $lastmes =
+                        "{$revuser->name}様には前回の査読において{$revjudgment}の判定をいただいており、誠に恐縮ではありますが、\n" .
+                        "著者から改訂稿が提出されましたら、引き続き、査読をお願いできればと考えております。\n\n";
+                } else {
+                    $lastmes = "{$revuser->name}様には、著者から改訂稿が提出されましたら、\n引き続き、査読をお願いできればと考えております。\n\n";
+                }
+                $lastmes .= '何卒よろしくお願いいたします。';
+            } elseif ($submit->accept_id == 2) {
+                // 不採録
+                $lastmes = '査読にご協力いただき、誠にありがとうございました。';
+            } else {
+                $lastmes = '査読にご協力いただき、誠にありがとうございました。';
+            }
+            $templates['査読のお礼'] = [
+                'sub' => '査読にご協力いただき、ありがとうございました',
+                'mes' =>
+                $revuser->affil .
+                    '  ' .
+                    $revuser->name .
+                    "様\n\n" .
+                    "このたびは、{$conftitle}に投稿された下記の論文\n" .
+                    "「{$this->paper->title}」\n" .
+                    "の査読にご協力いただき、誠にありがとうございました。\n" .
+                    "\n" .
+                    $lastmes,
+            ];
+
+            // info($submit);
+            $templates['査読結果の開示報告(1)'] = [
+                'sub' => '査読結果を著者に通知しました',
+                'mes' =>
+                $revuser->affil .
+                    '  ' .
+                    $revuser->name .
+                    "様\n\n" .
+                    "このたびは、{$conftitle}に投稿された下記の論文\n" .
+                    "「{$this->paper->title}」\n" .
+                    "の査読にご協力いただき、ありがとうございました。\n\n" .
+                    "編集委員会で審議した結果、本論文は「{$submit['accept']['name']}」となりました。\n\n" .
+                    "著者に通知した査読結果は、投稿システムメニューの\n" .
+                    '「査読」→「最近担当した査読」→「著者に通知した査読結果」' .
+                    "からご確認いただけます。\n" .
+                    route('role.top', ['role' => 'rev']) .
+                    "\n" .
+                    "\n" .
+                    $lastmes,
+            ];
+            $templates['査読結果の開示報告(2)'] = [
+                'sub' => '査読結果を著者に通知しました',
+                'mes' =>
+                $revuser->affil .
+                    '  ' .
+                    $revuser->name .
+                    "様\n\n" .
+                    "このたびは、{$conftitle}に投稿された下記の論文\n" .
+                    "「{$this->paper->title}」\n" .
+                    "の査読にご協力いただき、ありがとうございました。\n\n" .
+                    "編集委員会で審議した結果、本論文は「{$submit['accept']['name']}」となりました。\n\n" .
+                    "著者に通知した査読結果は、投稿システムメニューの\n" .
+                    '「査読」→「最近担当した査読」→「著者に通知した査読結果」' .
+                    "からご確認いただけます。\n" .
+                    route('role.top', ['role' => 'rev']) .
+                    "\n" .
+                    "\n" .
+                    $lastmes,
+            ];
+        }
+        return $templates;
     }
 
     // public function get_reviewers()

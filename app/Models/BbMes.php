@@ -24,4 +24,6 @@ class BbMes extends Model
     {
         return $this->hasMany(File::class, 'bb_mes_id');
     }
+
+
 }
