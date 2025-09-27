@@ -229,6 +229,14 @@ class Bb extends MetaModel
         info("submit count: " . count($allsubmit));
         info("allscore: " . json_encode($allscore));
         info("allscore count: " . count($allscore));
+
+        $first_thank = $revuser->affil .
+            '  ' .
+            $revuser->name .
+            "様\n\n" .
+            "このたびは、{$conftitle}に投稿された下記の論文\n" .
+            "「{$this->paper->title}」\n" .
+            "の査読にご協力いただき、ありがとうございました。\n\n";
         /**
          * お礼メールの場合
          * 
@@ -238,9 +246,17 @@ class Bb extends MetaModel
          */
 
         $submit = $allsubmit->first();
+        $lastsubmit = $allsubmit->last();
+        $meta_not_decided = ($lastsubmit->ec_decision_at == null); // まだ最終決定がされていないときtrue
+
+        $task = Task::where('submit_id', $revobj->submit->id)
+            ->where('subject_id', $revuser->id)
+            ->first();
+        // 予定締切：{{ $task->due_date }}
+
         // 採録
-        $lastmes = "引き続き、{$conftitle}編集業務へのご協力、よろしくお願いいたします。";
         if ($submit != null) {
+            $lastmes = "引き続き、{$conftitle}編集業務へのご協力、よろしくお願いいたします。";
             if ($submit->accept_id == 1) {
                 // 採録
                 $lastmes = "引き続き、{$conftitle}編集業務へのご協力、よろしくお願いいたします。";
@@ -260,31 +276,21 @@ class Bb extends MetaModel
             } else {
                 $lastmes = '査読にご協力いただき、誠にありがとうございました。';
             }
-            $templates['査読のお礼'] = [
+            $templates['査読のお礼(判定未確定)'] = [
                 'sub' => '査読にご協力いただき、ありがとうございました',
-                'mes' =>
-                $revuser->affil .
-                    '  ' .
-                    $revuser->name .
-                    "様\n\n" .
-                    "このたびは、{$conftitle}に投稿された下記の論文\n" .
-                    "「{$this->paper->title}」\n" .
-                    "の査読にご協力いただき、誠にありがとうございました。\n" .
-                    "\n" .
-                    $lastmes,
+                'mes' => $first_thank . "最終的な判定結果につきましては、後日こちらの掲示板で報告いたします。\n" .
+                    "引き続き、{$conftitle}へのご協力をいただけると幸いです。\n" .
+                    "どうぞよろしくお願いいたします。",
+            ];
+            $templates['査読のお礼(判定確定済)'] = [
+                'sub' => '査読にご協力いただき、ありがとうございました',
+                'mes' => $first_thank . $lastmes,
             ];
 
             // info($submit);
-            $templates['査読結果の開示報告(1)'] = [
+            $templates['査読結果の開示報告(継続)'] = [
                 'sub' => '査読結果を著者に通知しました',
-                'mes' =>
-                $revuser->affil .
-                    '  ' .
-                    $revuser->name .
-                    "様\n\n" .
-                    "このたびは、{$conftitle}に投稿された下記の論文\n" .
-                    "「{$this->paper->title}」\n" .
-                    "の査読にご協力いただき、ありがとうございました。\n\n" .
+                'mes' => $first_thank .
                     "編集委員会で審議した結果、本論文は「{$submit['accept']['name']}」となりました。\n\n" .
                     "著者に通知した査読結果は、投稿システムメニューの\n" .
                     '「査読」→「最近担当した査読」→「著者に通知した査読結果」' .
@@ -294,16 +300,9 @@ class Bb extends MetaModel
                     "\n" .
                     $lastmes,
             ];
-            $templates['査読結果の開示報告(2)'] = [
+            $templates['査読結果の開示報告(終了)'] = [
                 'sub' => '査読結果を著者に通知しました',
-                'mes' =>
-                $revuser->affil .
-                    '  ' .
-                    $revuser->name .
-                    "様\n\n" .
-                    "このたびは、{$conftitle}に投稿された下記の論文\n" .
-                    "「{$this->paper->title}」\n" .
-                    "の査読にご協力いただき、ありがとうございました。\n\n" .
+                'mes' => $first_thank .
                     "編集委員会で審議した結果、本論文は「{$submit['accept']['name']}」となりました。\n\n" .
                     "著者に通知した査読結果は、投稿システムメニューの\n" .
                     '「査読」→「最近担当した査読」→「著者に通知した査読結果」' .
@@ -311,7 +310,24 @@ class Bb extends MetaModel
                     route('role.top', ['role' => 'rev']) .
                     "\n" .
                     "\n" .
-                    $lastmes,
+                    "お忙しいところ査読にご協力いただき、誠にありがとうございました。\n" .
+                    "今後とも、{$conftitle}編集業務へのご協力、よろしくお願いいたします。",
+            ];
+            $templates['催促(1)'] = [
+                'sub' => '査読の状況についてお知らせください',
+                'mes' => $first_thank .
+                    "当初のお願いでは、査読期限を {$task->due_date} としてお願いしておりましたが、\n" .
+                    "現在のところ、査読のご提出が確認できておりません。\n" .
+                    "お忙しいところ恐縮ですが、査読の状況についてお知らせいただけますと幸いです。\n" .
+                    "どうぞよろしくお願いいたします。\n",
+            ];
+            $templates['催促(2)'] = [
+                'sub' => '至急ご対応をお願いいたします',
+                'mes' => $first_thank .
+                    "当初のお願いでは、査読期限を {$task->due_date} としてお願いしておりましたが、\n" .
+                    "現在のところ、査読のご提出が確認できておりません。\n" .
+                    "お忙しいところ恐縮ですが、至急ご対応いただけると幸いです。\n" .
+                    "どうぞよろしくお願いいたします。\n",
             ];
         }
         return $templates;
