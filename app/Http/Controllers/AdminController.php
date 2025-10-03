@@ -487,6 +487,8 @@ class AdminController extends Controller
         if (class_exists($eloModelName)) {
             $dids = $req->input('did');
             $eloModelName::whereIn('id', $dids)->forceDelete();
+        } else {
+            info("crudchkdelete: {$eloModelName} is not found.");
         }
         return redirect()->route('admin.crud', ['table' => $tableName]);
     }
