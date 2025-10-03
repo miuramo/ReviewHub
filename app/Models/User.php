@@ -99,6 +99,12 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Paper::class, 'paper_manager');//->withPivot('priority')->orderBy('id');
     }
 
+    public function unmanaged_papers()
+    {
+        $mpids = $this->managed_papers->pluck('id')->toArray();
+        return Paper::whereNotIn('id', $mpids)->orderBy('id')->get();
+    }
+
     /**
      * 初回のみ、パスワード再設定メールを変更している。see User.php
      */
