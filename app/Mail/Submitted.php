@@ -27,8 +27,10 @@ class Submitted extends RetryMailable
         $this->paper = $_paper;
         $this->mail_to_cc = $_paper->get_mail_to_cc();
         // 編集長をCCに追加
-        $ec_role = \App\Models\Role::findByIdOrName('ec');
-        $ec_users = $ec_role->users;
+        $ec_users = $this->paper->managers; 
+        // 以下をつかうと、利害のある編集長にもメールが飛んでしまう
+        // $ec_role = \App\Models\Role::findByIdOrName('ec');
+        // $ec_users = $ec_role->users;
         foreach($ec_users as $u){
             $this->mail_to_cc['cc'][] = $u->email;
         }
