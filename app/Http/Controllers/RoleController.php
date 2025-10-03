@@ -188,9 +188,12 @@ class RoleController extends Controller
     {
         if (!auth()->user()->can('role_any', 'meta|ec|aec|rev')) abort(403);
         $role = Role::findByIdOrName($req->input("role"));
-        $user = $req->user;
+        $user = str_replace("　"," ",$req->user);
         $affil = $req->affil;
-        $email = $req->email;
+        $email = str_replace("＠", "@", $req->email);
+        $user = trim($user);
+        $affil = trim($affil);
+        $email = trim($email);
         $u = User::where("email", $email)->first();
         if ($u == null) {
             if ($user == "" || $affil == "" || $email == "") {
