@@ -141,7 +141,7 @@ class Submit extends MetaModel
 
     public function heads()
     {
-        $fs = ['resubmit_until', 'submitted_at', 'accept_id', 'ec_decision_at', 'notify_at'];
+        $fs = ['resubmit_until', 'submitted_at', 'receiptsent_at', 'accept_id', 'ec_decision_at', 'notify_at'];
         // $fs に該当する、schema comment を取得
         $heads = [];
         $comments = $this->get_table_comments();

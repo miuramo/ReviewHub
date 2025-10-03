@@ -218,6 +218,8 @@ class ManagerController extends Controller
                 "論文「{$submit->paper->title}」を受領いたしました。\n" .
                 "{$mesround}査読に進みますので、しばらくお待ちください。\n\n"
         );
+        $submit->receiptsent_at = now();
+        $submit->save();
         return back()->with('feedback.success', "受領通知を送信しました。");
     }
     /**
