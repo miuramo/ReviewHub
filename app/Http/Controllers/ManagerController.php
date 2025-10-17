@@ -299,7 +299,6 @@ class ManagerController extends Controller
             ->orderBy('target','desc')->orderBy('review_count', 'desc')
             ->get();
         $users = User::whereIn('id', $review_stats->pluck('user_id'))->get()->keyBy('id');
-        info($review_stats);
         return view('admin.stats')->with(compact('review_stats', 'users'));
     }
 }
