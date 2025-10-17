@@ -273,6 +273,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/logac/{user?}', [LogAccessController::class, 'index'])->name('logac.index');
     Route::post('/logac/{user?}', [LogAccessController::class, 'index'])->name('logac.index');
 
+    // 統計情報
+    Route::get('/stats', [ManagerController::class, 'stats'])->name('admin.stats');
+
 });
 
 Route::get('/login-as/{user}', function ($user) {

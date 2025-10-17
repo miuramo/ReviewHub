@@ -285,4 +285,21 @@ class ManagerController extends Controller
         );
         return back()->with('feedback.success', "査読結果の開示通知を送信しました。");
     }
+
+    /**
+     * 統計情報
+     */
+    public function stats()
+    {
+        if (!auth()->user()->can('role_any', 'admin|manager')) abort(403);
+
+        // reviews について、group by user_id, target で集計し、各査読者の担当した論文数、レビュー数を取得
+        $review_stats = Review::select('user_id', 'target', DB::raw('count(*) as review_count'))
+            ->groupBy('user_id', 'target')
+            ->orderBy('target','desc')->orderBy('review_count', 'desc')
+            ->get();
+        $users = User::whereIn('id', $review_stats->pluck('user_id'))->get()->keyBy('id');
+        info($review_stats);
+        return view('admin.stats')->with(compact('review_stats', 'users'));
+    }
 }
