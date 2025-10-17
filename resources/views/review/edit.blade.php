@@ -37,7 +37,7 @@
     <div class="py-2 px-6">
         <x-element.h1>入力欄を空にすると <span class="text-red-600 font-extrabold">(未入力)</span>
             となります。<br>
-            各項目は、編集後フォーカスを外すと緑色にフラッシュして自動保存されます。本当に保存されたかどうか確認したいときはページを再読み込みしてください。（フォーム全体の保存ボタンはありません。）
+            各項目は、編集後フォーカスを外すと、緑色にフラッシュして自動保存されます。本当に保存されたかどうか確認したいときはページを再読み込みしてください。（フォーム全体の保存ボタンはありません。）
         </x-element.h1>
 
         <table class="table-auto">
@@ -82,12 +82,22 @@
             </div>
         </div>
 
-        <div class="mb-4 my-10">
+        <x-element.h1>
+            各項目は、編集後フォーカスを外すと、緑色にフラッシュして自動保存されます（フォーム全体の保存ボタンはありません）。<br>
+            →の右に入力内容が表示されていれば、すでに保存されています。
+            <x-element.linkbutton href="{{ route('role.top', ['role' => $roleofreview[$review->target]]) }}"
+                color="cyan" >
+                編集を保存・終了し、担当査読一覧に戻る
+            </x-element.linkbutton> <br>
+            <span class="text-pink-500 font-extrabold">担当査読一覧画面で「査読完了を報告する」を押していただくと、査読完了となります。</span>
+        </x-element.h1>
+
+        {{-- <div class="mb-4 my-10">
             <x-element.linkbutton href="{{ route('role.top', ['role' => $roleofreview[$review->target]]) }}"
                 color="gray" size="sm">
                 &larr; 担当査読一覧に戻る
             </x-element.linkbutton>
-        </div>
+        </div> --}}
 
     </div>
 

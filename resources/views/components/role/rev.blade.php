@@ -31,7 +31,7 @@
 
     @if (count($tasks) > 0)
         <div class="px-6 py-4">
-            <x-element.h1>以下の査読について、ご対応をお願いします。<br>（「査読報告の編集」が完了したあとに表示される「査読完了を報告する」ボタンを押してください。）</x-element.h1>
+            <x-element.h1>以下の査読について、ご対応をお願いします。<br><span class="text-pink-500 font-extrabold">（「査読報告の編集」が完了したあとに表示される「査読完了を報告する」ボタンを押してください。）</span></x-element.h1>
             @foreach ($tasks as $task)
                 <div class="mx-6">
                     <x-task.panel :task="$task" />
