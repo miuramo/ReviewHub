@@ -14,6 +14,8 @@
     が
     {{-- 何を --}}
     {{ $task->submit->paper->id_03d() }} の
+    第{{ $task->submit->round }}回査読 の
+    {{-- 何をするタスクか --}}
     {{ $task->workflow->description }}
 
     {{-- もし、割り当てタスクなら --}}

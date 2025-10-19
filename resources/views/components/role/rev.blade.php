@@ -12,6 +12,12 @@
         ->where('require_approve', 1)
         ->where('approved', 0)
         ->get();
+    
+    // 現在依頼済み
+    $review_requests = App\Models\Review::where('user_id', auth()->id())
+        ->where('status', 0)
+        ->whereNotNull('request_at')
+        ->get();
 
 @endphp
 
@@ -24,6 +30,24 @@
             @foreach ($approvetasks as $task)
                 <div class="mx-6">
                     <x-task.app_panel :task="$task" />
+                </div>
+            @endforeach
+        </div>
+    @endif
+    @if(count($review_requests) > 0)
+        <div class="px-6 py-4">
+            <x-element.h1c color="pink"><b>現在、承諾依頼中の査読があります。下のボタンから連絡してください。</b></x-element.h1>
+            @foreach ($review_requests as $revreq)
+                <div class="mx-6 border-2 px-3 py-4 pb-3 bg-white">
+                    <x-element.paperid size=1 :paper_id="$revreq->paper->id" />
+                    第{{ $revreq->submit->round }}回査読<br>
+
+                    {{ $revreq->paper->title }}<br>
+
+                    <x-element.linkbutton href="{{ route('review.req_confirm', ['review' => $revreq, 'token' => $revreq->token_for_request()]) }}" color="pink">
+                        査読の承諾（または辞退）を連絡する
+                    </x-element.linkbutton>
+
                 </div>
             @endforeach
         </div>
