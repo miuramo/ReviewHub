@@ -93,15 +93,22 @@
             </div>
         @endif
 
-
+        {{-- 査読掲示板で、複数の兄弟掲示板があるとき、古い方から全部表示する --}}
         @if ($bb->type == 2 && isset($related_bbs) && count($related_bbs) > 1)
             @foreach ($related_bbs as $rbb)
                 <hr class="mt-2">
-                <div class="font-extrabold text-lg py-2 text-gray-500 text-center bg-gray-200 hover:bg-lime-100 hover:transition-colors transition-all">{{ ordinal($loop->iteration) }} review </div>
+                <div
+                    class="font-extrabold text-lg py-2 text-gray-500 text-center bg-gray-200 hover:bg-lime-100 hover:transition-colors transition-all">
+                    {{ ordinal($loop->iteration) }} review </div>
                 <hr class="mb-2">
                 @foreach ($rbb->messages as $mes)
                     <x-bb.mes :mes="$mes"></x-bb.mes>
                 @endforeach
+
+                {{-- そして、書き込みは最後の掲示板に対して行う。 --}}
+                @php
+                    $bb = $rbb;
+                @endphp
             @endforeach
         @else
             @foreach ($bb->messages as $mes)
