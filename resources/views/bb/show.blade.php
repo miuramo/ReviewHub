@@ -1,6 +1,46 @@
 <x-app-layout>
     @php
         $names = [1 => '著者と投稿管理者の連絡', 2 => '査読者との', 3 => '全査読者との', 4 => '投稿管理者同士の'];
+
+        // もし、type=2(査読掲示板) で、bbs->rev_id でとってきたReview.user_id （査読者）が同じ、かつpaper_idが同じなら、
+        // 兄弟Bbを探してくる。
+        // そして、作成時刻が古いほうから順番にループをまわしていく。
+        // 投稿するときのBbは、最新のものを使う。
+        // まず、メインのBb->rev_id のReview.user_id と同じユーザIDのものを探す。
+        if ($bb->type == 2) {
+            $revobj = \App\Models\Review::find($bb->rev_id);
+            $main_rev_user_id = $revobj->user_id;
+            // info("main_rev_user_id: " . $main_rev_user_id);
+            $related_reviews = \App\Models\Review::where('paper_id', $bb->paper_id)
+                ->where('category_id', $revobj->category_id)
+                ->where('user_id', $main_rev_user_id)
+                ->orderBy('created_at', 'asc')
+                ->pluck('id')
+                ->toArray();
+            // info($related_reviews);
+            $related_bbs = \App\Models\Bb::with('messages')
+                ->where('paper_id', $bb->paper_id)
+                ->where('type', 2)
+                ->whereIn('rev_id', $related_reviews)
+                ->orderBy('created_at', 'asc')
+                ->get()
+                ->keyBy('id');
+        } else {
+            $main_rev_user_id = null;
+        }
+
+        function ordinal($number)
+        {
+            $suffixes = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
+
+            if ($number % 100 >= 11 && $number % 100 <= 13) {
+                $suffix = 'th';
+            } else {
+                $suffix = $suffixes[$number % 10];
+            }
+
+            return $number . $suffix;
+        }
     @endphp
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400">
@@ -54,9 +94,20 @@
         @endif
 
 
-        @foreach ($bb->messages as $mes)
-            <x-bb.mes :mes="$mes"></x-bb.mes>
-        @endforeach
+        @if ($bb->type == 2 && isset($related_bbs) && count($related_bbs) > 1)
+            @foreach ($related_bbs as $rbb)
+                <hr class="mt-2">
+                <div class="font-extrabold text-lg py-2 text-gray-500 text-center bg-gray-200 hover:bg-lime-100 hover:transition-colors transition-all">{{ ordinal($loop->iteration) }} review </div>
+                <hr class="mb-2">
+                @foreach ($rbb->messages as $mes)
+                    <x-bb.mes :mes="$mes"></x-bb.mes>
+                @endforeach
+            @endforeach
+        @else
+            @foreach ($bb->messages as $mes)
+                <x-bb.mes :mes="$mes"></x-bb.mes>
+            @endforeach
+        @endif
 
         <div class="text-right mt-1">
             <form action="{{ route('bbmes.store', ['bb' => $bb->id, 'key' => $bb->key]) }}" method="post"
@@ -66,7 +117,7 @@
                 <input type="hidden" name="key" value="{{ $bb->key }}">
 
                 <div
-                    class="inline-block w-3/4 bg-green-300 p-2 rounded-md mt-5 hover:bg-green-400 hover:transition-colors">
+                    class="inline-block w-3/4 bg-green-300 p-2 rounded-md mt-5 hover:bg-green-400 hover:transition-colors duration-500">
                     <div class="px-2 text-left text-sm">送信フォーム</div>
                     <input class="w-full p-2 bg-green-200 rounded-md border-green-300 border-2" type="text"
                         size="70" name="sub" id="bbsub" placeholder="ここに Subject (Title) を入力"

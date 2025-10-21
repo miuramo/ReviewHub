@@ -225,10 +225,10 @@ class Bb extends MetaModel
             ->where('canceled', 0)
             ->orderBy('ec_decision_at', 'desc') // 最終判断がついたものについて、新しい順にならんだあと、 ec_decision_atがnullのものが最後に来る
             ->get();
-        info("submit: " . json_encode($allsubmit));
-        info("submit count: " . count($allsubmit));
-        info("allscore: " . json_encode($allscore));
-        info("allscore count: " . count($allscore));
+        // info("submit: " . json_encode($allsubmit));
+        // info("submit count: " . count($allsubmit));
+        // info("allscore: " . json_encode($allscore));
+        // info("allscore count: " . count($allscore));
 
         $first_thank = $revuser->affil .
             '  ' .
