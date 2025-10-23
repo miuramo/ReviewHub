@@ -91,6 +91,10 @@
                     @endif
                 @endforeach
             </div>
+            <span class="mx-4"></span>
+            <x-element.linkbutton :href="route('paper.manage', ['paper' => $bb->paper_id])" color="gray" size="sm">
+                論文管理画面（投稿管理者のみ）
+            </x-element.linkbutton>
         @endif
 
         {{-- 査読掲示板で、複数の兄弟掲示板があるとき、古い方から全部表示する --}}
