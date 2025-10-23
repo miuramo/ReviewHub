@@ -19,6 +19,14 @@
     //     return ($paper->status_id ?? null);
     //     // return $paper->currentsubmit->submitted_at ?? null;
     // });
+
+    $status_labels = [
+        -1 => '<span class="text-gray-400">辞退</span>',
+        0 => '<span class="text-orange-500">未了解</span>',
+        1 => '<span class="text-green-600">査読中</span>',
+        2 => '<span class="text-blue-300">完了</span>',
+    ];
+
 @endphp
 <x-element.component_name>
     psummarytable
@@ -78,7 +86,7 @@
                 <td class="p-1 text-center">
                     <x-element.login_as :user="$paper->paperowner"></x-element.login_as> ({{ $paper->paperowner->affil }})
                 </td>
-                <td class="p-1 text-center leading-tight text-nowrap">
+                <td class="p-1 text-center leading-tight text-nowrap text-sm">
                     @foreach ($paper->currentsubmit->reviews as $review)
                         <div>
                             @php
@@ -95,11 +103,13 @@
                             @else
                                 {{ substr($review->user->email, 0, 5) }}-
                             @endif
-                            {{ $review->status }}
+                            {!! $status_labels[$review->status] !!}
                             @if ($review->status < 2)
                                 <span class=" text-red-400 dark:text-red-700 font-bold text-sm">
                                     {{ $review->task->due_date ?? '' }}
                                 </span>
+                            @else
+                                {{ $review->judge() ?? '' }}
                             @endif
                         </div>
                     @endforeach
