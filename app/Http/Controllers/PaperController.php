@@ -422,6 +422,8 @@ class PaperController extends Controller
         }
 
         $pdftext = $paper->pdf_file->getPdfText();
+        $pdftext = $this->normalizeSpaces($pdftext);
+
         // 書誌情報の設定項目
         $koumoku = Paper::mandatory_bibs();
         $koumokucolor = ['title' => 'teal', 'abst' => 'teal', 'keyword' => 'teal', 'authorlist' => 'teal', 'etitle' => 'lime', 'eabst' => 'lime', 'ekeyword' => 'lime', 'eauthorlist' => 'lime'];
@@ -458,6 +460,46 @@ class PaperController extends Controller
         } else {
             return json_encode(["field" => $target_field, "value" => $paper->{$target_field}]);
         }
+    }
+    /**
+     * 全角文字に挟まれた《半角スペース》に加え、全角と半角（英文字・数字）に挟まれた《半角スペース》も一括削除
+     */
+    public static function normalizeSpaces($val)
+    {
+        // 前後の空白をトリム
+        $val = trim($val);
+
+        // 「全角文字」を表すクラス
+        // - 一-龥: 漢字
+        // - ぁ-ゔ: ひらがな
+        // - ァ-ヴー: カタカナ（長音符含む）
+        // - 々〆〤: 特殊文字
+        // - ．，。、: 全角句読点
+        // - ＀-￯: 全角形（全角記号・英数字など、U+FF01〜U+FF60, U+FFE0〜U+FFE6）
+        $zenkaku = '一-龥ぁ-ゔァ-ヴー々〆〤．，。、！-～';
+
+        // 全角 + 全角 の間の半角スペースを削除
+        $val = preg_replace(
+            '/([' . $zenkaku . '])\s+([' . $zenkaku . '])/u',
+            '$1$2',
+            $val
+        );
+
+        // 全角 + 半角 の間の半角スペースを削除
+        $val = preg_replace(
+            '/([' . $zenkaku . '])\s+([a-zA-Z0-9])/u',
+            '$1$2',
+            $val
+        );
+
+        // 半角 + 全角 の間の半角スペースを削除
+        $val = preg_replace(
+            '/([a-zA-Z0-9])\s+([' . $zenkaku . '])/u',
+            '$1$2',
+            $val
+        );
+
+        return $val;
     }
 
     /**
