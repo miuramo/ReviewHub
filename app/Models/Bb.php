@@ -104,6 +104,19 @@ class Bb extends MetaModel
         $sub = Submit::with('paper')->find($ary["sub_id"]);
         return Bb::make_bb($sub, $ary["type"], $ary["rev_id"]);
     }
+    //
+    public static function ordinal($number)
+    {
+        $suffixes = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
+
+        if ($number % 100 >= 11 && $number % 100 <= 13) {
+            $suffix = 'th';
+        } else {
+            $suffix = $suffixes[$number % 10];
+        }
+
+        return $number . $suffix;
+    }
 
     /**
      * Bb通知メールをおくる
@@ -313,22 +326,24 @@ class Bb extends MetaModel
                     "お忙しいところ査読にご協力いただき、誠にありがとうございました。\n" .
                     "今後とも、{$conftitle}編集業務へのご協力、よろしくお願いいたします。",
             ];
-            $templates['催促(1)'] = [
-                'sub' => '査読の状況についてお知らせください',
-                'mes' => $first_thank .
-                    "当初のお願いでは、査読期限を {$task->due_date} としてお願いしておりましたが、\n" .
-                    "現在のところ、査読のご提出が確認できておりません。\n" .
-                    "お忙しいところ恐縮ですが、査読の状況についてお知らせいただけますと幸いです。\n" .
-                    "どうぞよろしくお願いいたします。\n",
-            ];
-            $templates['催促(2)'] = [
-                'sub' => '至急ご対応をお願いいたします',
-                'mes' => $first_thank .
-                    "当初のお願いでは、査読期限を {$task->due_date} としてお願いしておりましたが、\n" .
-                    "現在のところ、査読のご提出が確認できておりません。\n" .
-                    "お忙しいところ恐縮ですが、至急ご対応いただけると幸いです。\n" .
-                    "どうぞよろしくお願いいたします。\n",
-            ];
+            if ($task) {
+                $templates['催促(1)'] = [
+                    'sub' => '査読の状況についてお知らせください',
+                    'mes' => $first_thank .
+                        "当初のお願いでは、査読期限を {$task->due_date} としてお願いしておりましたが、\n" .
+                        "現在のところ、査読のご提出が確認できておりません。\n" .
+                        "お忙しいところ恐縮ですが、査読の状況についてお知らせいただけますと幸いです。\n" .
+                        "どうぞよろしくお願いいたします。\n",
+                ];
+                $templates['催促(2)'] = [
+                    'sub' => '至急ご対応をお願いいたします',
+                    'mes' => $first_thank .
+                        "当初のお願いでは、査読期限を {$task->due_date} としてお願いしておりましたが、\n" .
+                        "現在のところ、査読のご提出が確認できておりません。\n" .
+                        "お忙しいところ恐縮ですが、至急ご対応いただけると幸いです。\n" .
+                        "どうぞよろしくお願いいたします。\n",
+                ];
+            }
         }
         return $templates;
     }

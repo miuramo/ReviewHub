@@ -29,18 +29,6 @@
             $main_rev_user_id = null;
         }
 
-        function ordinal($number)
-        {
-            $suffixes = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
-
-            if ($number % 100 >= 11 && $number % 100 <= 13) {
-                $suffix = 'th';
-            } else {
-                $suffix = $suffixes[$number % 10];
-            }
-
-            return $number . $suffix;
-        }
     @endphp
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400">
@@ -103,7 +91,7 @@
                 <hr class="mt-2">
                 <div
                     class="font-extrabold text-lg py-2 text-gray-500 text-center bg-gray-200 hover:bg-lime-100 hover:transition-colors transition-all">
-                    {{ ordinal($loop->iteration) }} review </div>
+                    {{ \App\Models\Bb::ordinal($loop->iteration) }} review </div>
                 <hr class="mb-2">
                 @foreach ($rbb->messages as $mes)
                     <x-bb.mes :mes="$mes"></x-bb.mes>
