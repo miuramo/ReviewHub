@@ -16,6 +16,12 @@
                     color="cyan" size="sm" target="_blank">
                     編集管理マニュアル (Cosense/Scrapbox)</x-element.linkbutton>
             @endif
+            @if ($role->name == 'rev')
+                <x-element.linkbutton
+                    href="https://scrapbox.io/reviewhub/%E6%9F%BB%E8%AA%AD%E3%83%9E%E3%83%8B%E3%83%A5%E3%82%A2%E3%83%AB"
+                    color="pink" size="sm" target="_blank">
+                    査読マニュアル (Cosense/Scrapbox)</x-element.linkbutton>
+            @endif
         </h2>
     </x-slot>
 
