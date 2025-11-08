@@ -99,7 +99,7 @@ class SubmitController extends Controller
                 foreach ($ary as $sessionid => $presens) { // [0=>pid1, 1=>pid2, ...]
                     $in_session_num = 1;
                     foreach ($presens as $pid) {
-                        $sub = Submit::where("category_id", $catid)->where("paper_id", $pid)->first();
+                        $sub = Submit::where("category_id", $catid)->where("paper_id", $pid)->where("accept_id",1)->first(); // 採択(accept_id=1)のものだけを使う
                         $sub->psession_id = $sessionid;
                         $sub->orderint = $num;
                         $sub->save();

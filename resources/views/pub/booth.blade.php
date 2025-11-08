@@ -94,7 +94,7 @@
                             <x-element.submitbutton value="bysession" color="pink">現在のセッション番号と、セッション内の並び順を使用して設定する
                             </x-element.submitbutton>
                             @php
-                                $format = '%d-%d';
+                                $format = '%d-%02d';
                             @endphp
                             <div class="ml-8">
                                 sprintfフォーマット <input type="text" name="print_format" id="print_format" size="8"
