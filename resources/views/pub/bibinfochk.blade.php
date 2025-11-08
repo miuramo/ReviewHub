@@ -65,6 +65,7 @@
             'eauthorlist' => '英文著者・所属',
             'eabst' => '英文Abstract',
             'ekeyword' => '英文Keyword',
+            'ror' => 'ROR',
         ];
         $dtype = [
             'title' => 'varchar',
@@ -75,6 +76,7 @@
             'eauthorlist' => 'mediumtext',
             'eabst' => 'mediumtext',
             'ekeyword' => 'varchar',
+            'ror' => 'mediumtext',
         ];
 
         if (count($subs) == 0) {

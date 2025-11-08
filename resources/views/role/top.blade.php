@@ -22,6 +22,12 @@
                     color="pink" size="sm" target="_blank">
                     査読マニュアル (Cosense/Scrapbox)</x-element.linkbutton>
             @endif
+            @if ($role->name == 'pub')
+                <x-element.linkbutton
+                    href="https://scrapbox.io/reviewhub/%E5%87%BA%E7%89%88%E3%81%AB%E5%90%91%E3%81%91%E3%81%9F%E4%BD%9C%E6%A5%AD"
+                    color="lime" size="sm" target="_blank">
+                    出版マニュアル (Cosense/Scrapbox)</x-element.linkbutton>
+            @endif
         </h2>
     </x-slot>
 

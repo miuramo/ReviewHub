@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AffilController;
 use App\Http\Controllers\BbController;
 use App\Http\Controllers\BbMesController;
 use App\Http\Controllers\EnqueteAnswerController;
@@ -113,11 +114,11 @@ Route::middleware('auth')->group(function () {
     Route::put('/review/{review}', [ReviewController::class, 'update'])->name('review.update'); //査読フォームの変更を受けとる
     Route::get('/review/{review}', [ReviewController::class, 'show'])->name('review.show');
     Route::put('/review/{review}/start', [ReviewController::class, 'start'])->name('review.start');
-    
+
     Route::get('/review/pubkey/{review}/{token}', [ReviewController::class, 'pubshow'])->name('review.pubshow'); // 査読者同士の相互参照用
 
     Route::get('/review', [ReviewController::class, 'index'])->name('review.index');
-    Route::get('/review/{review}/restore', [ReviewController::class, 'restore'])->name('review.restore');//復活
+    Route::get('/review/{review}/restore', [ReviewController::class, 'restore'])->name('review.restore'); //復活
     Route::delete('/review/{review}', [ReviewController::class, 'destroy'])->name('review.destroy');
     Route::get('/review/indexcat/{cat}', [ReviewController::class, 'indexcat'])->name('review.indexcat');
     Route::get('/review_downzip/{cat}', [ReviewController::class, 'zipdownload_for_rev'])->name('review.downzip');
@@ -159,7 +160,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/logac/paper/{paper}', [LogAccessController::class, 'index'])->name('logac.index');
     Route::post('/logac/paper/{paper}', [LogAccessController::class, 'index'])->name('logac.index');
     Route::get('/logac/review/{review}', [LogAccessController::class, 'show'])->name('logac.show');
-    
+
     Route::get('/role', [RoleController::class, 'index'])->name('role.index');
     Route::get('/role/{role}/top', [RoleController::class, 'top'])->name('role.top');
     // Route::get('/role/{role}/pc', [RoleController::class, 'top'])->name('role.pc'); //本当はrole.topがあればよいのだが、navigationをactiveにするため...
@@ -195,9 +196,12 @@ Route::middleware('auth')->group(function () {
     Route::post('pub/{cat}/boothtxt', [SubmitController::class, 'boothtxt'])->name('pub.boothtxt');
     Route::post('pub_zipf', [SubmitController::class, 'zipdownload'])->name('pub.zipdownload');
     Route::get('pub/{cat}/bibinfochk', [SubmitController::class, 'bibinfochk'])->name('pub.bibinfochk'); //書誌情報の確認と修正
-    Route::post('pub/update_maydirty', [SubmitController::class, 'update_maydirty'])->name('pub.update_maydirty');// MayDirtyをリセット
-    Route::get('pub/{cat}/bibinfo/{abbr?}', [SubmitController::class, 'bibinfo'])->name('pub.bibinfo'); //書誌情報の表示 (abbrをtrueにすると同一所属を省略)
+    Route::post('pub/update_maydirty', [SubmitController::class, 'update_maydirty'])->name('pub.update_maydirty'); // MayDirtyをリセット
+    // Route::get('pub/{cat}/bibinfo/{abbr?}', [SubmitController::class, 'bibinfo'])->name('pub.bibinfo'); //書誌情報の表示 (abbrをtrueにすると同一所属を省略)
     Route::get('pub/{cat}/fileinfochk', [SubmitController::class, 'fileinfochk'])->name('pub.fileinfochk'); // カメラレディのタイムスタンプ確認
+    Route::get('paper/{paper}/bibinfochk', [SubmitController::class, 'bibinfochk_paper'])->name('pub.bibinfochk_paper'); //書誌情報の確認と修正
+    Route::get('pub/{cat}/bibinfo/{abbr?}/{useshort?}/{filechk?}', [SubmitController::class, 'bibinfo'])->name('pub.bibinfo'); //書誌情報の表示 (abbrをtrueにすると同一所属を省略)
+
 
     // メール雛形
     Route::resource('mt', MailTemplateController::class);
@@ -214,7 +218,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin_catsetting', [AdminController::class, 'catsetting'])->name('admin.catsetting');
     Route::get('/admin_chkexefiles', [AdminController::class, 'check_exefiles'])->name('admin.chkexefiles');
     Route::get('/admin_fixusernamespace', [AdminController::class, 'fixusernamespace'])->name('admin.fixusernamespace');
-    
+
     Route::get('/admin_resetpaper', [AdminController::class, 'resetpaper'])->name('admin.resetpaper');             // Danger Zone
     Route::get('/admin_resetaccesslog', [AdminController::class, 'resetaccesslog'])->name('admin.resetaccesslog'); // Danger Zone
     Route::get('/admin_resetbidding', [AdminController::class, 'resetbidding'])->name('admin.resetbidding');       // Danger Zone
@@ -244,7 +248,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/revcon/revname/{cat}', [RevConflictController::class, 'revname'])->name('revcon.revname'); // 査読者の名前
     Route::get('/revcon/notdownloaded', [RevConflictController::class, 'notdownloaded'])->name('revcon.notdownloaded');
     Route::get('/revcon/norev', [RevConflictController::class, 'norev'])->name('revcon.norev');
-    
+
     // Export and Import
     Route::get('viewpoints/export', [ViewpointController::class, 'export'])->name('viewpoint.export');
     Route::post('viewpoints/import', [ViewpointController::class, 'import'])->name('viewpoint.import');
@@ -276,13 +280,19 @@ Route::middleware('auth')->group(function () {
     // 統計情報
     Route::get('/stats', [ManagerController::class, 'stats'])->name('admin.stats');
 
+    // 所属修正
+    // Route::resource('affil', AffilController::class);
+    Route::get('affil', [AffilController::class, 'index'])->name('affil.index');
+    Route::post('affil/update', [AffilController::class, 'update'])->name('affil.update');
+    Route::get('affil/create', [AffilController::class, 'create'])->name('affil.create');
+    Route::get('affil/rebuild', [AffilController::class, 'rebuild'])->name('affil.rebuild');
 });
 
 Route::get('/login-as/{user}', function ($user) {
     $targetUser = User::find($user);
     if ($targetUser) {
         Auth::login($targetUser);
-        return redirect()->route('role.top',['role'=>$targetUser->maxRole() ])->with('feedback.success', '代理ログインしました: ' . $targetUser->name);
+        return redirect()->route('role.top', ['role' => $targetUser->maxRole()])->with('feedback.success', '代理ログインしました: ' . $targetUser->name);
     }
     return redirect('/')->with('error', 'ユーザが見つかりません');
 })->middleware(['auth'])->name('role.login-as'); // 必要に応じて認可や認証のミドルウェアを適用

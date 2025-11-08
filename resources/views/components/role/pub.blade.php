@@ -27,7 +27,7 @@
     </x-element.h1> --}}
 
     <x-element.h1>
-        巻割り当て
+        巻への割り当て
         @foreach ($cats as $cid => $cname)
             <span class="px-2"></span>
             <x-element.linkbutton href="{{ route('pub.booth', ['cat' => $cid]) }}" color="cyan" target="_blank">
@@ -54,6 +54,11 @@
                 {{ $cname }}
             </x-element.linkbutton>
         @endforeach
+        <span class="px-2"></span>
+        <x-element.linkbutton href="{{ route('affil.index') }}" color="purple" target="_blank">
+            所属修正ルールの一覧
+        </x-element.linkbutton>
+
     </x-element.h1>
 
     <x-element.h1>
@@ -132,7 +137,7 @@
     <div class="px-6 py-0 flex">
         <div class="px-2 py-0 flex-grow">
             @php
-                $fts = \App\Models\Filetype::all()->pluck('name','id')->toArray();
+                $fts = \App\Models\Filetype::all()->pluck('name', 'id')->toArray();
                 $def_use_pid = false;
             @endphp
             <form action="{{ route('pub.zipdownload') }}" method="post" id="pub_zipdownload">
@@ -147,7 +152,7 @@
                     @endforeach
                 </div>
                 <div>
-                    @foreach ($fts as $ftid=>$ft)
+                    @foreach ($fts as $ftid => $ft)
                         <input type="checkbox" name="filetype{{ $ft }}" value="{{ $ftid }}"
                             id="label{{ $ftid }}" @if ($ft == '論文') checked="checked" @endif>
                         <label for="label{{ $ftid }}"
@@ -156,19 +161,20 @@
                 </div>
                 <div class="bg-orange-100 p-2">
                     【個別ファイル名】
-                <input type="radio" name="use_pid" value="1" id="labeluse_pid1"
-                    @if ($def_use_pid) checked="checked" @endif>
-                <label for="labeluse_pid1" class="dark:text-gray-300 hover:bg-orange-200">PaperID (4桁)
-                    を使用する</label>
-                <span class="mx-2"></span>
-                <input type="radio" name="use_pid" value="0" id="labeluse_pid0"
-                    @if (!$def_use_pid) checked="checked" @endif>
-                <label for="labeluse_pid0"
-                    class="dark:text-gray-300 hover:bg-orange-200">「巻-[2桁番号]」を使用する（注：未定義の場合、「PaperID (4桁)」を使用します）</label>&nbsp;
-            </div>
+                    <input type="radio" name="use_pid" value="1" id="labeluse_pid1"
+                        @if ($def_use_pid) checked="checked" @endif>
+                    <label for="labeluse_pid1" class="dark:text-gray-300 hover:bg-orange-200">PaperID (4桁)
+                        を使用する</label>
+                    <span class="mx-2"></span>
+                    <input type="radio" name="use_pid" value="0" id="labeluse_pid0"
+                        @if (!$def_use_pid) checked="checked" @endif>
+                    <label for="labeluse_pid0"
+                        class="dark:text-gray-300 hover:bg-orange-200">「巻-[2桁番号]」を使用する（注：未定義の場合、「PaperID
+                        (4桁)」を使用します）</label>&nbsp;
+                </div>
                 <div class="dark:text-gray-400">
-                    ファイル名は、Prefix→ <input type="text" name="fn_prefix" size="6"
-                        value="" class="p-1 dark:bg-slate-600"> +
+                    ファイル名は、Prefix→ <input type="text" name="fn_prefix" size="6" value=""
+                        class="p-1 dark:bg-slate-600"> +
                     [個別ファイル名].[拡張子] になります。ファイル名が重複するため、論文 と 回答書 は同時に選択しないでください。
                 </div>
 

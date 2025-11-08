@@ -11,7 +11,7 @@
             </x-element.linkbutton>
         </div>
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('巻割り当て') }}
+            {{ __('巻への割り当て') }}
             <span class="mx-2"></span>
             <x-element.category :cat="$cat">
             </x-element.category>

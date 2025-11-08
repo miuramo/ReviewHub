@@ -163,7 +163,7 @@ class Paper extends Model
         $count = 0;
         foreach ($filetypes as $ftid) {
             // $fti = "{$ft}_file_id"; // file_id for $ft (filetype)
-            $file = File::where('paper_id', $this->id)->where("filetype_id", $ftid)->where('valid', 1)->where('deleted', 0)->where('archived',0)->first();
+            $file = File::where('paper_id', $this->id)->where("filetype_id", $ftid)->where('valid', 1)->where('deleted', 0)->where('archived', 0)->first();
             if ($file == null) continue;
             $zip->add(ZipFile::make($file->fullpath(), $fn_prefix . $fn . "." . $file->extension()));
             $count++;
@@ -643,13 +643,51 @@ class Paper extends Model
         }
         return true;
     }
+    /**
+     * 基本ルール(pre)は適用する。
+     */
+    public function apply_affil_fix($affil, bool $pre_apply = true, bool $use_short = false)
+    {
+        // $affil = str_replace("、", "/", $affil);
+        // $affil = str_replace(",", "/", $affil);
+        // $affil = str_replace("，", "/", $affil);
+        // 事前適用ルールを取得
+        if ($pre_apply) {
+            $pre_rules = Affil::where('pre', true)->where('skip', false)->get();
+            foreach ($pre_rules as $rule) {
+                $affil = str_replace($rule->before, $rule->after, $affil);
+            }
+        }
+
+        $afary = explode("/", $affil);
+        $afary = array_map('trim', $afary);
+
+        $ret = [];
+        foreach ($afary as $af) {
+            $obj = Affil::where('before', $af)->where('skip', false)->first();
+            if ($obj != null && $use_short) {
+                $ret[] = $obj->after;
+            } else {
+                $ret[] = $af;
+            }
+        }
+        //配列retの要素が空文字列なら、要素を削除する
+        $ret = array_filter($ret, function ($v) {
+            return strlen($v) > 0;
+        });
+        $ret = array_map(function ($v) {
+            return $this->remove_hankaku_between_zenkaku($v); // $this->remove_hankaku_between_zenkaku($v);
+        }, $ret);
+        return implode("/", $ret);
+    }
 
 
     // 著者名と所属のパース結果を配列で返す。英文所属は引数にeauthorlist を指定する。
-    public function authorlist_ary($field = "authorlist")
+    public function authorlist_ary($field = "authorlist", bool $use_short = false)
     {
         $ret = [];
         // まず、カッコをおきかえる
+        if (!isset($this->{$field})) return $ret; // 著者名と所属が設定されてない
         $lines = explode("\n", $this->{$field});
         $lines = array_map("trim", $lines);
         foreach ($lines as $line) {
@@ -660,19 +698,33 @@ class Paper extends Model
             $ary = explode("\t", trim($line));
             $ary = array_map("trim", $ary);
             // ここまでで、ary[0]には氏名、ary[1]には所属がはいる
+            if (isset($ary[1])) {
+                $ary[1] = $this->apply_affil_fix($ary[1], true, $use_short);
+            }
             $ret[] = $ary;
         }
         return $ret;
     }
-    public function getAllAffils($idx = 1, $prefix = "")
+    // 所属の修正を適用する
+    public function getAllAffils($idx = 1, $prefix = "", bool $use_short = true)
     {
-        $ary = $this->authorlist_ary($prefix . "authorlist");
+        $ary = $this->authorlist_ary($prefix . "authorlist", $use_short);
         $ret = [];
         foreach ($ary as $a) {
             if (isset($a[$idx])) $ret[] = $a[$idx];
         }
         return implode(";;", $ret);
     }
+    public static function remove_hankaku_between_zenkaku(string $val): string
+    {
+        $val = preg_replace('/([一-龥ぁ-ゔァ-ヴー々〆〤．，。、Ａ-Ｚａ-ｚ０-９])\s+([a-zA-Z0-9Ａ-Ｚａ-ｚ０-９一-龥ぁ-ゔァ-ヴー々〆〤．，。、])/u', '$1$2', $val);
+        $val = preg_replace('/([a-zA-Z0-9Ａ-Ｚａ-ｚ０-９])\s+([一-龥ぁ-ゔァ-ヴー々〆〤．，。、Ａ-Ｚａ-ｚ０-９])/u', '$1$2', $val);
+        $pattern = '/(?<=\p{Han})\s(?=\p{ASCII})|(?<=\p{ASCII})\s(?=\p{Han})/u';
+        $val = preg_replace($pattern, '', $val);
+
+        return $val;
+    }
+
 
     /**
      * 配列をかえす
@@ -751,7 +803,8 @@ class Paper extends Model
         return $title;
     }
 
-    public function lockMe(bool $b){
+    public function lockMe(bool $b)
+    {
         $this->locked = $b;
         $this->save();
     }
@@ -786,5 +839,35 @@ class Paper extends Model
             if ($user->id == $this->owner) continue;
             $this->managers()->attach($user->id);
         }
+    }
+
+    /**
+     * ROR取得
+     */
+    public function fetchROR()
+    {
+        $affils = $this->getAllAffils(1);
+        $affil_array = explode(";;", $affils);
+        $ret = [];
+        foreach ($affil_array as $affil) {
+            $affil = trim($affil);
+            if (strlen($affil) == 0) continue;
+            $url = "https://api.ror.org/organizations?query=" . urlencode($affil);
+            try {
+                $response = file_get_contents($url);
+                $data = json_decode($response, true);
+                if (isset($data['items']) && count($data['items']) > 0) {
+                    $first_item = $data['items'][0];
+                    if (isset($first_item['id'])) {
+                        $ret[] = $affil . " " . $first_item['id'];
+                    }
+                }
+            } catch (\Exception $e) {
+                // エラーハンドリング
+            }
+        }
+        $this->ror = implode("\r\n", $ret);
+        $this->save();
+        return $this->ror;
     }
 }
