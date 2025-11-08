@@ -71,7 +71,7 @@
                             <x-element.submitbutton value="byorder" color="orange">現在の orderint (通し番号) を使用して設定する
                             </x-element.submitbutton>
                             @php
-                                $format = '%04d';
+                                $format = '%02d';
                                 if ($cat == 2) {
                                     $format = 'P-%d';
                                 }

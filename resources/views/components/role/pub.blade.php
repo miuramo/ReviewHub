@@ -24,7 +24,7 @@
         <x-element.linkbutton href="{{ route('pub.addsubmit') }}" color="cyan" target="_blank">
             別カテゴリでの採否を追加する
         </x-element.linkbutton>
-    </x-element.h1>
+    </x-element.h1> --}}
 
     <x-element.h1>
         セッション割り当て
@@ -34,7 +34,7 @@
                 {{ $cname }}
             </x-element.linkbutton>
         @endforeach
-    </x-element.h1> --}}
+    </x-element.h1>
 
     {{-- <x-element.h1>
         書誌情報を、投稿者が修正できないように設定する

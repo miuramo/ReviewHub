@@ -31,7 +31,7 @@ function onNodeDragEnd(json) {
 
 $(document).ready(function () {
     for (let i = 1; i < 13; i++) {
-        new Oya(10, i * 150, i, i, "session " + i);
+        new Oya(10, i * 150, i+28, i+2025, "volume " + (i+28));
     }
 
     // console.log(subpapers);
