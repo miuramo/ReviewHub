@@ -99,7 +99,7 @@ class SubmitController extends Controller
                 foreach ($ary as $sessionid => $presens) { // [0=>pid1, 1=>pid2, ...]
                     $in_session_num = 1;
                     foreach ($presens as $pid) {
-                        $sub = Submit::where("category_id", $catid)->where("paper_id", $pid)->where("accept_id",1)->first(); // 採択(accept_id=1)のものだけを使う
+                        $sub = Submit::where("category_id", $catid)->where("paper_id", $pid)->where("accept_id", 1)->first(); // 採択(accept_id=1)のものだけを使う
                         $sub->psession_id = $sessionid;
                         $sub->orderint = $num;
                         $sub->save();
@@ -221,16 +221,23 @@ class SubmitController extends Controller
         // 採択submits→paper_id list
         $accept_papers = Submit::with('paper')->whereIn("category_id", $targets)->whereHas("accept", function ($query) {
             $query->where("judge", ">", 0);
-        })->orderBy("orderint")->pluck("paper_id", "paper_id")->toArray();
+        })->orderBy("orderint")->pluck("booth", "paper_id")->toArray();
 
         $addcount_tozip = 0;
+        $fn_prefix = $req->input("fn_prefix") ?? "";
         if (count($targets) > 0) {
             // find Target Papers
             $papers = Paper::whereIn('id', array_keys($accept_papers))->get();
             $zipFN = 'files.zip';
             $zipstream = Zip::create($zipFN);
             foreach ($papers as $paper) {
-                $paper->addFilesToZip_ForPub($zipstream, $filetypes, $req->input("fn_prefix") . sprintf("%04d", $paper->id));
+                if ($req->input('use_pid')) {
+                    $paper->addFilesToZip_ForPub($zipstream, $filetypes, $fn_prefix, sprintf("%04d", $paper->id));
+                } else {
+                    $fn = $accept_papers[$paper->id];
+                    if (strlen($fn) < 1) $fn = sprintf("%04d", $paper->id);
+                    $paper->addFilesToZip_ForPub($zipstream, $filetypes, $fn_prefix, $fn);
+                }
                 $addcount_tozip++;
             }
 

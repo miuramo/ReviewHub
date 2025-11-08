@@ -133,6 +133,7 @@
         <div class="px-2 py-0 flex-grow">
             @php
                 $fts = \App\Models\Filetype::all()->pluck('name','id')->toArray();
+                $def_use_pid = false;
             @endphp
             <form action="{{ route('pub.zipdownload') }}" method="post" id="pub_zipdownload">
                 @csrf
@@ -153,10 +154,22 @@
                             class="dark:text-gray-300">{{ $ft }}</label>&nbsp;
                     @endforeach
                 </div>
+                <div class="bg-orange-100 p-2">
+                    【個別ファイル名】
+                <input type="radio" name="use_pid" value="1" id="labeluse_pid1"
+                    @if ($def_use_pid) checked="checked" @endif>
+                <label for="labeluse_pid1" class="dark:text-gray-300 hover:bg-orange-200">PaperID (4桁)
+                    を使用する</label>
+                <span class="mx-2"></span>
+                <input type="radio" name="use_pid" value="0" id="labeluse_pid0"
+                    @if (!$def_use_pid) checked="checked" @endif>
+                <label for="labeluse_pid0"
+                    class="dark:text-gray-300 hover:bg-orange-200">「巻-[2桁番号]」を使用する（注：未定義の場合、「PaperID (4桁)」を使用します）</label>&nbsp;
+            </div>
                 <div class="dark:text-gray-400">
-                    ファイル名は、Prefix→ <input type="text" name="fn_prefix"
-                        value="{{ env('PUB_DL_PREFIX', 'JCS') }}" class="p-1 dark:bg-slate-600"> +
-                    [Paper_ID].[拡張子] になります。ファイル名が重複するため、論文 と 回答書 は同時に選択しないでください。
+                    ファイル名は、Prefix→ <input type="text" name="fn_prefix" size="6"
+                        value="" class="p-1 dark:bg-slate-600"> +
+                    [個別ファイル名].[拡張子] になります。ファイル名が重複するため、論文 と 回答書 は同時に選択しないでください。
                 </div>
 
                 <x-element.submitbutton value="view" color="yellow">↑選択したカテゴリ・種別の採択ファイルをDownload
