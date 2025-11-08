@@ -27,7 +27,7 @@
     </x-element.h1> --}}
 
     <x-element.h1>
-        セッション割り当て
+        巻割り当て
         @foreach ($cats as $cid => $cname)
             <span class="px-2"></span>
             <x-element.linkbutton href="{{ route('pub.booth', ['cat' => $cid]) }}" color="cyan" target="_blank">
