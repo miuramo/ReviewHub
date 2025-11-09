@@ -165,6 +165,15 @@ class Submit extends MetaModel
         })->orderBy($ord)->get();
         return $subs;
     }
+    public static function subs_accepted_notpublished(array $cat_ids, bool $published = false, string $ord = "orderint")
+    {
+        $subs = Submit::with('paper')->whereIn("category_id", $cat_ids)->whereHas("accept", function ($query) {
+            $query->where("judge", ">", 0);
+        })->whereHas("paper", function ($query) use ($published) {
+            $query->where("published", $published);
+        })->orderBy($ord)->get();
+        return $subs;
+    }
     public static function subs_all(int $cat_id, string $ord = "orderint")
     {
         $subs = Submit::with('paper')->where("category_id", $cat_id)->whereNot("paper_id", 0)->orderBy($ord)->get();

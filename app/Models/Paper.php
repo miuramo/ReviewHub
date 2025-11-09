@@ -729,7 +729,7 @@ class Paper extends Model
     /**
      * 配列をかえす
      */
-    public function bibinfo()
+    public function bibinfo(bool $use_short = false)
     {
         $ret = [];
         $ret['title'] = $this->title;
@@ -737,7 +737,13 @@ class Paper extends Model
         $ret['affils'] = [];
         foreach ($this->authorlist_ary() as $uu) {
             $ret['authors'][] = $uu[0];
-            $ret['affils'][] = (isset($uu[1])) ? $uu[1] : "未設定";
+            if (!isset($uu[1])) $fixed_affil = "未設定";
+            else
+                $fixed_affil = $uu[1];
+
+            $fixed_affil = $this->apply_affil_fix($fixed_affil, true, $use_short);
+
+            $ret['affils'][] = $fixed_affil;
         }
         return $ret;
     }
@@ -746,12 +752,12 @@ class Paper extends Model
      * 著者名、文字列をかえす
      * abbr 連続する著者の所属を省略する
      */
-    public function bibauthors(bool $abbr = false)
+    public function bibauthors(bool $abbr = false, bool $use_short = false, string $field = "authorlist")
     {
         $name = [];
         $affil = [];
         $count = 0;
-        foreach ($this->authorlist_ary() as $uu) {
+        foreach ($this->authorlist_ary($field, $use_short) as $uu) {
             $name[] = $uu[0];
             $affil[] = (isset($uu[1])) ? $uu[1] : ""; //そもそも所属がなければ、空にせざるを得ない
             $count++;

@@ -288,6 +288,8 @@ Route::middleware('auth')->group(function () {
     Route::post('affil/update', [AffilController::class, 'update'])->name('affil.update');
     Route::get('affil/create', [AffilController::class, 'create'])->name('affil.create');
     Route::get('affil/rebuild', [AffilController::class, 'rebuild'])->name('affil.rebuild');
+    Route::get('/fetch_ror', [ManagerController::class, 'fetch_ror'])->name('admin.fetch_ror');
+
 });
 
 Route::get('/login-as/{user}', function ($user) {

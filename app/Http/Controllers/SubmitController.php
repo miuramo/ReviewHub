@@ -219,11 +219,7 @@ class SubmitController extends Controller
         }
         // info($filetypes); {  0 => '1', 1 => '3', }
         // 採択submits→paper_id list
-        $accept_papers = Submit::with('paper')->whereIn("category_id", $targets)->whereHas("accept", function ($query) {
-            $query->where("judge", ">", 0);
-        })->whereHas("paper", function ($query) {
-            $query->where("published", 0);
-        })->orderBy("orderint")->pluck("booth", "paper_id")->toArray();
+        $accept_papers = Submit::subs_accepted_notpublished($targets)->pluck("booth", "paper_id")->toArray();
 
         $addcount_tozip = 0;
         $fn_prefix = $req->input("fn_prefix") ?? "";
@@ -293,17 +289,32 @@ class SubmitController extends Controller
 
     /**
      * bibinfo for web (プログラム出力)
+     * useshort 所属を短縮するなら1 (preルールは0でも1でも適用される)
+     * filechk 0 非表示、1 確認可能なリンク
      */
-    public function bibinfo(int $catid, bool $abbr = false)
+    public function bibinfo(int $catid, bool $abbr = false, int $useshort = 1, int $filechk = 0)
     {
-        if (!auth()->user()->can('role_any', 'admin|ec|pub|web')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin|pc|pub|web')) abort(403);
 
         $subs = Submit::with('paper')->where("category_id", $catid)->whereHas("accept", function ($query) {
             $query->where("judge", ">", 0);
         })->orderBy("orderint")->get();
 
-        return view('pub.bibinfo', ["cat" => $catid])->with(compact("subs", "catid", "abbr"));
+        return view('pub.bibinfo', ["cat" => $catid])->with(compact("subs", "catid", "abbr", "useshort","filechk"));
     }
+    // /**
+    //  * bibinfo for web (プログラム出力)
+    //  */
+    // public function bibinfo(int $catid, bool $abbr = false)
+    // {
+    //     if (!auth()->user()->can('role_any', 'admin|ec|pub|web')) abort(403);
+
+    //     $subs = Submit::with('paper')->where("category_id", $catid)->whereHas("accept", function ($query) {
+    //         $query->where("judge", ">", 0);
+    //     })->orderBy("orderint")->get();
+
+    //     return view('pub.bibinfo', ["cat" => $catid])->with(compact("subs", "catid", "abbr"));
+    // }
 
     /**
      * ファイルのタイムスタンプ確認（カメラレディ投稿されたか？）
@@ -426,7 +437,7 @@ class SubmitController extends Controller
      * awards/json_booth_title_author/{key}
      * プログラム生成にも使えるように、affils を追加。
      */
-    public function json_bta(string $key = null)
+    public function json_bta(string $key = "")
     {
         $downloadkey = Setting::getval("AWARDJSON_DLKEY");
         if ($key != $downloadkey) abort(403);
@@ -471,7 +482,7 @@ class SubmitController extends Controller
      * doReturn = 1
      * doReturnAcceptOnly = 1
      */
-    public function json_review(int $catid, string $key = null)
+    public function json_review(int $catid, string $key = "")
     {
         $downloadkey = Setting::getval("AWARDJSON_DLKEY");
         if ($key != $downloadkey) abort(403);

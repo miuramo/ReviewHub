@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\PapersExport4Hiroba;
 use App\Exports\PapersExportFromView;
 use App\Jobs\ExportHintFileJob;
+use App\Jobs\RoRJob;
 use App\Jobs\Test9w;
 use App\Mail\DisableEmail;
 use App\Mail\ForAuthor;
@@ -103,6 +104,14 @@ class ManagerController extends Controller
         // OcrJob::dispatch();
         return redirect()->route('admin.dashboard')->with('feedback.success', 'OCR Queueを実行しました。');
     }
+
+    public function fetch_ror()
+    {
+        if (!auth()->user()->can('role_any', 'ec|pub|web')) abort(403);
+        RoRJob::dispatch();
+        return redirect()->route('role.top',['role'=>'pub'])->with('feedback.success', 'RoRデータ収集を開始しました。1分ほどすると設定されます。');
+    }
+
 
     public function paperauthorhead(Request $req)
     {

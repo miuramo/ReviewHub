@@ -58,7 +58,6 @@
         <x-element.linkbutton href="{{ route('affil.index') }}" color="purple" target="_blank">
             所属修正ルールの一覧
         </x-element.linkbutton>
-
     </x-element.h1>
 
     <x-element.h1>
@@ -69,6 +68,12 @@
                 {{ $cname }}
             </x-element.linkbutton>
         @endforeach
+
+        <span class="px-4"></span>
+        ←の確認が終わった後で、
+        <x-element.linkbutton href="{{ route('admin.fetch_ror') }}" color="pink">
+            RoRデータの取得
+        </x-element.linkbutton>
 
         <span class="px-2"></span>
         <x-element.button id="toggleButton" value="出力をカスタマイズしたい場合" color='cyan' size='sm'
