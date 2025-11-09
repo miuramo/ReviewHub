@@ -132,7 +132,7 @@
     </x-element.h1>
 
 
-    <x-element.h1>採択論文・ファイルダウンロード</x-element.h1>
+    <x-element.h1>採択論文・ファイルの一括ダウンロード</x-element.h1>
 
     <div class="px-6 py-0 flex">
         <div class="px-2 py-0 flex-grow">
@@ -185,6 +185,14 @@
         </div>
     </div>
 
+    <x-element.h1>発行・出版済みにする
+        <span class="px-3"></span>
+        <x-element.linkbutton href="{{ route('pub.markaspublished') }}" color="cyan">
+            発行・出版済み論文の管理
+        </x-element.linkbutton>
+        <span class="mx-3"></span>
+        発行・出版済みにすると、一括ダウンロードに含まれなくなります。
+    </x-element.h1>
     <x-element.h1>メール送信
         <span class="px-3"></span>
         <x-element.linkbutton href="{{ route('mt.index') }}" color="pink">

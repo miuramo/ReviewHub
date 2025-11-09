@@ -221,6 +221,8 @@ class SubmitController extends Controller
         // 採択submits→paper_id list
         $accept_papers = Submit::with('paper')->whereIn("category_id", $targets)->whereHas("accept", function ($query) {
             $query->where("judge", ">", 0);
+        })->whereHas("paper", function ($query) {
+            $query->where("published", 0);
         })->orderBy("orderint")->pluck("booth", "paper_id")->toArray();
 
         $addcount_tozip = 0;
@@ -526,5 +528,37 @@ class SubmitController extends Controller
         if (!auth()->user()->can('manage_review', $sub->paper->id)) abort(403, "you are not a manager (manage_review)");
         $sub->setDecision();
         return redirect()->route('paper.manage', ['paper' => $sub->paper->id])->with('feedback.success', '査読結果を開示しました（通知は送っていません。「査読結果開示通知を送る」から、送信してください。）');
+    }
+
+    /**
+     * 発行・出版済みにする
+     */
+    public function markaspublished(Request $req)
+    {
+        if (!auth()->user()->can('role_any', 'pub|web')) abort(403);
+        // $accept_subs = Submit::with('paper')->whereHas("accept", function ($query) {
+        //     $query->where("judge", ">", 0);
+        // })->orderBy("orderint")->get();
+
+        if ($req->method() === 'POST') {
+            $allpids = $req->input("all_ids");
+            $selpids = $req->input("published_ids");
+            if ($allpids === null) $allpids = [];
+            if ($selpids === null) $selpids = [];
+            $papers = Paper::whereIn("id", $allpids)->get();
+            if ($papers->count() == 0) {
+                return redirect()->route('pub.markaspublished')->with('feedback.error', "発行・出版済みにする論文が選択されていません。");
+            }
+            $selflip = array_flip($selpids);
+            foreach ($papers as $paper) {
+                $paper->published = isset($selflip[$paper->id]) ? 1 : 0;
+                $paper->save();
+            }
+            $count = count($selflip);
+            return redirect()->route('pub.markaspublished')->with('feedback.success', "{$count} 件の論文を発行・出版済みにしました。");
+        } else {
+            $subs = Submit::subs_accepted(1);
+            return view('pub.markaspublished')->with(compact("subs"))->with('header','発行・出版済み論文の管理');
+        }
     }
 }

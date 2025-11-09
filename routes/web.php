@@ -201,7 +201,9 @@ Route::middleware('auth')->group(function () {
     Route::get('pub/{cat}/fileinfochk', [SubmitController::class, 'fileinfochk'])->name('pub.fileinfochk'); // カメラレディのタイムスタンプ確認
     Route::get('paper/{paper}/bibinfochk', [SubmitController::class, 'bibinfochk_paper'])->name('pub.bibinfochk_paper'); //書誌情報の確認と修正
     Route::get('pub/{cat}/bibinfo/{abbr?}/{useshort?}/{filechk?}', [SubmitController::class, 'bibinfo'])->name('pub.bibinfo'); //書誌情報の表示 (abbrをtrueにすると同一所属を省略)
-
+    // 発行・出版済みにする
+    Route::get('pub/markaspublished', [SubmitController::class, 'markaspublished'])->name('pub.markaspublished');
+    Route::post('pub/markaspublished', [SubmitController::class, 'markaspublished'])->name('pub.markaspublished');
 
     // メール雛形
     Route::resource('mt', MailTemplateController::class);

@@ -25,33 +25,51 @@
 
 </head>
 
-<body class="font-sans antialiased" x-cloak x-data="{darkMode: $persist(false)}" :class="{'dark': darkMode === true }" >
+<body class="font-sans antialiased" x-cloak x-data="{ darkMode: $persist(false) }" :class="{ 'dark': darkMode === true }">
     @php
-        $announce = App\Models\Setting::where("name","ANNOUNCE")->where("valid",true)->first();
+        $announce = App\Models\Setting::where('name', 'ANNOUNCE')->where('valid', true)->first();
     @endphp
     @isset($announce)
-    <div class="border border-yellow-800 bg-yellow-200 px-4 py-0 text-center text-yellow-800 font-bold dark:border-yellow-800 dark:bg-yellow-500 ">
-        {!!$announce->value!!}</div>
+        <div
+            class="border border-yellow-800 bg-yellow-200 px-4 py-0 text-center text-yellow-800 font-bold dark:border-yellow-800 dark:bg-yellow-500 ">
+            {!! $announce->value !!}</div>
     @endisset
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
 
         {{-- @auth --}}
-            @include('layouts.navigation')
+        @include('layouts.navigation')
         {{-- @endauth --}}
 
         <!-- Page Heading -->
         @if (isset($header))
-            <header class="bg-white dark:bg-gray-800 shadow">
+            <x-slot name="header">
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400">
+                    {{ $header }}
+                </h2>
+            </x-slot>
+            {{-- <header class="bg-white dark:bg-gray-800 shadow">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     {{ $header }}
                 </div>
-            </header>
+            </header> --}}
         @endif
 
         <!-- Page Content -->
-        <main>
-            {{ $slot }}
-        </main>
+        @if (session('feedback.success'))
+            <x-alert.success>{{ session('feedback.success') }}</x-alert.success>
+        @endif
+        @if (session('feedback.error'))
+            <x-alert.error>{{ session('feedback.error') }}</x-alert.error>
+        @endif
+
+        <!-- Page Content -->
+        @isset($slot)
+            <main>
+                {{ $slot }}
+            </main>
+        @else
+            @yield('content')
+        @endisset
     </div>
     <!-- 最後に差し込む、個別のJS -->
     @stack('localjs')
