@@ -572,4 +572,10 @@ class SubmitController extends Controller
             return view('pub.markaspublished')->with(compact("subs"))->with('header','発行・出版済み論文の管理');
         }
     }
+    public function important_dates()
+    {
+        if (!auth()->user()->can('role_any', 'admin|ec|pub|web')) abort(403);
+        $subs = Submit::subs_accepted_notpublished([1,2,3]);
+        return view('pub.important_dates')->with(compact("subs"));
+    }
 }

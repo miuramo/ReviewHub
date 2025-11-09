@@ -289,6 +289,8 @@ Route::middleware('auth')->group(function () {
     Route::get('affil/create', [AffilController::class, 'create'])->name('affil.create');
     Route::get('affil/rebuild', [AffilController::class, 'rebuild'])->name('affil.rebuild');
     Route::get('/fetch_ror', [ManagerController::class, 'fetch_ror'])->name('admin.fetch_ror');
+    // 投稿日・採録日の確認
+    Route::get('/important_dates', [SubmitController::class, 'important_dates'])->name('pub.important_dates');
 
 });
 

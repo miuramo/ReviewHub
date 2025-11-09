@@ -190,6 +190,12 @@
         </div>
     </div>
 
+    <x-element.h1>受付日・採録日
+        <span class="px-3"></span>
+        <x-element.linkbutton href="{{ route('pub.important_dates') }}" color="teal">
+            受付日・採録日の確認
+        </x-element.linkbutton>
+    </x-element.h1>
     <x-element.h1>発行・出版済みにする
         <span class="px-3"></span>
         <x-element.linkbutton href="{{ route('pub.markaspublished') }}" color="cyan">

@@ -876,4 +876,29 @@ class Paper extends Model
         $this->save();
         return $this->ror;
     }
+
+    /**
+     * 投稿日・最終採択日
+     */
+    public function get_important_dates_display()
+    {
+        // 関連Submit をすべて取得
+        $firstsub = $this->submits()->where('round', 1)->first();
+        $lastsub = $this->submits()->orderBy('round', 'desc')->first();
+        $dates = [];
+        if ($firstsub) {
+            $dates[] = "（" . $this->format_ymd($firstsub->submitted_at) . "受付）";
+        }
+        if ($lastsub && $lastsub->ec_decision_at != null) {
+            $dates[] = "（" . $this->format_ymd($lastsub->ec_decision_at) . "採録）";
+        }
+
+
+        return implode("<br>", $dates);
+    }
+    public function format_ymd($dt)
+    {
+        if ($dt == null) return "";
+        return date("Y年 m月 d日", strtotime($dt));
+    }
 }
