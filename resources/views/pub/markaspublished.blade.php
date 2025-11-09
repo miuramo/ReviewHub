@@ -1,8 +1,24 @@
-@extends('layouts.app')
+<x-app-layout>
+    <!-- review.result -->
+    @php
+        $catspans = App\Models\Category::spans();
+        $accepts = App\Models\Accept::select('name', 'id')->get()->pluck('name', 'id')->toArray();
+        $cats = App\Models\Category::manage_cats();
+    @endphp
+        @section('title', '発行・出版済みにする')
 
-@section('content')
+    <x-slot name="header">
+        <div class="mb-4">
+            <x-element.linkbutton href="{{ route('role.top', ['role' => 'pub']) }}" color="gray" size="sm">
+                &larr; 出版 Topに戻る
+            </x-element.linkbutton>
+        </div>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400">
+            発行・出版済みにする
+        </h2>
+    </x-slot>
+
     <div class="px-6 py-4">
-        <x-element.h1>発行・出版済みにする</x-element.h1>
 
         <div class="mb-4 text-blue-600">
             発行・出版済みにした論文は、一括ダウンロードの対象から外れます。<br>
@@ -11,7 +27,6 @@
         </div>
         <form method="POST" action="{{ route('pub.markaspublished') }}" id="publishedform">
             @csrf
-
             <table>
                 <tr>
                     <th class="text-left px-2 py-1 border">論文ID</th>
@@ -64,4 +79,4 @@
             }
         }
     </script>
-@endsection
+</x-app-layout>
