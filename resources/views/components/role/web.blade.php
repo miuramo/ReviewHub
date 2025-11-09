@@ -185,8 +185,8 @@
                 </div>
                 <div class="dark:text-gray-400">
                     ファイル名は、Prefix→ <input type="text" name="fn_prefix"
-                        value="{{ env('PUB_DL_PREFIX', 'IPSJ-SSS2024') }}" class="p-1 dark:bg-slate-600"> +
-                    [ブース記番].pdf になります。ファイル名が重複するため、pdf と altpdf は同時に選択しないでください。
+                        value="{{ env('PUB_DL_PREFIX', 'JCS_') }}" class="p-1 dark:bg-slate-600"> +
+                    [巻-XX番号].pdf になります。ファイル名が重複するため、pdf と altpdf は同時に選択しないでください。
                 </div>
 
                 <x-element.submitbutton value="view" color="yellow">↑選択したカテゴリ・種別の採択ファイルをDownload

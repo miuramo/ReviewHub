@@ -64,7 +64,7 @@
 
         <x-element.h1>サンプル（ピンク色のテキストエリア内を編集して送信しても、反映されません）
             <div class="mx-2 text-right text-sm">
-                発表件数が少なく、ブース記番が連番でよい場合→
+                発表件数が少なく、巻-XX番号が連番でよい場合→
                 <x-element.linkbutton href="{{ route('pub.booth', ['cat' => $cat]) }}" color="green" size="sm">
                     GUI形式でのセッション割り当て
                 </x-element.linkbutton>
