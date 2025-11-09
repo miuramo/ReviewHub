@@ -2,8 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Models\File;
-use App\Models\Setting;
+use App\Models\Submit;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -34,7 +33,8 @@ class RoRJob implements ShouldQueue
         foreach ($subs as $sub) {
             // まだ設定されていなければ、作成する
             if (strlen($sub->paper->ror) < 10) {
-                $sub->paper->fetchRoR();
+                $out = $sub->paper->fetchRoR();
+                Log::info("RoRJob: paper_id={$sub->paper->id} fetchRoR result: \r\n" . $out);
             }
         }
     }
