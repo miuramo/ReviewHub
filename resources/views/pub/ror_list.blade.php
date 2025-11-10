@@ -1,5 +1,5 @@
 <x-app-layout>
-    @section('title', '受付日・採録日の確認')
+    @section('title', 'RORの確認')
 
     <x-slot name="header">
         <div class="mb-4">
