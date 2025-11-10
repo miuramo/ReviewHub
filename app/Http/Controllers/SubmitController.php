@@ -578,4 +578,10 @@ class SubmitController extends Controller
         $subs = Submit::subs_accepted_notpublished([1,2,3]);
         return view('pub.important_dates')->with(compact("subs"));
     }
+    public function ror_list()
+    {
+        if (!auth()->user()->can('role_any', 'admin|ec|pub|web')) abort(403);
+        $subs = Submit::subs_accepted_notpublished([1,2,3]);
+        return view('pub.ror_list')->with(compact("subs"));
+    }
 }

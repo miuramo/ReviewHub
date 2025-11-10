@@ -705,6 +705,22 @@ class Paper extends Model
         }
         return $ret;
     }
+    public function rorlist_ary()
+    {
+        $ret = [];
+        $lines = explode("\n", $this->ror);
+        $lines = array_map("trim", $lines);
+        foreach ($lines as $line) {
+            $ary = explode(" ", trim($line));
+            $ary = array_map("trim", $ary);
+            // ここまでで、ary[0]には所属、ary[1]にはRORがはいる
+            if (isset($ary[1])) {
+                $ary[1] = trim($ary[1]);
+            }
+            $ret[] = $ary;
+        }
+        return $ret;
+    }
     // 所属の修正を適用する
     public function getAllAffils($idx = 1, $prefix = "", bool $use_short = true)
     {

@@ -291,6 +291,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/fetch_ror', [ManagerController::class, 'fetch_ror'])->name('admin.fetch_ror');
     // 投稿日・採録日の確認
     Route::get('/important_dates', [SubmitController::class, 'important_dates'])->name('pub.important_dates');
+    Route::get('/ror_list', [SubmitController::class, 'ror_list'])->name('pub.ror_list');
 
 });
 

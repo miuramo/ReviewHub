@@ -195,6 +195,10 @@
         <x-element.linkbutton href="{{ route('pub.important_dates') }}" color="teal">
             受付日・採録日の確認
         </x-element.linkbutton>
+        <span class="px-3"></span>
+        <x-element.linkbutton href="{{ route('pub.ror_list') }}" color="lime">
+            RORの確認
+        </x-element.linkbutton>
     </x-element.h1>
     <x-element.h1>発行・出版済みにする
         <span class="px-3"></span>
