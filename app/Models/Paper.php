@@ -865,27 +865,31 @@ class Paper extends Model
 
     /**
      * ROR取得
+     * https://ror.org/ から所属機関のRORを取得する
      */
     public function fetchROR()
     {
-        $affils = $this->getAllAffils(1);
-        $affil_array = explode(";;", $affils);
+        $author_affil_ary = $this->authorlist_ary("authorlist", true);
         $ret = [];
-        foreach ($affil_array as $affil) {
-            $affil = trim($affil);
-            if (strlen($affil) == 0) continue;
-            $url = "https://api.ror.org/organizations?query=" . urlencode($affil);
-            try {
-                $response = file_get_contents($url);
-                $data = json_decode($response, true);
-                if (isset($data['items']) && count($data['items']) > 0) {
-                    $first_item = $data['items'][0];
-                    if (isset($first_item['id'])) {
-                        $ret[] = $affil . " " . $first_item['id'];
+        foreach ($author_affil_ary as $ary) {
+            $affil_array = explode("/", $ary[1]);
+            Log::info($affil_array);
+            foreach ($affil_array as $affil) {
+                $affil = trim($affil);
+                if (strlen($affil) == 0) continue;
+                $url = "https://api.ror.org/organizations?query=" . urlencode($affil);
+                try {
+                    $response = file_get_contents($url);
+                    $data = json_decode($response, true);
+                    if (isset($data['items']) && count($data['items']) > 0) {
+                        $first_item = $data['items'][0];
+                        if (isset($first_item['id'])) {
+                            $ret[] = $affil . " " . $first_item['id'];
+                        }
                     }
+                } catch (\Exception $e) {
+                    // エラーハンドリング
                 }
-            } catch (\Exception $e) {
-                // エラーハンドリング
             }
         }
         $this->ror = implode("\r\n", $ret);

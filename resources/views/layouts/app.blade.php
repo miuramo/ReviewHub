@@ -55,12 +55,12 @@
         @endif
 
         <!-- Page Content -->
-        @if (session('feedback.success'))
+        {{-- @if (session('feedback.success'))
             <x-alert.success>{{ session('feedback.success') }}</x-alert.success>
         @endif
         @if (session('feedback.error'))
             <x-alert.error>{{ session('feedback.error') }}</x-alert.error>
-        @endif
+        @endif --}}
 
         <!-- Page Content -->
         @isset($slot)
