@@ -196,7 +196,7 @@
             受付日・採録日の確認
         </x-element.linkbutton>
         <span class="px-3"></span>
-        <x-element.linkbutton href="{{ route('pub.ror_list') }}" color="lime">
+        <x-element.linkbutton href="{{ route('pub.ror_list') }}" color="pink">
             RORの確認
         </x-element.linkbutton>
     </x-element.h1>

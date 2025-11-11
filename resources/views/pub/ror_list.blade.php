@@ -23,18 +23,34 @@
             </tr>
             @foreach ($subs as $sub)
                 @php
-                    $authors = $sub->paper->authorlist_ary("authorlist", true);
-                    $rors = $sub->paper->rorlist_ary();
+                    $authors = $sub->paper->authorlist_ary('authorlist', true);
+                    $rors = App\Models\Ror::affil2ror();
                 @endphp
-                @foreach($authors as $n=>$author)
-                <tr>
-                    <td class="px-2 py-1 border text-center">{{ $sub->booth }}</td>
-                    <td class="px-2 py-1 border text-center">{{ $author[0] }}</td>
-                    <td class="px-2 py-1 border text-center">◯</td>
-                    <td class="px-2 py-1 border text-center">
-                        {{ $rors[$n][1] ?? '---' }}
-                    </td>
-                </tr>
+                @foreach ($authors as $n => $author)
+                    @if (strpos($author[1], '/') !== false)
+                        @php
+                            $affils = explode('/', $author[1]);
+                        @endphp
+                        @foreach ($affils as $a)
+                            <tr>
+                                <td class="px-2 py-1 border text-center">{{ $sub->booth }}</td>
+                                <td class="px-2 py-1 border text-center">{{ $author[0] }}</td>
+                                <td class="px-2 py-1 border text-center">{{ isset($rors[$a]) ? '◯' : '×' }}</td>
+                                <td class="px-2 py-1 border text-center">
+                                    {{ isset($rors[$a]) ? $rors[$a] : '---' }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    @else
+                        <tr>
+                            <td class="px-2 py-1 border text-center">{{ $sub->booth }}</td>
+                            <td class="px-2 py-1 border text-center">{{ $author[0] }}</td>
+                            <td class="px-2 py-1 border text-center">{{ isset($rors[$author[1]]) ? '◯' : '×' }}</td>
+                            <td class="px-2 py-1 border text-center">
+                                {{ isset($rors[$author[1]]) ? $rors[$author[1]] : '---' }}
+                            </td>
+                        </tr>
+                    @endif
                 @endforeach
             @endforeach
         </table>
