@@ -287,7 +287,7 @@
                     @if (@$submit_finished)
                         <div class="mx-5 my-5 bg-cyan-200 p-5">
                             @if($paper->locked)
-                                投稿は完了しています。査読中のため、投稿はロックされています。
+                                投稿は完了しています。現在、投稿はロックされています。
                             @else
                             <x-element.linkbutton href="{{ route('paper.sendsubmitted', ['paper' => $paper->id]) }}"
                                 color="cyan" confirm="本当にメール送信しますか？">

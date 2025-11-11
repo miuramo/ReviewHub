@@ -641,6 +641,17 @@ class Paper extends Model
                 return false;
             }
         }
+        // 名前部分($ary[0])に半角スペースが1つ以上含まれていること。
+        foreach ($lines as $line) {
+            $line = str_replace("(", "\t", $line);
+            $line = str_replace(")", "\t", $line);
+            $ary = explode("\t", trim($line));
+            $ary = array_map("trim", $ary);
+            if (strpos($ary[0], " ") === false) {
+                return false;
+            }
+            // 名前部分($ary[0])に半角英数字が含まれていること。
+        }
         return true;
     }
     /**
