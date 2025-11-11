@@ -37,7 +37,7 @@
                                 <td class="px-2 py-1 border text-center">{{ $author[0] }}</td>
                                 <td class="px-2 py-1 border text-center">{{ isset($rors[$a]) ? '◯' : '×' }}</td>
                                 <td class="px-2 py-1 border text-center">
-                                    {{ isset($rors[$a]) ? $rors[$a] : '---' }}
+                                    {{ isset($rors[$a]) ? $rors[$a] : $a }}
                                 </td>
                             </tr>
                         @endforeach
@@ -47,7 +47,7 @@
                             <td class="px-2 py-1 border text-center">{{ $author[0] }}</td>
                             <td class="px-2 py-1 border text-center">{{ isset($rors[$author[1]]) ? '◯' : '×' }}</td>
                             <td class="px-2 py-1 border text-center">
-                                {{ isset($rors[$author[1]]) ? $rors[$author[1]] : '---' }}
+                                {{ isset($rors[$author[1]]) ? $rors[$author[1]] : $author[1] }}
                             </td>
                         </tr>
                     @endif
