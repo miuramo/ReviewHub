@@ -648,9 +648,6 @@ class Paper extends Model
      */
     public function apply_affil_fix($affil, bool $pre_apply = true, bool $use_short = false)
     {
-        // $affil = str_replace("、", "/", $affil);
-        // $affil = str_replace(",", "/", $affil);
-        // $affil = str_replace("，", "/", $affil);
         // 事前適用ルールを取得
         if ($pre_apply) {
             $pre_rules = Affil::where('pre', true)->where('skip', false)->get();
@@ -658,12 +655,14 @@ class Paper extends Model
                 $affil = str_replace($rule->before, $rule->after, $affil);
             }
         }
-
         $afary = explode("/", $affil);
         $afary = array_map('trim', $afary);
 
         $ret = [];
         foreach ($afary as $af) {
+            // 半角スペースを削除
+            $af = str_replace(" ", "", $af);
+            // Affilテーブルを参照して、変換する
             $obj = Affil::where('before', $af)->where('skip', false)->first();
             if ($obj != null && $use_short) {
                 $ret[] = $obj->after;
@@ -699,6 +698,7 @@ class Paper extends Model
             $ary = array_map("trim", $ary);
             // ここまでで、ary[0]には氏名、ary[1]には所属がはいる
             if (isset($ary[1])) {
+                $ary[1] = str_replace(" ","", $ary[1]);
                 $ary[1] = $this->apply_affil_fix($ary[1], true, $use_short);
             }
             $ret[] = $ary;
@@ -751,7 +751,7 @@ class Paper extends Model
         $ret['title'] = $this->title;
         $ret['authors'] = [];
         $ret['affils'] = [];
-        foreach ($this->authorlist_ary() as $uu) {
+        foreach ($this->authorlist_ary("authorlist", $use_short) as $uu) {
             $ret['authors'][] = $uu[0];
             if (!isset($uu[1])) $fixed_affil = "未設定";
             else
@@ -864,38 +864,27 @@ class Paper extends Model
     }
 
     /**
-     * ROR取得
-     * https://ror.org/ から所属機関のRORを取得する
+     * RORを取得して、rorフィールドにセットする
      */
-    public function fetchROR()
+    public function fetchRor()
     {
-        $author_affil_ary = $this->authorlist_ary("authorlist", true);
-        $ret = [];
-        foreach ($author_affil_ary as $ary) {
-            $affil_array = explode("/", $ary[1]);
-            Log::info($affil_array);
-            foreach ($affil_array as $affil) {
-                $affil = trim($affil);
-                if (strlen($affil) == 0) continue;
-                $url = "https://api.ror.org/organizations?query=" . urlencode($affil);
-                try {
-                    $response = file_get_contents($url);
-                    $data = json_decode($response, true);
-                    if (isset($data['items']) && count($data['items']) > 0) {
-                        $first_item = $data['items'][0];
-                        if (isset($first_item['id'])) {
-                            $ret[] = $affil . " " . $first_item['id'];
-                        }
-                    }
-                } catch (\Exception $e) {
-                    // エラーハンドリング
+        $alist = $this->authorlist_ary("authorlist", true);
+        $ror_lines = [];
+        foreach ($alist as $af) {
+            $afary = explode("/", $af[1]);
+            foreach($afary as $a) {
+                $a = trim($a);
+                $ror_id = Ror::getRor($a);
+                if ($ror_id != null) {
+                    $ror_lines[] = $a . " " . $ror_id;
                 }
             }
         }
-        $this->ror = implode("\r\n", $ret);
+        $this->ror = implode("\n", $ror_lines);
         $this->save();
         return $this->ror;
     }
+
 
     /**
      * 投稿日・最終採択日

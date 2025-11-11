@@ -93,15 +93,12 @@ class Affil extends Model
     public static function after_kouho(string $str)
     {
         // 「大学大学院」があれば、そこまで残す
-        $pos = mb_strpos($str, '大学大学院');
-        if ($pos !== false) {
-            return mb_substr($str, 0, $pos + mb_strlen('大学大学院'));
-        }
-
-        // 「大学」があれば、そこまで残す
-        $pos = mb_strpos($str, '大学');
-        if ($pos !== false) {
-            return mb_substr($str, 0, $pos + mb_strlen('大学'));
+        $cand = ["大学大学院", "大学院大学", "大学校" , "大学"];
+        foreach($cand as $c){
+            $pos = mb_strpos($str, $c);
+            if ($pos !== false) {
+                return mb_substr($str, 0, $pos + mb_strlen($c));
+            }
         }
 
         // // 「大学大学院」が含まれる場合、「大学大学院」まで残す
@@ -125,6 +122,10 @@ class Affil extends Model
             "\(株\)" => "",
             "（株）" => "",
             "　" => "",
+            "国立研究開発法人" => "",
+            "国立大学法人" => "",
+            "公立大学法人" => "",
+            "私立大学法人" => "",
             "高等専門学校" => "高専",
             "研究所" => "研",
             "Sony" => "ソニー",

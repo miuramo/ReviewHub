@@ -32,7 +32,7 @@ class RoRJob implements ShouldQueue
         $subs = Submit::subs_accepted_notpublished($targets);
         foreach ($subs as $sub) {
             // まだ設定されていなければ、作成する
-            if (strlen($sub->paper->ror) < 10) {
+            if (strlen($sub->paper->ror) < 1000) {
                 $out = $sub->paper->fetchRoR();
                 Log::info("RoRJob: paper_id={$sub->paper->id} fetchRoR result: \r\n" . $out);
             }
