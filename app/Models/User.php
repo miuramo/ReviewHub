@@ -14,10 +14,17 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
+use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
+use Laragear\WebAuthn\WebAuthnAuthentication;
 
-class User extends Authenticatable implements MustVerifyEmail
+// composer require laragear/webauthn
+// ./artisan webauthn:install
+// ./artisan migrate
+// composer update
+
+class User extends Authenticatable implements MustVerifyEmail, WebAuthnAuthenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, WebAuthnAuthentication;
     use FindByIdOrNameTrait; // Role::findByIdOrName(id数値でも nameでもよい)
     use SoftDeletes;
 
@@ -80,7 +87,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function maxRole()
     {
         $roles = $this->roles;
-        foreach($roles as $role){
+        foreach ($roles as $role) {
             if ($role->name == "ec") return "ec";
             if ($role->name == "aec") return "aec";
             if ($role->name == "meta") return "meta";
@@ -96,7 +103,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function managed_papers()
     {
-        return $this->belongsToMany(Paper::class, 'paper_manager');//->withPivot('priority')->orderBy('id');
+        return $this->belongsToMany(Paper::class, 'paper_manager'); //->withPivot('priority')->orderBy('id');
     }
 
     public function unmanaged_papers()
