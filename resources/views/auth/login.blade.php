@@ -6,9 +6,13 @@
         @csrf
 
         <div class="text-center mb-4">
-            <x-primary-button class="ms-3" id="passkey-login">
+            <x-primary-button class="ms-3 bg-green-800" id="passkey-login">
                 {{ __('Log in with Passkey') }}
             </x-primary-button>
+            <span class="mx-2"></span>
+            <x-element.linkbutton target="_blank" href="https://scrapbox.io/reviewhub/Passkey%E3%81%AE%E5%88%A9%E7%94%A8" color="lime" size="xs">
+                {{ __('How to register passkey') }}
+            </x-element.linkbutton>
         </div>
 
         <!-- Email Address -->
