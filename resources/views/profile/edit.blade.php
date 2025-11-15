@@ -31,7 +31,7 @@
                 </h2>
 
                 <div class="max-w-xl mt-4">
-                    <x-primary-button id="passkey-register"
+                    <x-primary-button id="passkey-register" class="bg-green-700"
                         type="button">{{ __('Register Passkey') }}</x-primary-button>
                 </div>
             </div>
