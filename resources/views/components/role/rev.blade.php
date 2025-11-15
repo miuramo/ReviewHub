@@ -12,10 +12,15 @@
         ->where('require_approve', 1)
         ->where('approved', 0)
         ->get();
-    
+
     // 現在依頼済み
-    $review_requests = App\Models\Review::where('user_id', auth()->id())
+    $review_requests = App\Models\Review::with('paper')
+        ->where('user_id', auth()->id())
         ->where('status', 0)
+        ->whereHas('paper', function ($query) {
+            // if paper is null, skip
+            $query->whereNull('deleted_at');
+        })
         ->whereNotNull('request_at')
         ->get();
 
@@ -34,28 +39,35 @@
             @endforeach
         </div>
     @endif
-    @if(count($review_requests) > 0)
+    @if (count($review_requests) > 0)
         <div class="px-6 py-4">
             <x-element.h1c color="pink"><b>現在、承諾依頼中の査読があります。下のボタンから連絡してください。</b></x-element.h1>
-            @foreach ($review_requests as $revreq)
-                <div class="mx-6 border-2 px-3 py-4 pb-3 bg-white">
-                    <x-element.paperid size=1 :paper_id="$revreq->paper->id" />
-                    第{{ $revreq->submit->round }}回査読<br>
+                @foreach ($review_requests as $revreq)
+                    {{-- 安全装置： 現在はreview_requests のpaper_idは null でないはず --}}
+                    @if (!$revreq->paper)
+                        @continue
+                    @endif
+                    <div class="mx-6 border-2 px-3 py-4 pb-3 bg-white">
+                        <x-element.paperid size=1 :paper_id="$revreq->paper->id" />
+                        第{{ $revreq->submit->round }}回査読<br>
 
-                    {{ $revreq->paper->title }}<br>
+                        {{ $revreq->paper->title }}<br>
 
-                    <x-element.linkbutton href="{{ route('review.req_confirm', ['review' => $revreq, 'token' => $revreq->token_for_request()]) }}" color="pink">
-                        査読の承諾（または辞退）を連絡する
-                    </x-element.linkbutton>
+                        <x-element.linkbutton
+                            href="{{ route('review.req_confirm', ['review' => $revreq, 'token' => $revreq->token_for_request()]) }}"
+                            color="pink">
+                            査読の承諾（または辞退）を連絡する
+                        </x-element.linkbutton>
 
-                </div>
-            @endforeach
+                    </div>
+                @endforeach
         </div>
     @endif
 
     @if (count($tasks) > 0)
         <div class="px-6 py-4">
-            <x-element.h1>以下の査読について、ご対応をお願いします。<br><span class="text-pink-500 font-extrabold">（「査読報告の編集」が完了したあとに表示される「査読完了を報告する」ボタンを押してください。）</span></x-element.h1>
+            <x-element.h1>以下の査読について、ご対応をお願いします。<br><span
+                    class="text-pink-500 font-extrabold">（「査読報告の編集」が完了したあとに表示される「査読完了を報告する」ボタンを押してください。）</span></x-element.h1>
             @foreach ($tasks as $task)
                 <div class="mx-6">
                     <x-task.panel :task="$task" />
