@@ -8,6 +8,7 @@
     <x-slot name="header">
         <div class="mb-4">
             <x-element.linkbutton href="{{ route('role.top', ['role' => $roleofreview[$review->target]]) }}"
+                confirm="本当に編集を終了して担当査読一覧に戻りますか？ 保存されていない変更がある場合、それらは失われます。"
                 color="gray" size="sm">
                 &larr; 担当査読一覧に戻る
             </x-element.linkbutton>
@@ -86,6 +87,7 @@
             各項目は、編集後フォーカスを外すと、緑色にフラッシュして自動保存されます（フォーム全体の保存ボタンはありません）。<br>
             →の右に入力内容が表示されていれば、すでに保存されています。
             <x-element.linkbutton href="{{ route('role.top', ['role' => $roleofreview[$review->target]]) }}"
+                confirm="本当に編集を終了して担当査読一覧に戻りますか？ 保存されていない変更がある場合、それらは失われます。"
                 color="cyan" >
                 編集を保存・終了し、担当査読一覧に戻る
             </x-element.linkbutton> <br>
