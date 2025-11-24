@@ -147,9 +147,12 @@ class Task extends Model
             $this->sendApproveMail(1, 0);
         }
     }
-    public function logappend($comment, $subject_id, $object_id, $approved)
+    public function logappend($comment, $subject_id=null, $object_id=null, $approved=null)
     {
         $localLog = $this->log ?? [];
+        $subject_id = $subject_id ?? $this->subject_id;
+        $object_id = $object_id ?? $this->object_id;
+        $approved = $approved ?? $this->approved; 
         $now = (new DateTime())->format('Y-m-d H:i:s');
         $newMes = ['workflow_id' => $this->workflow->id, 'subject_id' => $subject_id, 'object_id' => $object_id, 'comment' => $comment, 'approved' => $approved, 'datetime' => $now];
         $localLog[] = $newMes;

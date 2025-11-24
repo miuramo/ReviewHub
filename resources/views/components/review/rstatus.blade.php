@@ -50,7 +50,7 @@
                                     ->first();
                             @endphp
                             @isset($task)
-                                予定締切：{{ $task->due_date }}
+                                <livewire:task-duedate :task="$task" />
                             @endisset
                         </td>
                     @else
