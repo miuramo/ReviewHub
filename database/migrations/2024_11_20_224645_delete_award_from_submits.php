@@ -12,10 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('submits', function (Blueprint $table) {
-            $table->dropColumn('award');
-            $table->dropColumn('psession_id');
-            $table->dropColumn('booth');
-            $table->integer('aec_id')->nullable()->after('round'); 
+            if (Schema::hasColumn('submits', 'award')) {
+                $table->dropColumn('award');
+            }
+            if (Schema::hasColumn('submits', 'psession_id')) {
+                $table->dropColumn('psession_id');
+            }
+            if (Schema::hasColumn('submits', 'booth')) {
+                $table->dropColumn('booth');
+            }
+            if (!Schema::hasColumn('submits', 'aec_id')) {
+                $table->integer('aec_id')->nullable()->after('round');
+            }
             //
         });
     }
@@ -26,10 +34,18 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('submits', function (Blueprint $table) {
-            $table->integer('award')->nullable();
-            $table->integer('psession_id')->nullable();
-            $table->string('booth')->nullable();
-            $table->dropColumn('aec_id');
+            if (!Schema::hasColumn('submits', 'award')) {
+                $table->integer('award')->nullable();
+            }
+            if (!Schema::hasColumn('submits', 'psession_id')) {
+                $table->integer('psession_id')->nullable();
+            }
+            if (!Schema::hasColumn('submits', 'booth')) {
+                $table->string('booth')->nullable();
+            }
+            if (Schema::hasColumn('submits', 'aec_id')) {
+                $table->dropColumn('aec_id');
+            }
             //
         });
     }
