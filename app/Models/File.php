@@ -260,7 +260,10 @@ class File extends Model
     {
         if ($this->pagenum < 2) return;
         // Log::info("[File@extractTitle] File id: {$this->id} pagenum {$this->pagenum} start title extracts");
-        Paper::find($this->paper_id)->extractTitleAndAuthors($text);
+        // $paper = Paper::find($this->paper_id);
+        // if (!$paper) $paper->extractTitleAndAuthors($text);
+        // ReviewHubでは、extractTitleAndAuthorsは不要。Paper情報に自動で反映はさせず、著者が手動で設定する。
+        return;
     }
     /**
      * 標準出力を取り出して、返却値とする
