@@ -70,6 +70,12 @@
                             <td>
                                 <input type="checkbox" class="chkbox" name="did[]" form="chkdelete"
                                     value="{{ $d->id }}">
+                                {{-- <x-element.linkbutton2
+                                    href="{{ route('admin.crudcopy', ['table' => $tableName, 'row' => $d->id]) }}"
+                                    confirm="本当にこの行をコピーしますか？"
+                                    color="lime" size="xs">
+                                    cp
+                                </x-element.linkbutton2> --}}
                             </td>
                             @foreach ($coldetails as $nam => $typ)
                                 @if ($typ == 'tinyint')
@@ -90,9 +96,6 @@
                                         @endif
                                 @endif
                             @endforeach
-                            {{-- <td>
-                                <a href="{{ route('admin.crud') }}?table={{ $table->name }}"> {{ $table->name }}</a>
-                            </td> --}}
                         </tr>
                     @endforeach
                 </tbody>
@@ -110,7 +113,13 @@
                     @csrf
                     @method('post')
                     <input type="hidden" name="table" value="{{ $tableName }}">
-                    <x-element.submitbutton type="submit" color="purple" size="sm" confirm="本当にまとめて削除する？">
+                    <x-element.submitbutton type="submit" value="bcopy" color="lime" size="sm"
+                        confirm="本当にまとめてコピーする？">
+                        選択した行をコピー
+                    </x-element.submitbutton>
+                    <span class="mx-4"></span>
+                    <x-element.submitbutton type="submit" value="bdelete" color="purple" size="sm"
+                        confirm="本当にまとめて削除する？">
                         選択した行を削除
                     </x-element.submitbutton>
                 </form>

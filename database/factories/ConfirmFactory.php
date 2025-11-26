@@ -17,6 +17,9 @@ class ConfirmFactory extends Factory
     public function definition(): array
     {
         return [
+            'mes' => $this->faker->text(),
+            'grp' => 999,
+            'valid' => 0,
             //
         ];
     }

@@ -156,25 +156,26 @@ class AdminController extends Controller
             if (!auth()->user()->can('manage_cat', $cat_id)) abort(403);
         }
         $all = Paper::withTrashed()->where("category_id", $cat_id)->orderBy('deleted_at', 'asc')->orderBy('id')->get();
-        if ($req->has("action") ) {
+        if ($req->has("action")) {
             foreach ($req->input("pid") as $n => $pid) {
                 $paper = Paper::withTrashed()->find($pid);
                 if ($paper != null) {
-                    if ($req->input("action") == "revoke"){
+                    if ($req->input("action") == "revoke") {
                         $paper->deleted_at = null;
                         $paper->save();
                         $mes = "復活";
-                    } else if ($req->input("action") == "delete"){
+                    } else if ($req->input("action") == "delete") {
                         $paper->softdelete_me();
                         $mes = "論理削除";
                     }
                 }
             }
-            return redirect()->route('admin.deletepaper', ['cat' => $cat_id])->with('feedback.success', '投稿を'.$mes.'しました');
+            return redirect()->route('admin.deletepaper', ['cat' => $cat_id])->with('feedback.success', '投稿を' . $mes . 'しました');
         }
         return view('admin.deletepaper')->with(compact("all", "cat_id"));
     }
-    public function timestamp(int $cat_id){
+    public function timestamp(int $cat_id)
+    {
         if (!auth()->user()->can('role_any', 'ec')) {
             if (!auth()->user()->can('manage_cat', $cat_id)) abort(403);
         }
@@ -479,6 +480,8 @@ class AdminController extends Controller
         }
         return redirect()->route('admin.crud', ['table' => $tableName]);
     }
+
+    /** チェックした行を削除またはコピー */
     public function crudchkdelete(Request $req)
     {
         if (!auth()->user()->can('role_any', 'admin|manager|ec')) abort(403);
@@ -486,7 +489,21 @@ class AdminController extends Controller
         $eloModelName = 'App\\Models\\' . Str::studly(Str::singular($tableName)); //　studly でUpperCamelCaseにする
         if (class_exists($eloModelName)) {
             $dids = $req->input('did');
-            $eloModelName::whereIn('id', $dids)->forceDelete();
+            if (!$dids || count($dids) == 0) {
+                return redirect()->route('admin.crud', ['table' => $tableName])->with('feedback.error', '削除またはコピーする行を選択してください。');
+            }
+            if ($req->input('action') == 'bdelete') {
+                $eloModelName::whereIn('id', $dids)->forceDelete();
+            }
+            if ($req->input('action') == 'bcopy') {
+                foreach ($dids as $did) {
+                    $datum = $eloModelName::find($did);
+                    if (isset($datum)) {
+                        $newdatum = $datum->replicate(); // copy data
+                        $newdatum->save();
+                    }
+                }
+            }
         } else {
             info("crudchkdelete: {$eloModelName} is not found.");
         }
@@ -555,7 +572,7 @@ class AdminController extends Controller
         $tableComments = $this->get_table_comments($db_name, $tableName);
         $data = DB::table($tableName)->orderBy('id')->limit(100)->get()->toArray();
         $numdata = DB::table($tableName)->count();
-        return view('admin.crudtable2')->with(compact("tableName", "coldetails", "data", "whereBy", "numdata", "tableComments", "title","note"));
+        return view('admin.crudtable2')->with(compact("tableName", "coldetails", "data", "whereBy", "numdata", "tableComments", "title", "note"));
     }
 
     /**
@@ -671,7 +688,7 @@ class AdminController extends Controller
         $users = User::all();
         foreach ($users as $user) {
             $ary = explode("　", $user->name);
-            if (count($ary)==2) {
+            if (count($ary) == 2) {
                 $user->name = str_replace("　", " ", $user->name);
                 $user->save();
             }
