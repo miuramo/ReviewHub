@@ -21,7 +21,7 @@ class ReviewRequest extends RetryMailable
     public Paper $paper;
     public User $reviewer;
     public Review $rev;
-    
+
     /**
      * Create a new message instance.
      */
@@ -32,38 +32,50 @@ class ReviewRequest extends RetryMailable
         $this->rev = $_rev;
         $this->mail_to_cc['to'][] = $this->reviewer->email;
         // 編集長をCCに追加
-        $ec_users = $this->paper->managers; 
+        $ec_users = $this->paper->managers;
         // 以下をつかうと、利害のある編集長にもメールが飛んでしまう
         // $ec_role = \App\Models\Role::findByIdOrName('ec');
         // $ec_users = $ec_role->users;
-        foreach($ec_users as $u){
+        foreach ($ec_users as $u) {
             $this->mail_to_cc['cc'][] = $u->email;
         }
+        $organization = env('MAIL_ORGANIZATION', '日本創造学会 論文編集委員会'); // 環境変数から組織名を取得
+        $conftitle = \App\Models\Setting::getval('CONFTITLE');
         // 1回目？2回目
         $revobj = \App\Models\Review::find($this->rev->id);
         $submit = \App\Models\Submit::find($revobj->submit_id);
-        if ($submit->round > 1){
+        if ($submit->round > 1) {
             $round = "（{$submit->round}回目）";
+            $this->subject = "改訂稿が投稿されましたので、再査読{$round}をお願いしたいです (ID : " . $this->paper->id_03d() . ')';
+            $this->content = new Content(
+                markdown: 'emails.reviewrequest2nd',
+                with: [
+                    'title' => $this->paper->title,
+                    'paperid' => $this->paper->id_03d(),
+                    'conftitle' => $conftitle,
+                    'organization' => $organization,
+                    'reviewer' => $this->reviewer,
+                    'replyurl' => $url = route('review.req_confirm', ['review' => $this->rev, 'token' => $this->rev->token_for_request()]),
+                    'round' => $round,
+                ],
+            );
         } else {
-            $round = ''; 
-        }
-        $organization = env('MAIL_ORGANIZATION', '日本創造学会 論文編集委員会'); // 環境変数から組織名を取得
-        $this->subject = "【{$organization}より】" . $this->reviewer->name."さまに査読{$round}をお願いしたいです (ID : ".$this->paper->id_03d().')';
-        
-        $conftitle = \App\Models\Setting::getval('CONFTITLE');
+            $round = '';
+            $this->subject = "【{$organization}より】" . $this->reviewer->name . "さまに査読{$round}をお願いしたいです (ID : " . $this->paper->id_03d() . ')';
 
-        $this->content = new Content(
-            markdown: 'emails.reviewrequest',
-            with: [
-                'title' => $this->paper->title,
-                'paperid' => $this->paper->id_03d(),
-                'conftitle' => $conftitle,
-                'organization' => $organization,
-                'reviewer' => $this->reviewer,
-                'replyurl' => $url = route('review.req_confirm', ['review'=>$this->rev, 'token'=>$this->rev->token_for_request()]),
-                'round' => $round,
-            ],
-        );    
+            $this->content = new Content(
+                markdown: 'emails.reviewrequest',
+                with: [
+                    'title' => $this->paper->title,
+                    'paperid' => $this->paper->id_03d(),
+                    'conftitle' => $conftitle,
+                    'organization' => $organization,
+                    'reviewer' => $this->reviewer,
+                    'replyurl' => $url = route('review.req_confirm', ['review' => $this->rev, 'token' => $this->rev->token_for_request()]),
+                    'round' => $round,
+                ],
+            );
+        }
     }
 
     /**
