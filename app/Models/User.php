@@ -249,4 +249,20 @@ class User extends Authenticatable implements MustVerifyEmail, WebAuthnAuthentic
             }
         }
     }
+
+    /**
+     * 氏名が全角スペース区切りだったり、半角スペース複数区切りだったりするのを修正
+     */
+    public static function fix_username_space_all()
+    {
+        $uary = User::all();
+        foreach ($uary as $u) {
+            $name = preg_replace('/\s+/', ' ', trim($u->name));
+            $name = preg_replace('/　+/', ' ', trim($name));
+            if ($name != $u->name) {
+                $u->name = $name;
+                $u->save();
+            }
+        }
+    }
 }

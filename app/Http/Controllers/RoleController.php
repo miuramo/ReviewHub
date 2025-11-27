@@ -39,9 +39,6 @@ class RoleController extends Controller
             }
         }
 
-        // Userが存在しないContactを参照していたら、直す
-        User::fix_broken_contact_all();
-
         // $role = Role::where("name",$name)->first();
         $role = Role::findByIdOrName($name);
         return view('role/top', ["role" => 1])->with(["name" => $name, "role" => $role]);
