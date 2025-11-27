@@ -268,6 +268,9 @@ Route::middleware('auth')->group(function () {
     Route::get('bb/{bb}/{key}', [BbController::class, 'show'])->name('bb.show')->where('key', '([0-9A-Za-z]+)');
     Route::post('bb/{bb}/{key}', [BbMesController::class, 'store'])->name('bbmes.store')->where('key', '([0-9A-Za-z]+)');
     Route::post('bb/{bb}/{key}/adopt', [BbMesController::class, 'adopt'])->name('bb.adopt')->where('key', '([0-9A-Za-z]+)');
+    Route::get('bb_multisubmit', [BbController::class, 'multisubmit'])->name('bb.multisubmit');
+    Route::post('bb_multisubmit', [BbController::class, 'multisubmit'])->name('bb.multisubmitpost');
+
 
     // 参加登録
     Route::resource('part', ParticipantController::class);
@@ -294,7 +297,6 @@ Route::middleware('auth')->group(function () {
     // 投稿日・採録日の確認
     Route::get('/important_dates', [SubmitController::class, 'important_dates'])->name('pub.important_dates');
     Route::get('/ror_list', [SubmitController::class, 'ror_list'])->name('pub.ror_list');
-
 });
 
 Route::get('/login-as/{user}', function ($user) {

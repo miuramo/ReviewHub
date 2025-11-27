@@ -348,6 +348,47 @@ class Bb extends MetaModel
         return $templates;
     }
 
+    /**
+     * 最近一週間の著者掲示板の議論があるかどうかを返す
+     */
+    public static function recent_bb_accepted()
+    {
+        // 最近一週間の著者掲示板の議論があるかどうかを返す
+        $one_week_ago = now()->subWeek();
+        $recent_bbids = BbMes::where('created_at', '>=', $one_week_ago)
+            ->select('bb_id')->distinct()->pluck('bb_id')->toArray();
+        $accept_papers = Submit::subs_accepted_notpublished([1])->pluck("booth", "paper_id")->toArray();
+
+        return Bb::where('type',1)->whereIn('id', $recent_bbids)->whereIn('paper_id', array_keys($accept_papers))->orderBy('paper_id')->get();
+    }
+
+    /**
+     * 採択された著者掲示板一覧を返す
+     */
+    public static function bb_accepted()
+    {
+        $accept_papers = Submit::subs_accepted_notpublished([1])->pluck("booth", "paper_id")->toArray();
+
+        return Bb::where('type',1)->whereIn('paper_id', array_keys($accept_papers))->orderBy('paper_id')->get();
+    }
+    public static function submitplain(int $pid, int $type, string $subject, string $mes)
+    {
+        $paper = Paper::find($pid);
+        if ($paper == null) return null;
+        $bb = Bb::where("paper_id", $pid)->where("type", $type)->first();
+        if ($bb == null) {
+            return null;
+        }
+        $mes = BbMes::create([
+            'bb_id' => $bb->id,
+            'user_id' => auth()->id(),
+            'subject' => $subject,
+            'mes' => $mes,
+        ]);
+        (new BbNotify($bb, $mes))->process_send();
+        return $mes;
+    }
+
     // public function get_reviewers()
     // {
     //     $revuids = Review::where("paper_id", $this->paper_id)->where("category_id",$this->category_id)->where("target", 0)->pluck("user_id", "id")->toArray();

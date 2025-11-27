@@ -10,6 +10,7 @@ use App\Models\MailTemplate;
 use App\Models\Paper;
 use App\Models\RevConflict;
 use App\Models\Review;
+use App\Models\Submit;
 use Illuminate\Http\Request;
 
 class BbController extends Controller
@@ -44,7 +45,7 @@ class BbController extends Controller
      */
     public function create(string $serial)
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ec|rev|meta')) abort(403,'権限がありません');
+        if (!auth()->user()->can('role_any', 'admin|manager|ec|rev|meta')) abort(403, '権限がありません');
         $bb = Bb::gen_from_serial($serial);
         return redirect()->route('bb.show', ['bb' => $bb->id, 'key' => $bb->key]);
     }
@@ -122,7 +123,8 @@ class BbController extends Controller
     /**
      * 種別ごとに削除
      */
-    public function destroy_bytype(Request $req){
+    public function destroy_bytype(Request $req)
+    {
         if (!auth()->user()->can('role_any', 'admin|manager|ec|pub')) abort(403);
         $type = $req->input("type");
         if (!auth()->user()->can('role_any', 'admin|manager|ec')) {
@@ -132,9 +134,74 @@ class BbController extends Controller
         BbMes::whereIn("bb_id", $target_bbids)->delete();
         Bb::where("type", $type)->delete();
         $for_pub = $req->input("for_pub");
-        if ($for_pub){
+        if ($for_pub) {
             return redirect()->route('bb.index_for_pub')->with('feedback.success', "出版掲示板をすべて削除しました。");
         }
         return redirect()->route('bb.index')->with('feedback.success', "削除しました。");
+    }
+
+    /**
+     * 一括送信フォーム表示・処理
+     */
+    public function multisubmit(Request $req, int $type = 1)
+    {
+        if (!auth()->user()->can('role_any', 'admin|manager|pc|pub')) abort(403);
+        $preface = "論文編集委員会より、お知らせします。\r\n日本創造学会論文誌 第29巻が発行されました！";
+        $subject = "論文誌が発行されました";
+
+        $accept_papers = Submit::subs_accepted_notpublished([1])->pluck("booth", "paper_id")->toArray();
+
+        $csv = "";
+        foreach ($accept_papers as $paper_id => $booth) {
+            $csv .= '"=======' . "\r\n" . sprintf("%03d", $paper_id) . "\r\n";
+            $csv .= "=======" . "'" . "\r\n";
+        }
+        if ($req->has('action')) {
+            $lines = explode("\r\n", $req->csv);
+            $out = "";
+            $buf = "";
+            $subject = "";
+            $pid = 0;
+            $count = 0;
+            $bufary = [];
+            foreach ($lines as $n => $l) {
+                $line = $l; // trim($l);
+                if (preg_match("/={6,30}/", $line)) {
+                    if ($pid == 0) {
+                        continue;
+                    }
+                    $bufary[] = [
+                        "PID" => $pid,
+                        "subject" => trim($req->subject),
+                        "body" => $req->preface . "\n" . $buf
+                    ];
+                    $buf = $subject = "";
+                    $pid = 0;
+                } elseif (preg_match("/^[0-9０-９]+$/", $line)) {
+                    $pid = intval(mb_convert_kana($line, 'n', 'UTF-8'));
+                    $count = 0;
+                } else {
+                    $buf .= $line . "\r\n";
+                }
+                $count++;
+            }
+            if ($req->input('action') == "submit") {
+                foreach ($bufary as $n => $ba) {
+                    Bb::submitplain(
+                        $ba['PID'],
+                        $type,
+                        $ba['subject'],
+                        $ba['body']
+                    );
+                }
+                return redirect()->route('bb.multisubmit', ['type' => $type])->with('feedback.success', "一括送信しました。")->with(compact("out", "bufary", "preface", "subject", "csv"));
+            } else {
+                $preface = $req->preface;
+                $subject = $req->subject;
+                $csv = $req->csv;
+                return view('bb.multisubmit', ['type' => $type])->with(compact("out", "bufary", "preface", "subject", "csv"));
+            }
+        }
+        return view('bb.multisubmit', ['type' => $type])->with(compact("type", "preface", "subject", "csv"));
     }
 }
