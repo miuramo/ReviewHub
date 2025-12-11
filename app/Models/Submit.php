@@ -223,6 +223,8 @@ class Submit extends MetaModel
             $this->accept_id = 1; //採録
         } elseif (strpos($result, "不") === 0) {
             $this->accept_id = 6; //不採録
+        } elseif (strpos($result, "取り下げ") === 0) {
+            $this->accept_id = 7; //取り下げ（勝手に増やさない。不採録+1にしている理由は、statusの11不採録,12取り下げに合わせるため）
         }
         $this->save();
     }

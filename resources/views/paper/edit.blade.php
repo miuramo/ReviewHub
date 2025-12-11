@@ -20,8 +20,8 @@
             <span class="mx-1"></span>
 
             <span class="text-lg font-bold text-gray-800 dark:text-slate-400">
-                @if( $paper->currentsubmit->round > 1)
-                （{{ $paper->currentsubmit->round}}回目）
+                @if ($paper->currentsubmit->round > 1)
+                    （{{ $paper->currentsubmit->round }}回目）
                 @endif
                 {{ $paper->currentstatus->name }}
             </span>
@@ -77,8 +77,9 @@
         @endif
 
         {{-- 最後の条件submitted_at==null をいれたのは、2回目査読で採択したときに、再投稿方法を非表示にするため。 --}}
-        @if( $paper->currentsubmit->round > 1 && !$paper->locked && $paper->currentsubmit->submitted_at == null)
-            <div class="mx-6 px-4 my-2 p-2 bg-cyan-100 hover:bg-lime-100 text-md text-gray-500 font-bold hover:text-gray-800">
+        @if ($paper->currentsubmit->round > 1 && !$paper->locked && $paper->currentsubmit->submitted_at == null)
+            <div
+                class="mx-6 px-4 my-2 p-2 bg-cyan-100 hover:bg-lime-100 text-md text-gray-500 font-bold hover:text-gray-800">
                 再投稿の方法：論文PDF と、回答書PDF をアップロードしてください。<br>
                 （必要があれば和文題名、英文題名、連絡先等も変更してください。）<br><br>
                 なお、回答書 のフォーマット、ページ数は自由です。（とくに指定の形式はありません）。<br>
@@ -86,8 +87,9 @@
             </div>
         @endif
 
-        @if( $paper->status_id >= 10)
-            <div class="mx-6 px-4 my-2 p-2 bg-cyan-100 hover:bg-cyan-200 text-md text-gray-500 font-bold hover:text-gray-800">
+        @if ($paper->status_id == 10)
+            <div
+                class="mx-6 px-4 my-2 p-2 bg-cyan-100 hover:bg-cyan-200 text-md text-gray-500 font-bold hover:text-gray-800">
                 採録おめでとうございます。<br>
                 コメントを反映した最終稿PDFファイルと、その編集可能ファイル（Word.docx等）をアップロードしていただきますので、ご準備ください。<br>
                 提出期限につきましては、事務局からの連絡をお待ちください。<br>
@@ -95,9 +97,17 @@
         @endif
 
         {{-- ファイルエラーは、投稿フェーズに関係なく、表示して大丈夫 --}}
-        @foreach ($fileerrors as $er)
-            <x-alert.error>{{ $er }}</x-alert.error>
-        @endforeach
+        @if ($paper->status_id < 11)
+            @foreach ($fileerrors as $er)
+                <x-alert.error>{{ $er }}</x-alert.error>
+            @endforeach
+        @else
+            {{-- 不採択11・取り下げ12 後は、ファイルエラーは表示しない --}}
+            <div class="mx-6 px-4 my-2 p-2 bg-yellow-100 text-yellow-800 font-bold">ご投稿ありがとうございました。<br>
+                現在、この投稿は不採択または取り下げとなっているため、ファイルの修正・追加はできません。
+                <br>新規投稿をご希望の場合は、新たに投稿を作成してください。
+            </div>
+        @endif
         {{-- アンケートエラーは、査読中は表示しない。査読中とは、revedit_on が true かつ、revreturn が false のとき。 --}}
 
         @if (count($fileerrors) == 0)
@@ -286,13 +296,14 @@
                 <div class="text-lg my-5 p-1 bg-slate-200 rounded-lg dark:bg-slate-800 dark:text-slate-400">
                     @if (@$submit_finished)
                         <div class="mx-5 my-5 bg-cyan-200 p-5">
-                            @if($paper->locked)
+                            @if ($paper->locked)
                                 投稿は完了しています。現在、投稿はロックされています。
                             @else
-                            <x-element.linkbutton href="{{ route('paper.sendsubmitted', ['paper' => $paper->id]) }}"
-                                color="cyan" confirm="本当にメール送信しますか？">
-                                投稿完了通知メールを送信
-                            </x-element.linkbutton> を押すと、投稿完了となります。（編集委員にも通知されます。）
+                                <x-element.linkbutton
+                                    href="{{ route('paper.sendsubmitted', ['paper' => $paper->id]) }}" color="cyan"
+                                    confirm="本当にメール送信しますか？">
+                                    投稿完了通知メールを送信
+                                </x-element.linkbutton> を押すと、投稿完了となります。（編集委員にも通知されます。）
                             @endif
                         </div>
                     @else
@@ -303,9 +314,12 @@
                                 <x-alert.warning>投稿いただき、ありがとうございました。</x-alert.warning>
                             @endif
                         @else
-                            <div class="mx-5 my-5 bg-red-600 p-5 text-white font-bold text-2xl">
-                                投稿はまだ完了していません。画面上部の指示に従ってください。
-                            </div>
+                            {{-- 不採択・取り下げ以外のとき、案内をだす --}}
+                            @if ($paper->status_id < 11)
+                                <div class="mx-5 my-5 bg-red-600 p-5 text-white font-bold text-2xl">
+                                    投稿はまだ完了していません。画面上部の指示に従ってください。
+                                </div>
+                            @endif
                         @endif
                     @endif
 

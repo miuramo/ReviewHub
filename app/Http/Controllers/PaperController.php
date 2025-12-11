@@ -396,6 +396,10 @@ class PaperController extends Controller
             ])->init_reviews();
 
             return redirect()->route('paper.edit', ['paper' => $sub->paper])->with('feedback.success', '査読結果の確認ありがとうございました。再投稿は指定期日までに論文PDFと回答書PDFをアップロードしてください。（回答書PDFのフォーマット指定はありません）');
+        } else if ($sub->accept_id >= 6) { // 不採録や取り下げの場合 // Submit.updateCurrentDecisionに書いてある。採録なら1、条件付きなら2,不採録なら6,取り下げなら7
+            // reject の場合、Paperを無効にする
+            $sub->paper->status_id = $sub->accept_id + 5; // statusの11不採録,12取り下げに合わせる
+            $sub->paper->save();
         }
 
         // $accepts = Accept::select('name', 'id')->get()->pluck('name', 'id')->toArray();
