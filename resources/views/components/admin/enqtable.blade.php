@@ -40,7 +40,7 @@
 
     <tbody class="bg-white divide-y divide-gray-200 dark:text-white">
         @foreach ($papers as $paper)
-            @if($paper->submits[0]->accept_id != 1) @continue @endif
+            {{-- @if($paper->status_id != 10) @continue @endif --}}
             <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-700' : 'bg-white dark:bg-slate-600' }}">
                 <td class="p-1">{{ $paper->category_id }}
                 </td>
