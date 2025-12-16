@@ -575,7 +575,8 @@ class SubmitController extends Controller
     public function important_dates()
     {
         if (!auth()->user()->can('role_any', 'admin|ec|pub|web')) abort(403);
-        $subs = Submit::subs_accepted_notpublished([1,2,3]);
+        $subs = Submit::subs_accepted(1);
+        // $subs = Submit::subs_accepted_notpublished([1,2,3]);
         return view('pub.important_dates')->with(compact("subs"));
     }
     public function ror_list()

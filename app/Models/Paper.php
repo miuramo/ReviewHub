@@ -912,10 +912,22 @@ class Paper extends Model
         if ($lastsub && $lastsub->ec_decision_at != null) {
             $dates[] = "（" . $this->format_ymd($lastsub->ec_decision_at) . "採録）";
         }
-
-
         return implode("<br>", $dates);
     }
+    public function get_review_duration_display()
+    {
+        // 関連Submit をすべて取得
+        $firstsub = $this->submits()->where('round', 1)->first();
+        $lastsub = $this->submits()->orderBy('round', 'desc')->first();
+        if ($firstsub == null || $lastsub == null) return "";
+        if ($firstsub->submitted_at == null || $lastsub->ec_decision_at == null) return "";
+        $diff = Carbon::parse($firstsub->submitted_at)->diffInDays(Carbon::parse($lastsub->ec_decision_at));
+        // 小数なので、切り上げる
+        $diff = ceil($diff);
+        return $diff;
+    }
+
+
     public function format_ymd($dt)
     {
         if ($dt == null) return "";

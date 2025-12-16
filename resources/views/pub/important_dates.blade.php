@@ -20,6 +20,7 @@
                     <th class="text-left px-2 py-1 border">タイトル</th>
                     <th class="text-left px-2 py-1 border">Vol-XX</th>
                     <th class="px-2 py-1 border text-center">受付日・採録日</th>
+                    <th class="px-2 py-1 border text-center">査読日数</th>
                 </tr>
                 @foreach ($subs as $sub)
                     <tr>
@@ -28,6 +29,9 @@
                         <td class="px-2 py-1 border text-center">{{ $sub->booth }}</td>
                         <td class="px-2 py-1 border text-center">
                             {!! $sub->paper->get_important_dates_display() !!}
+                        </td>
+                        <td class="px-2 py-1 border text-center">
+                            {{ $sub->paper->get_review_duration_display() }}
                         </td>
                     </tr>
                 @endforeach
