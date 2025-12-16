@@ -91,7 +91,7 @@ Route::middleware('auth')->group(function () {
 
     //アンケート回答
     Route::resource('enq', EnqueteController::class); // ここはenq.index, enq.store 等。
-    Route::get('/enq/{enq}/answers', [EnqueteController::class, 'answers'])->name('enq.answers');
+    Route::get('/enq/{enq}/answers/{all?}', [EnqueteController::class, 'answers'])->name('enq.answers');
     Route::get('/enq_enqitmsetting', [EnqueteController::class, 'enqitmsetting'])->name('enq.enqitmsetting');
     Route::get('/enq_maptoroles', [EnqueteController::class, 'map_to_roles'])->name('enq.maptoroles');
     Route::post('/enq_maptoroles', [EnqueteController::class, 'map_to_roles'])->name('enq.maptoroles');

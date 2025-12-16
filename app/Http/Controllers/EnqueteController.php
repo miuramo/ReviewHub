@@ -35,7 +35,7 @@ class EnqueteController extends Controller
     /**
      * アンケート結果の表示またはダウンロード
      */
-    public function answers(int $enq_id, Request $req)
+    public function answers(int $enq_id, Request $req, int $all = 0)
     {
         $aEnq = Enquete::accessibleEnquetes(true);
         if (!isset($aEnq[$enq_id])) abort(403);
@@ -44,8 +44,14 @@ class EnqueteController extends Controller
         $enq = Enquete::find($enq_id);
         $enqans = EnqueteAnswer::where('enquete_id', $enq_id)->orderBy('paper_id')->get();
 
-        // eans にふくまれる paper_id について、Paperをもってくる status_id =10 採択のみ
-        $papers = Paper::with('paperowner')->with('submits')->where('status_id', 10)->orderByDesc('id')->get();
+        if ($all) {
+            // 全回答をもってくる
+            $papers = Paper::with('paperowner')->with('submits')->orderBy('id')->get();
+        } else {
+            // 採択論文の回答のみ
+            // eans にふくまれる paper_id について、Paperをもってくる status_id =10 採択のみ
+            $papers = Paper::with('paperowner')->with('submits')->where('status_id', 10)->orderByDesc('id')->get();
+        }
 
         if ($req->has("action") && $req->input("action") == "excel") {
             return Excel::download(new EnqExportFromView($enq), "enqans_{$enq->name}.xlsx");
