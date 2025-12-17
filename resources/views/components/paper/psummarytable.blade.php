@@ -1,24 +1,17 @@
 @props([
     'all' => [],
-    'heads' => ['カテゴリ', 'id', 'status', 'title', '投稿日時', '投稿者', '査-状況'],
+    'heads' => ['id', 'status', 'title', '投稿日時', '投稿者', '査-状況'],
     'enqans' => [],
 ])
 <!-- components.paper.summarytable -->
 @php
-    // $papers = App\Models\Paper::get();
     $papers = App\Models\User::with('managed_papers')->find(auth()->id())->managed_papers;
     $papers = $papers->sortBy([
         ['status_id', 'asc'],
         ['submitted_at', 'desc'],
-        // ['id', 'desc'],
     ]);
 
     $unmanaged = auth()->user()->unmanaged_papers();
-    //     function ($paper) {
-    // $papers = $papers->sortBy(function ($paper) {
-    //     return ($paper->status_id ?? null);
-    //     // return $paper->currentsubmit->submitted_at ?? null;
-    // });
 
     $status_labels = [
         -1 => '<span class="text-gray-400">辞退</span>',
@@ -43,7 +36,6 @@
         @foreach ($papers as $paper)
             <tr
                 class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-400' : 'bg-white dark:bg-slate-300' }}">
-                <td class="p-1 text-center">{{ $paper->category->name }}</td>
                 <td class="p-1 text-center">
                     {{-- <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
                         class="underline text-blue-600 hover:bg-lime-200" target="_blank"> --}}
@@ -139,7 +131,7 @@
                 @foreach ($unmanaged as $paper)
                     <tr
                         class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-400' : 'bg-white dark:bg-slate-300' }}">
-                        <td class="p-1 text-center">{{ $paper->category->name }}</td>
+                        {{-- <td class="p-1 text-center">{{ $paper->category->name }}</td> --}}
                         <td class="p-1 text-center">
                             {{-- <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
                             class="underline text-blue-600 hover:bg-lime-200" target="_blank"> --}}

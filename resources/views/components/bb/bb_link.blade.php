@@ -5,6 +5,7 @@
     'rev_id' => 0,
     'label' => null,
     'size' => 'md',
+    'target' => '_blank',
 ])
 <!-- components.bb.bb_link  -->
 @php
@@ -23,6 +24,6 @@
     bb_link
 </x-element.component_name> --}}
 
-<x-element.linkbutton2 href="{{ $bburl }}" color="green" size="{{ $size }}">
+<x-element.linkbutton2 href="{{ $bburl }}" color="green" size="{{ $size }}" target="{{ $target }}">
     {{$label}} 
 </x-element.linkbutton2>

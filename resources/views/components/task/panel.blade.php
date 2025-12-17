@@ -178,20 +178,36 @@
 
                 <span class="mx-2"></span>
 
-                <x-element.linkbutton href="{{ route('review.edit', ['review' => $rev]) }}" color="blue">
+                <x-element.linkbutton href="{{ route('review.edit', ['review' => $rev]) }}" color="blue" size="lg">
                     {{ $types[$rev->target] }}の編集
                 </x-element.linkbutton>
                 <span class="mx-2"></span>
-                <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green">
+                <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green" size="sm"
+                    target="_blank">
                     {{ $types[$rev->target] }}の参照
                 </x-element.linkbutton>
                 <span class="mx-2"></span>
-                <x-bb.bb_link :submit="$rev->submit" type="2" :rev_id="$rev->id" size="md"
+                <x-bb.bb_link :submit="$rev->submit" type="2" :rev_id="$rev->id" size="sm"
                     label="投稿管理者に連絡する"></x-bb.bb_link>
                 {{-- @endif --}}
                 <span class="mx-2"></span>
                 @if ($rev->target > 0)
-                    @php
+                    <span class="mx-2"></span>
+                    <x-review.commentsubmit_link :sub="$sub" color="purple" label="査読結果をみる">
+                    </x-review.commentsubmit_link>
+                    <span class="mx-1"></span>
+                    <x-element.linkbutton2
+                        href="{{ route('paper.review', ['sub' => $sub->id, 'token' => $sub->paper->token()]) }}"
+                        color="purple" target="_blank" size="sm">
+                        著者がみる査読結果 </x-element.linkbutton2>
+                    <span class="mx-2"></span>
+
+
+                    <x-element.linkbutton :href="route('paper.manage', ['paper' => $paper->id])" color="gray" size="sm">
+                        論文管理画面
+                    </x-element.linkbutton>
+
+                    {{-- @php
                         $revs = App\Models\Review::where('submit_id', $sub->id)
                             ->where('paper_id', $paper->id)
                             ->where('target', '<', $rev->target)
@@ -204,7 +220,7 @@
                             {{ $loop->iteration }}査 {{ $types[$revobj->target] }}({{ $revobj->id }})の参照
                         </x-element.linkbutton>
                         <span class="mx-2"></span>
-                    @endforeach
+                    @endforeach --}}
                 @endif
 
 

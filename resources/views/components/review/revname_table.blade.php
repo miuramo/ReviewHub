@@ -53,7 +53,7 @@
                 <td class="p-1 text-sm">
                     {{ $title }}
                 </td>
-                @if (isset($rigais[$pid][auth()->id()]) && $rigais[$pid][auth()->id()] < 3)
+                @if (isset($rigais[$pid][auth()->id()]) && $rigais[$pid][auth()->id()] < 3 || !auth()->user()->can('manage_review', $pid))
                     <td colspan=5 class="p-1 bg-yellow-100 text-center text-gray-400">
                         利害関係があるため非表示
                     @else

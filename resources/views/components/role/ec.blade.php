@@ -127,7 +127,7 @@
         </x-element.linkbutton>
     </x-element.h1>
 
-    <x-element.h1>査読結果と判定 <span class="px-2"></span>
+    {{-- <x-element.h1>査読結果と判定 <span class="px-2"></span>
         @foreach ($cats as $catid => $catname)
             @php
                 $btncolor = isset($cat_arrange_review[$catid]) ? 'purple' : 'gray';
@@ -183,7 +183,7 @@
     <x-element.h1>査読進捗 <span class="px-2"></span>
         <x-element.linkbutton href="{{ route('revcon.revstatus') }}" color="orange" target="_blank">査読進捗
         </x-element.linkbutton>
-    </x-element.h1>
+    </x-element.h1> --}}
 
     <x-element.h1>査読者一覧と利害表明者 <span class="px-2"></span>
         @foreach ($cats as $catid => $catname)
@@ -204,7 +204,7 @@
     </x-element.h1>
 
 
-    <x-element.h1>査読割り当て <span class="px-2"></span>
+    {{-- <x-element.h1>査読割り当て <span class="px-2"></span>
         @php
             $roles = App\Models\Role::where('name', 'like', '%reviewer')->get();
         @endphp
@@ -234,7 +234,7 @@
         </x-element.linkbutton>
 
 
-    </x-element.h1>
+    </x-element.h1> --}}
 
 
 
@@ -340,10 +340,10 @@
         @endforeach
     </x-element.h1>
 
-    <x-element.h1> <x-element.linkbutton href="{{ route('admin.hiroba_excel') }}" color="teal">
+    {{-- <x-element.h1> <x-element.linkbutton href="{{ route('admin.hiroba_excel') }}" color="teal">
             情報学広場登録用Excel Download
         </x-element.linkbutton>
-    </x-element.h1>
+    </x-element.h1> --}}
 
 
 </div>

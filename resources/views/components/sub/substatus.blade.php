@@ -58,32 +58,37 @@
                             confirm="★★注意！！こちらは、最終原稿を受領した場合の通知です。「最終原稿を受領いたしました。出版までしばらくお時間いただく場合がありますがご了承ください。」といった案内になります。★★（確認）あなたの名前で、受領通知を送ってよいですか？（著者との掲示板に書き込み、メール送信します）">最終原稿受領通知を送る
                         </x-element.linkbutton> <br>
                     @endif
-                    <x-review.commentsubmit_link :sub="$sub" color="purple"
-                        label="査読結果をみる"></x-element.commentsubmit_link>
-                        <br>
-                        @if (!$readonly && $sub->accept_id != 5)
-                            <x-sub.disclose :sub="$sub"></x-sub.disclose>
-                        @endif
+                    <x-review.commentsubmit_link :sub="$sub" color="purple" label="査読結果をみる">
+                    </x-review.commentsubmit_link>
+                    <span class="mx-2"></span>
+                    <x-element.linkbutton2
+                        href="{{ route('paper.review', ['sub' => $sub->id, 'token' => $sub->paper->token()]) }}"
+                        color="purple" target="_blank" size="sm">
+                        著者がみる査読結果 </x-element.linkbutton2>
 
-                        <x-element.linkbutton href="{{ route('manage.senddisclose', ['sub' => $sub->id]) }}"
-                            color="pink" size="sm"
-                            confirm="査読結果開示通知を送ってよいですか？（著者との掲示板に書き込み、メール送信します）">査読結果開示通知を送る
-                        </x-element.linkbutton>
-                        <br>
-                        <span class="mx-2"></span>
+                    <br>
+                    @if (!$readonly && $sub->accept_id != 5)
+                        <x-sub.disclose :sub="$sub"></x-sub.disclose>
+                    @endif
+
+                    <x-element.linkbutton href="{{ route('manage.senddisclose', ['sub' => $sub->id]) }}" color="pink"
+                        size="sm" confirm="査読結果開示通知を送ってよいですか？（著者との掲示板に書き込み、メール送信します）">査読結果開示通知を送る
+                    </x-element.linkbutton>
+                    <br>
+                    <span class="mx-2"></span>
 
 
-                        SubID: {{ $sub->id }}
-                        <form class="inline" action="{{ route('admin.crud') }}?table=submits" method="post"
-                            target="_blank" id="admincrudwhereid{{ $sub->id }}">
-                            @csrf
-                            @method('post')
-                            <input id="whereby" type="hidden"
-                                class="whereBy text-sm bg-slate-100 font-thin mr-2 p-0 h-5 w-full" name="whereBy__id"
-                                value={{ $sub->id }}>
-                            <x-element.submitbutton color="white" size="xs">編集(Sub{{ $sub->id }})（別タブ）
-                            </x-element.submitbutton>
-                        </form>
+                    SubID: {{ $sub->id }}
+                    <form class="inline" action="{{ route('admin.crud') }}?table=submits" method="post"
+                        target="_blank" id="admincrudwhereid{{ $sub->id }}">
+                        @csrf
+                        @method('post')
+                        <input id="whereby" type="hidden"
+                            class="whereBy text-sm bg-slate-100 font-thin mr-2 p-0 h-5 w-full" name="whereBy__id"
+                            value={{ $sub->id }}>
+                        <x-element.submitbutton color="white" size="xs">編集(Sub{{ $sub->id }})（別タブ）
+                        </x-element.submitbutton>
+                    </form>
                 </td>
             </tr>
         </tbody>
