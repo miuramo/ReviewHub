@@ -56,7 +56,7 @@ class EnqueteController extends Controller
         if ($req->has("action") && $req->input("action") == "excel") {
             return Excel::download(new EnqExportFromView($enq), "enqans_{$enq->name}.xlsx");
         }
-        return view("enquete.answers")->with(compact("enq", "enqans", "papers"));
+        return view("enquete.answers")->with(compact("enq", "enqans", "papers","all"));
     }
     /**
      * アンケート項目編集用のCRUD 2

@@ -23,7 +23,21 @@
         <x-alert.error>{{ session('feedback.error') }}</x-alert.error>
     @endif
 
+
     <div class="py-4 px-6  dark:text-gray-400">
+        @if ($all)
+            <x-element.linkbutton href="{{ route('enq.answers', ['enq' => $enq->id]) }}" color="blue" size="sm"
+                class="m-4">
+                採録済みのみ表示する
+            </x-element.linkbutton>
+        @else
+            <x-element.linkbutton href="{{ route('enq.answers', ['enq' => $enq->id, 'all' => 1]) }}" color="lime"
+                size="sm" class="m-4">
+                すべて表示する
+            </x-element.linkbutton>
+        @endif
+
+
         @if ($enq->withpaper)
             <x-admin.enqtable :papers="$papers" :enqans="$enqans" :enq="$enq">
             </x-admin.enqtable>
