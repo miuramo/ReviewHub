@@ -56,7 +56,6 @@
 
 <div class="px-6 py-4">
 
-    <x-element.h1>投稿論文一覧</x-element.h1>
 
     <div>
         {{-- 投稿論文一覧 --}}

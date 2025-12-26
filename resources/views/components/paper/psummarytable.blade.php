@@ -6,10 +6,12 @@
 <!-- components.paper.summarytable -->
 @php
     $papers = App\Models\User::with('managed_papers')->find(auth()->id())->managed_papers;
-    $papers = $papers->sortBy([
-        ['status_id', 'asc'],
-        ['submitted_at', 'desc'],
-    ]);
+    $current = $papers->where('status_id', '<', 10);
+    // $papers = $papers->where('created_at', 'like', '2025%');
+    $current = $current->sortBy([['status_id', 'asc'], ['submitted_at', 'desc']]);
+
+    $finished = $papers->where('status_id', '>=', 10);
+    $finished = $finished->sortBy([['created_at', 'desc']]);
 
     $unmanaged = auth()->user()->unmanaged_papers();
 
@@ -24,6 +26,8 @@
 <x-element.component_name>
     psummarytable
 </x-element.component_name>
+<x-element.h1c>投稿論文一覧（査読中）</x-element.h1c>
+
 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-400 sortable" id="psummarytable">
     <thead>
         <tr>
@@ -33,21 +37,16 @@
         </tr>
     </thead>
     <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-300">
-        @foreach ($papers as $paper)
+        @foreach ($current as $paper)
             <tr
                 class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-400' : 'bg-white dark:bg-slate-300' }}">
                 <td class="p-1 text-center">
-                    {{-- <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
-                        class="underline text-blue-600 hover:bg-lime-200" target="_blank"> --}}
                     {{ $paper->id_03d() }}
-                    {{-- </a> --}}
                 </td>
                 <td class="p-1 text-center">
                     @php
                         $sub = $paper->currentsubmit;
                     @endphp
-                    {{-- <a href="{{ route('sub.show', ['sub' => $sub]) }}" class="underline text-blue-600 hover:bg-lime-200"
-                        target="_blank"> --}}
                     <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
                         class="underline text-blue-600 hover:bg-lime-200">
                         {{ $paper->currentsubmit->round }}回目
@@ -105,13 +104,99 @@
                             @endif
                         </div>
                     @endforeach
-                    {{-- <x-element.login_as :user="$paper->currentsubmit->aecrep()->user" />
-                        {{ $paper->currentsubmit->isAssigned('aec') ? '' : '?' }} --}}
+                </td>
+            </tr>
+        @endforeach
+
+
+    </tbody>
+</table>
+<div class="my-8"></div>
+
+<x-element.h1>完了分</x-element.h1>
+
+<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-400 sortable" id="psummarytable_past">
+    <thead>
+        <tr>
+            @foreach ($heads as $h)
+                <th class="p-1 bg-slate-300 dark:bg-slate-500">{{ $h }}</th>
+            @endforeach
+        </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-300">
+        @foreach ($finished as $paper)
+            <tr
+                class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-400' : 'bg-white dark:bg-slate-300' }}">
+                <td class="p-1 text-center text-sm">
+                    {{ $paper->id_03d() }}
+                </td>
+                <td class="p-1 text-center text-sm">
+                    @php
+                        $sub = $paper->currentsubmit;
+                    @endphp
+                    <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
+                        class="underline text-blue-600 hover:bg-lime-200">
+                        {{ $paper->currentsubmit->round }}回目
+                        {{ $paper->currentstatus->name }}
+                    </a>
+                </td>
+                <td class="p-1 text-center block break-all text-sm">{{ $paper->title }}
+                    @if ($paper->pdf_file_id != 0)
+                        <a class="underline text-blue-600 hover:bg-lime-200"
+                            href="{{ route('file.showhash', ['file' => $paper->pdf_file_id, 'hash' => substr($paper->pdf_file->key, 0, 8)]) }}"
+                            target="_blank">
+                            {{ $paper->pdf_file->pagenum }}page
+                        </a>
+                    @else
+                        No PDF
+                    @endif
+                </td>
+
+                <td class="p-1 text-center text-sm">
+                    @if ($paper->currentsubmit->submitted_at)
+                        {{ $paper->currentsubmit->submitted_at }}
+                    @elseif($paper->currentsubmit->resubmit_until)
+                        <span class="text-sm text-gray-500">{{ $paper->currentsubmit->resubmit_until }} 再投稿期限</span>
+                    @else
+                        ---
+                    @endif
+                </td>
+                <td class="p-1 text-center text-sm">
+                    <x-element.login_as :user="$paper->paperowner"></x-element.login_as> ({{ $paper->paperowner->affil }})
+                </td>
+                <td class="p-1 text-center leading-tight text-nowrap text-xs">
+                    @foreach ($paper->currentsubmit->reviews as $review)
+                        <div>
+                            @php
+                                $bb = App\Models\Bb::where('paper_id', $paper->id)
+                                    ->where('type', 2)
+                                    ->where('rev_id', $review->id)
+                                    ->first();
+                            @endphp
+                            @if ($bb)
+                                <a class="hover:underline text-green-600 hover:bg-lime-200" href="{{ $bb->url() }}"
+                                    target="_blank">
+                                    {{ substr($review->user->email, 0, 5) }}
+                                </a>-
+                            @else
+                                {{ substr($review->user->email, 0, 5) }}-
+                            @endif
+                            {!! $status_labels[$review->status] !!}
+                            @if ($review->status < 2)
+                                <span class=" text-red-400 dark:text-red-700 font-bold text-sm">
+                                    {{ $review->task->due_date ?? '' }}
+                                </span>
+                            @else
+                                {{ $review->judge() ?? '' }}
+                            @endif
+                        </div>
+                    @endforeach
                 </td>
             </tr>
         @endforeach
     </tbody>
 </table>
+
 
 @if ($unmanaged->count() > 0)
     <div class="mt-10 p-4 bg-yellow-100 rounded-md">
