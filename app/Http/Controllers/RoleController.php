@@ -27,12 +27,17 @@ class RoleController extends Controller
         //     abort(403);
         // }
         if (!auth()->user()->can('role', $name)) {
-            if ($name == "rev" && auth()->user()->can('role', 'meta')) {
+            // 以前、投稿管理者だった方で、現在はRoleがない場合はecがみれる
+            if ($name == "ec" && auth()->user()->can('has_managed_papers')) {
+                $role = Role::findByIdOrName($name);
+                return view('role/top', ["role" => 1])->with(["name" => $name, "role" => $role]);
+                // return redirect()->route('role.top', ["role" => "ec"]);
+            } else if ($name == "rev" && auth()->user()->can('role', 'meta')) {
                 return redirect()->route('role.top', ["role" => "meta"]);
                 // reviewerはmetareviewerも見ることができる。
             } else if ($name == "pub" && auth()->user()->can('role', 'web')) {
                 return redirect()->route('role.top', ["role" => "web"]);
-            } else if ($name == "author"){
+            } else if ($name == "author") {
                 return redirect()->route('paper.index');
             } else {
                 abort(403);
@@ -185,7 +190,7 @@ class RoleController extends Controller
     {
         if (!auth()->user()->can('role_any', 'meta|ec|aec|rev')) abort(403);
         $role = Role::findByIdOrName($req->input("role"));
-        $user = str_replace("　"," ",$req->user);
+        $user = str_replace("　", " ", $req->user);
         $affil = $req->affil;
         $email = str_replace("＠", "@", $req->email);
         $user = trim($user);
@@ -272,13 +277,12 @@ class RoleController extends Controller
     {
         // info($req->all());
         if (auth()->id() != $req->input('user_id')) {
-            return redirect()->route('role.top',['role'=>'ec'])->with('feedback.error', '他者を査読管理者から外すことはできません');
+            return redirect()->route('role.top', ['role' => 'ec'])->with('feedback.error', '他者を査読管理者から外すことはできません');
         }
         $paper = Paper::find($req->input('paper_id'));
         $paper->managers()->detach($req->input('user_id'));
         $paper->save();
 
-        return redirect()->route('role.top',['role'=>'ec'])->with('feedback.success', '査読管理者を脱退しました。'. sprintf("%04d", $req->input('paper_id'))."の状況は今後参照できなくなります。");
+        return redirect()->route('role.top', ['role' => 'ec'])->with('feedback.success', '査読管理者を脱退しました。' . sprintf("%04d", $req->input('paper_id')) . "の状況は今後参照できなくなります。");
     }
-
 }

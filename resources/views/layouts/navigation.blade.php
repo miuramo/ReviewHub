@@ -38,6 +38,10 @@
                             $navs_href[$role->navi] = route('role.top', ['role' => $role->name]);
                             $navs_active[$role->navi] = url()->current() === $navs_href[$role->navi];
                         }
+                        if(auth()->user()->can('has_managed_papers')){
+                            $navs_href['管理者'] = route('role.top', ['role' => 'ec']);
+                            $navs_active['管理者'] = url()->current() === $navs_href['管理者'];
+                        }
                     @endphp
 
                     <!-- Navigation Links -->

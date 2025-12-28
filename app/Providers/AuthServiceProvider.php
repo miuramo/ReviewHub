@@ -129,5 +129,9 @@ class AuthServiceProvider extends ServiceProvider
             return false;
         });
 
+        Gate::define('has_managed_papers', function ($user) {
+            return ($user->managed_papers()->count() > 0);
+        });
+
     }
 }
