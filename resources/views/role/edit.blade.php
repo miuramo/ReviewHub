@@ -1,5 +1,5 @@
 <x-app-layout>
-<!-- role.edit -->
+    <!-- role.edit -->
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400">
             Role『{{ $role->desc }}』のメンバー編集
@@ -90,23 +90,24 @@
                     （注：ボタンを押すとすぐにメール送信します。確認画面はありません。メールを送信した後で、雛形を作成します。）
 
                     <div class="m-4">
-                    または、雛形
-                    @php
-                        $mts = App\Models\MailTemplate::orderBy('updated_at', 'desc')->get();
-                    @endphp
-                    <select name="mailtemplate" id="mailtemplate"
-                        class="w-3/4 p-1 text-sm text-black  bg-white dark:text-gray-200 dark:bg-gray-800">
-                        <option value="">メールテンプレートを選択</option>
-                        @foreach ($mts as $mt)
-                            <option value="{{ $mt->id }}">(ID: {{$mt->id}}) {{ $mt->subject }} 【{{$mt->to}}】</option>
-                        @endforeach
-                    </select><br>
-                    のsubjectとbodyを利用し、
-                    <x-element.submitbutton value="addtemplate" color="pink">
-                        チェックをいれた人をTo:に指定した雛形を、新規作成
-                    </x-element.submitbutton>
-                    （注：ボタンを押してもメールは送信しません。）
-                </div>
+                        または、雛形
+                        @php
+                            $mts = App\Models\MailTemplate::orderBy('updated_at', 'desc')->get();
+                        @endphp
+                        <select name="mailtemplate" id="mailtemplate"
+                            class="w-3/4 p-1 text-sm text-black  bg-white dark:text-gray-200 dark:bg-gray-800">
+                            <option value="">メールテンプレートを選択</option>
+                            @foreach ($mts as $mt)
+                                <option value="{{ $mt->id }}">(ID: {{ $mt->id }}) {{ $mt->subject }}
+                                    【{{ $mt->to }}】</option>
+                            @endforeach
+                        </select><br>
+                        のsubjectとbodyを利用し、
+                        <x-element.submitbutton value="addtemplate" color="pink">
+                            チェックをいれた人をTo:に指定した雛形を、新規作成
+                        </x-element.submitbutton>
+                        （注：ボタンを押してもメールは送信しません。）
+                    </div>
                 </div>
             </div>
         </div>
@@ -135,16 +136,24 @@
             </div>
         </div>
 
+        <div class="mx-6 my-2">
+            <div class="text-lg mt-6 my-2 p-3 bg-slate-300 rounded-lg dark:bg-slate-800 dark:text-slate-400">
+                <input id="search-box" placeholder="ユーザを検索" type="text" name="query" value=""
+                    class="text-sm px-2 py-1 text-teal-700 bg-teal-100" size=20>
+                <ul id="results" class="list-disc list-inside">
+                </ul>
+            </div>
+        </div>
 
         <div class="mx-6 my-2">
             <div class="text-lg mt-10 my-2 p-3 bg-slate-300 rounded-lg dark:bg-slate-800 dark:text-slate-400">
                 <div class="mb-3">
-                    <label for="contact"
+                    <div
                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">追加するユーザを【氏 名 (所属)
                         メールアドレス】またはタブ区切り（Excelのセルから氏 名・所属・メールの3列でコピー）の形式で入力。
                         <br>
                         ここではユーザ作成とRole『{{ $role->desc }}』に追加するだけで、メール送信はしません。<br>
-                        メールアドレスのみの場合、既存ユーザを検索して<b>見つかったときのみ</b> Role『{{ $role->desc }}』に追加します。</label>
+                        メールアドレスのみの場合、既存ユーザを検索して<b>見つかったときのみ</b> Role『{{ $role->desc }}』に追加します。</div>
 
                     <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
                         <div class="p-0">
@@ -197,10 +206,16 @@
         </div>
     @endisset
 
+    <script>
+        var searchUrl = "{{ route('user.search') }}";
+        var rolename = "{{ $role->name }}";
+    </script>
+
     @push('localjs')
         <script src="/js/jquery.min.js"></script>
         <script src="/js/openclose.js"></script>
         <script src="/js/chk_all.js"></script>
+        <script src="/js/usearch.js"></script>
     @endpush
 
 

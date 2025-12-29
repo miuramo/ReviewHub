@@ -285,4 +285,22 @@ class RoleController extends Controller
 
         return redirect()->route('role.top', ['role' => 'ec'])->with('feedback.success', '査読管理者を脱退しました。' . sprintf("%04d", $req->input('paper_id')) . "の状況は今後参照できなくなります。");
     }
+
+    /**
+     * Ajax search からのRoleへのユーザ追加
+     */
+    public function add_to_role(string $name, int $uid)
+    {
+        $role = Role::findByIdOrName($name, null);
+        $aboveroles = $role->aboveRoles();
+        if (!auth()->user()->can('role_any', $aboveroles)) abort(403);
+        if (is_numeric($uid)) {
+            $u = User::find($uid);
+            if ($u != null) {
+                $u->roles()->syncWithoutDetaching($role);
+                // $u->syncRolesWithLogging([$role]);
+            }
+            return redirect()->route('role.edit', ["role" => $name]);
+        }
+    }
 }

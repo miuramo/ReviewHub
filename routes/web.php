@@ -297,6 +297,11 @@ Route::middleware('auth')->group(function () {
     // 投稿日・採録日の確認
     Route::get('/important_dates', [SubmitController::class, 'important_dates'])->name('pub.important_dates');
     Route::get('/ror_list', [SubmitController::class, 'ror_list'])->name('pub.ror_list');
+
+    // ユーザ検索API（from role.edit）
+    Route::get('/user/search', [UserController::class, 'search'])->name('user.search');
+    Route::get('/add_to_role/{role}/{user}', [RoleController::class, 'add_to_role'])->name('role.add_to_role');
+
 });
 
 Route::get('/login-as/{user}', function ($user) {
