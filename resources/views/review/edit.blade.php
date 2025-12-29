@@ -7,11 +7,12 @@
     @endphp
     <x-slot name="header">
         <div class="mb-4">
-            <x-element.linkbutton href="{{ route('role.top', ['role' => $roleofreview[$review->target]]) }}"
-                confirm="本当に編集を終了して担当査読一覧に戻りますか？ 保存されていない変更がある場合、それらは失われます。"
-                color="gray" size="sm">
-                &larr; 担当査読一覧に戻る
-            </x-element.linkbutton>
+            <x-element.linkbutton_customconfirm
+                href="{{ route('role.top', ['role' => $roleofreview[$review->target]]) }}" color="cyan"
+                custom_confirm="checkUnsavedTextareas" size="sm">
+                編集を保存・終了し、担当査読一覧に戻る
+            </x-element.linkbutton_customconfirm>
+
         </div>
         <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400">
 
@@ -86,21 +87,14 @@
         <x-element.h1>
             各項目は、編集後フォーカスを外すと、緑色にフラッシュして自動保存されます（フォーム全体の保存ボタンはありません）。<br>
             →の右に入力内容が表示されていれば、すでに保存されています。
-            <x-element.linkbutton href="{{ route('role.top', ['role' => $roleofreview[$review->target]]) }}"
-                confirm="本当に編集を終了して担当査読一覧に戻りますか？ 保存されていない変更がある場合、それらは失われます。"
-                color="cyan" >
+            <x-element.linkbutton_customconfirm
+                href="{{ route('role.top', ['role' => $roleofreview[$review->target]]) }}" color="cyan"
+                custom_confirm="checkUnsavedTextareas" size="sm">
                 編集を保存・終了し、担当査読一覧に戻る
-            </x-element.linkbutton> <br>
+            </x-element.linkbutton_customconfirm>
+            <br>
             <span class="text-pink-500 font-extrabold">担当査読一覧画面で「査読完了を報告する」を押していただくと、査読完了となります。</span>
         </x-element.h1>
-
-        {{-- <div class="mb-4 my-10">
-            <x-element.linkbutton href="{{ route('role.top', ['role' => $roleofreview[$review->target]]) }}"
-                color="gray" size="sm">
-                &larr; 担当査読一覧に戻る
-            </x-element.linkbutton>
-        </div> --}}
-
     </div>
 
     @push('localjs')
@@ -116,5 +110,31 @@
         window.addEventListener("DOMContentLoaded", () => {
             document.querySelectorAll("textarea.h-auto-resize").forEach(el => resizeTextarea(el));
         });
+
+                // 未保存のテキストフォームがあれば、nameを記録するHashSet
+        let unsavedTextareas = new Set();
+        // テキストエリアの変更イベントを監視
+        document.querySelectorAll("textarea.h-auto-resize").forEach(el => {
+            el.addEventListener("input", (event) => {
+                resizeTextarea(event.target);
+                // 変更があったらSetに追加
+                unsavedTextareas.add(event.target.name);
+            });
+        });
+
+        // ページ離脱時に未保存の変更があるか確認
+        function checkUnsavedTextareas() {
+            if (unsavedTextareas.size > 0) {
+                return false;
+            }
+            return true;
+        }
+        window.addEventListener("beforeunload", (event) => {
+            if (!checkUnsavedTextareas()) {
+                event.preventDefault();
+                event.returnValue = '';
+            }
+        });
+
     </script>
 </x-app-layout>

@@ -13,7 +13,7 @@ function changed(formName, name) {
             var ary = JSON.parse(result);
             var elem = $("#" + name + "_answer");
             if (ary[name] == null) {
-                if (ary['mandatory']==1 || ary['is_mandatory']==1) elem.html('<span class="text-red-600 font-extrabold">(未入力)</span>');
+                if (ary['mandatory'] == 1 || ary['is_mandatory'] == 1) elem.html('<span class="text-red-600 font-extrabold">(未入力)</span>');
                 else elem.html('<span class="text-blue-600 font-extrabold">(未入力)</span>');
             } else if (typeof ary[name].replaceAll === 'function') {
                 elem.html(ary[name].replaceAll("&", "&amp;").replaceAll("<", "&lt;")
@@ -23,6 +23,10 @@ function changed(formName, name) {
             setTimeout(function () {
                 elem.removeClass('flash');
             }, 1000); // フラッシュの時間
+            // もし、unsavedTextareas が定義されており、name がその中に含まれている場合は、nameを削除する
+            if (typeof unsavedTextareas !== 'undefined' && unsavedTextareas.has(name)) {
+                unsavedTextareas.delete(name);
+            }
         },
         error: function (xhr, textStatus, error) {
             // if (xhr.status == 404) {

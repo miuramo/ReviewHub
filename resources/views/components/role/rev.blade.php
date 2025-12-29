@@ -82,6 +82,7 @@
             ->where('completed', 1)
             ->where('approved', 1)
             ->orderBy('updated_at', 'desc')
+            ->limit(6)
             ->get();
     @endphp
     @if (count($recentapproved) > 0)
