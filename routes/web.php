@@ -149,6 +149,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin_submit_sendreceipt_final/{sub}', [ManagerController::class, 'submit_sendreceipt_final'])->name('manage.sendreceipt_final'); // 受領通知（最終原稿）を送る
     Route::get('/admin_submit_senddisclose/{sub}', [ManagerController::class, 'submit_senddisclose'])->name('manage.senddisclose'); // 結果開示通知を送る
 
+    //無限リストによる、完了論文一覧
+    Route::get('/admin_finished', [PaperController::class, 'finishedList'])->name('paper.finishedlist');
+
     Route::get('sub/{sub}/show', [SubmitController::class, 'show'])->name('sub.show'); // 査読管理
     Route::post('sub/{sub}/review_assign', [SubmitController::class, 'review_assign'])->name('sub.review_assign'); // 査読者の割り当て
     Route::post('sub/{sub}/review_assign_again', [SubmitController::class, 'review_assign_again'])->name('sub.review_assign_again'); // 査読者の割り当て

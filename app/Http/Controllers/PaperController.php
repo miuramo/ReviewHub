@@ -584,4 +584,9 @@ class PaperController extends Controller
 
         return view('paper.manage')->with(compact("paper", "files"));
     }
+
+    public function finishedList()
+    {
+        return view('paper.finished-list');
+    }
 }

@@ -63,7 +63,7 @@
     </div>
 
 
-    @if (count($recent) > 0)
+    {{-- @if (count($recent) > 0)
         <div class="px-6 py-4">
             <x-element.h1>最近依頼したタスク</x-element.h1>
             @foreach ($recent as $task)
@@ -72,9 +72,9 @@
                 </div>
             @endforeach
         </div>
-    @endif
+    @endif --}}
 
-    @if (count($recentapproved) > 0)
+    {{-- @if (count($recentapproved) > 0)
         <div class="px-6 py-4">
             <x-element.h1>最近承諾したタスク</x-element.h1>
             @foreach ($recentapproved as $task)
@@ -83,7 +83,7 @@
                 </div>
             @endforeach
         </div>
-    @endif
+    @endif --}}
 
     <div class="my-20"></div>
 

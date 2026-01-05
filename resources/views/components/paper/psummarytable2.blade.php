@@ -13,7 +13,7 @@
     ];
     if ($size === 'sm') {
         $size_s = 'xs';
-    } else if ($size === 'md') {
+    } elseif ($size === 'md') {
         $size_s = 'sm';
     }
 
@@ -33,10 +33,10 @@
         @foreach ($all as $paper)
             <tr
                 class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-400' : 'bg-white dark:bg-slate-300' }}">
-                <td class="p-1 text-center text-{{$size}}">
+                <td class="p-1 text-center text-{{ $size }}">
                     {{ $paper->id_03d() }}
                 </td>
-                <td class="p-1 text-center text-{{$size}}">
+                <td class="p-1 text-center text-{{ $size }}">
                     @php
                         $sub = $paper->currentsubmit;
                     @endphp
@@ -46,7 +46,7 @@
                         {{ $paper->currentstatus->name }}
                     </a>
                 </td>
-                <td class="p-1 text-center block break-all text-{{$size}}">{{ $paper->title }}
+                <td class="p-1 text-center block break-all text-{{ $size }}">{{ $paper->title }}
                     @if ($paper->pdf_file_id != 0)
                         <a class="underline text-blue-600 hover:bg-lime-200"
                             href="{{ route('file.showhash', ['file' => $paper->pdf_file_id, 'hash' => substr($paper->pdf_file->key, 0, 8)]) }}"
@@ -58,7 +58,7 @@
                     @endif
                 </td>
 
-                <td class="p-1 text-center text-{{$size}}">
+                <td class="p-1 text-center text-{{ $size }}">
                     @if ($paper->currentsubmit->submitted_at)
                         {{ $paper->currentsubmit->submitted_at }}
                     @elseif($paper->currentsubmit->resubmit_until)
@@ -67,36 +67,41 @@
                         ---
                     @endif
                 </td>
-                <td class="p-1 text-center text-{{$size}}">
+                <td class="p-1 text-center text-{{ $size }}">
                     <x-element.login_as :user="$paper->paperowner"></x-element.login_as> ({{ $paper->paperowner->affil }})
                 </td>
-                <td class="p-1 text-center leading-tight text-nowrap text-{{$size_s}}">
-                    @foreach ($paper->currentsubmit->reviews as $review)
-                        <div>
-                            @php
-                                $bb = App\Models\Bb::where('paper_id', $paper->id)
-                                    ->where('type', 2)
-                                    ->where('rev_id', $review->id)
-                                    ->first();
-                            @endphp
-                            @if ($bb)
-                                <a class="hover:underline text-green-600 hover:bg-lime-200" href="{{ $bb->url() }}"
-                                    target="_blank">
-                                    {{ substr($review->user->email, 0, 5) }}
-                                </a>-
-                            @else
-                                {{ substr($review->user->email, 0, 5) }}-
-                            @endif
-                            {!! $status_labels[$review->status] !!}
-                            @if ($review->status < 2)
-                                <span class=" text-red-400 dark:text-red-700 font-bold text-sm">
-                                    {{ $review->task->due_date ?? '' }}
-                                </span>
-                            @else
-                                {{ $review->judge() ?? '' }}
-                            @endif
-                        </div>
-                    @endforeach
+                <td class="p-1 text-center leading-tight text-nowrap text-{{ $size_s }}">
+                    {{-- 査読者と状況結果を表示する。ただし、閲覧者が管理権限がある場合のみ --}}
+                    @if (auth()->user()->can('manage_review', $paper->id))
+                        @foreach ($paper->currentsubmit->reviews as $review)
+                            <div>
+                                @php
+                                    $bb = App\Models\Bb::where('paper_id', $paper->id)
+                                        ->where('type', 2)
+                                        ->where('rev_id', $review->id)
+                                        ->first();
+                                @endphp
+                                @if ($bb)
+                                    <a class="hover:underline text-green-600 hover:bg-lime-200"
+                                        href="{{ $bb->url() }}" target="_blank">
+                                        {{ substr($review->user->email, 0, 5) }}
+                                    </a>-
+                                @else
+                                    {{ substr($review->user->email, 0, 5) }}-
+                                @endif
+                                {!! $status_labels[$review->status] !!}
+                                @if ($review->status < 2)
+                                    <span class=" text-red-400 dark:text-red-700 font-bold text-sm">
+                                        {{ $review->task->due_date ?? '' }}
+                                    </span>
+                                @else
+                                    {{ $review->judge() ?? '' }}
+                                @endif
+                            </div>
+                        @endforeach
+                    @else
+                        (hidden)
+                    @endif
                 </td>
             </tr>
         @endforeach
