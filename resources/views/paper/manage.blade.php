@@ -40,7 +40,11 @@
         <span class="mx-2"></span>
         {{-- 著者との掲示板 --}}
         <x-bb.bb_link :submit="$paper->currentsubmit" type="1"></x-bb.bb_link>
-        <span class="mx-2"></span>
+        <span class="mx-6"></span>
+        <x-element.linkbutton href="{{ route('paper.sendsubmitted', ['paper' => $paper->id]) }}"
+            confirm="投稿状況メールを代理送信します。よろしいですか？" color="cyan" size="xs" target="_self">
+            投稿状況メールを代理送信
+        </x-element.linkbutton>
         {{-- ロック --}}
         <livewire:paper-lock :paper="$paper" />
 

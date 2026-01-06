@@ -34,7 +34,7 @@ class PaperController extends Controller
     public function sendSubmitted(string $id)
     {
         $aT = $this->author_check($id);
-        if ($aT > 0) {
+        if ($aT > 0 || auth()->user()->can('manage_review', $id)) {
             $paper = Paper::with(["contacts", "currentsubmit"])->find($id);
             if ($paper->pdf_file_id != 0 && count($paper->validateFiles()) == 0) {
                 // status_id が 1 だったら、 2 にする
@@ -51,6 +51,9 @@ class PaperController extends Controller
                 }
                 (new Submitted($paper))->process_send();
                 // $mail->send();
+                if (auth()->user()->can('manage_review', $id)){
+                    return redirect()->route('paper.manage', ['paper' => $paper->id])->with('feedback.success', "投稿状況メールを代理送信しました。");
+                }
                 return redirect()->route('paper.edit', ['paper' => $paper->id])->with('feedback.success', "投稿状況メールを送信しました。");
             } else {
                 return redirect()->route('paper.edit', ['paper' => $paper->id])->with('feedback.error', "投稿状況メールを送信しようとしましたが、まだ投稿が完了していませんでした。下のメッセージをご確認ください。");
