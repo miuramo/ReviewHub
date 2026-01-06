@@ -40,7 +40,9 @@ class PaperController extends Controller
                 // status_id が 1 だったら、 2 にする
                 if ($paper->status_id <= 2) {
                     $paper->status_id = 2;
-                    $paper->currentsubmit->submitted_at = now();
+                    if ($paper->currentsubmit->submitted_at == null) {
+                        $paper->currentsubmit->submitted_at = now();
+                    }
                     $paper->currentsubmit->save();
                     $paper->save();
 
@@ -51,7 +53,7 @@ class PaperController extends Controller
                 }
                 (new Submitted($paper))->process_send();
                 // $mail->send();
-                if (auth()->user()->can('manage_review', $id)){
+                if (auth()->user()->can('manage_review', $id)) {
                     return redirect()->route('paper.manage', ['paper' => $paper->id])->with('feedback.success', "投稿状況メールを代理送信しました。");
                 }
                 return redirect()->route('paper.edit', ['paper' => $paper->id])->with('feedback.success', "投稿状況メールを送信しました。");

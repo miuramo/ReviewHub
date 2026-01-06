@@ -39,7 +39,7 @@
 {{-- <x-paper.psummarytable2 :all="$finished" :heads="$heads" size="sm" /> --}}
 
 
-@if ($unmanaged->count() > 0)
+@if ($unmanaged->count() > 0 && false)
     <div class="mt-10 p-4 bg-yellow-100 rounded-md">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400 pt-1 pb-3">
             {{ __('あなたが共著者・利害関係者となっている投稿論文（上の投稿論文一覧には含まれていません）') }}
