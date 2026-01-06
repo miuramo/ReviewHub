@@ -5,6 +5,13 @@
             {{ __('投稿管理') }}
             <span class="mx-2"></span>
             <x-element.paperid size=2 :paper_id="$paper->id"></x-element.paperid>
+
+            <span class="mx-6"></span>
+            <x-element.linkbutton
+                href="https://scrapbox.io/reviewhub/%E7%B7%A8%E9%9B%86%E9%95%B7%E3%81%AE%E4%BD%9C%E6%A5%AD" color="cyan"
+                size="sm" target="_blank">
+                編集管理マニュアル (Cosense/Scrapbox)</x-element.linkbutton>
+
         </h2>
     </x-slot>
     <style>
