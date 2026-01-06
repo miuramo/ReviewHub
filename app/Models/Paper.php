@@ -351,6 +351,9 @@ class Paper extends Model
         $ema = explode("\n", trim($this->contactemails));
         foreach ($ema as $e) {
             DB::transaction(function () use ($e) {
+                if (strpos($e, '＠') !== false) {
+                    $e = str_replace('＠', '@', $e);
+                }
                 $con = Contact::firstOrCreate([
                     'email' => $e,
                 ]);
@@ -406,11 +409,18 @@ class Paper extends Model
         $cclist = [];
         $bcclist = [];
         foreach ($this->contacts as $con) {
+            if (strpos($con->email, '＠') !== false) {
+                $con->email = str_replace('＠', '@', $con->email);
+                $con->save();
+            }
             $cclist[] = $con->email;
         }
         if ($this->bcc_contactemails != null) {
             $bccs = explode("\n", trim($this->bcc_contactemails));
             foreach ($bccs as $bcc) {
+                if (strpos($bcc, '＠') !== false) {
+                    $bcc = str_replace('＠', '@', $bcc);
+                }
                 $bcclist[] = $bcc;
             }
         }
