@@ -7,8 +7,8 @@ use Livewire\Component;
 
 class InfList extends Component
 {
-    public $perPage = 5;
-    public int $increment = 5;
+    public $perPage = 10;
+    public int $increment = 10;
     public bool $isLoading = false;
     public int $total = 0;
     public $heads = ['id', 'status', 'title', '投稿日時', '投稿者', '査-状況'];
