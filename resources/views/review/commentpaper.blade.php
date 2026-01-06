@@ -6,6 +6,8 @@
         $cats = App\Models\Category::select('name', 'id')->get()->pluck('name', 'id')->toArray();
 
         $nameofmeta = App\Models\Setting::getval('name_of_meta');
+
+        $count = 0;
     @endphp
     @section('title', $paper->id_03d() . ' スコア')
     <x-slot name="header">
@@ -100,10 +102,14 @@
     @foreach ($sub->reviews as $rev)
         <div class="m-6">
             <table class="table-auto">
+                @php
+                    $count++;
+                @endphp
+
                 <thead>
                     <tr>
                         <th colspan=2 class="bg-slate-300 border-4 border-slate-300 text-left pl-10">
-                            査{{ $rev->id }}
+                            査読者{{$count}} <span class="text-gray-200 ml-10">（査{{ $rev->id }}）</span>
 
                             @if ($rev->ismeta)
                                 <span class="mx-2 font-bold text-purple-500">({{ $nameofmeta }}) </span>
@@ -127,12 +133,12 @@
                                 @else --}}
                                 {!! nl2br(App\Models\Review::urllink($valstr)) !!}
                                 {{-- @endif --}}
-                                @if(strlen($valstr)<2)
+                                @if (strlen($valstr) < 2)
                                     @php
                                         $item_title = App\Models\Viewpoint::firstContent($vpdesc);
                                         $item_title = str_replace('で評価してください．', '', $item_title);
                                     @endphp
-                                    <span class="text-gray-400 text-sm pl-8">（{{$item_title}}）</span>
+                                    <span class="text-gray-400 text-sm pl-8">（{{ $item_title }}）</span>
                                 @endif
                             </td>
                         </tr>

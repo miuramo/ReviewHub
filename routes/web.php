@@ -187,7 +187,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/reviewcomment/{cat}', [ReviewController::class, 'comment'])->name('review.comment'); // ?excel=dl でExcel
     Route::get('/reviewcomment_scoreonly/{cat}', [ReviewController::class, 'comment_scoreonly'])->name('review.comment_scoreonly'); // ?excel=dl でExcel
     Route::get('/reviewcomment/cat/{cat}/paper/{paper}/{token}', [ReviewController::class, 'comment_paper'])->name('review.commentpaper'); //判定会議で見る用
-    Route::get('/reviewcomment_sub/{sub}/{token}', [ReviewController::class, 'comment_submit'])->name('review.commentsubmit'); //ReviewHub 判定はSubmit単位
+    Route::get('/reviewcomment_sub/{sub}/{token}', [ReviewController::class, 'comment_submit'])->name('review.commentsubmit'); //編集委員用の査読結果
 
     // 別カテゴリでの採否を追加
     Route::get('addsubmit', [SubmitController::class, 'addsubmit'])->name('pub.addsubmit');
