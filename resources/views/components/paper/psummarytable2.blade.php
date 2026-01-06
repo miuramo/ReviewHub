@@ -37,6 +37,7 @@
                     {{ $paper->id_03d() }}
                 </td>
                 <td class="p-1 text-center text-{{ $size }}">
+                    @if (auth()->user()->can('manage_review', $paper->id))
                     @php
                         $sub = $paper->currentsubmit;
                     @endphp
@@ -45,6 +46,11 @@
                         {{ $paper->currentsubmit->round }}回目
                         {{ $paper->currentstatus->name }}
                     </a>
+                    @else
+                        {{-- 管理できないので、表示だけ --}}
+                        {{ $paper->currentsubmit->round }}回目
+                        {{ $paper->currentstatus->name }}
+                    @endif
                 </td>
                 <td class="p-1 text-center block break-all text-{{ $size }}">{{ $paper->title }}
                     @if ($paper->pdf_file_id != 0)
