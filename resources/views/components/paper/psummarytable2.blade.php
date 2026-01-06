@@ -38,14 +38,14 @@
                 </td>
                 <td class="p-1 text-center text-{{ $size }}">
                     @if (auth()->user()->can('manage_review', $paper->id))
-                    @php
-                        $sub = $paper->currentsubmit;
-                    @endphp
-                    <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
-                        class="underline text-blue-600 hover:bg-lime-200">
-                        {{ $paper->currentsubmit->round }}回目
-                        {{ $paper->currentstatus->name }}
-                    </a>
+                        @php
+                            $sub = $paper->currentsubmit;
+                        @endphp
+                        <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
+                            class="underline text-blue-600 hover:bg-lime-200">
+                            {{ $paper->currentsubmit->round }}回目
+                            {{ $paper->currentstatus->name }}
+                        </a>
                     @else
                         {{-- 管理できないので、表示だけ --}}
                         {{ $paper->currentsubmit->round }}回目
@@ -53,14 +53,24 @@
                     @endif
                 </td>
                 <td class="p-1 text-center block break-all text-{{ $size }}">{{ $paper->title }}
-                    @if ($paper->pdf_file_id != 0)
-                        <a class="underline text-blue-600 hover:bg-lime-200"
-                            href="{{ route('file.showhash', ['file' => $paper->pdf_file_id, 'hash' => substr($paper->pdf_file->key, 0, 8)]) }}"
-                            target="_blank">
-                            {{ $paper->pdf_file->pagenum }}page
-                        </a>
+                    @if (auth()->user()->can('manage_review', $paper->id))
+                        @if ($paper->pdf_file_id != 0)
+                            <a class="underline text-blue-600 hover:bg-lime-200"
+                                href="{{ route('file.showhash', ['file' => $paper->pdf_file_id, 'hash' => substr($paper->pdf_file->key, 0, 8)]) }}"
+                                target="_blank">
+                                {{ $paper->pdf_file->pagenum }}page
+                            </a>
+                        @else
+                            No PDF
+                        @endif
                     @else
-                        No PDF
+                            <span class="mx-4"></span>
+                        {{-- 管理できないので、表示だけ --}}
+                        @if ($paper->pdf_file_id != 0)
+                            {{ $paper->pdf_file->pagenum }}page
+                        @else
+                            No PDF
+                        @endif
                     @endif
                 </td>
 
@@ -74,7 +84,11 @@
                     @endif
                 </td>
                 <td class="p-1 text-center text-{{ $size }}">
-                    <x-element.login_as :user="$paper->paperowner"></x-element.login_as> ({{ $paper->paperowner->affil }})
+                    @if (auth()->user()->can('manage_review', $paper->id))
+                        <x-element.login_as :user="$paper->paperowner"></x-element.login_as> ({{ $paper->paperowner->affil }})
+                    @else
+                        (hidden)
+                    @endif
                 </td>
                 <td class="p-1 text-center leading-tight text-nowrap text-{{ $size_s }}">
                     {{-- 査読者と状況結果を表示する。ただし、閲覧者が管理権限がある場合のみ --}}
