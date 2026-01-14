@@ -23,6 +23,7 @@ class ExportHintFileJob implements ShouldQueue
      */
     public function __construct()
     {
+        Log::info("ExportHintFileJob instantiated");
         //
     }
 
@@ -41,7 +42,6 @@ class ExportHintFileJob implements ShouldQueue
         $validPapers = Paper::whereNotNull("pdf_file_id")->get();
         foreach($validPapers as $p){
             $p->writeHintFile();
-            info($p->id);
         }
     }
 }

@@ -98,6 +98,7 @@
             PHP: v{{ PHP_VERSION }}<br>
             upload_max_filesize: {{ ini_get('upload_max_filesize') }}<br>
             post_max_size: {{ ini_get('post_max_size') }}<br>
+            LOG_SLACK_WEBHOOK_URL: {{ env('LOG_SLACK_WEBHOOK_URL') ? env('LOG_SLACK_WEBHOOK_URL') : '未設定' }}<br>
 
 
         </div>

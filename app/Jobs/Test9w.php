@@ -21,6 +21,7 @@ class Test9w implements ShouldQueue
      */
     public function __construct()
     {
+        Log::info("Test9w instantiated");
         //
     }
 
