@@ -86,7 +86,8 @@
             @endphp
             App::environment(APP_ENV): {{ config('app.env') }} <span class="mx-4"></span>
             (use "production" for https)<br>
-            App::environment(APP_DEBUG): {{ env('APP_DEBUG') }} <span class="mx-4"></span>1の場合、component_name を表示する。<br>
+            App::environment(APP_DEBUG): {{ env('APP_DEBUG') }} <span class="mx-4"></span>1の場合、component_name
+            を表示する。<br>
             DB_Setting FILEPUT_DIR: {{ $fileput_dir }} <br>
             DB_Setting LAST_QUEUEWORK_DATE: {{ $queuework_date }}<br>
             config('database.default'): {{ $domain }} <br>
@@ -159,6 +160,11 @@
         <x-element.linkbutton href="{{ route('admin.paperauthorhead') }}" color="cyan">
             第一著者名の設定
         </x-element.linkbutton>
+        <span class="px-5"></span>
+        <x-element.linkbutton href="{{ route('admin.failed_jobs') }}" color="purple">
+            Failed Jobs
+        </x-element.linkbutton>
+
     </x-element.h1>
 
     <x-element.h1>Danger Zone：

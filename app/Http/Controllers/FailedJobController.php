@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FailedJob;
 use Illuminate\Http\Request;
 
 class FailedJobController extends Controller

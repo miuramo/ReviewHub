@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Mail\FailedJobsAlert;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class CheckFailedJobs extends Command
@@ -31,6 +32,7 @@ class CheckFailedJobs extends Command
         $failedJobsCount = DB::table('failed_jobs')->count();
         if ($failedJobsCount > 0) {
             Mail::to(env('MAIL_BCC_ADDRESS','miuramo@gmail.com'))->send(new FailedJobsAlert($failedJobsCount));
+            Log::channel('slack')->error("There are {$failedJobsCount} failed jobs in the system. ".route('admin.failed_jobs', ['all' => 'false']));
             $this->warn("Warning email sent to admin.");
         } else {
             $this->info("No failed jobs found.");

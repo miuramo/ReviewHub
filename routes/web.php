@@ -6,6 +6,7 @@ use App\Http\Controllers\BbController;
 use App\Http\Controllers\BbMesController;
 use App\Http\Controllers\EnqueteAnswerController;
 use App\Http\Controllers\EnqueteController;
+use App\Http\Controllers\FailedJobController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\LogAccessController;
 use App\Http\Controllers\MailTemplateController;
@@ -225,6 +226,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin_catsetting', [AdminController::class, 'catsetting'])->name('admin.catsetting');
     Route::get('/admin_chkexefiles', [AdminController::class, 'check_exefiles'])->name('admin.chkexefiles');
     Route::get('/admin_fixusernamespace', [AdminController::class, 'fixusernamespace'])->name('admin.fixusernamespace');
+
+    Route::get('/admin_failed_jobs/{all?}', [FailedJobController::class, 'index'])->name('admin.failed_jobs');
+    Route::post('/admin_failed_jobs/{id}/mark_as_read', [FailedJobController::class, 'markAsRead'])->name('admin.failed_jobs.mark_as_read');
+
 
     Route::get('/admin_resetpaper', [AdminController::class, 'resetpaper'])->name('admin.resetpaper');             // Danger Zone
     Route::get('/admin_resetaccesslog', [AdminController::class, 'resetaccesslog'])->name('admin.resetaccesslog'); // Danger Zone
