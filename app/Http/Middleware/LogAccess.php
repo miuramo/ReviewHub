@@ -15,7 +15,7 @@ class LogAccess
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next) : Response
+    public function handle(Request $request, Closure $next): Response
     {
         $hozon = $next($request);
 
@@ -26,16 +26,27 @@ class LogAccess
         $allreq = $request->all();
         // unset($allreq['password']);
         $hidden = ['password', 'current_password', 'password_confirmation'];
-        foreach($hidden as $h){
+        foreach ($hidden as $h) {
             if (isset($allreq[$h])) $allreq[$h] = '(hidden)';
         }
-        $accessLog = new ModelsLogAccess([
-            'uid' => $uid,
-            'url' => substr($request->fullUrl(), strlen($rooturl)),
-            'method' => $request->method(),
-            'request' => $allreq,//'-',// $request->headers->all(),
-        ]);
-        $accessLog->save();
+        array_walk_recursive($allreq, function (&$value) {
+            if (is_string($value)) {
+                $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8, ISO-8859-1, ASCII');
+            }
+        });
+
+        try {
+            $accessLog = new ModelsLogAccess([
+                'uid' => $uid,
+                'url' => substr($request->fullUrl(), strlen($rooturl)),
+                'method' => $request->method(),
+                'request' => $allreq, //'-',// $request->headers->all(),
+            ]);
+            $accessLog->save();
+        } catch (\Exception $e) {
+            info("LogAccess Middleware Error: " . $e->getMessage());
+            info($allreq);
+        }
 
         return $hozon;
     }
