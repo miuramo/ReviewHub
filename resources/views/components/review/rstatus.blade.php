@@ -73,7 +73,7 @@
                     </x-element.deletebutton>
                 @endif
                 <div class="p-2">
-                    <x-element.linkbutton href="{{ route('logac.show', ['review' => $review]) }}" color="gray"
+                    <x-element.linkbutton href="{{ route('logac.review', ['review' => $review]) }}" color="gray"
                         size="xs" target="_blank">
                         査読活動ログ（別タブ）
                     </x-element.linkbutton>

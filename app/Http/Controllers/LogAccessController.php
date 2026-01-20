@@ -66,16 +66,17 @@ class LogAccessController extends Controller
         if (!$revobj) {
             abort(404, 'Review not found.');
         }
-        if (!auth()->user()->can('manage_review', $revobj->paper->id)) abort(403, "you are not a manager");
+        if (!auth()->user()->can('manage_review', $revobj->paper->id)) abort(403, "you are not a manager of this paper.");
         $user = $revobj->user->id;
         $fileid = $revobj->paper->pdf_file_id;
         $task = Task::where('submit_id', $revobj->submit->id)
             ->where('subject_id', $user)
             ->first();
         if ($user) {
-            $logs = LogAccess::where('uid', $user)->where(function ($query) use ($fileid, $review, $task) {
-                $query->orWhere('url', 'like', "/file/{$fileid}/show/%");
+            $logs = LogAccess::whereNot("url","/file/favicon")->whereNot("url","/role/rev/top")->where(function ($query) use ($fileid, $review, $task, $user) {
+                $query->where('uid', $user)->orWhere('url', 'like', "/file/{$fileid}/show/%");
                 $query->orWhere('url', 'like', "/review/{$review}%");
+                $query->orWhere('url', 'like', "/task_sendrequest/{$review}/%");
                 if ($task) {
                     $query->orWhere('url', 'like', "/task/{$task->id}%");
                 }

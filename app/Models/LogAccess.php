@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Container\Attributes\Log;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -26,4 +27,13 @@ class LogAccess extends Model
     /**
      * App\Http\Middleware\LogAccess で、実際のアクセスログ保存処理を行っている。
      */
+
+    public static function dates_sendrequest($review, $revuid)
+    {
+        $ret = LogAccess::where('url', "/task_sendrequest/{$review}/{$revuid}")
+            ->where('method', 'GET')
+            ->orderBy('created_at', 'asc')
+            ->get();
+        return $ret;
+    }
 }

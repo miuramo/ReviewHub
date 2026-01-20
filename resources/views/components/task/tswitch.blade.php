@@ -6,6 +6,7 @@
         ->where('submit_id', $review->submit->id)
         ->where('workflow_id', 4)
         ->first();
+    $dates_sendrequest = App\Models\LogAccess::dates_sendrequest($review->id, $review->user->id);
 @endphp
 <!-- components.task.tswitch -->
 {{-- <x-element.component_name>
@@ -20,6 +21,11 @@
 @else
     @if ($review->request_at)
         <span class="text-cyan-600 font-extrabold">査読依頼送信済み</span>
+        <span class="text-cyan-600 text-sm">
+            @foreach($dates_sendrequest as $logac)
+                {{ substr($logac->created_at, 5, 11) }}<br>
+            @endforeach
+        </span>
     @else
         <span class="text-red-500 font-extrabold">依頼メール未送信です</span>
     @endif

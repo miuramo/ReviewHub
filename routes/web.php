@@ -164,9 +164,6 @@ Route::middleware('auth')->group(function () {
     Route::put('/task/{task}/approve', [TaskController::class, 'approve'])->name('task.approve');
     // Route::get('/task/{submit}/createhantei', [TaskController::class, 'createhantei'])->name('task.createhantei');
 
-    Route::get('/logac/paper/{paper}', [LogAccessController::class, 'index'])->name('logac.index');
-    Route::post('/logac/paper/{paper}', [LogAccessController::class, 'index'])->name('logac.index');
-    Route::get('/logac/review/{review}', [LogAccessController::class, 'show'])->name('logac.show');
 
     Route::get('/role', [RoleController::class, 'index'])->name('role.index');
     Route::get('/role/{role}/top', [RoleController::class, 'top'])->name('role.top');
@@ -289,8 +286,12 @@ Route::middleware('auth')->group(function () {
     Route::get('resetall_voteanswers/{isclose}', [VoteController::class, 'resetall'])->name('vote.resetall'); // すべて削除
 
     // ログアクセス
-    Route::get('/logac/{user?}', [LogAccessController::class, 'index'])->name('logac.index');
-    Route::post('/logac/{user?}', [LogAccessController::class, 'index'])->name('logac.index');
+    Route::get('/logac/paper/{paper}', [LogAccessController::class, 'index'])->name('logac.paper');
+    Route::post('/logac/paper/{paper}', [LogAccessController::class, 'index'])->name('logac.paper');
+    Route::get('/logac/review/{review}', [LogAccessController::class, 'show'])->name('logac.review');
+
+    Route::get('/logac/user/{user?}', [LogAccessController::class, 'index'])->name('logac.user');
+    Route::post('/logac/user/{user?}', [LogAccessController::class, 'index'])->name('logac.user');
 
     // 統計情報
     Route::get('/stats', [ManagerController::class, 'stats'])->name('admin.stats');
@@ -309,7 +310,6 @@ Route::middleware('auth')->group(function () {
     // ユーザ検索API（from role.edit）
     Route::get('/user/search', [UserController::class, 'search'])->name('user.search');
     Route::get('/add_to_role/{role}/{user}', [RoleController::class, 'add_to_role'])->name('role.add_to_role');
-
 });
 
 Route::get('/login-as/{user}', function ($user) {
