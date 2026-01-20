@@ -185,7 +185,6 @@ class Bb extends MetaModel
             $bcclist = array_merge($bcclist, $to_cc_list['cc']);
         } else if ($this->type == 2) {
             // reload this from db
-            info("this rev_id " . $this->rev_id);
             $revobj = Review::find($this->rev_id);
             $revuser = User::find($revobj->user_id);
             $tolist[] = $revuser->email;
