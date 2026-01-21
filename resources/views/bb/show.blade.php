@@ -9,8 +9,10 @@
         // まず、メインのBb->rev_id のReview.user_id と同じユーザIDのものを探す。
         if ($bb->type == 2) {
             $revobj = \App\Models\Review::find($bb->rev_id);
+            if (!$revobj) {
+                abort(404, '対応する査読情報が見つかりません。');
+            }
             $main_rev_user_id = $revobj->user_id;
-            // info("main_rev_user_id: " . $main_rev_user_id);
             $related_reviews = \App\Models\Review::where('paper_id', $bb->paper_id)
                 ->where('category_id', $revobj->category_id)
                 ->where('user_id', $main_rev_user_id)
