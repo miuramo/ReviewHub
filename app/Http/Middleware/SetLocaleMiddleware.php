@@ -19,13 +19,13 @@ class SetLocaleMiddleware
 
         // Request::getPreferredLanguage は Symfony の実装を使う
         // 引数に配列を渡すと最も優先するサポート言語を返す（例: 'en', 'ja'）
-        Log::info('Accept-Language Header: ' . $request->header('Accept-Language'));
+        // Log::info('Accept-Language Header: ' . $request->header('Accept-Language'));
         $preferred = $request->getPreferredLanguage($supported);
-        Log::info("Preferred locale from Symfony: {$preferred}");
+        // Log::info("Preferred locale from Symfony: {$preferred}");
 
         // getPreferredLanguage が null を返す可能性があるため安全にフォールバック
         $locale = $preferred ?? Config::get('app.locale');
-        Log::info("Final locale to be set: {$locale}");
+        // Log::info("Final locale to be set: {$locale}");
 
         // 安全: 一応サポート配列にあるか確認（getPreferredLanguage で保証されるが二重チェック）
         if (! in_array($locale, $supported)) {
