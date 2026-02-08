@@ -11,21 +11,18 @@
         @isset($conf->value)
             @isset($confurl)
                 for
-                <a href="{{ $confurl->value }}" class="hover:underline hover:text-blue-500" target="_blank">{{ $conf->value }}</a>
+                <a href="{{ $confurl->value }}" class="text-blue-800 hover:underline hover:text-blue-500 dark:text-gray-300" target="_blank">{{ $conf->value }}</a>
             @else
                 for {{ $conf->value }}
             @endisset
         @endisset
     </div>
 
-    @php
-        $cfplinktext = App\Models\Setting::getval('CFP_LINKTEXT');
-    @endphp
     @isset($cfpurl)
         <div class="my-4 mx-8 px-6">
             <!-- CFPリンクの設定は、Setting:CFP_LINKTEXT CFP_URL -->
             <a target="_blank" href="{{ $cfpurl->value }}"
-                class="hover:underline hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-500 text-2xl p-2">{{ $cfplinktext }}</a>
+                class="font-bold text-blue-800 hover:underline hover:text-blue-500 dark:text-gray-300 text-2xl p-2">{{ __('submit_manual') }}</a>
         </div>
     @endisset
 

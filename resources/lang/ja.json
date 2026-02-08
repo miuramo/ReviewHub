@@ -16,5 +16,7 @@
     "Email Password Reset Link": "パスワード再設定メールを送信",
     "How to register passkey": "パスキー登録方法",
     "Log in with Passkey": "パスキーでログイン",
-    "Register Passkey": "パスキーの登録"
+    "Register Passkey": "パスキーの登録",
+    "submit_manual": "投稿マニュアル",
+    "NewSubmitTo": ":catname に新規投稿する"
 }

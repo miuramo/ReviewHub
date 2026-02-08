@@ -2,14 +2,14 @@
 <!-- user.entry -->
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400">
-            <a href="/" title="トップページへのリンク"
-                class="font-semibold text-gray-800 hover:text-blue-700 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">{{ env('APP_NAME') }}</a>
+            {{-- <a href="/" title="トップページへのリンク"
+                class="font-semibold text-gray-800 hover:text-blue-700 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">{{ env('APP_NAME') }}</a> --}}
 
             {{ __('投稿者アカウントの作成') }}
         </h2>
     </x-slot>
 
-    <div class="py-2">
+    <div class="py-2 px-6">
 
         @if (session('feedback.success'))
             <x-alert.success>{{ session('feedback.success') }}</x-alert.success>
@@ -23,8 +23,8 @@
                 @csrf
                 @method('post')
                 <div class="text-xl py-6 dark:text-gray-400">
-                    あなたのメールアドレスを入力して、送信ボタンを押してください。<br>
-                    届いたメールを確認し、60分以内に、認証URLをクリックしてください。
+                    {{ __('あなたのメールアドレスを入力して、送信ボタンを押してください。') }}<br>
+                    {{ __('届いたメールを確認し、60分以内に、認証URLをクリックしてください。') }}
                 </div>
                 <div class="mb-6">
                     <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email
@@ -37,7 +37,7 @@
 
                 <div>
                     <x-element.submitbutton>
-                        認証URLをメール送信
+                        {{ __('認証URLをメール送信') }}
                     </x-element.submitbutton>
                 </div>
             </form>
@@ -45,13 +45,13 @@
         </div>
 
         <x-element.sankou>
-            参考：このあとの流れは、以下のようになります。
+            {{ __('参考：このあとの流れは、以下のようになります。') }}
             <ol class="list-decimal px-8 pt-4">
-                <li> メールで届いた認証URLをクリック</li>
-                <li> パスワードの設定</li>
-                <li> 氏名と所属の登録</li>
-                <li> 新規投稿情報の作成と、確認事項への了承</li>
-                <li> 論文PDFのアップロード、投稿受付完了通知メールを送信</li>
+                <li> {{ __('メールで届いた認証URLをクリック') }}</li>
+                <li> {{ __('パスワードの設定') }}</li>
+                <li> {{ __('氏名と所属の登録') }}</li>
+                <li> {{ __('新規投稿情報の作成と、確認事項への了承') }}</li>
+                <li> {{ __('論文PDFのアップロード、投稿受付完了通知メールを送信') }}</li>
             </ol>
 
         </x-element.sankou>

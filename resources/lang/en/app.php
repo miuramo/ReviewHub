@@ -1,0 +1,25 @@
+<?php
+
+return [
+    '投稿マニュアル' => 'Posting Manual',
+    'welcome' => 'Welcome to our application!',
+    'greeting' => 'Hello, :name!',
+    'dashboard' => 'Dashboard',
+    'profile' => 'Profile',
+    'settings' => 'Settings',
+    'logout' => 'Logout',
+    'save' => 'Save',
+    'cancel' => 'Cancel',
+    'delete' => 'Delete',
+    'confirm' => 'Confirm',
+    'action' => 'Action',
+    'edit' => 'Edit',
+    'view' => 'View',
+    'create' => 'Create',
+    'title' => 'Title',
+    'description' => 'Description',
+    'email' => 'Email Address',
+    'password' => 'Password',
+    'remember_me' => 'Remember Me',
+    'forgot_password' => 'Forgot Your Password?',
+];

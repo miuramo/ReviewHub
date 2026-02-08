@@ -35,6 +35,7 @@ class Kernel extends HttpKernel
         'web' => [
             // \App\Http\Middleware\ReplaceKutenMiddleware::class,
             \App\Http\Middleware\CheckDomain::class,
+            \App\Http\Middleware\SetLocaleMiddleware::class,
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
