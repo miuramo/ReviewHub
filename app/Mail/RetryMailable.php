@@ -45,7 +45,7 @@ class RetryMailable extends Mailable implements ShouldQueue
         $pmail = Mail::to($this->mail_to_cc['to']);
         if (count($this->mail_to_cc['cc']) > 0) $pmail->cc($this->mail_to_cc['cc']);
         if (isset($this->mail_to_cc['bcc']) && count($this->mail_to_cc['bcc']) > 0) $pmail->bcc($this->mail_to_cc['bcc']);
-        info($this->mail_to_cc);
+        // info($this->mail_to_cc);
         $pmail->queue($this);
     }
 
