@@ -27,15 +27,23 @@ class Role extends Model
         'desc'
     ];
 
-    public function users(string $desc='users.id')
+    public function users(string $desc = 'users.id')
     {
         $tbl = 'role_user';
-        return $this->belongsToMany(User::class, $tbl)->orderBy('users.id');//->using(RolesUser::class);
+        return $this->belongsToMany(User::class, $tbl)->orderBy('users.id'); //->using(RolesUser::class);
     }
-    public function users_desc(string $desc='users.id')
+    public function users_desc(string $desc = 'users.id')
     {
         $tbl = 'role_user';
-        return $this->belongsToMany(User::class, $tbl)->orderByDesc($desc);//->using(RolesUser::class);
+        return $this->belongsToMany(User::class, $tbl)->orderByDesc($desc); //->using(RolesUser::class);
+    }
+
+    public function users_except_paper_manager(int $paper_id)
+    {
+        $tbl = 'role_user';
+        $paper = Paper::find($paper_id);
+        $managers = $paper->managers()->pluck("users.id")->toArray();
+        return $this->belongsToMany(User::class, $tbl)->whereNotIn("users.id", $managers)->orderBy('users.id');
     }
 
     public function uids()
@@ -50,10 +58,11 @@ class Role extends Model
         return $this->users()->where("user_id", $user_id)->exists();
     }
 
-    public static function checkRoleUser(string|int $role_id, int $user_id){
-        if (is_integer($role_id)){
+    public static function checkRoleUser(string|int $role_id, int $user_id)
+    {
+        if (is_integer($role_id)) {
             $role = Role::find($role_id);
-        } else if (is_string($role_id)){
+        } else if (is_string($role_id)) {
             $role = Role::where("name", $role_id)->first();
         }
         return $role->containsUser($user_id);
@@ -67,11 +76,11 @@ class Role extends Model
     {
         $roles = Role::orderBy("id")->get();
         $ary = [];
-        foreach($roles as $role){
+        foreach ($roles as $role) {
             if ($this->id >= $role->id) break;
-            $ary []= $role->name;
+            $ary[] = $role->name;
         }
-        if (count($ary)==0) $ary[] = "admin";
+        if (count($ary) == 0) $ary[] = "admin";
         return implode("|", $ary);
     }
 
@@ -80,34 +89,35 @@ class Role extends Model
      * demo = 10
      * meta|rev|aec|pub|award|acc|demo|web|wc|admin
      */
-    public static function resetRolesExcept(int $user_id, $roles){
+    public static function resetRolesExcept(int $user_id, $roles)
+    {
         $user = User::find($user_id);
-        if (is_string($roles)){
+        if (is_string($roles)) {
             $roles = explode("|", $roles);
             $roles = Role::whereIn("name", $roles)->pluck("id")->toArray();
         }
         $user->roles()->detach();
-        foreach($roles as $role){
+        foreach ($roles as $role) {
             $user->roles()->attach(Role::find($role));
         }
         return $roles;
     }
     // テスト用：tinkerから呼び出す
-    public static function setRolesExcept(int $user_id, $roles){
+    public static function setRolesExcept(int $user_id, $roles)
+    {
         $user = User::find($user_id);
-        if (is_string($roles)){
+        if (is_string($roles)) {
             $roles = explode("|", $roles);
             $roles = Role::whereIn("name", $roles)->pluck("id")->toArray();
             info($roles);
         }
         $all = Role::pluck("id")->toArray();
-        foreach($all as $role){
+        foreach ($all as $role) {
             $user->roles()->attach(Role::find($role));
         }
-        foreach($roles as $role){
+        foreach ($roles as $role) {
             $user->roles()->detach(Role::find($role));
         }
         return $user->roles;
     }
-
 }

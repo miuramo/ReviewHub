@@ -88,6 +88,8 @@ Route::middleware('auth')->group(function () {
     //査読管理者による査読者の割り当て等の操作
     Route::get('/paper/{paper}/manage', [PaperController::class, 'manage'])->name('paper.manage');
     Route::post('/paper/{paper}/manage', [PaperController::class, 'manage'])->name('paper.managepost');
+    // 管理者の管理
+    Route::get('/paper/{paper}/addmanager', [PaperController::class, 'addmanager'])->name('paper.addmanager');
 
 
     //アンケート回答
@@ -174,6 +176,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/role_adduser', [RoleController::class, 'adduser'])->name('role.adduser');
     Route::delete('/role/{role}/leave/{user}', [RoleController::class, 'leave'])->name('role.leave');
     Route::put('/role_remove_manager', [RoleController::class, 'remove_manager'])->name('role.remove_manager');
+    Route::put('/role_remove_manager_force', [RoleController::class, 'remove_manager_force'])->name('role.remove_manager_force');
+    Route::put('/role_add_manager_force', [RoleController::class, 'add_manager_force'])->name('role.add_manager_force');
     // 査読割り当て
     Route::get('/role/{role}/revassign/{cat}', [RoleController::class, 'revassign'])->name('role.revassign');
     Route::post('/role/{role}/revassign/{cat}', [RoleController::class, 'revassignpost'])->name('role.revassignpost');

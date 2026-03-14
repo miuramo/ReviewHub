@@ -109,7 +109,7 @@
 
 
     <div class="py-2 px-6">
-        <x-element.h1>投稿管理者：
+        <x-element.h1c color="yellow">投稿管理者：
             @foreach ($paper->managers as $user)
                 <x-element.login_as :user="$user"></x-element.login_as>
                 @if ($user->id == Auth::user()->id)
@@ -120,7 +120,14 @@
             <x-bb.bb_link :submit="$paper->currentsubmit" type="4"></x-bb.bb_link>
             <span class="mx-2"></span>
             <x-bb.bb_link :submit="$paper->currentsubmit" type="3"></x-bb.bb_link>
-        </x-element.h1>
+            <span class="mx-2"></span>
+            @can('manage_paper', $paper->id)
+                <x-element.linkbutton href="{{ route('paper.addmanager', ['paper' => $paper->id]) }}" color="cyan"
+                    size="xs" target="_self">
+                    投稿管理者を管理する
+                </x-element.linkbutton>
+            @endcan
+        </x-element.h1c>
     </div>
 
     <div class="py-2 px-6">

@@ -273,6 +273,7 @@ class RoleController extends Controller
         return view('role.index')->with(compact("roles"));
     }
 
+    /** 本人が自発的に、査読管理者から外れる */
     public function remove_manager(Request $req)
     {
         // info($req->all());
@@ -284,6 +285,26 @@ class RoleController extends Controller
         $paper->save();
 
         return redirect()->route('role.top', ['role' => 'ec'])->with('feedback.success', '査読管理者を脱退しました。' . sprintf("%04d", $req->input('paper_id')) . "の状況は今後参照できなくなります。");
+    }
+    /** managerが他者を強制的に査読管理者から外す */
+    public function remove_manager_force(Request $req)
+    {
+        if (!auth()->user()->can('role_any', 'manager')) abort(403, 'manager権限が必要です');
+        $paper = Paper::find($req->input('paper_id'));
+        $paper->managers()->detach($req->input('user_id'));
+        $paper->save();
+        $user = User::find($req->input('user_id'));
+        return back()->with('feedback.success', "{$user->name}さんを査読管理者から外しました。");
+    }
+    /** managerが他者を強制的に査読管理者に追加する */
+    public function add_manager_force(Request $req)
+    {
+        if (!auth()->user()->can('role_any', 'manager')) abort(403, 'manager権限が必要です');
+        $paper = Paper::find($req->input('paper_id'));
+        $paper->managers()->attach($req->input('user_id'));
+        $paper->save();
+        $user = User::find($req->input('user_id'));
+        return back()->with('feedback.success', "{$user->name}さんを査読管理者に追加しました。");
     }
 
     /**
