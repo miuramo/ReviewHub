@@ -8,7 +8,7 @@
 /vendor
 .env
 .env_*
-dotenv_*
+# dotenv_*
 .env.testing
 .env.backup
 .env.production
@@ -22,7 +22,7 @@ yarn-error.log
 /.idea
 /.vscode
 .DS_Store
-*.sh
+#*.sh
 
 *.orig
 *.rej
