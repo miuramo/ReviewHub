@@ -485,7 +485,7 @@ class Paper extends Model
             if ($file->pending) continue;
             if ($file->archived) continue; // アーカイブされたファイルは無視する
             if ($file->mime == "application/pdf") {
-                $non_embedded = $file->check_non_embedded();
+                $non_embedded = $file->font_not_embedded();
                 if (count($non_embedded) > 0) {
                     $errorary[] = "PDFファイル「{$file->filename}」に非埋め込みフォントが含まれています。すべてのフォントを埋め込んでください。";
                     continue;
