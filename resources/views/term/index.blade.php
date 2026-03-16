@@ -13,7 +13,24 @@
     @endif
 
     <div class="mx-6">
-        
+        <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+            <thead class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">年度</th>
+                    <th scope="col" class="px-6 py-3">役職</th>
+                    <th scope="col" class="px-6 py-3">氏名（所属）</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($terms as $term)
+                    <tr class="border-b bg-white dark:border-gray-700 dark:bg-gray-800">
+                        <td class="px-6 py-4">{{ $term->year }}</td>
+                        <td class="px-6 py-4">{{ $term->post->name }}</td>
+                        <td class="px-6 py-4">{{ $term->user->name }} ({{ $term->user->affil }})</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 
 

@@ -101,7 +101,7 @@ class RoleController extends Controller
                     ]);
                 }
             }
-            return redirect()->route('role.edit', ["role" => $name])->with('feedback.success', "チェックをいれた人に、{$fiscal_year}年度の役職任期を追加しました。");
+            return redirect()->route('role.edit', ["role" => $name])->with('feedback.success', "チェックをいれた人に、「{$fiscal_year}年度 {$post->name}」の役職任期を追加しました。");
         } else if ($req->has("action") && $req->input("action") == "otherroles") {
             // valueがonの要素をあつめる。u_{uid}になっているので、とりだす。
             $target_users = []; // uid (integer) の配列
