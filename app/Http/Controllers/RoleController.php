@@ -89,7 +89,7 @@ class RoleController extends Controller
             if ($fiscal_year == null || !is_numeric($fiscal_year)) {
                 return redirect()->route('role.edit', ["role" => $name])->with('feedback.error', "年度が選択されていませんでした。");
             }
-            $post = Post::find($req->input("post"));
+            $post = Post::find($req->input("post_id"));
             foreach ($target_users as $uuid) {
                 $u = User::find($uuid);
                 if ($u != null) {
