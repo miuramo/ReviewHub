@@ -35,10 +35,13 @@ class LogAccess
             }
         });
 
+        $url = substr($request->fullUrl(), strlen($rooturl));
+        if ($url == '/file/favicon' || strlen($url) == 0) return $hozon; // faviconのアクセスはログに残さない
+
         try {
             $accessLog = new ModelsLogAccess([
                 'uid' => $uid,
-                'url' => substr($request->fullUrl(), strlen($rooturl)),
+                'url' => $url,
                 'method' => $request->method(),
                 'request' => $allreq, //'-',// $request->headers->all(),
             ]);
