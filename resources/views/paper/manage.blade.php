@@ -121,8 +121,8 @@
             <span class="mx-2"></span>
             <x-bb.bb_link :submit="$paper->currentsubmit" type="3"></x-bb.bb_link>
             <span class="mx-2"></span>
-            @can('manage_paper', $paper->id)
-                <x-element.linkbutton href="{{ route('paper.addmanager', ['paper' => $paper->id]) }}" color="cyan"
+            @can('manage_papermanager', $paper->id)
+                <x-element.linkbutton href="{{ route('paper.manage_papermanager', ['paper' => $paper->id]) }}" color="cyan"
                     size="xs" target="_self">
                     投稿管理者を管理する
                 </x-element.linkbutton>

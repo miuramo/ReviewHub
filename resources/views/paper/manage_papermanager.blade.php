@@ -23,14 +23,16 @@
             </div>
 
             <div class="py-2 px-4">
+                <x-element.h1c color="yellow"> 現在の投稿管理者：
                 @foreach ($paper->managers as $user)
                     <x-element.login_as :user="$user"></x-element.login_as>
                     <x-role.remove_manager_force :submit_id="$paper->currentsubmit->id" :user_id="$user->id"></x-role.remove_manager_force>
                     <span class="mx-2"></span>
                 @endforeach
+                </x-element.h1c>
             </div>
 
-            <div class="py-2 px-4">
+            <div class="py-2 px-4">投稿管理者候補：
                 @foreach ($candidates as $user)
                     <x-element.login_as :user="$user"></x-element.login_as>
                     <x-role.add_manager_force :submit_id="$paper->currentsubmit->id" :user_id="$user->id"></x-role.add_manager_force>

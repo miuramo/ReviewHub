@@ -596,7 +596,7 @@ class PaperController extends Controller
         return view('paper.finished-list');
     }
 
-    public function addmanager(Request $req, int $paper_id)
+    public function manage_papermanager(Request $req, int $paper_id)
     {
         $paper = Paper::findOrFail($paper_id);
         if (!auth()->user()->can('manage_review', $paper_id)) abort(403, "you are not a manager");
@@ -604,6 +604,6 @@ class PaperController extends Controller
         $users = User::where('valid', 1)->get();
         $revrole = Role::findByIdOrName('rev');
         $candidates = $revrole->users_except_paper_manager($paper_id)->where('valid', 1)->get();
-        return view('paper.addmanager')->with(compact("paper", "users", "revrole", "candidates"));
+        return view('paper.manage_papermanager')->with(compact("paper", "users", "revrole", "candidates"));
     }
 }

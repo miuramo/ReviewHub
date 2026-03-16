@@ -133,5 +133,15 @@ class AuthServiceProvider extends ServiceProvider
             return ($user->managed_papers()->count() > 0);
         });
 
+        Gate::define('manage_papermanager', function ($user, $paper) {
+            // システムマネージャで、かつ、現在当該論文のペーパーマネージャであること。
+            if (is_integer($paper)) {
+                $paper = Paper::find($paper);
+            }
+            if ($user->can('role', 'manager') && $paper->isManager($user->id)) {
+                return true;
+            }
+            return false;
+        });
     }
 }

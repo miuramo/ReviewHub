@@ -291,6 +291,9 @@ class RoleController extends Controller
     {
         if (!auth()->user()->can('role_any', 'manager')) abort(403, 'manager権限が必要です');
         $paper = Paper::find($req->input('paper_id'));
+        if (!auth()->user()->can('manage_papermanager', $paper)) {
+            return back()->with('feedback.error', 'この論文の査読管理者を外す権限がありません。');
+        }
         $paper->managers()->detach($req->input('user_id'));
         $paper->save();
         $user = User::find($req->input('user_id'));
@@ -301,6 +304,9 @@ class RoleController extends Controller
     {
         if (!auth()->user()->can('role_any', 'manager')) abort(403, 'manager権限が必要です');
         $paper = Paper::find($req->input('paper_id'));
+        if (!auth()->user()->can('manage_papermanager', $paper)) {
+            return back()->with('feedback.error', 'この論文の査読管理者に追加する権限がありません。');
+        }
         $paper->managers()->attach($req->input('user_id'));
         $paper->save();
         $user = User::find($req->input('user_id'));
