@@ -28,7 +28,7 @@
 </x-element.component_name>
 <x-element.h1c>投稿論文一覧（査読中）</x-element.h1c>
 
-<x-paper.psummarytable_cm :all="$current" :heads="$heads" size="md" />
+<x-paper.psummarytable2 :all="$current" :heads="$heads" size="md" />
 <div class="my-8"></div>
 
 <x-element.h1>
