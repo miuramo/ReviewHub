@@ -1,5 +1,6 @@
 APP_NAME="ReviewHub"
-APP_ENV=local
+APP_ENV=testing
+#APP_ENV=local
 APP_KEY=base64:E+Gvb9lSE8m+q1k2P6nEnFN900h+rf++nqTCVAJAoME=
 
 APP_DEBUG=true
@@ -31,7 +32,7 @@ PUB_DL_PREFIX="ReviewHub"
 DB_CONNECTION=mysql
 DB_HOST=localhost
 DB_PORT=3306
-DB_DATABASE=reviewhub
+DB_DATABASE=test_reviewhub
 DB_USERNAME=${DB_DATABASE}
 DB_PASSWORD=${DB_DATABASE}
 

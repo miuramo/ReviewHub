@@ -48,6 +48,19 @@ class SettingSeeder extends Seeder
             'isnumber' => false,
             'isbool' => false,
         ]);
+        # 投稿案内・マニュアルURL
+        Setting::factory()->create([
+            'name' => "CFP_URL",
+            'value' => "https://scrapbox.io/reviewhub/%E6%8A%95%E7%A8%BF%E3%83%9E%E3%83%8B%E3%83%A5%E3%82%A2%E3%83%AB",
+            'isnumber' => false,
+            'isbool' => false,
+        ]);
+        Setting::factory()->create([
+            'name' => "CFP_LINKTEXT",
+            'value' => "投稿案内・マニュアル",
+            'isnumber' => false,
+            'isbool' => false,
+        ]);
 
         // Setting seeder
         Setting::seeder();
