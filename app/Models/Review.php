@@ -371,9 +371,7 @@ class Review extends MetaModel
     public function judge()
     {
         $ret = $this->scores_and_comments(1, 0, 0);
-        // info($ret);
         return $ret['判定結果'] ?? $ret['措置'] ?? '??';
-
     }
 
     /**

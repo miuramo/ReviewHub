@@ -254,4 +254,15 @@ class Submit extends MetaModel
         $this->ec_decision_at = now();
         $this->save();
     }
+
+    public function judge()
+    {
+        $out = [];
+        foreach ($this->reviews as $review) {
+            $out[] = mb_substr($review->judge(), 0, 1);
+        }
+        $meta = array_shift($out);
+        $rev12 = implode('＋', $out);
+        return $rev12 . "→" . $meta;
+    }
 }

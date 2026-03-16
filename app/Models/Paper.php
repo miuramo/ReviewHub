@@ -227,7 +227,7 @@ class Paper extends Model
 
     public function submits()
     {
-        return $this->hasMany(Submit::class)->orderBy('round', 'desc');
+        return $this->hasMany(Submit::class)->orderBy('round', 'asc');
     }
     public function submits_desc()
     {
@@ -949,5 +949,15 @@ class Paper extends Model
     {
         if ($dt == null) return "";
         return date("Y年 m月 d日", strtotime($dt));
+    }
+
+    public function judge()
+    {
+        $result = [];
+        foreach ($this->submits as $submit) {
+            $result[$submit->round] = $submit->judge();
+        }
+        ksort($result);
+        return $result;
     }
 }

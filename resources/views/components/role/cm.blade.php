@@ -76,75 +76,10 @@
         </div>
     @endif
 
-    @php
-        $recentapproved = App\Models\Task::with('submit')
-            ->where('subject_id', auth()->id())
-            ->where('completed', 1)
-            ->where('approved', 1)
-            ->orderBy('updated_at', 'desc')
-            ->limit(6)
-            ->get();
-    @endphp
-    @if (count($recentapproved) > 0)
-        <div class="px-6 py-4">
-            <x-element.h1>最近完了した査読タスク</x-element.h1>
-            @foreach ($recentapproved as $task)
-                <div class="mx-6">
-                    <x-task.revfinishpanel :task="$task" />
-                </div>
-            @endforeach
-        </div>
-    @endif
 
-
-    @php
-        $myreviews = App\Models\Review::where('user_id', auth()->id())
-            ->whereNotNull('end_at')
-            ->orderBy('created_at', 'desc')
-            ->get();
-    @endphp
-    <div class="px-6 py-4">
-        <x-element.h1>最近担当した査読</x-element.h1>
-        @foreach ($myreviews as $rev)
-            <div class="mx-6 border-2 px-3 py-4 pb-3 bg-white">
-                <x-element.paperid size=1 :paper_id="$rev->paper->id" />
-                第{{ $rev->submit->round }}回査読<br>
-
-                {{ $rev->paper->title }}<br>
-
-                <div class="bg-gray-200 text-sm p-2 mx-2 dark:text-gray-300 dark:bg-gray-500">
-                    論文ファイル：
-                    @foreach ($rev->paper->past_pdf_files() as $file)
-                        <a class="underline text-blue-600 hover:bg-lime-200 dark:text-blue-200 dark:hover:bg-lime-500"
-                            href="{{ route('file.showhash', ['file' => $file->id, 'hash' => substr($file->key, 0, 10)]) }}"
-                            target="_blank"> {{ $file->origname }} </a>
-                        <span class="mx-4"></span>
-                    @endforeach
-                </div>
-
-                {{-- <span class="mx-2"></span> --}}
-
-                <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green">
-                    査読報告の参照
-                </x-element.linkbutton>
-                <span class="mx-4"></span>
-                @if (!$rev->submit->ec_decision_at)
-                    <x-element.linkbutton href="{{ route('review.edit', ['review' => $rev]) }}" color="blue">
-                        査読報告の修正
-                    </x-element.linkbutton>
-                @else
-                    <span
-                        class="text-sm text-gray-300 hover:text-gray-500">{{ substr($rev->submit->ec_decision_at, 0, 10) }}
-                        通知済み（査読報告の修正はできません）</span>
-
-                    <x-element.linkbutton2 href="{{ $rev->submit->url_reviewresult_for_author() }}" color="purple"
-                        target="_blank" size="sm">
-                        著者に通知した査読結果 </x-element.linkbutton2>
-                @endif
-                <span class="mx-4"></span>
-                <x-bb.bb_link :submit="$rev->submit" type="2" :rev_id="$rev->id" size="sm" label="投稿管理者との掲示板">
-                </x-bb.bb_link>
-            </div>
-        @endforeach
+    <div class="py-2 px-6">
+        <livewire:inf-list-cm />
     </div>
+
+
 </div>
