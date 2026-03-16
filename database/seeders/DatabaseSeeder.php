@@ -40,14 +40,6 @@ class DatabaseSeeder extends Seeder
                 'affil' => env('INITIAL_AFFIL'), //'Example',
                 'password' => Hash::make(env('INITIAL_PASSWORD')),
             ]);
-            if (env('APP_DEBUG')) {
-                User::factory()->create([
-                    'name' => "当麻 哲哉",   //'First User',
-                    'email' => "miura@moto.qee.jp", //'firstuser@example.com',
-                    'affil' => "慶應義塾大学", //'Example',
-                    'password' => Hash::make('jcs'),
-                ]);
-            }
         }
         if (Role::count() == 0) {
             foreach (Role::$roles as $name => $desc) {
@@ -66,7 +58,7 @@ class DatabaseSeeder extends Seeder
             $manager->navi = "x";
             $manager->save();
         }
-        if (env('APP_DEBUG')) {
+        if (env('APP_ENV') === 'testing' && Paper::count() == 0) {
             Paper::firstOrCreate([
                 'category_id' => 1,
                 'owner' => 3,
@@ -88,7 +80,7 @@ class DatabaseSeeder extends Seeder
                     Role::findByIdOrName('aec')->users()->attach($i);
                 }
                 for ($i = 8; $i <= 12; $i++) {
-                    Role::findByIdOrName('meta')->users()->attach($i);
+                    Role::findByIdOrName('cm')->users()->attach($i);
                 }
                 for ($i = 13; $i <= 24; $i++) {
                     Role::findByIdOrName('rev')->users()->attach($i);
@@ -117,6 +109,7 @@ class DatabaseSeeder extends Seeder
             StatusSeeder::class,
             WorkflowSeeder::class,
             FileSeeder::class,
+            PostSeeder::class,
         ]);
     }
 }

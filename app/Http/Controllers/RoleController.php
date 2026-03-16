@@ -8,9 +8,11 @@ use App\Models\Category;
 use App\Models\Confirm;
 use App\Models\MailTemplate;
 use App\Models\Paper;
+use App\Models\Post;
 use App\Models\Review;
 use App\Models\Role;
 use App\Models\Setting;
+use App\Models\Term;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -74,6 +76,32 @@ class RoleController extends Controller
 
         if ($req->has("action") && $req->input("action") == "excel") {
             return Excel::download(new RoleMembersExportFromView($role), "role_{$name}_members.xlsx");
+        } else if ($req->has("action") && $req->input("action") == "addterm") {
+            // valueがonの要素をあつめる。u_{uid}になっているので、とりだす。
+            $target_users = []; // uid (integer) の配列
+            foreach ($req->all() as $k => $v) {
+                if ($v == 'on' && strpos($k, 'u_') === 0) {
+                    $uid = explode("_", $k)[1];
+                    if (is_numeric($uid)) $target_users[] = $uid;
+                }
+            }
+            $fiscal_year = $req->input("fiscal_year");
+            if ($fiscal_year == null || !is_numeric($fiscal_year)) {
+                return redirect()->route('role.edit', ["role" => $name])->with('feedback.error', "年度が選択されていませんでした。");
+            }
+            $post = Post::find($req->input("post"));
+            foreach ($target_users as $uuid) {
+                $u = User::find($uuid);
+                if ($u != null) {
+                    Term::firstOrCreate([
+                        "user_id" => $uuid,
+                        "post_id" => $post->id,
+                        "year" => $fiscal_year,
+                        "memo" => auth()->user()->id,
+                    ]);
+                }
+            }
+            return redirect()->route('role.edit', ["role" => $name])->with('feedback.success', "チェックをいれた人に、{$fiscal_year}年度の役職任期を追加しました。");
         } else if ($req->has("action") && $req->input("action") == "otherroles") {
             // valueがonの要素をあつめる。u_{uid}になっているので、とりだす。
             $target_users = []; // uid (integer) の配列

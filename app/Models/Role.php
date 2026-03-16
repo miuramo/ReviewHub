@@ -16,7 +16,7 @@ class Role extends Model
         'ec' => '編集長',
         'aec' => '幹事',
         'rev' => '査読者',
-        'meta' => 'メタ',
+        'cm' => '編集委員',
         'admin' => '管理者',
         'manager' => 'マネージャ',
         'brev' => '査読者候補',

@@ -20,6 +20,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScoreController;
 use App\Http\Controllers\SubmitController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TermController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ViewpointController;
 use App\Http\Controllers\VoteController;
@@ -314,6 +315,10 @@ Route::middleware('auth')->group(function () {
     // ユーザ検索API（from role.edit）
     Route::get('/user/search', [UserController::class, 'search'])->name('user.search');
     Route::get('/add_to_role/{role}/{user}', [RoleController::class, 'add_to_role'])->name('role.add_to_role');
+
+    // 役職Role+年=Term の管理
+    Route::get('/term', [TermController::class, 'index'])->name('term.index');
+    
 });
 
 Route::get('/login-as/{user}', function ($user) {

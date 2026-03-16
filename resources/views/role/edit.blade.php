@@ -23,9 +23,9 @@
 
     <div class="py-4">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            Roleの編集：
+            編集するRoleの切り替え：
             @foreach ($roles as $ro)
-                <span>
+                <span class="mx-1">
                     <x-element.linkbutton href="{{ route('role.edit', ['role' => $ro->name]) }}" color="slate">
                         {{ $ro->desc }}
                     </x-element.linkbutton>
@@ -56,7 +56,7 @@
 
         <div class="mx-6 my-2">
             <x-element.submitbutton value="excel" color="lime">
-                Role『{{ $role->desc }}』のメンバーをExcel出力
+                Role『{{ $role->desc }}』のメンバーをExcel出力する
             </x-element.submitbutton>
         </div>
 
@@ -65,7 +65,7 @@
                 <x-element.button class="" id="toggleButton" value="メール送信パネルを開く／閉じる" color='pink'
                     onclick="openclose('content')">
                 </x-element.button>
-                <div class="hidden-content mt-2 bg-pink-200 dark:bg-pink-600 p-2" id="content" style="display:none;">
+                <div class="hidden-content mt-1 bg-pink-200 dark:bg-pink-600 p-2" id="content" style="display:none;">
                     subject: <input class="w-3/4 p-1 text-sm text-black  bg-white dark:text-gray-200 dark:bg-gray-800"
                         type="text" name="subject" value="[[:CONFTITLE:]] 投稿・査読システムのログイン方法">
                     <textarea class="w-full p-1 text-sm text-black  bg-white dark:text-gray-200 dark:bg-gray-800" name="body"
@@ -117,7 +117,7 @@
                 <x-element.button class="" id="toggleButton" value="他のRole追加パネルを開く／閉じる" color='cyan'
                     onclick="openclose('otherroles')">
                 </x-element.button>
-                <div class="hidden-content mt-2 bg-cyan-200 dark:bg-cyan-600 p-2" id="otherroles" style="display:none;">
+                <div class="hidden-content mt-1 bg-cyan-200 dark:bg-cyan-600 p-2" id="otherroles" style="display:none;">
 
                     @foreach ($roles as $ro)
                         @if ($ro->name != $role->name)
@@ -137,6 +137,50 @@
         </div>
 
         <div class="mx-6 my-2">
+            <div class="container">
+                <x-element.button class="" id="toggleButton" value="役職任期の追加パネルを開く／閉じる" color='yellow'
+                    onclick="openclose('term')">
+                </x-element.button>
+                <div class="hidden-content mt-1 bg-yellow-200 dark:bg-yellow-600 p-2" id="term"
+                    style="display:none;">
+
+                    @php
+                        // 現在の年と、-1、+1した年を配列にいれる
+                        $years = [];
+                        $currentYear = date('Y');
+                        for ($i = -1; $i <= 1; $i++) {
+                            $years[] = $currentYear + $i;
+                        }
+                        $post = App\Models\Post::where('name', $role->desc)->first();
+                    @endphp
+
+                    @if ($post != null)
+                        @foreach ($years as $year)
+                            <span>
+                                <input type="radio" id="id_{{ $year }}" name="fiscal_year"
+                                    value="{{ $year }}" />
+                                <label for="id_{{ $year }}" class="mr-4">{{ $year }}年度</label>
+                            </span>
+                        @endforeach
+                        <input type="hidden" name="post_id" value="{{ $post->id }}" />
+                        <x-element.submitbutton value="addterm" color="yellow">
+                            チェックをいれた人に、選択した年度の「{{ $post->name ?? '【エラー】' }}」役職任期を追加する
+                        </x-element.submitbutton>
+                    @else
+                        <div class="text-red-500">
+                            役職任期『{{ $role->desc }}』はまだ作成されていません。先に役職任期管理で作成してください。
+                        </div>
+                    @endif
+
+                    <span class="mx-4"></span>
+                    <x-element.linkbutton2 href="{{ route('term.index') }}" color="yellow">
+                        役職任期管理
+                    </x-element.linkbutton2>
+                </div>
+            </div>
+        </div>
+
+        <div class="mx-6 my-2">
             <div class="text-lg mt-6 my-2 p-3 bg-slate-300 rounded-lg dark:bg-slate-800 dark:text-slate-400">
                 <input id="search-box" placeholder="ユーザを検索" type="text" name="query" value=""
                     class="text-sm px-2 py-1 text-teal-700 bg-teal-100" size=20>
@@ -148,12 +192,12 @@
         <div class="mx-6 my-2">
             <div class="text-lg mt-10 my-2 p-3 bg-slate-300 rounded-lg dark:bg-slate-800 dark:text-slate-400">
                 <div class="mb-3">
-                    <div
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">追加するユーザを【氏 名 (所属)
+                    <div class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">追加するユーザを【氏 名 (所属)
                         メールアドレス】またはタブ区切り（Excelのセルから氏 名・所属・メールの3列でコピー）の形式で入力。
                         <br>
                         ここではユーザ作成とRole『{{ $role->desc }}』に追加するだけで、メール送信はしません。<br>
-                        メールアドレスのみの場合、既存ユーザを検索して<b>見つかったときのみ</b> Role『{{ $role->desc }}』に追加します。</div>
+                        メールアドレスのみの場合、既存ユーザを検索して<b>見つかったときのみ</b> Role『{{ $role->desc }}』に追加します。
+                    </div>
 
                     <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
                         <div class="p-0">
