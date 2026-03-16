@@ -43,14 +43,10 @@
             <x-role.rev :role="$role">
             </x-role.rev>
         @endif
-        @if ($role->name == 'meta')
-            <x-role.meta :role="$role">
-            </x-role.meta>
+        @if ($role->name == 'cm')
+            <x-role.cm :role="$role">
+            </x-role.cm>
         @endif
-        {{-- @if ($role->name == 'meta')
-            <x-role.reviewer :role="$role">
-            </x-role.reviewer>
-        @endif --}}
         @if ($role->name == 'ec' || $role->name == 'aec')
             <x-role.ec :role="$role">
             </x-role.ec>
