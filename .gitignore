@@ -23,6 +23,7 @@ yarn-error.log
 /.vscode
 .DS_Store
 #*.sh
+run_*.sh
 
 *.orig
 *.rej
