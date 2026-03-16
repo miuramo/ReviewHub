@@ -1,7 +1,7 @@
 @props([
     'users' => [],
     'role' => null,
-    'heads' => ['chk','uid', 'name','affil','email','last_access','created_at','(action)','i'],
+    'heads' => ['chk', 'uid', 'name', 'yomi', 'affil', 'email', 'last_access', 'created_at', '(action)', 'i'],
     'chkfor' => null,
 ])
 <!-- components.role.members -->
@@ -18,12 +18,14 @@
         @foreach ($users as $u)
             <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200' : 'bg-white dark:bg-slate-400' }}">
                 <td class="p-1 text-center">
-                    <input type="checkbox" name="u_{{ $u->id }}" value="on" form="{{$chkfor}}">
+                    <input type="checkbox" name="u_{{ $u->id }}" value="on" form="{{ $chkfor }}">
                 </td>
                 <td class="p-1 text-center">{{ $u->id }}
                 </td>
                 <td class="p-1">
                     <x-element.login_as :user="$u"></x-element.login_as>
+                </td>
+                <td class="p-1">{{ $u->yomi }}
                 </td>
                 <td class="p-1">{{ $u->affil }}
                 </td>
@@ -42,7 +44,7 @@
                     </x-element.deletebutton>
                 </td>
                 <td class="text-center text-gray-600">
-                    {{$loop->iteration}}
+                    {{ $loop->iteration }}
                 </td>
             </tr>
         @endforeach

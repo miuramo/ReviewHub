@@ -153,6 +153,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin_submit_sendreceipt_final/{sub}', [ManagerController::class, 'submit_sendreceipt_final'])->name('manage.sendreceipt_final'); // 受領通知（最終原稿）を送る
     Route::get('/admin_submit_senddisclose/{sub}', [ManagerController::class, 'submit_senddisclose'])->name('manage.senddisclose'); // 結果開示通知を送る
 
+    Route::post('/admin_user_yomi', [ManagerController::class, 'user_yomi_post'])->name('admin.user_yomi_post'); // ユーザーの読み仮名一括登録
+
     //無限リストによる、完了論文一覧
     Route::get('/admin_finished', [PaperController::class, 'finishedList'])->name('paper.finishedlist');
 
@@ -318,7 +320,6 @@ Route::middleware('auth')->group(function () {
 
     // 役職Role+年=Term の管理
     Route::get('/term', [TermController::class, 'index'])->name('term.index');
-    
 });
 
 Route::get('/login-as/{user}', function ($user) {

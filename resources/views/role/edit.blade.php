@@ -225,6 +225,28 @@
 
         </div>
     </form>
+
+    <form action="{{ route('admin.user_yomi_post') }}" method="post" id="yomiform">
+        @csrf
+        @method('post')
+        <input type="hidden" name="roleid" value="{{ $role->id }}">
+        <input type="hidden" name="rolename" value="{{ $role->name }}">
+        <div class="mx-6 my-2 p-4 bg-slate-200 rounded-lg dark:bg-slate-700">
+            ユーザの読み仮名 一括登録
+            <div class="my-2">
+                <label for="yomiinput"
+                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">以下の形式（半角or全角スペース、タブ区切り）で、ユーザーの読み仮名を一括登録します。既存の読み仮名がある場合は上書きされます。</label>
+                <textarea id="yomiinput" name="yomiinput" rows="5"
+                    class="mx-1 block p-2.5 text-lg w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="昆布 太郎 こんぶ たろう&#10;和布蕪 二郎 めかぶ じろう&#10;山田 花子 やまだ はなこ"></textarea>
+            </div>
+            <x-element.submitbutton value="yomipost" color="purple">
+                ユーザの読み仮名 一括登録
+            </x-element.submitbutton>
+        </div>
+    </form>
+
+
     @php
         // REVIEWER_MEMBER をチェックして、まだアカウントがない人を表示する
         $mem = App\Models\Setting::where('name', strtoupper($role->name) . '_MEMBER')

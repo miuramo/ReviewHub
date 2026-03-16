@@ -19,6 +19,7 @@
                     <th scope="col" class="px-6 py-3">年度</th>
                     <th scope="col" class="px-6 py-3">役職</th>
                     <th scope="col" class="px-6 py-3">氏名（所属）</th>
+                    <th scope="col" class="px-6 py-3">よみがな</th>
                 </tr>
             </thead>
             <tbody>
@@ -27,6 +28,8 @@
                         <td class="px-6 py-4">{{ $term->year }}</td>
                         <td class="px-6 py-4">{{ $term->post->name }}</td>
                         <td class="px-6 py-4">{{ $term->user->name }} ({{ $term->user->affil }})</td>
+                        <td class="px-6 py-4">{{ $term->user->yomi }}</td>
+
                     </tr>
                 @endforeach
             </tbody>

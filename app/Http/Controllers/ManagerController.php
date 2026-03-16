@@ -109,7 +109,7 @@ class ManagerController extends Controller
     {
         if (!auth()->user()->can('role_any', 'ec|pub|web')) abort(403);
         RoRJob::dispatch();
-        return redirect()->route('role.top',['role'=>'pub'])->with('feedback.success', 'RoRデータ収集を開始しました。1分ほどすると設定されます。');
+        return redirect()->route('role.top', ['role' => 'pub'])->with('feedback.success', 'RoRデータ収集を開始しました。1分ほどすると設定されます。');
     }
 
 
@@ -274,7 +274,7 @@ class ManagerController extends Controller
         } else {
             $mesround = "";
         }
-        if ($submit->accept_id == 2){
+        if ($submit->accept_id == 2) {
             $conditional_accept_message = "再投稿期限は、本日より30日後の " . date('Y年m月d日', strtotime('+30 days')) . " です。\n";
             $conditional_accept_message .= "（再投稿期限は、著者による査読結果確認のあと、投稿一覧画面でも確認することができます。）\n\n";
             $conditional_accept_message .= "再投稿の方法は、投稿一覧 → 論文サムネイル画像をクリック → 投稿編集画面上部 に記載されますので、こちらの指示に従ってください。\n\n";
@@ -287,7 +287,7 @@ class ManagerController extends Controller
             "【論文編集委員会より】第{$numround}回査読結果の開示",
             "{$paper->paperowner->affil}  {$paper->paperowner->name}様\n\n日本創造学会論文編集委員会の {$myname} と申します。\n\n" .
                 "投稿いただいておりました論文「{$submit->paper->title}」の、\n第{$numround}回査読結果を開示いたしました。\n\n" .
-                "査読結果は、投稿一覧 → 第{$numround}回査読結果（オレンジ色のボタン）から、確認してください。\n" . 
+                "査読結果は、投稿一覧 → 第{$numround}回査読結果（オレンジ色のボタン）から、確認してください。\n" .
                 "査読結果を確認されましたら、査読結果ページ上部の「査読結果を確認した」ボタンを押してください。\n\n" .
                 $conditional_accept_message .
                 "ご不明な点がありましたら、掲示板にてご質問ください。\n\n"
@@ -305,9 +305,56 @@ class ManagerController extends Controller
         // reviews について、group by user_id, target で集計し、各査読者の担当した論文数、レビュー数を取得
         $review_stats = Review::select('user_id', 'target', DB::raw('count(*) as review_count'))
             ->groupBy('user_id', 'target')
-            ->orderBy('target','desc')->orderBy('review_count', 'desc')
+            ->orderBy('target', 'desc')->orderBy('review_count', 'desc')
             ->get();
         $users = User::whereIn('id', $review_stats->pluck('user_id'))->get()->keyBy('id');
         return view('admin.stats')->with(compact('review_stats', 'users'));
+    }
+
+    public function user_yomi_post(Request $req)
+    {
+        if (!auth()->user()->can('role_any', 'admin|manager|pc')) abort(403);
+
+        $roleid = $req->input('roleid');
+        $input = $req->input('yomiinput');
+        $lines = explode("\n", $input);
+        $lines = array_map("trim", $lines);
+        $count = 0;
+        foreach ($lines as $line) {
+            // $lineにふくまれる全角スペースを半角スペースに変換し、タブも半角スペースに変換する
+            $line = str_replace("　", " ", $line);
+            $line = str_replace("\t", " ", $line);
+            // 連続する半角スペースを;;に変換する
+            $line = preg_replace('/[ ]+/', ';;', $line);
+
+            $ary = explode(";;", $line);
+            $ary = array_map("trim", $ary);
+            if (count($ary) >= 2) {
+                $user = User::where("name", $ary[0] . " " . $ary[1])->whereIn("id", function ($query) use ($roleid) {
+                    $query->select('user_id')
+                        ->from('role_user')
+                        ->where('role_id', $roleid);
+                })->first();
+                if ($user) {
+                    $user->yomi = $ary[2] . " " . $ary[3];
+                    $user->save();
+                    $count++;
+                } else {
+                    $u2 = User::where("name", "like", "%" . $ary[0] . "%")->where("name", "like", "%" . $ary[1] . "%")->whereIn("id", function ($query) use ($roleid) {
+                        $query->select('user_id')
+                            ->from('role_user')
+                            ->where('role_id', $roleid);
+                    })->first();
+                    if ($u2) {
+                        $u2->yomi = $ary[2] . " " . $ary[3];
+                        $u2->save();
+                        $count++;
+                    } else {
+                        info("ユーザー " . $ary[0] . " " . $ary[1] . " が見つかりません。");
+                    }
+                }
+            }
+        }
+        return redirect()->route('role.edit', ['role' => $req->input('rolename')])->with('feedback.success', 'ユーザーの読み仮名を ' . $count . ' 件登録しました。');
     }
 }
