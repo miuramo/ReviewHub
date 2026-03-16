@@ -481,12 +481,19 @@ class Paper extends Model
         $cat = Category::find($this->category_id);
         if ($cat == null) return []; //通常はありえないが、テストを通すため...
         foreach ($this->files as $file) {
-            // if ($file->mime == "application/pdf") {
             if ($file->deleted) continue;
             if ($file->pending) continue;
             if ($file->archived) continue; // アーカイブされたファイルは無視する
-            $checkary[$file->filetype_id][] = $file->id;
-            // }
+            if ($file->mime == "application/pdf") {
+                $non_embedded = $file->check_non_embedded();
+                if (count($non_embedded) > 0) {
+                    $errorary[] = "PDFファイル「{$file->filename}」に非埋め込みフォントが含まれています。すべてのフォントを埋め込んでください。";
+                    continue;
+                }
+                $checkary[$file->filetype_id][] = $file->id;
+            } else {
+                $checkary[$file->filetype_id][] = $file->id;
+            }
         }
         // それぞれのファイルの数をチェックする
         if (!isset($checkary[1]) || count($checkary[1]) == 0) {
@@ -719,7 +726,7 @@ class Paper extends Model
             $ary = array_map("trim", $ary);
             // ここまでで、ary[0]には氏名、ary[1]には所属がはいる
             if (isset($ary[1])) {
-                $ary[1] = str_replace(" ","", $ary[1]);
+                $ary[1] = str_replace(" ", "", $ary[1]);
                 $ary[1] = $this->apply_affil_fix($ary[1], true, $use_short);
             }
             $ret[] = $ary;
@@ -893,7 +900,7 @@ class Paper extends Model
         $ror_lines = [];
         foreach ($alist as $af) {
             $afary = explode("/", $af[1]);
-            foreach($afary as $a) {
+            foreach ($afary as $a) {
                 $a = trim($a);
                 $ror_id = Ror::getRor($a);
                 if ($ror_id != null) {
