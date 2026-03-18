@@ -31,7 +31,7 @@
                     {{ $paper->id_03d() }}
                 </td>
                 <td class="p-1 text-center text-{{ $size }}">
-                    @if (auth()->user()->can('manage_review', $paper->id))
+                    @if (auth()->user()->can('see_review', $paper->id))
                         @php
                             $sub = $paper->currentsubmit;
                         @endphp

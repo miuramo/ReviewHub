@@ -453,6 +453,32 @@ class Paper extends Model
         }
     }
 
+    /**
+     * 共著者または著者ならtrue
+     */
+    public function isAuthorOrCoAuthor(User $u): bool
+    {
+        if ($this->owner == $u->id) return true;
+        if ($this->isCoAuthorEmail($u->email)) return true;
+        // check author name 
+        $authorlist = explode("\n", $this->authorlist);
+        $ufirst_ulast = explode(" ", trim($u->name));
+        foreach ($authorlist as $author) {
+            $match_all = true;
+            foreach ($ufirst_ulast as $namepart) {
+                if (strpos($author, $namepart) === false) {
+                    $match_all = false;
+                    break;
+                }
+            }
+            if ($match_all) {
+                Log::channel("single")->info("check author: {$this->id} author={$author} ufirst_ulast=" . implode(",", $ufirst_ulast));
+                return true;
+            }
+        }
+        return false;
+    }
+
     // public function submits()
     // {
     //     return $this->hasMany(Submit::class);
