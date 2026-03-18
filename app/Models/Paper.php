@@ -472,7 +472,7 @@ class Paper extends Model
                 }
             }
             if ($match_all) {
-                Log::channel("single")->info("check author: {$this->id} author={$author} ufirst_ulast=" . implode(",", $ufirst_ulast));
+                // Log::channel("single")->info("check author: {$this->id} author={$author} ufirst_ulast=" . implode(",", $ufirst_ulast));
                 return true;
             }
         }
