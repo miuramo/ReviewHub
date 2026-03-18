@@ -14,9 +14,9 @@
     <form action="{{ route('role.adduser') }}" method="post" class="inline-block leading-relaxed">
         @csrf
         @method('PUT')
-        <input type="text" name="user" class="text-sm" placeholder="氏 名" size=8>
-        <input type="text" name="affil" class="text-sm" placeholder="所属" size=8>
-        <input type="text" name="email" class="text-sm" placeholder="メールアドレス" size=20>
+        <input type="text" name="user" class="text-sm" placeholder="氏 名" size=20>
+        <input type="text" name="affil" class="text-sm" placeholder="所属" size=20>
+        <input type="text" name="email" class="text-sm" placeholder="メールアドレス" size=40>
         <input type="hidden" name="role" value="rev">
         <input type="hidden" name="redirect_page" value="{{ route('paper.manage',['paper'=>$sub->paper]) }}">
         を入力して

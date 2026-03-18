@@ -35,7 +35,7 @@
                         @php
                             $sub = $paper->currentsubmit;
                         @endphp
-                        <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
+                        <a href="{{ route('paper.revstatus', ['paper' => $paper]) }}"
                             class="underline text-blue-600 hover:bg-lime-200">
                             {{ $paper->currentsubmit->round }}回目
                             {{ $paper->currentstatus->name }}

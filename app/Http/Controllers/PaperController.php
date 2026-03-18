@@ -582,7 +582,7 @@ class PaperController extends Controller
         $paper = Paper::findOrFail($paper_id);
         $files = File::where('paper_id', $paper_id)->orderByDesc('created_at')->get();
         // dd($files);
-        if (!auth()->user()->can('manage_review', $paper_id)) abort(403, "you are not a manager");
+        if (!auth()->user()->can('manage_review', $paper_id)) abort(403, "you are not a paper manager");
 
         // 最終判定があれば、それを反映する。本来task complete時にやるが、そのあと修正するかもしれないので。
         $paper->currentsubmit->updateCurrentDecision();
@@ -590,6 +590,20 @@ class PaperController extends Controller
 
         return view('paper.manage')->with(compact("paper", "files"));
     }
+
+    public function revstatus(Request $req, int $paper_id)
+    {
+        $paper = Paper::findOrFail($paper_id);
+        $files = File::where('paper_id', $paper_id)->orderByDesc('created_at')->get();
+        if (!auth()->user()->can('see_review', $paper_id)) abort(403, "you are not a committee manager (cannot see review status)");
+
+        // 最終判定があれば、それを反映する。本来task complete時にやるが、そのあと修正するかもしれないので。
+        $paper->currentsubmit->updateCurrentDecision();
+        Status::updatePaperStatus($paper->currentsubmit);
+
+        return view('paper.revstatus')->with(compact("paper", "files"));
+    }
+
 
     public function finishedList()
     {
@@ -599,7 +613,7 @@ class PaperController extends Controller
     public function manage_papermanager(Request $req, int $paper_id)
     {
         $paper = Paper::findOrFail($paper_id);
-        if (!auth()->user()->can('manage_review', $paper_id)) abort(403, "you are not a manager");
+        if (!auth()->user()->can('manage_review', $paper_id)) abort(403, "you are not a system manager");
 
         $users = User::where('valid', 1)->get();
         $revrole = Role::findByIdOrName('rev');

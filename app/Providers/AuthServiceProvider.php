@@ -143,5 +143,18 @@ class AuthServiceProvider extends ServiceProvider
             }
             return false;
         });
+
+        /**
+         * 編集委員なら、査読内容を見れる。
+         */
+        Gate::define('see_review', function ($user, $paper) {
+            $paper = Paper::find($paper);
+            // もし、編集長または編集委員なら、true
+            // TODO: 利害関係者も外す
+            if ($user->can('role_any', 'ec|cm')) return true;
+            // TODO: 有効なTermがある場合も、見れる。
+            // Termの期間と、投稿判定の期間が重なっているか。
+            return false;
+        });
     }
 }
