@@ -29,9 +29,18 @@ class LogAccess
         foreach ($hidden as $h) {
             if (isset($allreq[$h])) $allreq[$h] = '(hidden)';
         }
+        
+        // より堅牢なUTF-8クリーニング処理
         array_walk_recursive($allreq, function (&$value) {
             if (is_string($value)) {
-                $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8, ISO-8859-1, ASCII');
+                // 不正なUTF-8文字を除去/置換
+                $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+                
+                // null バイトを除去
+                $value = str_replace("\0", '', $value ?? '');
+                
+                // 制御文字を除去（改行とタブは保持）
+                $value = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $value);
             }
         });
 
