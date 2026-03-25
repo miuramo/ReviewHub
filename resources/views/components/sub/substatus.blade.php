@@ -99,19 +99,20 @@
     </table>
 </div>
 
+@if (count($sub->reviews) > 0)
+    @foreach ($sub->reviews as $review)
+        <x-review.rstatus :review="$review" :readonly="$readonly"></x-review.rstatus>
+    @endforeach
+@else
+    <div class="m-6 p-4 bg-yellow-200 inline-block align-top">
+        <p class="text-center">査読者はまだ登録されていません。</p>
+        @if ($sub->round > 1)
+            <x-review.rassign_again :submit_id="$sub->id"></x-review.rassign_again>
+        @endif
+    </div>
+@endif
+
 @if (!$readonly)
-    @if (count($sub->reviews) > 0)
-        @foreach ($sub->reviews as $review)
-            <x-review.rstatus :review="$review" :readonly="$readonly"></x-review.rstatus>
-        @endforeach
-    @else
-        <div class="m-6 p-4 bg-yellow-200 inline-block align-top">
-            <p class="text-center">査読者はまだ登録されていません。</p>
-            @if ($sub->round > 1)
-                <x-review.rassign_again :submit_id="$sub->id"></x-review.rassign_again>
-            @endif
-        </div>
-    @endif
 
     {{-- 削除済み（辞退） --}}
     @if (count($sub->rejected_reviews()) > 0)
