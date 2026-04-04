@@ -31,7 +31,7 @@
     <div class="mx-6 my-2 dark:text-gray-300">
         <x-paper.shoshi_list :paper="$paper">
         </x-paper.shoshi_list>
-        投稿者：<x-element.login_as :user="$paper->paperowner"></x-element.login_as>
+        投稿者：<x-element.login_as :user="$paper->paperowner"></x-element.login_as> ({{$paper->paperowner->email}})
 
         <span class="mx-2"></span>
         @if ($paper->pdf_file_id != 0)
