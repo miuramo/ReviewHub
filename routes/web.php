@@ -64,7 +64,7 @@ Route::post('/review_request/confirmpost/{review}/{token}', [ReviewController::c
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::patch('/profile_specialities', [ProfileController::class, 'updateSpecialities'])->name('profile.specialities_update');
+    // Route::patch('/profile_specialities', [ProfileController::class, 'updateSpecialities'])->name('profile.specialities_update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // 順番をまちがえると、files/{file} の{file}に delall や test がマッチしちゃう。その結果、FileController.show(delall)になっちゃう。
