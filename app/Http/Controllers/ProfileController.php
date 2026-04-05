@@ -40,6 +40,21 @@ class ProfileController extends Controller
     }
 
     /**
+     * Update the user's specialities.
+     */
+    public function updateSpecialities(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'specialities' => ['array'],
+            'specialities.*' => ['exists:specialities,id'],
+        ]);
+
+        $request->user()->specialities()->sync($request->input('specialities', []));
+
+        return Redirect::route('profile.edit')->with('status', 'profile-updated')->with('feedback.success', '専門分野を更新しました。');
+    }
+
+    /**
      * Delete the user's account.
      */
     public function destroy(Request $request): RedirectResponse

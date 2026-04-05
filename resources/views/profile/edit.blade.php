@@ -19,6 +19,12 @@
 
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg dark:bg-slate-800 dark:text-slate-400">
                 <div class="max-w-xl">
+                    @include('profile.partials.update-speciality-form')
+                </div>
+            </div>
+
+            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg dark:bg-slate-800 dark:text-slate-400">
+                <div class="max-w-xl">
                     @include('profile.partials.update-password-form')
                 </div>
             </div>
