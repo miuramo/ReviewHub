@@ -2,7 +2,7 @@
     @if ($is_editing)
         <div class="mb-4">
             <div>
-                <x-setcolor-button wire:click="$set('is_editing', false) ; userUpdatedSpecialities()" color="cyan">{{ __('Done') }}</x-setcolor-button>
+                <x-setcolor-button wire:click="save" color="cyan">{{ __('Done') }}</x-setcolor-button>
             </div>
             @foreach ($this->specialities as $index => $speciality)
                 <div class="flex items-center mb-2">

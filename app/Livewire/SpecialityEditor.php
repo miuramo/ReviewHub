@@ -51,6 +51,7 @@ class SpecialityEditor extends Component
     public function save()
     {
         $this->is_editing = false;
+        $this->userUpdatedSpecialities();
         // 既存のspecialitiesを削除
         \App\Models\Speciality::where('user_id', $this->user_id)->delete();
         // 新しいspecialitiesを保存
