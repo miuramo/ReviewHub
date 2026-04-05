@@ -18,5 +18,12 @@
     "Log in with Passkey": "パスキーでログイン",
     "Register Passkey": "パスキーの登録",
     "submit_manual": "投稿マニュアル",
-    "NewSubmitTo": ":catname に新規投稿する"
+    "NewSubmitTo": ":catname に新規投稿する",
+    "Add Speciality": "専門分野を追加",
+    "Edit Specialities": "専門分野を編集",
+    "Done": "完了",
+    "New Speciality": "新しい専門分野",
+    "Specialities": "専門分野",
+    "Remove": "削除"
+
 }
