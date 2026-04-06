@@ -1,6 +1,7 @@
 @props([
     'all' => [],
-    'heads' => ['id', 'status', 'title', '投稿日時', '投稿者', '査-状況'],
+    'heads' => ['id', '種別', 'status', 'title', '投稿日時', '投稿者', '査-状況'],
+    // 'heads' => ['id', 'status', 'title', '投稿日時', '投稿者', '査-状況'],
     'size' => 'md',
 ])
 <!-- components.paper.summarytable -->
@@ -35,6 +36,9 @@
                 class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-400' : 'bg-white dark:bg-slate-300' }}">
                 <td class="p-1 text-center text-{{ $size }}">
                     {{ $paper->id_03d() }}
+                </td>
+                <td class="p-1 text-center text-{{ $size }}">
+                    {{ $paper->category->name }}
                 </td>
                 <td class="p-1 text-center text-{{ $size }}">
                     @if (auth()->user()->can('manage_review', $paper->id))

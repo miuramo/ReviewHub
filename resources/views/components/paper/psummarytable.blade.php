@@ -1,6 +1,6 @@
 @props([
     'all' => [],
-    'heads' => ['id', 'status', 'title', '投稿日時', '投稿者', '査-状況'],
+    'heads' => ['id', '種別', 'status', 'title', '投稿日時', '投稿者', '査-状況'],
     'enqans' => [],
 ])
 <!-- components.paper.summarytable -->
