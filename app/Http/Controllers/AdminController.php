@@ -521,6 +521,19 @@ class AdminController extends Controller
         return redirect()->route('admin.crud', ['table' => $tableName]);
     }
 
+    /** autoincrement値を設定する */
+    public function crud_setautoinc(Request $req)
+    {
+        if (!auth()->user()->can('role_any', 'admin|manager|ec')) abort(403);
+        $tableName = $req->input("table");
+        $autoinc = $req->input("autoinc");
+        if (!is_numeric($autoinc) || intval($autoinc) < 1) {
+            return redirect()->route('admin.crud', ['table' => $tableName])->with('feedback.error', 'autoincには1以上の数値を入力してください。');
+        }
+        DB::statement("ALTER TABLE {$tableName} AUTO_INCREMENT = {$autoinc}");
+        return redirect()->route('admin.crud', ['table' => $tableName])->with('feedback.success', "{$tableName}のautoincを{$autoinc}に設定しました。");
+    }
+
 
     /** カテゴリごとの査読進行管理設定 */
     public function catsetting(Request $req)

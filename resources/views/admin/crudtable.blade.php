@@ -126,6 +126,23 @@
             </div>
 
             <div class="mt-4">
+                <form action="{{ route('admin.crud_setautoinc') }}" method="post" id="setautoinc">
+                    @csrf
+                    @method('post')
+                    @php
+                        $nextId = DB::table($tableName)->max('id') + 1;
+                    @endphp
+                    <input type="hidden" name="table" value="{{ $tableName }}">
+                    <input type="number" name="autoinc" value="{{ $nextId }}"
+                        class="w-32 text-sm bg-cyan-100 p-1 rounded text-right">
+                    <x-element.submitbutton type="submit" value="set_autoinc" color="cyan" size="sm"
+                        confirm="本当にautoincrement値を設定しますか？">
+                        autoincrement値を設定
+                    </x-element.submitbutton>
+                </form>
+            </div>
+
+            <div class="mt-4">
                 <x-element.linkbutton href="{{ route('admin.crud') }}" color="gray" size="sm">
                     &larr; Crud Tables に戻る
                 </x-element.linkbutton>
