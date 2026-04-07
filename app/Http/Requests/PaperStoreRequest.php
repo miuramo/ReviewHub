@@ -115,6 +115,29 @@ class PaperStoreRequest extends FormRequest
                 'contactemails' => $em,
                 'owner' => Auth::user()->id,
             ]);
+
+            // もし、$paper->id が年の下2桁ではじまっていない場合は、autoincrementを再セットして、再度生成する。例：2024年なら、24で始まるべき
+            if (env('PID_NUM_BASEDIGIT', 0) > 0) {
+                $year = date('y');
+                if (substr($paper->id, 0, 2) !== $year) {
+                    $paper->delete(); //さっき生成したものを削除
+                    // autoincrementを再セット
+                    $maxId = Paper::max('id');
+                    $nextId = ($year * pow(10, env('PID_NUM_BASEDIGIT', 3))) + 1; // 例えば、2024年なら、240001から始まる
+                    if ($maxId >= $nextId) {
+                        // すでに次の年のIDが存在している場合は、次の年のIDの最大値 + 1 を次のIDにする
+                        $nextId = $maxId + 1;
+                    }
+                    DB::statement("ALTER TABLE papers AUTO_INCREMENT = $nextId");
+                    // 再度生成
+                    $paper = Paper::create([
+                        'category_id' => $this->input("action"),
+                        'contactemails' => $em,
+                        'owner' => Auth::user()->id,
+                    ]);
+                }
+            }
+
             // $paper->createSubmit(1); PaperObserver で作成
             // $paper->updateContacts();
         } catch (QueryException $e) {
@@ -122,7 +145,6 @@ class PaperStoreRequest extends FormRequest
         }
         return redirect()->route('paper.edit', ['paper' => $paper->id])->with('feedback.success', "投稿情報を作成しました。");
         // }
-        return null;
     }
 
     // papers.edit からの更新
