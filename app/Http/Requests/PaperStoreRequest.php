@@ -117,6 +117,7 @@ class PaperStoreRequest extends FormRequest
             ]);
 
             // もし、$paper->id が年の下2桁ではじまっていない場合は、autoincrementを再セットして、再度生成する。例：2024年なら、24で始まるべき
+            // ただし、PID_NUM_BASEDIGIT が.envで未設定または 0 以下の場合は、この処理をスキップする
             if (env('PID_NUM_BASEDIGIT', 0) > 0) {
                 $year = date('y');
                 if (substr($paper->id, 0, 2) !== $year) {
