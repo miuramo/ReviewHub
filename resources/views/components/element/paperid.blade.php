@@ -3,7 +3,7 @@
     'paper_id' => 0,
 ])
 @php
-    $id_03d = sprintf('%04d', $paper_id);
+    $id_03d = sprintf(env('PID_FORMAT','%04d'), $paper_id);
     $font = "text-{$size}xl px-".($size+1)." py-2";
 @endphp
 <!-- components.element.paperid -->

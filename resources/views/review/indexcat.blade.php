@@ -157,7 +157,7 @@
                                 <tr
                                     class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-300' : 'bg-white dark:bg-slate-500' }}">
                                     <td class="p-1 text-center">
-                                        {{ sprintf('%04d', $rev->paper->id) }}
+                                        {{ sprintf(env('PID_FORMAT','%04d'), $rev->paper->id) }}
                                     </td>
                                     <td class="p-1">
                                         <x-review.commentpaper_link :sub="$rev->submit"></x-element.commentpaper_link>

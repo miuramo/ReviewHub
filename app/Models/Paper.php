@@ -236,7 +236,7 @@ class Paper extends Model
 
     public function id_03d()
     {
-        return sprintf("%04d", $this->id);
+        return sprintf(env('PID_FORMAT','%04d'), $this->id);
     }
     public function pdf_file()
     {

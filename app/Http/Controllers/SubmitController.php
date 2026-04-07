@@ -230,10 +230,10 @@ class SubmitController extends Controller
             $zipstream = Zip::create($zipFN);
             foreach ($papers as $paper) {
                 if ($req->input('use_pid')) {
-                    $paper->addFilesToZip_ForPub($zipstream, $filetypes, $fn_prefix, sprintf("%04d", $paper->id));
+                    $paper->addFilesToZip_ForPub($zipstream, $filetypes, $fn_prefix, sprintf(env('PID_FORMAT','%04d'), $paper->id));
                 } else {
                     $fn = $accept_papers[$paper->id];
-                    if (strlen($fn) < 1) $fn = sprintf("%04d", $paper->id);
+                    if (strlen($fn) < 1) $fn = sprintf(env('PID_FORMAT','%04d'), $paper->id);
                     $paper->addFilesToZip_ForPub($zipstream, $filetypes, $fn_prefix, $fn);
                 }
                 $addcount_tozip++;
@@ -422,10 +422,10 @@ class SubmitController extends Controller
         $pids = [];
         foreach ($res2 as $res) {
             if (is_array(@$pids[$res->category_id][$res->accept_id])) {
-                $pids[$res->category_id][$res->accept_id][] = sprintf("%04d", $res->paper_id);
+                $pids[$res->category_id][$res->accept_id][] = sprintf(env('PID_FORMAT','%04d'), $res->paper_id);
             } else {
                 $pids[$res->category_id][$res->accept_id] = [];
-                $pids[$res->category_id][$res->accept_id][] = sprintf("%04d", $res->paper_id);
+                $pids[$res->category_id][$res->accept_id][] = sprintf(env('PID_FORMAT','%04d'), $res->paper_id);
             }
         }
 

@@ -40,7 +40,7 @@ class PaperTest extends TestCase
 
         $this->assertTrue($paper1->owner == $user10->id);
 
-        $this->assertTrue($paper1->id_03d() == sprintf("%04d",$paper1->id));
+        $this->assertTrue($paper1->id_03d() == sprintf(env('PID_FORMAT','%04d'),$paper1->id));
         $this->assertTrue(Contact::where('email', $user20->email)->get() != null);
         $this->assertTrue(Contact::where('email', $user21->email)->get() != null);
     }

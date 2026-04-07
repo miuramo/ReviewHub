@@ -265,7 +265,7 @@ class FileController extends Controller
             if (!is_array(@$pids[$res->category_id][$res->valid][$res->deleted][$res->pending][$res->locked])) {
                 $pids[$res->category_id][$res->valid][$res->deleted][$res->pending][$res->locked] = [];
             }
-            $label = sprintf("%04d", $res->paper_id) . " (f{$res->id} {$shortmime}";
+            $label = sprintf(env('PID_FORMAT','%04d'), $res->paper_id) . " (f{$res->id} {$shortmime}";
             if ($res->mime === 'application/pdf') {
                 $label .= $res->pagenum . "p";
             }

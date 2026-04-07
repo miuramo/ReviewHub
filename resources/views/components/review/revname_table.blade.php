@@ -48,7 +48,7 @@
             <tr
                 class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-300' : 'bg-white dark:bg-slate-500 ' }}">
                 <td class="p-1 text-center ">
-                    {{ sprintf('%04d', $pid) }}
+                    {{ sprintf(env('PID_FORMAT','%04d'), $pid) }}
                 </td>
                 <td class="p-1 text-sm">
                     {{ $title }}

@@ -312,7 +312,7 @@ class RoleController extends Controller
         $paper->managers()->detach($req->input('user_id'));
         $paper->save();
 
-        return redirect()->route('role.top', ['role' => 'ec'])->with('feedback.success', '査読管理者を脱退しました。' . sprintf("%04d", $req->input('paper_id')) . "の状況は今後参照できなくなります。");
+        return redirect()->route('role.top', ['role' => 'ec'])->with('feedback.success', '査読管理者を脱退しました。' . sprintf(env('PID_FORMAT','%04d'), $req->input('paper_id')) . "の状況は今後参照できなくなります。");
     }
     /** managerが他者を強制的に査読管理者から外す */
     public function remove_manager_force(Request $req)

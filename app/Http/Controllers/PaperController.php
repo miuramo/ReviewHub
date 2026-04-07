@@ -265,7 +265,7 @@ class PaperController extends Controller
             if (!Gate::allows('show_paper', $paper)) {
                 abort(403, 'forbidden_for_others');
             }
-            $id_03d = sprintf("%04d", $id);
+            $id_03d = sprintf(env('PID_FORMAT','%04d'), $id);
 
             // 回答可能(canedit)または参照可能(readonly)
             $enqs = Enquete::needForSubmit($paper);
@@ -294,7 +294,7 @@ class PaperController extends Controller
             if (!Gate::allows('edit_paper', $paper)) {
                 abort(403, 'forbidden_for_coauthor_or_others');
             }
-            $id_03d = sprintf("%04d", $id);
+            $id_03d = sprintf(env('PID_FORMAT','%04d'), $id);
             $all = File::where('user_id', Auth::user()->id)->where('paper_id', $id)->get()->sortByDesc("id");
 
             // 回答可能(canedit)または参照可能(readonly)
@@ -568,10 +568,10 @@ class PaperController extends Controller
         $pids = [];
         foreach ($res2 as $res) {
             if (is_array(@$pids[$res->category_id][$res->valid][$res->locked])) {
-                $pids[$res->category_id][$res->valid][$res->locked][] = sprintf("%04d", $res->id);
+                $pids[$res->category_id][$res->valid][$res->locked][] = sprintf(env('PID_FORMAT','%04d'), $res->id);
             } else {
                 $pids[$res->category_id][$res->valid][$res->locked] = [];
-                $pids[$res->category_id][$res->valid][$res->locked][] = sprintf("%04d", $res->id);
+                $pids[$res->category_id][$res->valid][$res->locked][] = sprintf(env('PID_FORMAT','%04d'), $res->id);
             }
         }
         return view('admin.paperlock')->with(compact("cols", "pids"));

@@ -50,7 +50,7 @@
                                         @endisset
                                     </td>
                                 @endforeach
-                                <td class="p-1">{{ sprintf("%04d",$pid) }}
+                                <td class="p-1">{{ sprintf(env('PID_FORMAT','%04d'),$pid) }}
                                 </td>
                                 <td class="p-1 text-sm">{{ $pname }}
                                 </td>

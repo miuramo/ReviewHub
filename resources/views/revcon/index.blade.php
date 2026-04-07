@@ -25,7 +25,7 @@
         <x-element.h1>{{$name}} ({{count($papers)}}件)</x-element.h1>
         <div class="m-2 p-2">
             @foreach ($papers as $pid=>$title)
-                {{sprintf("%04d",$pid)}} {{$title}}<br>
+                {{sprintf(env('PID_FORMAT','%04d'),$pid)}} {{$title}}<br>
             @endforeach
         </div>
         @endforeach
