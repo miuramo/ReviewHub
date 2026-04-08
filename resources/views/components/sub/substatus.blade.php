@@ -45,13 +45,15 @@
                 <td colspan=2 class="p-1 text-center">
                     @if (!$readonly)
                         {{-- 受領メールを送る --}}
-                        @if ($sub->receiptsent_at == null && $sub->accept_id == 5)
-                            <x-element.linkbutton href="{{ route('manage.sendreceipt', ['sub' => $sub->id]) }}"
-                                color="pink" size="sm"
-                                confirm="★★注意！！こちらは、受領した原稿に対して、査読をスタートする場合の受領通知です。「〜回目の査読に進みますので、しばらくお待ちください。」といった案内になります。★★（確認）あなたの名前で、受領通知を送ってよいですか？（著者との掲示板に書き込み、メール送信します）">受領通知（査読に進みます）を送る
-                            </x-element.linkbutton> <br>
-                        @else
-                            <span class="text-pink-300">受領通知送信済み</span><br>
+                        @if (isset($sub->submitted_at))
+                            @if ($sub->receiptsent_at == null && $sub->accept_id == 5)
+                                <x-element.linkbutton href="{{ route('manage.sendreceipt', ['sub' => $sub->id]) }}"
+                                    color="pink" size="sm"
+                                    confirm="★★注意！！こちらは、受領した原稿に対して、査読をスタートする場合の受領通知です。「〜回目の査読に進みますので、しばらくお待ちください。」といった案内になります。★★（確認）あなたの名前で、受領通知を送ってよいですか？（著者との掲示板に書き込み、メール送信します）">受領通知（査読に進みます）を送る
+                                </x-element.linkbutton> <br>
+                            @else
+                                <span class="text-pink-300">受領通知送信済み</span><br>
+                            @endif
                         @endif
                         @if ($sub->ec_decision_at != null)
                             <x-element.linkbutton href="{{ route('manage.sendreceipt_final', ['sub' => $sub->id]) }}"
@@ -61,11 +63,12 @@
                         @endif
                     @endif
 
-                    @if (count($sub->tasks) == 0)
+                    @if (!$readonly && isset($sub->submitted_at) && count($sub->tasks) == 0)
                         <div>
                             <span class="text-red-500 font-extrabold">本査読ラウンドに関するタスクがまだ作成されていません！</span>
                             <x-element.linkbutton href="{{ route('sub.gen_tasks', ['sub' => $sub->id]) }}"
-                                color="yellow" size="sm" target="_self" confirm="現在の査読ラウンドのタスクを生成します。よろしいですか？（あなたが発起人となります）">
+                                color="yellow" size="sm" target="_self"
+                                confirm="現在の査読ラウンドのタスクを生成します。よろしいですか？（あなたが発起人となります）">
                                 タスクを生成する
                             </x-element.linkbutton>
                         </div>

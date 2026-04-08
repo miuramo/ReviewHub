@@ -239,7 +239,8 @@ class RoleController extends Controller
         if (!$role->containsUser($u->id)) { // ふくまれていなければ
             $u->roles()->attach($role);
         }
-        return redirect($req->input("redirect_page"))->with('feedback.success', 'ユーザを追加しました');
+        return back()->with('feedback.success', "査読者（{$user}）を新規作成しました");
+        // return redirect($req->input("redirect_page"))->with('feedback.success', 'ユーザを追加しました');
     }
 
     public function leave(Role $role, User $user)
