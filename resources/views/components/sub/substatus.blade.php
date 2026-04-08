@@ -60,37 +60,53 @@
                             </x-element.linkbutton> <br>
                         @endif
                     @endif
-                    <x-review.commentsubmit_link :sub="$sub" color="purple" label="査読結果をみる">
-                    </x-review.commentsubmit_link>
-                    <span class="mx-2"></span>
-                    <x-element.linkbutton2
-                        href="{{ route('paper.review', ['sub' => $sub->id, 'token' => $sub->paper->token()]) }}"
-                        color="purple" target="_blank" size="sm">
-                        著者がみる査読結果 </x-element.linkbutton2>
 
-                    <br>
-                    @if (!$readonly && $sub->accept_id != 5)
-                        <x-sub.disclose :sub="$sub"></x-sub.disclose>
+                    @if (count($sub->tasks) == 0)
+                        <div>
+                            <span class="text-red-500 font-extrabold">本査読ラウンドに関するタスクがまだ作成されていません！</span>
+                            <x-element.linkbutton href="{{ route('sub.gen_tasks', ['sub' => $sub->id]) }}"
+                                color="yellow" size="sm" target="_self" confirm="現在の査読ラウンドのタスクを生成します。よろしいですか？（あなたが発起人となります）">
+                                タスクを生成する
+                            </x-element.linkbutton>
+                        </div>
+                    @endif
 
-                        <x-element.linkbutton href="{{ route('manage.senddisclose', ['sub' => $sub->id]) }}"
-                            color="pink" size="sm"
-                            confirm="査読結果開示通知を送ってよいですか？（著者との掲示板に書き込み、メール送信します）">査読結果開示通知を送る
-                        </x-element.linkbutton>
-                        <br>
-                        <span class="mx-2"></span>
+                    @if (count($sub->reviews) > 0)
+                        <div>
+                            <x-review.commentsubmit_link :sub="$sub" color="purple" label="査読結果をみる">
+                            </x-review.commentsubmit_link>
+                            <span class="mx-2"></span>
+                            <x-element.linkbutton2
+                                href="{{ route('paper.review', ['sub' => $sub->id, 'token' => $sub->paper->token()]) }}"
+                                color="purple" target="_blank" size="sm">
+                                著者がみる査読結果 </x-element.linkbutton2>
 
 
-                        SubID: {{ $sub->id }}
-                        <form class="inline" action="{{ route('admin.crud') }}?table=submits" method="post"
-                            target="_blank" id="admincrudwhereid{{ $sub->id }}">
-                            @csrf
-                            @method('post')
-                            <input id="whereby" type="hidden"
-                                class="whereBy text-sm bg-slate-100 font-thin mr-2 p-0 h-5 w-full" name="whereBy__id"
-                                value={{ $sub->id }}>
-                            <x-element.submitbutton color="white" size="xs">編集(Sub{{ $sub->id }})（別タブ）
-                            </x-element.submitbutton>
-                        </form>
+                            @if (!$readonly && $sub->accept_id != 5)
+                                <x-sub.disclose :sub="$sub"></x-sub.disclose>
+
+                                <x-element.linkbutton href="{{ route('manage.senddisclose', ['sub' => $sub->id]) }}"
+                                    color="pink" size="sm"
+                                    confirm="査読結果開示通知を送ってよいですか？（著者との掲示板に書き込み、メール送信します）">査読結果開示通知を送る
+                                </x-element.linkbutton>
+                                <br>
+                                <span class="mx-2"></span>
+
+
+                                SubID: {{ $sub->id }}
+                                <form class="inline" action="{{ route('admin.crud') }}?table=submits" method="post"
+                                    target="_blank" id="admincrudwhereid{{ $sub->id }}">
+                                    @csrf
+                                    @method('post')
+                                    <input id="whereby" type="hidden"
+                                        class="whereBy text-sm bg-slate-100 font-thin mr-2 p-0 h-5 w-full"
+                                        name="whereBy__id" value={{ $sub->id }}>
+                                    <x-element.submitbutton color="white"
+                                        size="xs">編集(Sub{{ $sub->id }})（別タブ）
+                                    </x-element.submitbutton>
+                                </form>
+                            @endif
+                        </div>
                     @endif
 
                 </td>

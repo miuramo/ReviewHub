@@ -165,6 +165,8 @@ Route::middleware('auth')->group(function () {
     //無限リストによる、完了論文一覧
     Route::get('/admin_finished', [PaperController::class, 'finishedList'])->name('paper.finishedlist');
 
+    Route::get('/sub/{sub}/gen_tasks', [SubmitController::class, 'gen_tasks'])->name('sub.gen_tasks'); // 査読ラウンドのタスクを生成する
+
     Route::get('sub/{sub}/show', [SubmitController::class, 'show'])->name('sub.show'); // 査読管理
     Route::post('sub/{sub}/review_assign', [SubmitController::class, 'review_assign'])->name('sub.review_assign'); // 査読者の割り当て
     Route::post('sub/{sub}/review_assign_again', [SubmitController::class, 'review_assign_again'])->name('sub.review_assign_again'); // 査読者の割り当て

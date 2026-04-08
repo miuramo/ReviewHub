@@ -38,7 +38,7 @@ class PaperController extends Controller
         if ($aT > 0 || auth()->user()->can('manage_review', $id)) {
             $paper = Paper::with(["contacts", "currentsubmit"])->find($id);
             if ($paper->pdf_file_id != 0 && count($paper->validateFiles()) == 0) {
-                // status_id が 1 だったら、 2 にする
+                // status_id が 1（投稿準備中） だったら、 2（投稿完了） にする
                 if ($paper->status_id <= 2) {
                     $paper->status_id = 2;
                     if ($paper->currentsubmit->submitted_at == null) {
@@ -50,6 +50,7 @@ class PaperController extends Controller
                     //newSubmit_newTasks from workflow (すでに、Submitは作成済み)
                     // $paper->currentsubmit->newTasks(); // 新規投稿完了時のタスク
                     // 暫定の、査読管理者を設定する。掲示板を作成し、投稿する。
+                    // ここでは自動的にタスクを生成しない。かわりに、管理画面で、タスク群生成ボタンを押したら生成する。
 
                 }
                 (new Submitted($paper))->process_send();

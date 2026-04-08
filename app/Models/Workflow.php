@@ -64,22 +64,23 @@ class Workflow extends Model
         $taskary[1]->recursive_set_due_date($now);
 
         $firsttask = Task::where('submit_id', $sub->id)->first();
-        $firsttask->subject_id = $firsttask->workflow->subject_id();
+        // 最初のタスクのsubject_id は、タスク群を生成した作業者本人にする。
+        $firsttask->subject_id = auth()->id(); // $firsttask->workflow->subject_id();
         $firsttask->started = 1;
         $firsttask->save();
     }
 
     // 初期タスクのsubject_idを返す
-    public function subject_id()
-    {
-        if ($this->subject == "ec") {
-            $role = Role::findByIdOrName("ec");
-            $users = $role->users();
-            return $users->first()->id;
-        } else {
-            return null;
-        }
-    }
+    // public function subject_id()
+    // {
+    //     if ($this->subject == "ec") {
+    //         $role = Role::findByIdOrName("ec");
+    //         $users = $role->users();
+    //         return $users->first()->id;
+    //     } else {
+    //         return null;
+    //     }
+    // }
 
     public function obj_role_name()
     {
@@ -225,19 +226,21 @@ class Workflow extends Model
         if ($this->object == "aec") {
             $task->submit->aec_id = $oid;
             $task->submit->save();
-            $rev = $task->submit->aecrep();
-            $rev->user_id = $oid;
-            $rev->save();
+            // create review for aec
+            Review::review_assign($task->submit->id, $oid,  3); // target 3はaec
+            // reload task
+            // $task->refresh();
+            // $rev = $task->submit->aecrep();
+            // $rev->user_id = $oid;
+            // $rev->save();
         } else if ($this->object == "meta") {
-            $rev = $task->submit->meta();
-            $rev->user_id = $oid;
-            $rev->save();
-        } else if ($this->object == "rev1") {
-            $task->submit->rev1()->save_user_id($oid);
-        } else if ($this->object == "rev2") {
-            $task->submit->rev2()->save_user_id($oid);
-        } else if ($this->object == "rev3") {
-            $task->submit->rev3()->save_user_id($oid);
+            Review::review_assign($task->submit->id, $oid,  2); // target 2はmeta
+            // $rev = $task->submit->meta();
+            // $rev->user_id = $oid;
+            // $rev->save();
+        } else if ($this->object == "rev1" || $this->object == "rev2" || $this->object == "rev3") {
+            Review::review_assign($task->submit->id, $oid,  1); // target 1はrev
+            // $task->submit->rev1()->save_user_id($oid);
         }
         // // submitのstatusを更新
         // $task->submit->updateStatus();

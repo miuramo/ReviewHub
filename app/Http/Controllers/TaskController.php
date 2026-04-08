@@ -133,18 +133,22 @@ class TaskController extends Controller
 
 
         if ($ret) {
-            Bb::add_message(
-                $task->submit,
-                2,
-                '査読完了の報告',
-                "投稿管理者のかたへ\n査読報告の編集が完了しましたことを、報告します。",
-                $req->rev_id,
-            );
-            return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.success', '査読へのご協力ありがとうございました。');
+            if ($task->workflow->task == "submit") {
+                Bb::add_message(
+                    $task->submit,
+                    2,
+                    '査読完了の報告',
+                    "投稿管理者のかたへ\n査読報告の編集が完了しましたことを、報告します。",
+                    $req->rev_id,
+                );
+                return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.success', '査読へのご協力ありがとうございました。');
+            } else {
+                return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.success', 'Task completed successfully');
+            }
         } else {
             return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.error', 'タスク処理に失敗しました');
         }
-        return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.success', 'Task completed successfully');
+        // return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.success', 'Task completed successfully');
     }
 
     /**

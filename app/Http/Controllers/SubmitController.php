@@ -84,6 +84,17 @@ class SubmitController extends Controller
     }
 
 
+    /**
+     * 査読ラウンドのタスクを生成する
+     *
+     */
+    public function gen_tasks(Submit $sub)
+    {
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
+        $sub->newTasks();
+        return redirect()->route('paper.manage', ['paper' => $sub->paper_id])->with('feedback.success', 'タスクを生成しました。');
+    }
+
 
     /**
      * 出版担当またはプログラムチェアによる、プログラム編成とブース設定
