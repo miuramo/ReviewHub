@@ -28,6 +28,27 @@
         ->where('approved', 1)
         ->orderBy('updated_at', 'desc')
         ->get();
+
+    //投稿管理者に重複があったら、削除する
+    // paper_manager table の paper_id と user_id の組み合わせはユニークであるべきだが、重複があった場合、1つだけ残して削除する
+    $managers = App\Models\PaperManager::select('paper_id', 'user_id')
+        ->groupBy('paper_id', 'user_id')
+        ->havingRaw('COUNT(*) > 1')
+        ->get();
+    foreach ($managers as $manager) {
+        $duplicates = App\Models\PaperManager::where('paper_id', $manager->paper_id)
+            ->where('user_id', $manager->user_id)
+            ->get();
+        $first = true;
+        foreach ($duplicates as $dup) {
+            if ($first) {
+                $first = false;
+                continue;
+            }
+            $dup->delete();
+        }
+    }
+
 @endphp
 <!-- components.role.pc -->
 @if (count($tasks) > 0)
