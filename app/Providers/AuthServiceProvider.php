@@ -92,14 +92,14 @@ class AuthServiceProvider extends ServiceProvider
          * カテゴリの管理権限
          */
         Gate::define('manage_paper', function ($user, $paper) {
-            // もし、PC長なら、true
+            // もし、編集長なら、true
             if ($user->can('role', 'ec')) return true;
             // もし、著者なら、true
             if ($paper->isCoAuthorEmail($user->email)) return true;
             return false;
         });
         Gate::define('review_paper', function ($user, $paper) {
-            // もし、PC長なら、true
+            // もし、編集長なら、true
             if ($user->can('role', 'ec')) return true;
             // もし、査読者またはメタなら、true
             $paper = Paper::find($paper);
@@ -123,7 +123,7 @@ class AuthServiceProvider extends ServiceProvider
             if ($paper->managers()->count() > 0) {
                 return $paper->isManager($user->id);
             } else {
-                // もし、PC長なら、true
+                // もし、編集長なら、true
                 if ($user->can('role', 'ec')) return true;
             }
             return false;

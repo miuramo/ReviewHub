@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('categories', function (Blueprint $table) {
-            $table->boolean('status__arrange_review')->default(true)->comment("査読実施予定(査読者を割当てる)ならtrue (falseだとPC長Topにボタン表示しない)")->after("openend");
+            $table->boolean('status__arrange_review')->default(true)->comment("査読実施予定(査読者を割当てる)ならtrue (falseだと編集長Topにボタン表示しない)")->after("openend");
             //
         });
     }

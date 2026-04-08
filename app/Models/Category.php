@@ -84,7 +84,7 @@ class Category extends Model
     }
 
     /**
-     * PC長ではなく、manage_cat 権限のみの場合は、そのカテゴリのみ返す。
+     * 編集長ではなく、manage_cat 権限のみの場合は、そのカテゴリのみ返す。
      */
     public static function manage_cats()
     {

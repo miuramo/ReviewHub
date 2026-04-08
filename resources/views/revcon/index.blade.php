@@ -3,7 +3,7 @@
     <x-slot name="header">
         <div class="mb-4">
             <x-element.linkbutton href="{{ route('role.top', ['role' => 'ec']) }}" color="gray" size="sm">
-                &larr; PC長 Topに戻る
+                &larr; 編集長 Topに戻る
             </x-element.linkbutton>
         </div>
         <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400">

@@ -3,7 +3,7 @@
         $back_link_href = route('role.top', ['role' => 'ec']);
     }
     if (!isset($back_link_label)) {
-        $back_link_label = 'PC長 Topに戻る';
+        $back_link_label = '編集長 Topに戻る';
     }
 @endphp
 
