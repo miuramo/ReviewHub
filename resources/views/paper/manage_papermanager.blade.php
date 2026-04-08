@@ -13,7 +13,9 @@
         @if (session('feedback.success'))
             <x-alert.success>{{ session('feedback.success') }}</x-alert.success>
         @endif
-
+        @if (session('feedback.error'))
+            <x-alert.error>{{ session('feedback.error') }}</x-alert.error>
+        @endif
 
         <div class="py-2 px-6">
             <x-paper.shoshi_list :paper="$paper">
@@ -24,11 +26,11 @@
 
             <div class="py-2 px-4">
                 <x-element.h1c color="yellow"> 現在の投稿管理者：
-                @foreach ($paper->managers as $user)
-                    <x-element.login_as :user="$user"></x-element.login_as>
-                    <x-role.remove_manager_force :submit_id="$paper->currentsubmit->id" :user_id="$user->id"></x-role.remove_manager_force>
-                    <span class="mx-2"></span>
-                @endforeach
+                    @foreach ($paper->managers as $user)
+                        <x-element.login_as :user="$user"></x-element.login_as>
+                        <x-role.remove_manager_force :submit_id="$paper->currentsubmit->id" :user_id="$user->id"></x-role.remove_manager_force>
+                        <span class="mx-2"></span>
+                    @endforeach
                 </x-element.h1c>
             </div>
 

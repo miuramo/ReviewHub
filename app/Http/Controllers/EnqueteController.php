@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateEnqueteRequest;
 use App\Models\Category;
 use App\Models\Enquete;
 use App\Models\EnqueteAnswer;
+use App\Models\EnqueteConfig;
 use App\Models\EnqueteItem;
 use App\Models\Paper;
 use App\Models\Role;
@@ -56,8 +57,50 @@ class EnqueteController extends Controller
         if ($req->has("action") && $req->input("action") == "excel") {
             return Excel::download(new EnqExportFromView($enq), "enqans_{$enq->name}.xlsx");
         }
-        return view("enquete.answers")->with(compact("enq", "enqans", "papers","all"));
+        return view("enquete.answers")->with(compact("enq", "enqans", "papers", "all"));
     }
+
+    /**
+     * アンケートの受付設定（期間、対象カテゴリ等）
+     */
+    public function config(int $enq_id, Request $req)
+    {
+        $aEnq = Enquete::accessibleEnquetes(true);
+        if (!isset($aEnq[$enq_id])) abort(403);
+        if ($req->has('action')) {
+            if ($req->input('action') == 'addrow') {
+                $enq = Enquete::find($enq_id);
+                $newdatum = new EnqueteConfig();
+                $newdatum->enquete_id = $enq_id;
+                $newdatum->save();
+                return redirect()->route('enq.config', ["enq" => $enq_id])->with('feedback.success', '行を追加しました');
+            } else {
+                // 設定更新
+                $ecid_idx = array_flip($req->input('id')); // enq config id => index
+                $catcsv = $req->input('catcsv');
+                $openstart = $req->input('openstart');
+                $openend = $req->input('openend');
+                $valid = $req->input('valid');
+                $memo = $req->input('memo');
+                $orderint = $req->input('orderint');
+                foreach ($ecid_idx as $ecid => $idx) {
+                    $enqconf = EnqueteConfig::find($ecid);
+                    $enqconf->catcsv = $catcsv[$idx];
+                    $enqconf->openstart = $openstart[$idx];
+                    $enqconf->openend = $openend[$idx];
+                    $enqconf->valid = $valid[$idx];
+                    $enqconf->memo = $memo[$idx];
+                    $enqconf->orderint = $orderint[$idx];
+                    $enqconf->save();
+                }
+                return redirect()->route('enq.config', ["enq" => $enq_id])->with('feedback.success', '設定を更新しました');
+            }
+        }
+
+        $configs = EnqueteConfig::where('enquete_id', $enq_id)->get();
+        return view("enquete.config")->with(compact("configs", "enq_id"));
+    }
+
     /**
      * アンケート項目編集用のCRUD 2
      */

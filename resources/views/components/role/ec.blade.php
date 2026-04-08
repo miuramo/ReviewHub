@@ -62,33 +62,14 @@
         <x-paper.psummarytable />
     </div>
 
-
-    {{-- @if (count($recent) > 0)
-        <div class="px-6 py-4">
-            <x-element.h1>最近依頼したタスク</x-element.h1>
-            @foreach ($recent as $task)
-                <div class="mx-6">
-                    <x-task.abstpanel :task="$task" />
-                </div>
-            @endforeach
-        </div>
-    @endif --}}
-
-    {{-- @if (count($recentapproved) > 0)
-        <div class="px-6 py-4">
-            <x-element.h1>最近承諾したタスク</x-element.h1>
-            @foreach ($recentapproved as $task)
-                <div class="mx-6">
-                    <x-task.abstpanel :task="$task" />
-                </div>
-            @endforeach
-        </div>
-    @endif --}}
-
     <div class="my-20"></div>
 
 
     <x-element.h1> <span class="px-2"></span>
+        <x-element.linkbutton href="{{ route('admin.paperlist') }}" color="lime">
+            投稿情報の確認
+        </x-element.linkbutton>
+        <span class="px-2"></span>
         <x-element.linkbutton href="{{ route('admin.deletepaper', ['cat' => 1]) }}" color="red">
             投稿の削除と復活
         </x-element.linkbutton>

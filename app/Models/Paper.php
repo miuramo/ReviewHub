@@ -714,8 +714,7 @@ class Paper extends Model
 
         $ret = [];
         foreach ($afary as $af) {
-            // 半角スペースを削除
-            $af = str_replace(" ", "", $af);
+            $af = $this->remove_hankaku_between_zenkaku($af);
             // Affilテーブルを参照して、変換する
             $obj = Affil::where('before', $af)->where('skip', false)->first();
             if ($obj != null && $use_short) {
@@ -729,7 +728,8 @@ class Paper extends Model
             return strlen($v) > 0;
         });
         $ret = array_map(function ($v) {
-            return $this->remove_hankaku_between_zenkaku($v); // $this->remove_hankaku_between_zenkaku($v);
+            return $v;
+            // return $this->remove_hankaku_between_zenkaku($v); // $this->remove_hankaku_between_zenkaku($v);
         }, $ret);
         return implode("/", $ret);
     }
@@ -748,6 +748,7 @@ class Paper extends Model
             $line = str_replace("）", ")", $line);
             $line = str_replace("(", "\t", $line);
             $line = str_replace(")", "\t", $line);
+            $line = str_replace("　", " ", $line); // たまに全角スペースで氏名を区切っているので、半角にする。本来はバリデーションではじくべき。
             $ary = explode("\t", trim($line));
             $ary = array_map("trim", $ary);
             // ここまでで、ary[0]には氏名、ary[1]には所属がはいる
