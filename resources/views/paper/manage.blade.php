@@ -127,6 +127,13 @@
                     投稿管理者を管理する
                 </x-element.linkbutton>
             @endcan
+            @if(count($paper->managers) == 0)
+                <span class="text-red-500">投稿管理者がいません！</span>
+                <x-element.linkbutton href="{{ route('paper.manage_papermanager', ['paper' => $paper->id]) }}"
+                    color="cyan" size="xs" target="_self">
+                    投稿管理者を追加・管理する
+                </x-element.linkbutton>
+            @endif
         </x-element.h1c>
     </div>
 
