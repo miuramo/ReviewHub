@@ -13,9 +13,9 @@ class SettingSeeder extends Seeder
      */
     public function run(): void
     {
-        $confname = "日本創造学会論文誌";
-        $confabb = "JCS";
-        $mailfrom = "jcs-editorial@istlab.info"; // "toukouadmin@interaction-ipsj.org"
+        $confname = env("JOURNAL_NAME", "日本創造学会論文誌");
+        $confabb = env("JOURNAL_ABB", "JCS");
+        $mailfrom = env("CONTACT_EMAIL", "jcs-editorial@istlab.info"); // "toukouadmin@interaction-ipsj.org"
         Setting::factory()->create([
             'name' => "CONFTITLE",
             'value' => $confname,
@@ -34,11 +34,11 @@ class SettingSeeder extends Seeder
         ]);
         Setting::factory()->create([
             'name' => "CONF_URL",
-            'value' => "http://www.japancreativity.jp/member_2.html",
+            'value' => env("CONF_URL", "http://www.japancreativity.jp/member_2.html"),
         ]);
         Setting::factory()->create([
             'name' => "PSEUDOTESTSITE",
-            'value' => "false",
+            'value' => env("PSEUDOTESTSITE", "false"),
             'isnumber' => false,
             'isbool' => true,
         ]);

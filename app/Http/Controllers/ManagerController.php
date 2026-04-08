@@ -222,8 +222,8 @@ class ManagerController extends Controller
         Bb::add_message(
             $submit,
             1, // type=1 投稿管理者と著者の掲示板
-            "【論文編集委員会より】論文を受領いたしました",
-            "{$paper->paperowner->affil}  {$paper->paperowner->name}様\n\n日本創造学会論文編集委員会の {$myname} と申します。\n\n" .
+            "【".env('MAIL_ORGANIZATION', '日本創造学会論文編集委員会'). "より】論文を受領いたしました",
+            "{$paper->paperowner->affil}  {$paper->paperowner->name}様\n\n".env('MAIL_ORGANIZATION', '日本創造学会論文編集委員会'). "の {$myname} と申します。\n\n" .
                 "論文「{$submit->paper->title}」を受領いたしました。\n" .
                 "{$mesround}査読に進みますので、しばらくお待ちください。\n\n"
         );
@@ -246,8 +246,8 @@ class ManagerController extends Controller
         Bb::add_message(
             $submit,
             1, // type=1 投稿管理者と著者の掲示板
-            "【論文編集委員会より】論文を受領いたしました",
-            "{$paper->paperowner->affil}  {$paper->paperowner->name}様\n\n日本創造学会論文編集委員会の {$myname} と申します。\n\n" .
+            "【".env('MAIL_ORGANIZATION', '日本創造学会論文編集委員会'). "より】論文を受領いたしました",
+            "{$paper->paperowner->affil}  {$paper->paperowner->name}様\n\n".env('MAIL_ORGANIZATION', '日本創造学会論文編集委員会'). "の {$myname} と申します。\n\n" .
                 "論文「{$submit->paper->title}」の最終原稿を受領いたしました。\n" .
                 "なお、論文誌の発行（J-STAGE掲載）は、年に2回（6月・12月）のスケジュールを予定しております。\n\n" .
                 "出版までしばらくお時間をいただく場合がありますが、どうかご了承ください。\n\n"
@@ -284,8 +284,8 @@ class ManagerController extends Controller
         Bb::add_message(
             $submit,
             1, // type=1 投稿管理者と著者の掲示板
-            "【論文編集委員会より】第{$numround}回査読結果の開示",
-            "{$paper->paperowner->affil}  {$paper->paperowner->name}様\n\n日本創造学会論文編集委員会の {$myname} と申します。\n\n" .
+            "【".env('MAIL_ORGANIZATION', '日本創造学会論文編集委員会'). "より】第{$numround}回査読結果の開示",
+            "{$paper->paperowner->affil}  {$paper->paperowner->name}様\n\n".env('MAIL_ORGANIZATION', '日本創造学会論文編集委員会'). "の {$myname} と申します。\n\n" .
                 "投稿いただいておりました論文「{$submit->paper->title}」の、\n第{$numround}回査読結果を開示いたしました。\n\n" .
                 "査読結果は、投稿一覧 → 第{$numround}回査読結果（オレンジ色のボタン）から、確認してください。\n" .
                 "査読結果を確認されましたら、査読結果ページ上部の「査読結果を確認した」ボタンを押してください。\n\n" .
