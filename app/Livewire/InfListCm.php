@@ -11,7 +11,7 @@ class InfListCm extends Component
     public int $increment = 5;
     public bool $isLoading = false;
     public int $total = 0;
-    public $heads = ['id', 'status', 'title', '査-状況'];
+    public $heads = ['id', '種別', 'status', 'title', '査-状況'];
 
 
     protected $listeners = [

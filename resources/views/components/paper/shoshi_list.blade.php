@@ -20,10 +20,4 @@ $koumoku = App\Models\Paper::mandatory_bibs(); //必須書誌情報
             @endif
         </tr>
     @endforeach
-    <tr class="bg-cyan-50 dark:bg-cyan-700">
-        <td class="px-2 py-1 whitespace-nowrap">投稿連絡用メールアドレス</td>
-        <td class="px-2 py-1">
-            {{ $paper->contactemails }}
-        </td>
-    </tr>
 </table>

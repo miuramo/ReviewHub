@@ -49,7 +49,7 @@
             <thead>
                 <tr>
                     @foreach ($heads as $h)
-                        <th class="p-1 bg-slate-300 dark:bg-slate-500           ">{{ $h }}</th>
+                        <th class="p-1 bg-slate-300 dark:bg-slate-500">{{ $h }}</th>
                     @endforeach
                 </tr>
             </thead>
@@ -57,13 +57,13 @@
                 @foreach ($unmanaged as $paper)
                     <tr
                         class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-400' : 'bg-white dark:bg-slate-300' }}">
-                        {{-- <td class="p-1 text-center">{{ $paper->category->name }}</td> --}}
                         <td class="p-1 text-center">
                             {{-- <a href="{{ route('paper.manage', ['paper' => $paper]) }}"
                             class="underline text-blue-600 hover:bg-lime-200" target="_blank"> --}}
                             {{ $paper->id_03d() }}
                             {{-- </a> --}}
                         </td>
+                        <td class="p-1 text-center">{{ $paper->category->name }}</td>
                         <td class="p-1 text-center">
                             @php
                                 $sub = $paper->currentsubmit;
