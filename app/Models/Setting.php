@@ -175,7 +175,6 @@ class Setting extends Model
         ]);
 
         // Viewpoint::change_separator();
-
         Setting::firstOrCreate([
             'name' => "REDIRECT",
         ], [
@@ -188,6 +187,19 @@ class Setting extends Model
         Vote::init();
         VoteItem::init();
 
+        Role::firstOrCreate([
+            'name' => "cm",
+        ], [
+            'abbr' => "cm",
+            'desc' => "編集委員",
+        ]);
+
+        Role::firstOrCreate([
+            'name' => "pub",
+        ], [
+            'abbr' => "pub",
+            'desc' => "出版",
+        ]);
 
     }
 }
