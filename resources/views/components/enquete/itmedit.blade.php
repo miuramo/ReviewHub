@@ -15,6 +15,9 @@
         $currentbr = nl2br($current);
         if (strlen($current) < 1) {
             $currentbr = null;
+            if (isset($ary[5]) && strlen($ary[5]) > 0) {
+                $current = $ary[5];
+            }
         }
     }
     $after = nl2br($itm->contentafter); // input要素のあとの説明など

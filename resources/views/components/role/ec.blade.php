@@ -104,10 +104,10 @@
             サプリメントファイル受付管理
         </x-element.linkbutton>
         <span class="px-2"></span>
-        <x-element.linkbutton href="{{ route('admin.catsetting') }}" color="orange">
+        {{-- <x-element.linkbutton href="{{ route('admin.catsetting') }}" color="orange">
             査読進行管理
         </x-element.linkbutton>
-        <span class="px-2"></span>
+        <span class="px-2"></span> --}}
         <x-element.linkbutton2 href="{{ route('admin.catsetting', ['leadtext' => 'on']) }}" color="gray">
             カテゴリ固有の案内(リード文など)
         </x-element.linkbutton2>
