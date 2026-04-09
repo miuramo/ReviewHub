@@ -65,11 +65,10 @@
 
                     @if (!$readonly && isset($sub->submitted_at) && count($sub->tasks) == 0)
                         <div>
-                            <span class="text-red-500 font-extrabold">本査読ラウンドに関するタスクがまだ作成されていません！</span>
                             <x-element.linkbutton href="{{ route('sub.gen_tasks', ['sub' => $sub->id]) }}"
-                                color="yellow" size="sm" target="_self"
-                                confirm="現在の査読ラウンドのタスクを生成します。よろしいですか？（あなたが発起人となります）">
-                                タスクを生成する
+                                color="yellow" size="xs" target="_self"
+                                confirm="現在の査読ラウンドのタスクを生成します。よろしいですか？（あなたが発起人となります。）">
+                                （高度）タスクを生成する
                             </x-element.linkbutton>
                         </div>
                     @endif
