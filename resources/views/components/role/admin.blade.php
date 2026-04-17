@@ -43,10 +43,11 @@
             @php
                 $shortcuts = [
                     'Setting' => 'settings',
-                    'LogAccess' => 'log_accesses',
+                    'Role' => 'roles',
                     'EnqueteConfig' => 'enquete_configs',
                     'Enquete' => 'enquetes',
                     'EnqueteItems' => 'enquete_items',
+                    'LogAccess' => 'log_accesses',
                 ];
             @endphp
             @foreach ($shortcuts as $key => $tbl)
