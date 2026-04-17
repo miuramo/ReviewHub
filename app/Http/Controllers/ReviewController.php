@@ -203,7 +203,8 @@ class ReviewController extends Controller
         if (!auth()->user()->can('role_any', 'ec|aec|rev|meta')) return abort(403);
         // else if ($review->user_id != auth()->id()) return abort(403, "THIS IS NOT YOUR REVIEW");
 
-        $viewpoints = Viewpoint::where("category_id", $review->category_id)->where("target", $review->target)->orderBy("orderint")->get();
+        // $viewpoints = Viewpoint::where("category_id", $review->category_id)->where("target", $review->target)->orderBy("orderint")->get();
+        $viewpoints = Viewpoint::by_category_target($review->category_id, $review->target);
         // 既存回答
         $scoreobj = Score::where('review_id', $review->id)->get();
         $scores = [];
@@ -222,7 +223,7 @@ class ReviewController extends Controller
         if (!auth()->user()->can('role_any', 'ec|aec|rev|meta',)) return abort(403);
         if ($review->token() != $token) return abort(403, "Review Browse TOKEN ERROR");
 
-        $viewpoints = Viewpoint::where("category_id", $review->category_id)->where("target", $review->target)->orderBy("orderint")->get();
+        $viewpoints = Viewpoint::by_category_target($review->category_id, $review->target);
         // 既存回答
         $scoreobj = Score::where('review_id', $review->id)->get();
         $scores = [];
@@ -235,7 +236,7 @@ class ReviewController extends Controller
     /**
      * for test (dummy)
      */
-    public function edit_dummy($cat_id, $target = 0)
+    public function edit_dummy($cat_id, $target = 1)
     {
         if (!auth()->user()->can('role', 'ec')) return abort(403);
         $rev = new Review();
@@ -258,7 +259,7 @@ class ReviewController extends Controller
         if (!auth()->user()->can('role_any', 'ec|aec|rev|meta')) return abort(403);
         if ($review->user_id != auth()->id()) return abort(403, "THIS IS NOT YOUR REVIEW");
 
-        $viewpoints = Viewpoint::where("category_id", $review->category_id)->where("target", $review->target)->orderBy("orderint")->get();
+        $viewpoints = Viewpoint::by_category_target($review->category_id, $review->target);
         // 既存回答
         $scoreobj = Score::where('review_id', $review->id)->get();
         $scores = [];

@@ -31,6 +31,7 @@ class ViewpointSeeder extends Seeder
                 'desc' => '査読コメント',
                 'content' => "査読コメントは著者に返ります。\n; textarea ; 60 ; 5 ; （著者に返ります）",
                 'doReturn' => true,
+                'target' => 1,
             ]);
             Viewpoint::factory()->create([
                 'category_id' => $cat,
@@ -50,7 +51,7 @@ class ViewpointSeeder extends Seeder
                 'content' => "5：採択、4：採択に近い、3：中立、2：不採択に近い、1：不採択\n; number ; 1 ; 5 ",
                 'weight' => 1,
                 'doReturn' => true,
-                'target' => 1,
+                'target' => 2,
             ]);
             Viewpoint::factory()->create([
                 'category_id' => $cat,
@@ -59,17 +60,17 @@ class ViewpointSeeder extends Seeder
                 'desc' => 'メタコメント',
                 'content' => "メタコメントは著者に返ります。\n; textarea ; 60 ; 5 ; （著者に返ります）",
                 'doReturn' => true,
-                'target' => 1,
+                'target' => 2,
             ]);
-            Viewpoint::factory()->create([
-                'category_id' => $cat,
-                'orderint' => 3,
-                'name' => 'for_meta_aec',
-                'desc' => '編集委員向けコメント',
-                'content' => "編集委員向けコメントは著者に返りません。\n;textarea ; 60 ; 5 ; (編集委員会向け) ",
-                'target' => 1,
-                'mandatory' => false,
-            ]);
+            // Viewpoint::factory()->create([
+            //     'category_id' => $cat,
+            //     'orderint' => 3,
+            //     'name' => 'for_meta_aec',
+            //     'desc' => '編集委員向けコメント',
+            //     'content' => "編集委員向けコメントは著者に返りません。\n;textarea ; 60 ; 5 ; (編集委員会向け) ",
+            //     'target' => 1,
+            //     'mandatory' => false,
+            // ]);
 
             Viewpoint::factory()->create([
                 'category_id' => $cat,
@@ -87,16 +88,16 @@ class ViewpointSeeder extends Seeder
                 'desc' => '幹事コメント',
                 'content' => "幹事コメントは著者に返ります。\n; textarea ; 60 ; 5 ; （著者に返ります）",
                 'doReturn' => true,
-                'target' => 2,
+                'target' => 4,
                 'mandatory' => false,
             ]);
             Viewpoint::factory()->create([
                 'category_id' => $cat,
-                'orderint' => 3,
-                'name' => 'for_ec_by_aec',
+                'orderint' => 5,
+                'name' => 'for_ec',
                 'desc' => '編集委員向けコメント',
                 'content' => "編集委員向けコメントは著者に返りません。\n;textarea ; 60 ; 5 ; (編集委員会向け) ",
-                'target' => 2,
+                'target' => 7,
                 'mandatory' => false,
             ]);
 

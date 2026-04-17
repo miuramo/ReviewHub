@@ -40,7 +40,8 @@
                 {{--  Reviewerの数にあわせて、繰り返す。 --}}
                 @foreach ($sub->reviews as $rev)
                     @php
-                        $vps = App\Models\Viewpoint::where('category_id', $cat_id)->where('target', $rev->target);
+                        // $vps = App\Models\Viewpoint::where('category_id', $cat_id)->where('target', $rev->target);
+                        $vps = App\Models\Viewpoint::by_category_target($cat_id, $rev->target);
                         if ($scoreonly) {
                             $vps = $vps->where('content', 'like', '%number%');
                         }

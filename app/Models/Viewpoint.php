@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Viewpoint extends Model
 {
@@ -25,6 +26,17 @@ class Viewpoint extends Model
         'doReturnAcceptOnly',
 
     ];
+
+    /**
+     * カテゴリとターゲットで査読観点を取得
+     * ターゲットは、査読者向けなら1、メタなら2、幹事なら3。
+     * 関連して、Review.target を1つ増やす必要があるが、まずは変更なしで。将来的に、0は無効にしたい。
+     */
+    public static function by_category_target(int $cat_id, int $target = 0)
+    {
+        $inttarget = pow(2, $target); // 0,1,2,3 -> 1,2,4,8
+        return Viewpoint::where("category_id", $cat_id)->whereRaw("target & ? != 0", [$inttarget])->orderBy("orderint")->get();
+    }
 
     /**
      * コロンではなくセミコロンに変更
@@ -86,5 +98,38 @@ class Viewpoint extends Model
         }
         $ary = explode(self::$separator, $vp->content);
         return nl2br(trim($ary[0]));
+    }
+
+    /**
+     * targetをビットマスクに変換する。0は無効、1は査読者向け、2はメタ向け、4は幹事向け。複数指定する場合は足す（例：7はすべて）。すでにビットマスクになっている場合は何もしない。
+     */
+    public static function fix_target_as_bitmask()
+    {
+        // 適用済みかどうかを、targetに0が一つでもあるかどうかで判断する。複数回適用するとデータが壊れるため。
+        $target_min = Viewpoint::min("target");
+        if ($target_min == 1) { // すでにビットマスクになっていると判断する。
+            return;
+        }
+        // さらに、maxが3以下であれば、まだビットマスクに変換されていないと判断する。
+        $target_max = Viewpoint::max("target");
+        if ($target_max > 3) { // すでにビットマスクになっていると判断する。
+            return;
+        }
+
+        // 2を4に、1を2に、0を1に変換する。
+        $vps = Viewpoint::all();
+        foreach($vps as $vp) {
+            if ($vp->target == 0) {
+                $vp->target = 1;
+                $vp->save();
+            } else if ($vp->target == 1) {
+                $vp->target = 2;
+                $vp->save();
+            } else if ($vp->target == 2) {
+                $vp->target = 4;
+                $vp->save();
+            }
+        }
+        Log::channel('plain')->info("Viewpoint: fixed target as bitmask");
     }
 }

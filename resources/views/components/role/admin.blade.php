@@ -13,6 +13,9 @@
     // 氏名が全角スペース区切りだったり、半角スペース複数区切りだったりするのを修正
     App\Models\User::fix_username_space_all();
 
+    // Viewpointのtargetをビットマスクに変更する（0が一つでもある場合に限る。複数回適用するとデータが壊れるため。）
+    App\Models\Viewpoint::fix_target_as_bitmask();
+
 @endphp
 <div class="px-4 py-4">
     <x-element.h1>あなたのRole</x-element.h1>

@@ -46,7 +46,7 @@ class ReviewTest extends TestCase
         $reviews = Review::where('user_id', $rev1->id)->get();
         foreach($reviews as $rv){
             $paper = Paper::find($rv->paper_id);
-            $score_viewpointid = Viewpoint::where('category_id', $paper->category_id)->where("name","score")->first()->id;
+            $score_viewpointid = Viewpoint::where('category_id', $paper->category_id)->whereRaw("target & ? != 0", [$rv->target + 1])->where("name","score")->first()->id;
             $scr = Score::firstOrCreate([
                 'review_id' => $rv->id,
                 'user_id' => $rev1->id,
@@ -82,7 +82,8 @@ class ReviewTest extends TestCase
         $reviews = Review::where('user_id', $rev2->id)->get();
         foreach($reviews as $rv){
             $paper = Paper::find($rv->paper_id);
-            $score_viewpointid = Viewpoint::where('category_id', $paper->category_id)->where("name","score")->first()->id;
+            $score_viewpointid = Viewpoint::where('category_id', $paper->category_id)->whereRaw("target & ? != 0", [$rv->target + 1])->where("name","score")->first()->id;
+            // $score_viewpointid = Viewpoint::where('category_id', $paper->category_id)->where("name","score")->first()->id;
             $scr = Score::firstOrCreate([
                 'review_id' => $rv->id,
                 'user_id' => $rev2->id,

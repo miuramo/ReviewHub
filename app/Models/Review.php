@@ -326,7 +326,7 @@ class Review extends MetaModel
             $query->where('mandatory', 1);
         })->get()->pluck('viewpoint_id')->toArray();
         $finish_vpids = count($finish_vpids_ary);
-        $all_vpids = Viewpoint::where('category_id', $this->category_id)->where('target', $this->target)->where('mandatory', 1)->pluck('id')->toArray();
+        $all_vpids = Viewpoint::where('category_id', $this->category_id)->whereRaw("target & ? != 0", [$this->target + 1])->where('mandatory', 1)->pluck('id')->toArray();
         if ($finish_vpids == 0) {
             $this->status = 0;
         } else if ($finish_vpids == count($all_vpids)) {
@@ -354,13 +354,14 @@ class Review extends MetaModel
     public function scores_and_comments($only_doreturn = 1, $only_score = 0, $accepted = 1)
     {
         $aryscores = $this->scores->pluck("valuestr", "viewpoint_id")->toArray();
-        $vps = Viewpoint::where('category_id', $this->category_id)->orderBy('orderint')->get();
+        // $vps = Viewpoint::where('category_id', $this->category_id)->orderBy('orderint')->get();
+        $vps = Viewpoint::by_category_target($this->category_id, $this->target); //ここは単一の査読(Review)にもとづいているので、Review.targetのみでよい。（複数targetをループでまわす必要はない）
         $ret = [];
         foreach ($vps as $vp) {
             if ($only_doreturn && !$vp->doReturn) continue;
             if ($only_score && strpos($vp->content, "number") === false) continue;
             // Primaryじゃないとき(target=0)、forrev=0のときは表示しない
-            if ($this->target != $vp->target) continue;
+            // if ($this->target != $vp->target) continue; ここは関係ない。
             if (!$accepted && $vp->doReturnAcceptOnly) continue;
 
             $ret[$vp->desc] = (isset($aryscores[$vp->id])) ? $aryscores[$vp->id] : "(未入力)";

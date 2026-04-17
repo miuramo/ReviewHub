@@ -104,6 +104,7 @@ class ScoreController extends Controller
         foreach ($cols as $c) {
             $cnts[$c->viewpoint_id][$c->category_id] = $c->cnt;
         }
+        //TODO: targetが複数ある場合は、さらにtarget_idも必要。
         $vps = Viewpoint::select('id', 'desc')->orderBy("category_id")->orderBy("orderint")->get()->pluck("desc", "id")->toArray("desc", "id");
         $cats = Category::select('id', 'name')->get()->pluck("name", "id")->toArray("name", "id");
         return view("score.resetscore")->with(compact("cnts", "vps", "cats"));
