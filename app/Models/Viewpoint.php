@@ -29,13 +29,14 @@ class Viewpoint extends Model
 
     /**
      * カテゴリとターゲットで査読観点を取得
-     * ターゲットは、査読者向けなら1、メタなら2、幹事なら3。
-     * 関連して、Review.target を1つ増やす必要があるが、まずは変更なしで。将来的に、0は無効にしたい。
+     * ターゲットは、査読者向けなら0、メタなら1、幹事なら2。
+     * ==関連して、Review.target を1つ増やす必要があるが、まずは変更なしで。将来的に、0は無効にしたい。== →とりあえずそのままで。
      */
-    public static function by_category_target(int $cat_id, int $target = 0)
+    public static function by_category_target(int $cat_id, int $target012 = 0)
     {
-        $inttarget = pow(2, $target); // 0,1,2,3 -> 1,2,4,8
-        return Viewpoint::where("category_id", $cat_id)->whereRaw("target & ? != 0", [$inttarget])->orderBy("orderint")->get();
+        $bitmask_target = pow(2, $target012); // 0,1,2,3 -> 1,2,4,8
+        // Viewpointテーブルのtargetカラムはビットマスクになっている。target012に対応するビットが立っていれば、取得される。
+        return Viewpoint::where("category_id", $cat_id)->whereRaw("target & ? != 0", [$bitmask_target])->orderBy("orderint")->get();
     }
 
     /**
