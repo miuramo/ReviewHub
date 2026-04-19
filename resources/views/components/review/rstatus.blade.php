@@ -94,14 +94,14 @@
                     rstatus {{ $review->id }}
                 </x-element.component_name>
 
-                @if ($task->completed == 0)
+                @if ($task && $task->completed == 0)
                     <form action="{{ route('task.update', ['task' => $task]) }}" method="post" class="inline-block text-xs">
                     @csrf
                     @method('PUT')
                     <input type="hidden" name="task" value="{{ $task->id }}">
                     <input type="hidden" name="rev_id" value="{{ $review->id }}">
                     <input type="hidden" name="redirect_role" value="{{ $task->workflow->subject }}">
-                    <x-element.submitbutton2 color="pink" value="assign">代理で査読完了にする</x-element.submitbutton>
+                    <x-element.submitbutton2 color="pink" value="assign" confirm="本当に代理で査読完了にしますか？">代理で査読完了にする</x-element.submitbutton>
                 </form>
                 @endif
             </td>
