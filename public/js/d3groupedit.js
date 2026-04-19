@@ -100,7 +100,7 @@ class Oya {
                 ooo.setY(lasty);
                 // console.log(ooo.name+" "+lasty);
             });
-            lasty = (lasty + maxlist[yval] + 20);
+            lasty = (lasty + maxlist[yval] + 50); // 親同士をどれだけ離すか？
             linenum++;
         });
         //        Oya.layoutChildren();
@@ -278,7 +278,8 @@ function getClosestParent(child) {
 }
 function getDistance(parent, child) {
     var dx = parent.x - child.x;
-    var dy = parent.y + 15 + parent.kodomo.length * 20 - child.y;
+    // var dy = parent.y + parent.height - child.y;
+    var dy = parent.y + 15 + parent.kodomo.length * 30 - child.y;
     return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 }
 
