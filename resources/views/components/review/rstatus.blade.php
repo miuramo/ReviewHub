@@ -12,6 +12,7 @@
         'end_at' => '終了日時',
         'will_end_at' => '予定終了日時',
     ];
+    $task = $review->task;
 @endphp
 
 <!-- components.review.rstatus  -->
@@ -93,6 +94,16 @@
                     rstatus {{ $review->id }}
                 </x-element.component_name>
 
+                @if ($task->completed == 0)
+                    <form action="{{ route('task.update', ['task' => $task]) }}" method="post" class="inline-block text-xs">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="task" value="{{ $task->id }}">
+                    <input type="hidden" name="rev_id" value="{{ $review->id }}">
+                    <input type="hidden" name="redirect_role" value="{{ $task->workflow->subject }}">
+                    <x-element.submitbutton2 color="pink" value="assign">代理で査読完了にする</x-element.submitbutton>
+                </form>
+                @endif
             </td>
         </tr>
     </tbody>
