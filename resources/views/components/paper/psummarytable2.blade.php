@@ -55,6 +55,10 @@
                         {{ $paper->currentsubmit->round }}回目
                         {{ $paper->currentstatus->name }}
                     @endif
+                    @if($paper->currentsubmit->booth)
+                        <span class="mx-1"></span>
+                        <span class="text-sm font-bold text-blue-600">{{$paper->currentsubmit->booth}}</span>
+                    @endif
                 </td>
                 <td class="p-1 text-center block break-all text-{{ $size }}">{{ $paper->title }}
                     @if (auth()->user()->can('manage_review', $paper->id))

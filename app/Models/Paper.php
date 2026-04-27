@@ -948,13 +948,14 @@ class Paper extends Model
     {
         // 関連Submit をすべて取得
         $firstsub = $this->submits()->where('round', 1)->first();
-        $lastsub = $this->submits()->orderBy('round', 'desc')->first();
+        $lastsub = $this->currentsubmit()->first();
         $dates = [];
         if ($firstsub) {
             $dates[] = "（" . $this->format_ymd($firstsub->submitted_at) . "受付）";
         }
-        if ($lastsub && $lastsub->ec_decision_at != null) {
+        if ($lastsub && isset($lastsub->ec_decision_at) ) {
             $dates[] = "（" . $this->format_ymd($lastsub->ec_decision_at) . "採録）";
+            $dates[] = "【" . $lastsub->round . "回目で採録】";
         }
         return implode("<br>", $dates);
     }
@@ -962,7 +963,7 @@ class Paper extends Model
     {
         // 関連Submit をすべて取得
         $firstsub = $this->submits()->where('round', 1)->first();
-        $lastsub = $this->submits()->orderBy('round', 'desc')->first();
+        $lastsub = $this->currentsubmit()->first();
         if ($firstsub == null || $lastsub == null) return "";
         if ($firstsub->submitted_at == null || $lastsub->ec_decision_at == null) return "";
         $diff = Carbon::parse($firstsub->submitted_at)->diffInDays(Carbon::parse($lastsub->ec_decision_at));
