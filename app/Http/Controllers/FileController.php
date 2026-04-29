@@ -80,7 +80,6 @@ class FileController extends Controller
         imagestring($im, 5, 15, 40, "No Image", $col);
         header("Content-Type: image/png");
         imagepng($im);
-        imagedestroy($im);
     }
     public function altimgshow(int $pdffileid, string $firsthash)
     {
@@ -97,7 +96,7 @@ class FileController extends Controller
     /**
      * PDFサムネイルを画像で
      */
-    public function pdfimages(int $pdffileid, int $pagenum = null, $firsthash = null)
+    public function pdfimages(int $pdffileid, int $pagenum = 1, string $firsthash = "")
     {
         // 権限の確認
         try {
@@ -314,7 +313,6 @@ class FileController extends Controller
         imageAlphaBlending($im, false);
         imageSaveAlpha($im, true);
         imagepng($im);
-        imagedestroy($im);
 
         // return response()->file(storage_path(File::apf() . '/' . substr($file->fname, 0, -4) . ".png"));
     }
