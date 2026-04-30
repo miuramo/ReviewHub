@@ -717,7 +717,7 @@ class AdminController extends Controller
         
         // 全テーブルを取得して、制限ありテーブルを除外
         $all_tables = $this->get_db_tables();
-        $restricted_tables = ['reviews', 'scores', 'bbs', 'bb_mes', 'paper_manager']; // 管理権限のあるPaperに関連するテーブルは制限あり
+        $restricted_tables = ['reviews', 'scores', 'bbs', 'bb_mes', 'paper_manager', 'tasks']; // 管理権限のあるPaperに関連するテーブルは制限あり
         $unrestricted_tables = array_diff($all_tables, $restricted_tables);
         
         foreach ($unrestricted_tables as $table) {
@@ -749,6 +749,13 @@ class AdminController extends Controller
             if (count($bbIds) > 0) {
                 $bbIdList = implode(',', $bbIds);
                 shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-create-info --complete-insert --where=\"bb_id IN ({$bbIdList})\" {$db_name} bb_mes >> dump.sql");
+            }
+
+            // tasks テーブル（submit_idを経由して制限）
+            $submitIds = DB::table('submits')->whereIn('paper_id', $managedPaperIds)->pluck('id')->toArray();
+            if (count($submitIds) > 0) {
+                $submitIdList = implode(',', $submitIds);
+                shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-create-info --complete-insert --where=\"submit_id IN ({$submitIdList})\" {$db_name} tasks >> dump.sql");
             }
         }
         
