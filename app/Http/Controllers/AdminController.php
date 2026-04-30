@@ -717,7 +717,7 @@ class AdminController extends Controller
         
         // 全テーブルを取得して、制限ありテーブルを除外
         $all_tables = $this->get_db_tables();
-        $restricted_tables = ['reviews', 'scores', 'bbs', 'bb_mes'];
+        $restricted_tables = ['reviews', 'scores', 'bbs', 'bb_mes', 'paper_manager']; // 管理権限のあるPaperに関連するテーブルは制限あり
         $unrestricted_tables = array_diff($all_tables, $restricted_tables);
         
         foreach ($unrestricted_tables as $table) {
@@ -727,6 +727,9 @@ class AdminController extends Controller
         // 制限ありでダンプするテーブル（管理権限のあるPaperに関連するもののみ）
         if (count($managedPaperIds) > 0) {
             $paperIdList = implode(',', $managedPaperIds);
+
+            // paper_manager テーブル（user_idを経由して制限）
+            shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-create-info --complete-insert --where=\"user_id = {$user->id}\" {$db_name} paper_manager >> dump.sql");
                         
             // reviews テーブル
             shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-create-info --complete-insert --where=\"paper_id IN ({$paperIdList})\" {$db_name} reviews >> dump.sql");
