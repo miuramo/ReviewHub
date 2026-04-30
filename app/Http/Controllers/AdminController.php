@@ -759,7 +759,7 @@ class AdminController extends Controller
 
             // log_accesses テーブル（user_idを経由して制限 OR paper_idを経由して制限）
             $whereCondition = "(user_id = {$user->id} OR paper_id IN ({$paperIdList}))";
-            // \Log::info("mysqldump log_accesses WHERE: " . $whereCondition);
+            Log::info("mysqldump log_accesses WHERE: " . $whereCondition);
             shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-create-info --complete-insert --where=\"{$whereCondition}\" {$db_name} log_accesses >> dump.sql");
 
             // log_creates テーブル、log_modifies テーブル、error_logs テーブルは、必要性がひくいため、いまのところダンプしない。
