@@ -51,7 +51,7 @@ Route::get('/dashboard', function () {
     return redirect()->route('paper.index');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/file/favicon', [FileController::class, 'favicon'])->name('file.favicon');
+Route::get('/file_favicon', [FileController::class, 'favicon'])->name('file.favicon');
 
 //表彰状作成用のJSON
 Route::get('awards/json_booth_title_author/{key?}', [SubmitController::class, 'json_bta'])->name('pub.json_booth_title_author');
@@ -68,15 +68,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // 順番をまちがえると、files/{file} の{file}に delall や test がマッチしちゃう。その結果、FileController.show(delall)になっちゃう。
-    Route::delete('/file/delall', [FileController::class, 'delall'])->name('file.delall');
-    Route::get('/file/adminlock', [FileController::class, 'adminlock'])->name('file.adminlock'); //ロック状態の変更(file)
-    Route::post('/file/adminlock', [FileController::class, 'adminlock'])->name('file.adminlock'); //ロック状態の変更(file)
-    Route::get('/file/altimgshow/{file}/{hash?}', [FileController::class, 'altimgshow'])->name('file.altimgshow');
-    Route::get('/file/pdfimages/{file}/{page?}/{hash?}', [FileController::class, 'pdfimages'])->name('file.pdfimages')->where('page', '([0-9]+|)');
-    Route::get('/file/pdftext/{file}', [FileController::class, 'pdftext'])->name('file.pdftext')->where('file', '([0-9]+|)');
+    Route::delete('/file_delall', [FileController::class, 'delall'])->name('file.delall');
+    Route::get('/file_adminlock', [FileController::class, 'adminlock'])->name('file.adminlock'); //ロック状態の変更(file)
+    Route::post('/file_adminlock', [FileController::class, 'adminlock'])->name('file.adminlock'); //ロック状態の変更(file)
+    Route::get('/file/{file}/altimgshow//{hash?}', [FileController::class, 'altimgshow'])->name('file.altimgshow');
+    Route::get('/file/{file}/pdfimages//{page?}/{hash?}', [FileController::class, 'pdfimages'])->name('file.pdfimages')->where('page', '([0-9]+|)');
+    Route::get('/file/{file}/pdftext', [FileController::class, 'pdftext'])->name('file.pdftext')->where('file', '([0-9]+|)');
     Route::resource('file', FileController::class);
     Route::get('/file/{file}/show/{hash?}', [FileController::class, 'show'])->name('file.showhash')->where('file', '([0-9]+|)');
-    Route::post('/file/updateinfo', [FileController::class, 'updateinfo'])->name('file.updateinfo');
+    Route::post('/file_updateinfo', [FileController::class, 'updateinfo'])->name('file.updateinfo');
 
     Route::get('/paper/adminlock', [PaperController::class, 'adminlock'])->name('paper.adminlock'); //ロック状態の変更(paper) 順番が大事。
     Route::post('/paper/adminlock', [PaperController::class, 'adminlock'])->name('paper.adminlock'); //ロック状態の変更(paper)
@@ -129,17 +129,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/review/{review}', [ReviewController::class, 'show'])->name('review.show');
     Route::put('/review/{review}/start', [ReviewController::class, 'start'])->name('review.start');
 
-    Route::get('/review/pubkey/{review}/{token}', [ReviewController::class, 'pubshow'])->name('review.pubshow'); // 査読者同士の相互参照用
+    Route::get('/review/{review}/pubkey/{token}', [ReviewController::class, 'pubshow'])->name('review.pubshow'); // 査読者同士の相互参照用
 
     Route::get('/review', [ReviewController::class, 'index'])->name('review.index');
     Route::get('/review/{review}/restore', [ReviewController::class, 'restore'])->name('review.restore'); //復活
     Route::delete('/review/{review}', [ReviewController::class, 'destroy'])->name('review.destroy');
-    Route::get('/review/indexcat/{cat}', [ReviewController::class, 'indexcat'])->name('review.indexcat');
+    Route::get('/review_indexcat/{cat}', [ReviewController::class, 'indexcat'])->name('review.indexcat');
     Route::get('/review_downzip/{cat}', [ReviewController::class, 'zipdownload_for_rev'])->name('review.downzip');
     // Route::resource('review', ReviewController::class);
     // put /review/{review} -> review.update
     // get review.index で仮に作成
-    Route::get('/review/{cat}/edit_dummy/{target}', [ReviewController::class, 'edit_dummy'])->name('review.edit_dummy');
+    Route::get('/review_edit_dummy/{cat}/{target}', [ReviewController::class, 'edit_dummy'])->name('review.edit_dummy');
 
     // admin
     Route::get('/admin_dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
@@ -154,7 +154,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin_paperlist_excel', [AdminController::class, 'paperlist_excel'])->name('admin.paperlist_excel');
     Route::get('/admin_hiroba_excel', [AdminController::class, 'hiroba_excel'])->name('admin.hiroba_excel');
     Route::get('/admin_filelist', [AdminController::class, 'filelist'])->name('admin.filelist');
-    Route::get('admin_paper/{paper}/edit', [AdminController::class, 'paper_edit'])->name('admin.paper_edit'); //ECが操作
+    Route::get('/admin_paper/{paper}/edit', [AdminController::class, 'paper_edit'])->name('admin.paper_edit'); //ECが操作
     Route::put('/admin_submit_proceed/{sub}', [ManagerController::class, 'submit_proceed'])->name('manage.submit_proceed');
     Route::get('/admin_submit_sendreceipt/{sub}', [ManagerController::class, 'submit_sendreceipt'])->name('manage.sendreceipt'); // 受領通知（査読に進みます）を送る
     Route::get('/admin_submit_sendreceipt_final/{sub}', [ManagerController::class, 'submit_sendreceipt_final'])->name('manage.sendreceipt_final'); // 受領通知（最終原稿）を送る

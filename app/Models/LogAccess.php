@@ -16,6 +16,7 @@ class LogAccess extends Model
     protected $fillable = [
         'uid',
         'url',
+        'paper_id',
         'method',
         'request'
     ];

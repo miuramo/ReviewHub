@@ -707,8 +707,7 @@ class AdminController extends Controller
         $managedPaperIds = [];
         
         // paper_manager テーブルから管理権限のあるPaperを取得
-        $managedPaperIds = DB::table('paper_manager')
-            ->where('user_id', $user->id)
+        $managedPaperIds = \App\Models\PaperManager::where('user_id', $user->id)
             ->pluck('paper_id')
             ->toArray();
         
@@ -717,7 +716,7 @@ class AdminController extends Controller
         
         // 全テーブルを取得して、制限ありテーブルを除外
         $all_tables = $this->get_db_tables();
-        $restricted_tables = ['reviews', 'scores', 'bbs', 'bb_mes', 'paper_manager', 'tasks']; // 管理権限のあるPaperに関連するテーブルは制限あり
+        $restricted_tables = ['reviews', 'scores', 'bbs', 'bb_mes', 'paper_manager', 'tasks', 'log_accesses', 'log_creates', 'log_modifies', 'error_logs']; // 管理権限のあるPaperに関連するテーブルは制限あり
         $unrestricted_tables = array_diff($all_tables, $restricted_tables);
         
         foreach ($unrestricted_tables as $table) {
@@ -729,13 +728,13 @@ class AdminController extends Controller
             $paperIdList = implode(',', $managedPaperIds);
 
             // paper_manager テーブル（user_idを経由して制限）
-            shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-create-info --complete-insert --where=\"user_id = {$user->id}\" {$db_name} paper_manager >> dump.sql");
+            shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-create-info --complete-insert --where=\"paper_id IN ({$paperIdList})\" {$db_name} paper_manager >> dump.sql");
                         
             // reviews テーブル
             shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-create-info --complete-insert --where=\"paper_id IN ({$paperIdList})\" {$db_name} reviews >> dump.sql");
             
             // scores テーブル（reviewsのIDを経由して制限）
-            $reviewIds = DB::table('reviews')->whereIn('paper_id', $managedPaperIds)->pluck('id')->toArray();
+            $reviewIds = \App\Models\Review::whereIn('paper_id', $managedPaperIds)->pluck('id')->toArray();
             if (count($reviewIds) > 0) {
                 $reviewIdList = implode(',', $reviewIds);
                 shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-create-info --complete-insert --where=\"review_id IN ({$reviewIdList})\" {$db_name} scores >> dump.sql");
@@ -745,18 +744,23 @@ class AdminController extends Controller
             shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-create-info --complete-insert --where=\"paper_id IN ({$paperIdList})\" {$db_name} bbs >> dump.sql");
             
             // bb_mes テーブル（bbsのIDを経由して制限）
-            $bbIds = DB::table('bbs')->whereIn('paper_id', $managedPaperIds)->pluck('id')->toArray();
+            $bbIds = \App\Models\Bb::whereIn('paper_id', $managedPaperIds)->pluck('id')->toArray();
             if (count($bbIds) > 0) {
                 $bbIdList = implode(',', $bbIds);
                 shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-create-info --complete-insert --where=\"bb_id IN ({$bbIdList})\" {$db_name} bb_mes >> dump.sql");
             }
 
             // tasks テーブル（submit_idを経由して制限）
-            $submitIds = DB::table('submits')->whereIn('paper_id', $managedPaperIds)->pluck('id')->toArray();
+            $submitIds = \App\Models\Submit::whereIn('paper_id', $managedPaperIds)->pluck('id')->toArray();
             if (count($submitIds) > 0) {
                 $submitIdList = implode(',', $submitIds);
                 shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-create-info --complete-insert --where=\"submit_id IN ({$submitIdList})\" {$db_name} tasks >> dump.sql");
             }
+
+            // log_accesses テーブル（user_idを経由して制限 OR paper_idを経由して制限）
+            shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-create-info --complete-insert --where=\"user_id = {$user->id} OR paper_id IN ({$paperIdList})\" {$db_name} log_accesses >> dump.sql");
+
+            // log_creates テーブル、log_modifies テーブル、error_logs テーブルは、必要性がひくいため、いまのところダンプしない。
         }
         
         shell_exec("zip -e --password={$pass} passdumpsql.zip dump.sql");
