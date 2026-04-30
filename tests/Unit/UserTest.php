@@ -25,7 +25,7 @@ class UserTest extends TestCase
         $user12 = User::factory()->create();
         $paper1 = Paper::create([
             'category_id' => 1,
-            'contactemails' => $user11->email."\n",$user12->email,
+            'contactemails' => $user11->email."\n".$user12->email,
             'owner' => $user10->id,
         ]);
         $paper1->updateContacts();
@@ -35,7 +35,7 @@ class UserTest extends TestCase
         $user22 = User::factory()->create();
         $paper2 = Paper::create([
             'category_id' => 2,
-            'contactemails' => $user21->email."\n",$user22->email,
+            'contactemails' => $user21->email."\n".$user22->email,
             'owner' => $user20->id,
         ]);
         $paper2->updateContacts();
