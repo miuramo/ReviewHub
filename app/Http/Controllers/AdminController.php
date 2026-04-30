@@ -689,14 +689,66 @@ class AdminController extends Controller
      */
     public function passdumpsql(Request $req)
     {
+        // 管理者のみアクセス可能。ただし、管理者であっても、管理権限のあるPaperに関連するテーブル（reviews, scores, bbs, bb_mes）については、管理権限のあるPaperに関連するもののみをダンプする。
         if (!auth()->user()->can('role', 'admin')) abort(403);
         $pass = Str::random(30);
         if ($req->has("password")) $pass = $req->input("password");
         $app_public_filedir = storage_path(File::apf());
         $mysql = config('database.default');
         $db_name = config('database.connections.' . str_replace('.', '_', $mysql) . '.database');
+        $db_user = config('database.connections.' . str_replace('.', '_', $mysql) . '.username');
+        $db_password = config('database.connections.' . str_replace('.', '_', $mysql) . '.password');
+        $db_host = config('database.connections.' . str_replace('.', '_', $mysql) . '.host', 'localhost');
+        
         chdir($app_public_filedir);
-        shell_exec("mysqldump -u {$db_name} -p{$db_name} {$db_name} > dump.sql");
+        
+        // 管理者が管理権限を持つpaperのIDを取得
+        $user = auth()->user();
+        $managedPaperIds = [];
+        
+        // paper_manager テーブルから管理権限のあるPaperを取得
+        $managedPaperIds = DB::table('paper_manager')
+            ->where('user_id', $user->id)
+            ->pluck('paper_id')
+            ->toArray();
+        
+        // 構造のみダンプ（全テーブル）
+        shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-data {$db_name} > dump.sql");
+        
+        // 全テーブルを取得して、制限ありテーブルを除外
+        $all_tables = $this->get_db_tables();
+        $restricted_tables = ['reviews', 'scores', 'bbs', 'bb_mes'];
+        $unrestricted_tables = array_diff($all_tables, $restricted_tables);
+        
+        foreach ($unrestricted_tables as $table) {
+            shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-create-info --complete-insert {$db_name} {$table} >> dump.sql");
+        }
+        
+        // 制限ありでダンプするテーブル（管理権限のあるPaperに関連するもののみ）
+        if (count($managedPaperIds) > 0) {
+            $paperIdList = implode(',', $managedPaperIds);
+                        
+            // reviews テーブル
+            shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-create-info --complete-insert --where=\"paper_id IN ({$paperIdList})\" {$db_name} reviews >> dump.sql");
+            
+            // scores テーブル（reviewsのIDを経由して制限）
+            $reviewIds = DB::table('reviews')->whereIn('paper_id', $managedPaperIds)->pluck('id')->toArray();
+            if (count($reviewIds) > 0) {
+                $reviewIdList = implode(',', $reviewIds);
+                shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-create-info --complete-insert --where=\"review_id IN ({$reviewIdList})\" {$db_name} scores >> dump.sql");
+            }
+            
+            // bbs テーブル
+            shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-create-info --complete-insert --where=\"paper_id IN ({$paperIdList})\" {$db_name} bbs >> dump.sql");
+            
+            // bb_mes テーブル（bbsのIDを経由して制限）
+            $bbIds = DB::table('bbs')->whereIn('paper_id', $managedPaperIds)->pluck('id')->toArray();
+            if (count($bbIds) > 0) {
+                $bbIdList = implode(',', $bbIds);
+                shell_exec("mysqldump -h {$db_host} -u {$db_user} -p{$db_password} --no-create-info --complete-insert --where=\"bb_id IN ({$bbIdList})\" {$db_name} bb_mes >> dump.sql");
+            }
+        }
+        
         shell_exec("zip -e --password={$pass} passdumpsql.zip dump.sql");
         return response()->file(
             $app_public_filedir . "/passdumpsql.zip",
