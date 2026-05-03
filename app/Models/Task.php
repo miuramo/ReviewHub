@@ -147,7 +147,7 @@ class Task extends Model
             $this->sendApproveMail(1, 0);
         }
     }
-    public function logappend(string $comment, ?int $subject_id=null, ?int $object_id=null, ?int $approved=null): void
+    public function logappend(?string $comment, ?int $subject_id=null, ?int $object_id=null, ?int $approved=null): void
     {
         $localLog = $this->log ?? [];
         $subject_id = $subject_id ?? $this->subject_id;
@@ -187,9 +187,9 @@ class Task extends Model
     /**
      * TaskController.update から呼ばれる。ワークフローを進める。
      */
-    public function process(Request $req): void
+    public function process(Request $req): bool
     {
-        $this->workflow->process($this, $req);
+        return $this->workflow->process($this, $req);
     }
 
     public function log_comment_last(): string
