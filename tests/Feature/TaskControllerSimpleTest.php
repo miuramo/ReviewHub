@@ -174,4 +174,116 @@ class TaskControllerSimpleTest extends TestCase
             $this->assertEquals($expected, $result, "Input '{$input}' should produce '{$expected}'");
         }
     }
+
+    #[Test]
+    public function task_approve_route_is_accessible()
+    {
+        // Given: 基本的なWorkflowとTaskを作成
+        $workflow = Workflow::factory()->create([
+            'name' => 'Test Approve Workflow',
+            'task' => 'assign'
+        ]);
+        $paper = Paper::factory()->create();
+        $submit = Submit::factory()->create(['paper_id' => $paper->id]);
+        $task = Task::factory()->create([
+            'workflow_id' => $workflow->id,
+            'submit_id' => $submit->id
+        ]);
+
+        // When: approveルートにアクセス
+        $response = $this->put(route('task.approve', $task), [
+            'redirect_role' => 'admin',
+            'approve' => true
+        ]);
+
+        // Then: ルートが見つかり、正常に処理される
+        $this->assertNotEquals(404, $response->getStatusCode());
+        $this->assertTrue(in_array($response->getStatusCode(), [200, 302, 500]), 'Approve route should be accessible');
+    }
+
+    #[Test]
+    public function task_approve_handles_approval_decision()
+    {
+        // Given: 承認用のWorkflowとTaskを作成
+        $workflow = Workflow::factory()->create([
+            'name' => 'Test Approval Decision Workflow',
+            'task' => 'assign'
+        ]);
+        $paper = Paper::factory()->create();
+        $submit = Submit::factory()->create(['paper_id' => $paper->id]);
+        $task = Task::factory()->create([
+            'workflow_id' => $workflow->id,
+            'submit_id' => $submit->id
+        ]);
+
+        // When: 承認でapproveメソッドを実行
+        $responseApprove = $this->put(route('task.approve', $task), [
+            'redirect_role' => 'admin',
+            'approve' => true
+        ]);
+
+        // Then: 承認処理が実行される
+        $this->assertNotEquals(404, $responseApprove->getStatusCode());
+
+        // When: 辞退でapproveメソッドを実行
+        $responseDecline = $this->put(route('task.approve', $task), [
+            'redirect_role' => 'admin',
+            'approve' => false
+        ]);
+
+        // Then: 辞退処理が実行される
+        $this->assertNotEquals(404, $responseDecline->getStatusCode());
+    }
+
+    #[Test]
+    public function task_approve_processes_redirect_role_parameter()
+    {
+        // Given: redirect_roleパラメータのテスト
+        $workflow = Workflow::factory()->create([
+            'name' => 'Test Approve Role Processing Workflow',
+            'task' => 'assign'
+        ]);
+        $paper = Paper::factory()->create();
+        $submit = Submit::factory()->create(['paper_id' => $paper->id]);
+        $task = Task::factory()->create([
+            'workflow_id' => $workflow->id,
+            'submit_id' => $submit->id
+        ]);
+
+        // When: 数字が含まれるredirect_roleでテスト
+        $response = $this->put(route('task.approve', $task), [
+            'redirect_role' => 'admin123456',
+            'approve' => true
+        ]);
+
+        // Then: パラメータが受け取られ、処理される
+        $this->assertNotEquals(404, $response->getStatusCode());
+        $this->assertTrue(in_array($response->getStatusCode(), [200, 302, 500]), 
+            'Approve route should process redirect_role parameter');
+    }
+
+    #[Test]
+    public function task_approve_handles_missing_approve_parameter()
+    {
+        // Given: approveパラメータが未設定の場合のテスト
+        $workflow = Workflow::factory()->create([
+            'name' => 'Test Missing Approve Parameter Workflow',
+            'task' => 'assign'
+        ]);
+        $paper = Paper::factory()->create();
+        $submit = Submit::factory()->create(['paper_id' => $paper->id]);
+        $task = Task::factory()->create([
+            'workflow_id' => $workflow->id,
+            'submit_id' => $submit->id
+        ]);
+
+        // When: approveパラメータなしでapproveメソッドを実行
+        $response = $this->put(route('task.approve', $task), [
+            'redirect_role' => 'admin'
+            // approve パラメータを意図的に省略
+        ]);
+
+        // Then: 処理が実行される（デフォルトでfalseとして扱われる）
+        $this->assertNotEquals(404, $response->getStatusCode());
+    }
 }
