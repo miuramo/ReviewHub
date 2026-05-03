@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Review extends MetaModel
 {
@@ -320,12 +321,12 @@ class Review extends MetaModel
     public function validateOneRev(): void
     {
         $finish_vpids_ary = Score::where('review_id', $this->id)->whereNotNull('valuestr')->whereHas('viewpoint', function ($query) {
-            $query->where('mandatory', 1);
+            $query->where('mandatory', 1)->whereRaw("target & ? != 0", [pow(2, $this->target)]);
         })->get()->pluck('viewpoint_id')->toArray();
         $finish_vpids = count($finish_vpids_ary);
-        $all_vpids = Viewpoint::where('category_id', $this->category_id)->whereRaw("target & ? != 0", [$this->target + 1])->where('mandatory', 1)->pluck('id')->toArray();
+        $all_vpids = Viewpoint::where('category_id', $this->category_id)->where('mandatory', 1)->whereRaw("target & ? != 0", [pow(2, $this->target)])->pluck('id')->toArray();
         if ($finish_vpids == 0) {
-            $this->status = 0;
+            return; // まだ未回答のまま
         } else if ($finish_vpids == count($all_vpids)) {
             // 厳密には、全ての必須項目が埋まっているかどうかをチェックするべき
             sort($finish_vpids_ary);
