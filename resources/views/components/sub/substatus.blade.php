@@ -85,13 +85,14 @@
 
 
                             @if (!$readonly && $sub->accept_id != 5)
-                                <x-sub.disclose :sub="$sub"></x-sub.disclose>
+                                <div>
+                                    <x-sub.disclose :sub="$sub"></x-sub.disclose>
 
-                                <x-element.linkbutton href="{{ route('manage.senddisclose', ['sub' => $sub->id]) }}"
-                                    color="pink" size="sm"
-                                    confirm="査読結果開示通知を送ってよいですか？（著者との掲示板に書き込み、メール送信します）">査読結果開示通知を送る
-                                </x-element.linkbutton>
-                                <br>
+                                    <x-element.linkbutton
+                                        href="{{ route('manage.senddisclose', ['sub' => $sub->id]) }}" color="pink"
+                                        size="sm" confirm="査読結果開示通知を送ってよいですか？（著者との掲示板に書き込み、メール送信します）">査読結果開示通知を送る
+                                    </x-element.linkbutton>
+                                </div>
                                 <span class="mx-2"></span>
 
 
