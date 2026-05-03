@@ -12,8 +12,22 @@ class Workflow extends Model
     /** @use HasFactory<\Database\Factories\WorkflowFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'subject',
+        'task',
+        'object',
+        'num_of_days',
+        'next_workflow_id',
+        'join'
+    ];
+
     // protected $with = [];
     protected $attributes = [
+        'subject' => 'ec',
+        'task' => 'assign',
+        'object' => 'meta',
+        'num_of_days' => 7,
         'next_workflow_id' => '[]',
         'join' => '[]',
     ];
@@ -21,6 +35,14 @@ class Workflow extends Model
         'next_workflow_id' => 'array',
         'join' => 'array',
     ];
+
+    /**
+     * WorkflowのTasksリレーション
+     */
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 
     /**
      * 新しいタスクを、submitに対して作成する
