@@ -17,7 +17,7 @@ class EnqueteItem extends Model
     /**
      * バリデーション
      */
-    public function validate_rule(string $val)
+    public function validate_rule(string $val): bool
     {
         if ($val == null) return true;
         if ($this->pregrule == null) return true;

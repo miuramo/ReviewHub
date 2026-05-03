@@ -32,7 +32,7 @@ class Status extends Model
      * 
      * 呼び出す場所 PaperController@index, PaperController@manage
      */
-    public static function updatePaperStatus(Submit $sub)
+    public static function updatePaperStatus(Submit $sub): void
     {
         $paper = $sub->paper;
         if ($paper->status_id === 2) {

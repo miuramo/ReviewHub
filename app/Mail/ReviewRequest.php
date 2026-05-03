@@ -25,7 +25,7 @@ class ReviewRequest extends RetryMailable
     /**
      * Create a new message instance.
      */
-    public function __construct($_paper, $_reviewer, $_rev)
+    public function __construct(Paper $_paper, User $_reviewer, Review $_rev)
     {
         $this->paper = $_paper;
         $this->reviewer = $_reviewer;
@@ -44,6 +44,7 @@ class ReviewRequest extends RetryMailable
         // 1回目？2回目
         $revobj = \App\Models\Review::find($this->rev->id);
         $submit = \App\Models\Submit::find($revobj->submit_id);
+        $review_duration = \App\Models\Setting::getary('REVIEW_DURATION_DAYS')[$this->rev->target];
         if ($submit->round > 1) {
             $round = "（{$submit->round}回目）";
             $this->subject = "改訂稿が投稿されましたので、再査読{$round}をお願いしたいです (ID : " . $this->paper->id_03d() . ')';
@@ -57,6 +58,7 @@ class ReviewRequest extends RetryMailable
                     'reviewer' => $this->reviewer,
                     'replyurl' => $url = route('review.req_confirm', ['review' => $this->rev, 'token' => $this->rev->token_for_request()]),
                     'round' => $round,
+                    'review_duration' => $review_duration,
                 ],
             );
         } else {
@@ -73,6 +75,7 @@ class ReviewRequest extends RetryMailable
                     'reviewer' => $this->reviewer,
                     'replyurl' => $url = route('review.req_confirm', ['review' => $this->rev, 'token' => $this->rev->token_for_request()]),
                     'round' => $round,
+                    'review_duration' => $review_duration,
                 ],
             );
         }

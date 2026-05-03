@@ -58,7 +58,7 @@ class Role extends Model
         return $this->users()->where("user_id", $user_id)->exists();
     }
 
-    public static function checkRoleUser(string|int $role_id, int $user_id)
+    public static function checkRoleUser(string|int $role_id, int $user_id): bool
     {
         if (is_integer($role_id)) {
             $role = Role::find($role_id);
@@ -89,7 +89,7 @@ class Role extends Model
      * demo = 10
      * meta|rev|aec|pub|award|acc|demo|web|wc|admin
      */
-    public static function resetRolesExcept(int $user_id, $roles)
+    public static function resetRolesExcept(int $user_id, string|array $roles): array
     {
         $user = User::find($user_id);
         if (is_string($roles)) {
@@ -103,7 +103,7 @@ class Role extends Model
         return $roles;
     }
     // テスト用：tinkerから呼び出す
-    public static function setRolesExcept(int $user_id, $roles)
+    public static function setRolesExcept(int $user_id, string|array $roles): array
     {
         $user = User::find($user_id);
         if (is_string($roles)) {
@@ -118,6 +118,6 @@ class Role extends Model
         foreach ($roles as $role) {
             $user->roles()->detach(Role::find($role));
         }
-        return $user->roles;
+        return $user->roles()->pluck("id")->toArray();
     }
 }

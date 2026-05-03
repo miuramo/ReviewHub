@@ -28,7 +28,7 @@ class VoteItem extends Model
         return $this->hasMany(VoteAnswer::class);
     }
 
-    public static function init()
+    public static function init(): void
     {
         // 各カテゴリで、学生発表とそれ以外（一般発表）に分ける。
         // アンケートは4番、paper_id => valuestr をとっておく。
@@ -61,7 +61,7 @@ class VoteItem extends Model
         // }
 
     }
-    public static function student_boothes()
+    public static function student_boothes(): array
     {
         $student_pids = EnqueteAnswer::where("enquete_id",4)->where("valuestr","学生")->orderBy("paper_id")
         ->get()->pluck("paper_id")->toArray();

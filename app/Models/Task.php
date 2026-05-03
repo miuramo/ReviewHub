@@ -51,7 +51,7 @@ class Task extends Model
     /**
      * 柔軟な査読者の割り当てと査読タスク生成
      */
-    public static function createReviewTask(Submit $sub, int $revuid){
+    public static function createReviewTask(Submit $sub, int $revuid): Task {
         // ここに柔軟な査読者の割り当てと査読タスク生成の処理を書く
         if (auth()->user()){
             $obj_id = auth()->user()->id;
@@ -86,7 +86,7 @@ class Task extends Model
         return $this->belongsTo(Submit::class);
     }
 
-    public function dueForHumans($prefix = 'あと', $postfix = '超過')
+    public function dueForHumans(string $prefix = 'あと', string $postfix = '超過'): string
     {
         $date = $this->due_date;
         try {
@@ -112,11 +112,11 @@ class Task extends Model
      * 承認要求メールを送信する
      * @param bool $isApprove 要求=0 か承認返信=1か
      */
-    public function sendApproveMail(bool $isApprove, bool $approved)
+    public function sendApproveMail(bool $isApprove, bool $approved): void
     {
         // ここにメール送信処理を書く TODO:
     }
-    public function task_approved()
+    public function task_approved(): void
     {
         $this->approved = 1;
         $this->approved_at = now();
@@ -126,7 +126,7 @@ class Task extends Model
     /**
      * タスクの承認または辞退
      */
-    public function approve(Request $req, bool $approved)
+    public function approve(Request $req, bool $approved): void
     {
         $this->logappend($req->comment, $this->subject_id, $this->object_id, $req->approve);
         if ($approved) {
@@ -147,7 +147,7 @@ class Task extends Model
             $this->sendApproveMail(1, 0);
         }
     }
-    public function logappend($comment, $subject_id=null, $object_id=null, $approved=null)
+    public function logappend(string $comment, ?int $subject_id=null, ?int $object_id=null, ?int $approved=null): void
     {
         $localLog = $this->log ?? [];
         $subject_id = $subject_id ?? $this->subject_id;
@@ -161,7 +161,7 @@ class Task extends Model
     }
 
     // next, next2をみながら、
-    public function recursive_set_due_date(string $ymd)
+    public function recursive_set_due_date(string $ymd): void
     {
         $this->due_date = $this->addDaysToDate($this->workflow->num_of_days, $ymd);
         $this->save();
@@ -169,7 +169,7 @@ class Task extends Model
             Task::find($nextid)->recursive_set_due_date($this->due_date);
         }
     }
-    public function addDaysToDate(int $days, string $currentDate = null)
+    public function addDaysToDate(int $days, ?string $currentDate = null): string
     {
         if ($currentDate == null) {
             // 現在の日付を取得
@@ -187,12 +187,12 @@ class Task extends Model
     /**
      * TaskController.update から呼ばれる。ワークフローを進める。
      */
-    public function process(Request $req)
+    public function process(Request $req): void
     {
-        return $this->workflow->process($this, $req);
+        $this->workflow->process($this, $req);
     }
 
-    public function log_comment_last()
+    public function log_comment_last(): string
     {
 
         $ary = $this->log;
@@ -200,7 +200,7 @@ class Task extends Model
         return $ary[count($ary) - 1]['comment'];
     }
 
-    public function random_proceed()
+    public function random_proceed(): void
     {
         // いい感じに進める
         // もし割り当てタスクなら
@@ -254,7 +254,7 @@ class Task extends Model
     /**
      * Submitに移動したほうがよい
      */
-    public function setDecision()
+    public function setDecision(): void
     {
         $this->submit->setDecision();
     }

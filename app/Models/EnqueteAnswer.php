@@ -35,7 +35,7 @@ class EnqueteAnswer extends Model
     // アンケート showonpaperindex
     // [paperid][enqid][name1] = value1
     // [paperid][enqid][name2] = value2
-    public static function getAnswers()
+    public static function getAnswers(): array
     {
         $showonEnq = Enquete::where("showonpaperindex", true)->get()->pluck('id')->toArray();
 
@@ -54,7 +54,7 @@ class EnqueteAnswer extends Model
     /**
      * デモ希望としているアンケート回答数を、採択状況ごとに分けてカウントする
      */
-    public static function demoCount()
+    public static function demoCount(): int
     {
         $demoenqitem = EnqueteItem::where("name", "demoifaccepted")->first();
         if ($demoenqitem != null) {
@@ -67,7 +67,7 @@ class EnqueteAnswer extends Model
     }
     // すべてのカテゴリについて、デモ希望をだしているPaperIDのリストを返す 例:[9,24,29,31,33]
     // ただし、Paper->deleted_at が null であるものに限る
-    public static function demoPaperIDs()
+    public static function demoPaperIDs(): array
     {
         $demoenqitem = EnqueteItem::where("name", "demoifaccepted")->first();
         if ($demoenqitem != null) {
@@ -79,14 +79,14 @@ class EnqueteAnswer extends Model
         return [];
     }
     // すべてのカテゴリについて、デモ希望をだしているPaperID=>CatIDの配列を返す 例:[9=>1,24=>1,29=>3,31=>3,33=>1]
-    public static function demoPaperIDs_CatID()
+    public static function demoPaperIDs_CatID(): array
     {
         $demoPaperIDs = self::demoPaperIDs();
         $res = Paper::select("id", "category_id")->whereIn("id", $demoPaperIDs)->orderBy("id")->get()->pluck("category_id", "id")->toArray();
         return $res;
     }
     // 上記の結果を、カテゴリごとに分けて返す 例:[1=>[0=>9,1=>24,2=>33],3=>[0=>29,1=>31]]
-    public static function demoPaperIDs_eachCat()
+    public static function demoPaperIDs_eachCat(): array
     {
         $demoPaperIDs = self::demoPaperIDs_CatID();
         $res = [];
@@ -100,7 +100,7 @@ class EnqueteAnswer extends Model
     // さらに、採択状況によって分ける
     // group by submits.accept_id, papers.category_id
 
-    public static function demoPaperIDs_eachCat_eachAccID()
+    public static function demoPaperIDs_eachCat_eachAccID(): array
     {
         $demoPaperIDs = self::demoPaperIDs_CatID();
 

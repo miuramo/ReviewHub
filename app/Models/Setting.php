@@ -24,7 +24,7 @@ class Setting extends Model
     /**
      * Settingの REVIEWER_MEMBER や PC_MEMBERをみて、自動でロールをわりあてる
      */
-    public static function auto_role_member(){
+    public static function auto_role_member(): void {
         $sets = Setting::where("name","like","%_MEMBER")->where("valid",true)->get();
         foreach($sets as $set){
             $val = $set->value;
@@ -54,7 +54,7 @@ class Setting extends Model
     //     }
     //     return null;
     // }
-    public static function setval($setting_name, $setting_value)
+    public static function setval(string $setting_name, string $setting_value): void
     {
         $setting = Setting::where('name', $setting_name)->first();
         if ($setting) {
@@ -71,9 +71,18 @@ class Setting extends Model
         }
     }
 
+    public static function getary(string $setting_name): ?array
+    {
+        $val = self::getval($setting_name);
+        if ($val) {
+            return json_decode($val, true);
+        }
+        return null;
+    }
 
 
-    public static function seeder()
+
+    public static function seeder(): void
     {
         Setting::firstOrCreate([
             'name' => "NAME_OF_META",
@@ -182,6 +191,15 @@ class Setting extends Model
             'isnumber' => false,
             'isbool' => false,
             'misc' => '/paper/create | /paper | /vote',
+        ]);
+
+        Setting::firstOrCreate([
+            'name' => "REVIEW_DURATION_DAYS",
+        ], [
+            'value' => "[24, 10, 5]",
+            'isnumber' => false,
+            'isbool' => false,
+            'misc' => '査読期間の日数。通常、メタ、最終の順で指定する。例: [24, 10, 5]',
         ]);
 
         Vote::init();

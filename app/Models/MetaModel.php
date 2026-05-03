@@ -10,7 +10,7 @@ class MetaModel extends Model
 {
     use HasFactory;
 
-    public static function column_details($tableName)
+    public static function column_details(string $tableName): array
     {
         $driver = DB::connection()->getDriverName();
         $coldetails = [];
@@ -36,9 +36,10 @@ class MetaModel extends Model
         return $coldetails;
     }
 
-    public static function get_db_tables()
+    public static function get_db_tables(): array
     {
         $driver = DB::connection()->getDriverName();
+        $tables = [];
         if ($driver === 'sqlite' || $driver === 'sqlite_testing') {
             $_tables = DB::select("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
             $tables = array_map(function ($item) {
@@ -46,7 +47,6 @@ class MetaModel extends Model
             }, $_tables);
         } else if ($driver === 'mysql') {
             $_tables = DB::select('SHOW TABLES');
-            $tables = [];
             foreach ($_tables as $nnn => $obj) {
                 foreach ($obj as $nnnn => $tn) {
                     $tables[] = $tn;
@@ -56,7 +56,7 @@ class MetaModel extends Model
         sort($tables);
         return $tables;
     }
-    public function get_table_comments()
+    public function get_table_comments(): array
     {
         $domain = config('database.default');
         $db_name = config('database.connections.' . str_replace('.', '_', $domain) . '.database');
@@ -64,7 +64,7 @@ class MetaModel extends Model
         return self::get_table_comments_from_db($db_name, $tableName);
     }
 
-    public static function get_table_comments_from_db($dbName, $tableName)
+    public static function get_table_comments_from_db(string $dbName, string $tableName): array
     {
         $driver = DB::connection()->getDriverName();
         $coldetails = [];
@@ -83,7 +83,7 @@ class MetaModel extends Model
         return $coldetails;
     }
 
-    public static function ary2serial($ary)
+    public static function ary2serial(array $ary): string
     {
         $s = serialize($ary);
         $k = md5($s . env('APP_KEY'));
@@ -92,7 +92,7 @@ class MetaModel extends Model
         $val = base64_encode($gz);
         return str_replace(['+', '/', '='], ['_', '-', '.'], $val);
     }
-    public static function serial2ary($serial)
+    public static function serial2ary(string $serial): array|false
     {
         $val = str_replace(['_', '-', '.'], ['+', '/', '='], $serial);
         $gz = base64_decode($val);

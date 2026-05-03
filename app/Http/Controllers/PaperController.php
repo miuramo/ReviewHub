@@ -398,7 +398,7 @@ class PaperController extends Controller
                 'round' => $sub->round + 1,
                 'resubmit_until' => date('Y-m-d', strtotime('+30 days')),
                 'previous_submit_id' => $sub->id,
-            ])->init_reviews();
+            ]);// ->init_reviews();
 
             return redirect()->route('paper.edit', ['paper' => $sub->paper])->with('feedback.success', '査読結果の確認ありがとうございました。再投稿は指定期日までに論文PDFと回答書PDFをアップロードしてください。（回答書PDFのフォーマット指定はありません）');
         } else if ($sub->accept_id >= 6) { // 不採録や取り下げの場合 // Submit.updateCurrentDecisionに書いてある。採録なら1、条件付きなら2,不採録なら6,取り下げなら7
@@ -473,7 +473,7 @@ class PaperController extends Controller
     /**
      * 全角文字に挟まれた《半角スペース》に加え、全角と半角（英文字・数字）に挟まれた《半角スペース》も一括削除
      */
-    public static function normalizeSpaces($val)
+    public static function normalizeSpaces(string $val)
     {
         // 前後の空白をトリム
         $val = trim($val);

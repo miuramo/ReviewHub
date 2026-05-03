@@ -32,7 +32,7 @@ class Category extends Model
         return $this->hasMany(Paper::class, 'category_id')->whereNotNull('pdf_file_id')->orderBy('id');
     }
 
-    public static function spans()
+    public static function spans(): array
     {
         $all = Category::all();
         $spans = [];
@@ -45,12 +45,12 @@ class Category extends Model
     /**
      * 新規投稿受付ボタン
      */
-    public function isOpen()
+    public function isOpen(): bool
     {
         return Enquete::checkdayduration($this->openstart, $this->openend);
     }
 
-    public function is_accept_pdf()
+    public function is_accept_pdf(): bool
     {
         return Enquete::checkdayduration($this->pdf_accept_start, $this->pdf_accept_end);
     }
@@ -58,7 +58,7 @@ class Category extends Model
     /**
      * 投稿数が設定の上限(upperlimit)を超えたらfalse
      */
-    public function isnotUpperLimit()
+    public function isnotUpperLimit(): bool
     {
         if ($this->upperlimit == 0) return true;
         $papercount = Paper::where("category_id", $this->id)->count();
@@ -68,7 +68,7 @@ class Category extends Model
     /**
      * 査読結果を表示するかどうか
      */
-    public static function isShowReview($cat_id)
+    public static function isShowReview(int $cat_id): bool
     {
         $canshow = false;
         $revlist = Category::select('id', 'status__revlist_on')->get()->pluck('status__revlist_on', 'id')->toArray();
@@ -86,7 +86,7 @@ class Category extends Model
     /**
      * 編集長ではなく、manage_cat 権限のみの場合は、そのカテゴリのみ返す。
      */
-    public static function manage_cats()
+    public static function manage_cats(): array
     {
         $cats = Category::select('id', 'name')->get()->pluck('name', 'id')->toArray();
         if (auth()->user()->can('role', 'ec')) {

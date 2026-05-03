@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Container\Attributes\Log;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class LogAccess extends Model
 {
@@ -29,7 +30,7 @@ class LogAccess extends Model
     /**
      * Accessor for request attribute to handle malformed UTF-8 characters
      */
-    public function getRequestAttribute($value)
+    public function getRequestAttribute(mixed $value): ?array
     {
         if (is_null($value)) {
             return null;
@@ -57,7 +58,7 @@ class LogAccess extends Model
     /**
      * Mutator for request attribute to ensure clean UTF-8 encoding
      */
-    public function setRequestAttribute($value)
+    public function setRequestAttribute(mixed $value): void
     {
         if (is_array($value) || is_object($value)) {
             // Apply UTF-8 cleaning recursively to array/object values
@@ -71,7 +72,7 @@ class LogAccess extends Model
     /**
      * Clean malformed UTF-8 characters from a string
      */
-    private function cleanUtf8($string)
+    private function cleanUtf8(mixed $string): mixed
     {
         if (!is_string($string)) {
             return $string;
@@ -92,7 +93,7 @@ class LogAccess extends Model
     /**
      * Recursively clean UTF-8 characters in arrays and objects
      */
-    private function cleanUtf8Recursive($data)
+    private function cleanUtf8Recursive(mixed $data): mixed
     {
         if (is_array($data)) {
             return array_map([$this, 'cleanUtf8Recursive'], $data);
@@ -114,7 +115,7 @@ class LogAccess extends Model
      * App\Http\Middleware\LogAccess で、実際のアクセスログ保存処理を行っている。
      */
 
-    public static function dates_sendrequest($review, $revuid)
+    public static function dates_sendrequest(string $review, string $revuid): Collection
     {
         $ret = LogAccess::where('url', "/task_sendrequest/{$review}/{$revuid}")
             ->where('method', 'GET')

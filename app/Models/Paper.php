@@ -10,16 +10,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Mail\Mailable;
-use Illuminate\Mail\PendingMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 use STS\ZipStream\Builder;
 use STS\ZipStream\Models\File as ZipFile;
 use ZipArchive;
@@ -112,7 +104,7 @@ class Paper extends Model
     ];
 
 
-    public static function mandatory_bibs()
+    public static function mandatory_bibs(): array
     {
         $koumoku = [
             'title' => '和文題名',
@@ -132,7 +124,7 @@ class Paper extends Model
         return $koumoku;
     }
 
-    public function addFilesToZip(ZipArchive $zip, array $filetypes)
+    public function addFilesToZip(ZipArchive $zip, array $filetypes): int
     {
         $count = 0;
         foreach ($filetypes as $ft) {
@@ -145,7 +137,7 @@ class Paper extends Model
         return $count;
     }
     // https://github.com/stechstudio/laravel-zipstream を使用
-    public function addFilesToZipStream(Builder $zip, array $filetypes)
+    public function addFilesToZipStream(Builder $zip, array $filetypes): int
     {
         $count = 0;
         foreach ($filetypes as $ft) {
@@ -158,7 +150,7 @@ class Paper extends Model
         return $count;
     }
     // こちらも https://github.com/stechstudio/laravel-zipstream を使用
-    public function addFilesToZip_ForPub(Builder $zip, array $filetypes, string $fn_prefix, string $fn)
+    public function addFilesToZip_ForPub(Builder $zip, array $filetypes, string $fn_prefix, string $fn): int
     {
         $count = 0;
         foreach ($filetypes as $ftid) {
@@ -172,12 +164,12 @@ class Paper extends Model
     }
 
 
-    public function files()
+    public function files(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         // return $this->hasMany(File::class, 'paper_id');
         return $this->hasMany(File::class, 'paper_id')->where('valid', 1)->where('deleted', 0);
     }
-    public function archiveFiles()
+    public function archiveFiles(): void
     {
         foreach ($this->files as $file) {
             if ($file) {
@@ -189,29 +181,29 @@ class Paper extends Model
         }
     }
 
-    public function managers()
+    public function managers(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(User::class, 'paper_manager');
     }
 
-    public function currentstatus()
+    public function currentstatus(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Status::class, 'status_id');
     }
 
     // 最新のSubmitを返す
-    public function currentsubmit()
+    public function currentsubmit(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Submit::class)->latest();
         // return $this->hasOne(Submit::class)->where('round', 1);
     }
 
-    public function category()
+    public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function contacts()
+    public function contacts(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         // $table_fields = Schema::getColumnListing('paper_contact');
         return $this->belongsToMany(Contact::class, 'paper_contact'); // ->withPivot($table_fields)->using(PapersUser::class);
@@ -220,29 +212,29 @@ class Paper extends Model
     //   ->contacts()
     //   ->attach(5);　で、Contact.id = 5 を追加する。反対はdetach,配列も可。
     // syncで、削除＆追加をする。
-    public function paperowner()
+    public function paperowner(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class, 'owner');
     }
 
-    public function submits()
+    public function submits(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Submit::class)->orderBy('round', 'asc');
     }
-    public function submits_desc()
+    public function submits_desc(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Submit::class)->orderBy('round', 'desc');
     }
 
-    public function id_03d()
+    public function id_03d(): string
     {
         return sprintf(env('PID_FORMAT','%04d'), $this->id);
     }
-    public function pdf_file()
+    public function pdf_file(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(File::class, 'pdf_file_id');
     }
-    public function answer_file()
+    public function answer_file(): ?File
     {
         $answer_file = File::where('paper_id', $this->id)
             ->where('filetype_id', 2) // Answer file
@@ -256,7 +248,7 @@ class Paper extends Model
     /**
      * 過去の投稿ファイル
      */
-    public function past_pdf_files()
+    public function past_pdf_files(): \Illuminate\Database\Eloquent\Collection
     {
         return File::where('paper_id', $this->id)
             ->where('filetype_id', 1) // PDF file
@@ -266,16 +258,16 @@ class Paper extends Model
             ->where('archived', 1)
             ->orderBy('created_at', 'desc')->get();
     }
-    public function enqans()
+    public function enqans(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(EnqueteAnswer::class, 'paper_id');
     }
-    public function enqansByItemId($enq_itm_id)
-    {
-        return null;
-    }
+    // public function enqansByItemId($enq_itm_id)
+    // {
+    //     return null;
+    // }
 
-    public function isReviewer(int $uid)
+    public function isReviewer(int $uid): bool
     {
         $submit = $this->currentsubmit;
         if ($submit == null) return false;
@@ -287,7 +279,7 @@ class Paper extends Model
         // if ($submit->rev3()->user_id == $uid) return true;
         return false;
     }
-    public function isManager(int $uid)
+    public function isManager(int $uid): bool
     {
         return $this->managers()->where('user_id', $uid)->exists();
     }
@@ -295,7 +287,7 @@ class Paper extends Model
     /**
      * この論文の査読結果のトークンを生成（著者がみえる査読結果）
      */
-    public function token()
+    public function token(): string
     {
         return sha1($this->id . $this->user_id . $this->paper_id . $this->category_id . $this->title);
     }
@@ -305,7 +297,7 @@ class Paper extends Model
      * PaperObserverで作成される)
      * 採録通知のときに、作成する。著者は2回目以降は、Submitに対してファイルをアップロードする。
      */
-    public function createSubmit(int $round)
+    public function createSubmit(int $round): void
     {
         $sub = new Submit();
         $sub->paper_id = $this->id;
@@ -326,7 +318,10 @@ class Paper extends Model
         }
         return -1;
     }
-    public static function getAT($uid, $pid): int
+    /**
+     * getAuthorTypeByUserId
+     */
+    public static function getAT(int $uid, int $pid): int
     {
         $p = Paper::find($pid);
         $u = User::find($uid);
@@ -344,7 +339,7 @@ class Paper extends Model
      *
      * （投稿者アカウントのメールが変更されたら、どうする？＞基本的に、すべてのPaperについて、ここを実行すればよいが、もうすこし省力化できるかも）
      */
-    public function updateContacts()
+    public function updateContacts(): void
     {
         $this->contacts()->detach(); // 既存のはすべて削除する
         //contactemails から、Contactを作成する（重複はtableのunique制約で保証される）
@@ -367,7 +362,7 @@ class Paper extends Model
         $this->refresh();
     }
     // 主にテスト用。現在のContactリレーションからcontactemailsを逆に生成する。
-    public function updateContactemailsFromContacts()
+    public function updateContactemailsFromContacts(): array
     {
         // ここで、いったん$this->contactsを再読み込みする必要があるらしい。
         $this->refresh();
@@ -381,7 +376,7 @@ class Paper extends Model
     }
 
     // contactemailsから抜く
-    public function remove_contact(Contact $con)
+    public function remove_contact(Contact $con): void
     {
         $this->contacts()->detach($con->id);
         // ここで、いったんcontactsを再読み込みする必要があるらしい。
@@ -389,13 +384,13 @@ class Paper extends Model
         $this->refresh();
     }
     // contactemailsに足す
-    public function add_contact(Contact $con)
+    public function add_contact(Contact $con): void
     {
         $this->contacts()->attach($con->id);
         $this->updateContactemailsFromContacts();
         $this->refresh();
     }
-    public function add_contactemail(string $em)
+    public function add_contactemail(string $em): void
     {
         $ema = explode("\n", trim($this->contactemails));
         $ema[] = $em;
@@ -404,7 +399,7 @@ class Paper extends Model
         $this->updateContacts();
     }
 
-    public function get_mail_to_cc()
+    public function get_mail_to_cc(): array
     {
         $cclist = [];
         $bcclist = [];
@@ -426,7 +421,7 @@ class Paper extends Model
         }
         return ["to" => $this->paperowner->email, "cc" => $cclist, "bcc" => $bcclist];
     }
-    public function get_mail_manager()
+    public function get_mail_manager(): array
     {
         return $this->managers->pluck("email")->toArray();
     }
@@ -484,13 +479,13 @@ class Paper extends Model
     //     return $this->hasMany(Submit::class);
     // }
 
-    public function delete_me()
+    public function delete_me(): void
     {
         $this->contacts()->detach(); //belongsToManyリレーションを削除する
         Paper::destroy($this->id);
     }
 
-    public function softdelete_me()
+    public function softdelete_me(): void
     {
         $this->delete();
     }
@@ -498,7 +493,7 @@ class Paper extends Model
     /**
      * 投稿ファイルのバリデーション（注：投稿可能期間のみ有効）
      */
-    public function validateFiles()
+    public function validateFiles(): array
     {
         // ルール； 論文(1)、回答書(2)、対照表(3)、その他(4) について、4以外は1つのみ。4は0個以上。
 
@@ -512,7 +507,7 @@ class Paper extends Model
             if ($file->archived) continue; // アーカイブされたファイルは無視する
             if ($file->mime == "application/pdf") {
                 $non_embedded = $file->font_not_embedded();
-                if (count($non_embedded) > 0) {
+                if (!empty($non_embedded)) {
                     $errorary[] = "PDFファイル「{$file->filename}」に非埋め込みフォントが含まれています。すべてのフォントを埋め込んでください。";
                     continue;
                 }
@@ -548,7 +543,7 @@ class Paper extends Model
     /**
      * PDFファイルがなければ true (@MailTemplate mt_nofile)
      */
-    public function check_nofile()
+    public function check_nofile(): bool
     {
         if ($this->pdf_file_id == null) return true;
         // もし、pdf_file_id が無効なら、もう一度validateする。
@@ -565,7 +560,7 @@ class Paper extends Model
     /**
      * 書誌情報のチェック。足りないものを配列で返す。
      */
-    public function validateBibinfo()
+    public function validateBibinfo(): array
     {
         // 何が必須か？は、全部から、SKIP_BIBINFOを引く。
         // $manda = ["title", "etitle", "authorlist", "eauthorlist", "abst", "eabst", "keyword", "ekeyword"];
@@ -592,7 +587,7 @@ class Paper extends Model
     }
 
 
-    public function between(int $s, int $x, int $e)
+    public function between(int $s, int $x, int $e): bool
     {
         return ($s <= $x && $x <= $e);
     }
@@ -600,7 +595,7 @@ class Paper extends Model
     /**
      * PdfJob => File(2ページ以上のとき) =>　ここでタイトル設定・更新
      */
-    public function extractTitleAndAuthors(string $text)
+    public function extractTitleAndAuthors(string $text): void
     {
         // もし、カテゴリの投稿受付設定 extract_title が　0　だったら、実行しない。
         $cat = Category::find($this->category_id);
@@ -643,7 +638,7 @@ class Paper extends Model
         $this->save();
     }
 
-    public function demo_ifaccepted()
+    public function demo_ifaccepted(): bool
     {
         $demoenqitem = EnqueteItem::where("name", "demoifaccepted")->first();
         if ($demoenqitem != null) {
@@ -656,7 +651,7 @@ class Paper extends Model
         return false;
     }
 
-    public function validate_accepted()
+    public function validate_accepted(): void
     {
         //ファイルエラー
         $fileerrors = $this->validateFiles();
@@ -670,7 +665,7 @@ class Paper extends Model
     /**
      * 著者名(所属) のチェック
      */
-    public function authorlist_check($field = "authorlist")
+    public function authorlist_check($field = "authorlist"): bool
     {
         $src = $this->{$field};
         $src = str_replace("（", "(", $src);
@@ -700,7 +695,7 @@ class Paper extends Model
     /**
      * 基本ルール(pre)は適用する。
      */
-    public function apply_affil_fix($affil, bool $pre_apply = true, bool $use_short = false)
+    public function apply_affil_fix(string $affil, bool $pre_apply = true, bool $use_short = false): string
     {
         // 事前適用ルールを取得
         if ($pre_apply) {
@@ -736,7 +731,7 @@ class Paper extends Model
 
 
     // 著者名と所属のパース結果を配列で返す。英文所属は引数にeauthorlist を指定する。
-    public function authorlist_ary($field = "authorlist", bool $use_short = false)
+    public function authorlist_ary($field = "authorlist", bool $use_short = false): array
     {
         $ret = [];
         // まず、カッコをおきかえる
@@ -760,7 +755,7 @@ class Paper extends Model
         }
         return $ret;
     }
-    public function rorlist_ary()
+    public function rorlist_ary(): array
     {
         $ret = [];
         $lines = explode("\n", $this->ror);
@@ -777,7 +772,7 @@ class Paper extends Model
         return $ret;
     }
     // 所属の修正を適用する
-    public function getAllAffils($idx = 1, $prefix = "", bool $use_short = true)
+    public function getAllAffils($idx = 1, $prefix = "", bool $use_short = true): string
     {
         $ary = $this->authorlist_ary($prefix . "authorlist", $use_short);
         $ret = [];
@@ -800,7 +795,7 @@ class Paper extends Model
     /**
      * 配列をかえす
      */
-    public function bibinfo(bool $use_short = false)
+    public function bibinfo(bool $use_short = false): array
     {
         $ret = [];
         $ret['title'] = $this->title;
@@ -823,7 +818,7 @@ class Paper extends Model
      * 著者名、文字列をかえす
      * abbr 連続する著者の所属を省略する
      */
-    public function bibauthors(bool $abbr = false, bool $use_short = false, string $field = "authorlist")
+    public function bibauthors(bool $abbr = false, bool $use_short = false, string $field = "authorlist"): string
     {
         $name = [];
         $affil = [];
@@ -851,7 +846,7 @@ class Paper extends Model
         return implode("，", $ret); // カンマでつなげて出力
     }
 
-    public function writeHintFile()
+    public function writeHintFile(): void
     {
         $txt = "pdf_file_id\t" . $this->pdf_file_id . "\n";
         $txt .= "title\t" . $this->title . "\n";
@@ -862,13 +857,13 @@ class Paper extends Model
         $this->pdf_file->writeHintFile($txt);
     }
 
-    public function pdftotext()
+    public function pdftotext(): string
     {
         if ($this->pdf_file)
             return $this->pdf_file->getPdfText();
         return "(pdftotext準備中)";
     }
-    public function title_candidate()
+    public function title_candidate(): string
     {
         $title = str_replace("\n", "", $this->pdftotext());
         // owner name
@@ -880,12 +875,12 @@ class Paper extends Model
         return $title;
     }
 
-    public function lockMe(bool $b)
+    public function lockMe(bool $b): void
     {
         $this->locked = $b;
         $this->save();
     }
-    public function lockAll(bool $b)
+    public function lockAll(bool $b): void
     {
         // 現在アップロードされているすべてのファイル（削除済みを除く）をロックする
         foreach ($this->files as $file) {
@@ -895,7 +890,7 @@ class Paper extends Model
             }
         }
     }
-    public function archiveAll(bool $b)
+    public function archiveAll(bool $b): void
     {
         // 現在アップロードされているすべてのファイル（削除済みを除く）をアーカイブする
         foreach ($this->files as $file) {
@@ -909,7 +904,7 @@ class Paper extends Model
     /**
      * 初期状態のマネージャを設定する
      */
-    public function setDefaultManagers()
+    public function setDefaultManagers(): void
     {
         $role = Role::findByIdOrName("ec");
         foreach ($role->users as $user) {
@@ -921,7 +916,7 @@ class Paper extends Model
     /**
      * RORを取得して、rorフィールドにセットする
      */
-    public function fetchRor()
+    public function fetchRor(): string
     {
         $alist = $this->authorlist_ary("authorlist", true);
         $ror_lines = [];
@@ -944,7 +939,7 @@ class Paper extends Model
     /**
      * 投稿日・最終採択日
      */
-    public function get_important_dates_display()
+    public function get_important_dates_display(): string
     {
         // 関連Submit をすべて取得
         $firstsub = $this->submits()->where('round', 1)->first();
@@ -959,7 +954,7 @@ class Paper extends Model
         }
         return implode("<br>", $dates);
     }
-    public function get_review_duration_display()
+    public function get_review_duration_display(): string
     {
         // 関連Submit をすべて取得
         $firstsub = $this->submits()->where('round', 1)->first();
@@ -969,17 +964,17 @@ class Paper extends Model
         $diff = Carbon::parse($firstsub->submitted_at)->diffInDays(Carbon::parse($lastsub->ec_decision_at));
         // 小数なので、切り上げる
         $diff = ceil($diff);
-        return $diff;
+        return (string)$diff;
     }
 
 
-    public function format_ymd($dt)
+    public function format_ymd(?string $dt): string
     {
         if ($dt == null) return "";
         return date("Y年 m月 d日", strtotime($dt));
     }
 
-    public function judge()
+    public function judge(): array
     {
         $result = [];
         foreach ($this->submits as $submit) {

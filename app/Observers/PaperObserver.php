@@ -30,7 +30,7 @@ class PaperObserver
             'paper_id' => $paper->id,
             'category_id' => $paper->category_id,
             'round' => 1,
-        ])->init_reviews();
+        ]);// ->init_reviews();
         //
     }
 

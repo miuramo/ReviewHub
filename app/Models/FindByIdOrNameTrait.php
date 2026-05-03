@@ -13,7 +13,7 @@ trait FindByIdOrNameTrait
      *  AuthServiceProviderの Gate::define('role') $role_id は id数値でも nameでもよい。なんならObjectでもよい。
      * 第2引数はnull以外なら返却Objのフィールドを返す
      */
-    public static function findByIdOrName(object|string $id, ?string $getfield = null, string $field = 'name')
+    public static function findByIdOrName(object|string $id, ?string $getfield = null, string $field = 'name'): ?object
     {
         if (is_object($id)) { // オブジェクトなら、そのまま返す
             return $id;

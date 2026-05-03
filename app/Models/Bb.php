@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Mail\BbNotify;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class Bb extends MetaModel
@@ -41,7 +42,7 @@ class Bb extends MetaModel
         return $this->hasMany(BbMes::class, 'bb_id');
     }
 
-    public function nummessages()
+    public function nummessages(): int
     {
         // メッセージの数を返す        
         return $this->hasMany(BbMes::class, 'bb_id')->count();
@@ -51,7 +52,7 @@ class Bb extends MetaModel
      * TaskController.create または
      * TaskController.update から呼ばれる。
      */
-    public static function add_message(Submit $sub, $type, $subject, $mes, $rev_id = 0)
+    public static function add_message(Submit $sub, int $type, string $subject, string $mes, int $rev_id = 0): Bb
     {
         $bb = Bb::where('paper_id', $sub->paper->id)->where('type', $type)->where('rev_id', $rev_id)->first();
         if (!$bb) {
@@ -69,7 +70,7 @@ class Bb extends MetaModel
         return $bb;
     }
 
-    public static function make_bb(Submit $sub, int $type = 1, int $rev_id = 0)
+    public static function make_bb(Submit $sub, int $type = 1, int $rev_id = 0): Bb
     {
         $firstmes = [
             1 => "ここは投稿管理者と著者の掲示板です。",
@@ -93,19 +94,19 @@ class Bb extends MetaModel
         ]);
         return $bb;
     }
-    public static function gen_make_url(int $sub_id, int $type, int $rev_id = 0)
+    public static function gen_make_url(int $sub_id, int $type, int $rev_id = 0): string
     {
         $serial = MetaModel::ary2serial(["sub_id" => $sub_id, "type" => $type, "rev_id" => $rev_id]);
         return route('bb.gen', ['serial' => $serial]);
     }
-    public static function gen_from_serial(string $serial)
+    public static function gen_from_serial(string $serial): Bb
     {
         $ary = MetaModel::serial2ary($serial);
         $sub = Submit::with('paper')->find($ary["sub_id"]);
         return Bb::make_bb($sub, $ary["type"], $ary["rev_id"]);
     }
     //
-    public static function ordinal($number)
+    public static function ordinal(int $number): string
     {
         $suffixes = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
 
@@ -126,23 +127,23 @@ class Bb extends MetaModel
     //     // pcのみ利害関係に注意する。
     //     (new BbNotify($bb, $bbmes))->process_send();
     // }
-    public function url()
+    public function url(): string
     {
         return route('bb.show', ['bb' => $this->id, 'key' => $this->key]);
     }
-    public static function url_from_bbid(int $bbid)
+    public static function url_from_bbid(int $bbid): ?string
     {
         $bb = Bb::find($bbid);
         if ($bb == null) return null;
         return $bb->url();
-    }
-    public static function url_from_rev(Review $rev, int $type = 1)
+    }   
+    public static function url_from_rev(Review $rev, int $type = 1): ?string
     {
         $bb = Bb::where("paper_id", $rev->paper_id)->where("category_id", $rev->category_id)->where("type", $type)->first();
         if ($bb == null) return null;
         return $bb->url();
     }
-    public function get_participants()
+    public function get_participants(): array
     {
         $retuobj = [];
         foreach ($this->paper->managers as $manager) {
@@ -166,7 +167,7 @@ class Bb extends MetaModel
         }
         return $retuobj;
     }
-    public function get_mail_to_cc()
+    public function get_mail_to_cc(): array
     {
         $tolist = [];
         $cclist = [];
@@ -202,7 +203,7 @@ class Bb extends MetaModel
     /**
      * 定型文を作成する
      */
-    public function getRevTemplates()
+    public function getRevTemplates(): array
     {
         $revobj = Review::find($this->rev_id);
         $paper_id = $revobj->paper_id;
@@ -237,10 +238,7 @@ class Bb extends MetaModel
             ->where('canceled', 0)
             ->orderBy('ec_decision_at', 'desc') // 最終判断がついたものについて、新しい順にならんだあと、 ec_decision_atがnullのものが最後に来る
             ->get();
-        // info("submit: " . json_encode($allsubmit));
-        // info("submit count: " . count($allsubmit));
-        // info("allscore: " . json_encode($allscore));
-        // info("allscore count: " . count($allscore));
+        $templates = [];
 
         $first_thank = $revuser->affil .
             '  ' .
@@ -350,7 +348,7 @@ class Bb extends MetaModel
     /**
      * 最近一週間の著者掲示板の議論があるかどうかを返す
      */
-    public static function recent_bb_accepted()
+    public static function recent_bb_accepted(): Collection
     {
         // 最近一週間の著者掲示板の議論があるかどうかを返す
         $one_week_ago = now()->subWeek();
@@ -364,13 +362,13 @@ class Bb extends MetaModel
     /**
      * 採択された著者掲示板一覧を返す
      */
-    public static function bb_accepted()
+    public static function bb_accepted(): Collection
     {
         $accept_papers = Submit::subs_accepted_notpublished([1])->pluck("booth", "paper_id")->toArray();
 
         return Bb::where('type',1)->whereIn('paper_id', array_keys($accept_papers))->orderBy('paper_id')->get();
     }
-    public static function submitplain(int $pid, int $type, string $subject, string $mes)
+    public static function submitplain(int $pid, int $type, string $subject, string $mes): ?BbMes
     {
         $paper = Paper::find($pid);
         if ($paper == null) return null;

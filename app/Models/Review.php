@@ -38,7 +38,7 @@ class Review extends MetaModel
         return $this->belongsTo(Submit::class, 'submit_id');
     }
 
-    public function save_user_id($user_id)
+    public function save_user_id(int $user_id): void
     {
         $this->user_id = $user_id;
         $this->save();
@@ -67,7 +67,7 @@ class Review extends MetaModel
     /**
      * メールから承諾リンクを押してくれた
      */
-    public function do_accept()
+    public function do_accept(): bool
     {
         // もし、すでに査読者2名開始している場合は、ペンディングにする（メールを送らない）
         $count = Review::where('paper_id', $this->paper_id)
@@ -87,7 +87,7 @@ class Review extends MetaModel
     /**
      * 査読開始（内諾が得られた！＆まだ人数が2名未満）→ タスクを作る（念の為査読者確認フェーズにはいる）
      */
-    public function do_assign()
+    public function do_assign(): bool
     {
         $paper = Paper::with('currentSubmit')->find($this->paper_id);
         $revuid = $this->user_id;
@@ -100,13 +100,10 @@ class Review extends MetaModel
             return false;
         }
         $task = Task::createReviewTask($paper->currentSubmit, $revuid);
-        if ($this->target == 2) {
-            $task->due_date = $task->addDaysToDate(5); // 最終判定は5日
-        } else if ($this->target == 0) {
-            $task->due_date = $task->addDaysToDate(24); // 通常査読は24日
-        } else { // case of 1
-            $task->due_date = $task->addDaysToDate(10); // 現在は使用していないが、メタの場合は、10日
-        }
+        $review_duration_days = Setting::getary("REVIEW_DURATION_DAYS");
+        $review_duration_days = $review_duration_days ?? [24, 10, 5]; // デフォルトは24日
+        //TODO: ここを設定で指定する。[24, 10, 5] のように、通常、メタ、最終判定の順で日数を指定する。
+        $task->due_date = $task->addDaysToDate($review_duration_days[$this->target]);
         $task->save();
 
         $conftitle = Setting::getval('CONFTITLE');
@@ -135,7 +132,7 @@ class Review extends MetaModel
         return true;
     }
 
-    public function message_accept_by_maillink()
+    public function message_accept_by_maillink(): string
     {
         $message = "査読をお引き受けいただき、ありがとうございます。<br>" .
             "早速ではありますが、査読を開始させていただきます。<br>" .
@@ -169,7 +166,7 @@ class Review extends MetaModel
      * 査読割り当て
      * status 3が最終判定 2がメタ 1が通常 0以下が解除
      */
-    public static function review_assign($submit_id, $user_id, $ismeta2)
+    public static function review_assign(int $submit_id, int $user_id, int $ismeta2): void
     {
         $ismeta2 = intval($ismeta2);
         $submit = Submit::find($submit_id);
@@ -207,7 +204,7 @@ class Review extends MetaModel
     /**
      * 数をしらべる。( field = paper_id or user_id )
      */
-    public static function revass_stat($catid, $field = "user_id")
+    public static function revass_stat(int $catid, string $field = "user_id"): array
     {
         $tmp = Review::select(DB::raw("count(id) as count, {$field}, target"))
             ->where('category_id', $catid)
@@ -221,7 +218,7 @@ class Review extends MetaModel
         }
         return $ret;
     }
-    public static function revass_stat_allcategory()
+    public static function revass_stat_allcategory(): array
     {
         $field = "user_id";
         $tmp = Review::select(DB::raw("count(id) as count, {$field}, target"))
@@ -240,7 +237,7 @@ class Review extends MetaModel
      * ネストした配列で返す
      * arr[paper_id][user_id] = rev
      */
-    public static function arr_pu_rev()
+    public static function arr_pu_rev(): array
     {
         $ret = [];
         foreach (Review::all() as $a) {
@@ -252,7 +249,7 @@ class Review extends MetaModel
      * ネストした配列で返す
      * arr[paper_id][user_id] = status(2:meta 1:normal)
      */
-    public static function arr_pu_status()
+    public static function arr_pu_status(): array
     {
         $ret = [];
         foreach (Review::all() as $a) {
@@ -264,7 +261,7 @@ class Review extends MetaModel
      * ネストした配列で返す
      * arr[paper_id][user_id] = star span
      */
-    public static function arr_pu_star()
+    public static function arr_pu_star(): array
     {
         $ret = [];
         $colors = ["teal", "cyan", "red"];
@@ -280,7 +277,7 @@ class Review extends MetaModel
      * 査読者名を取得する
      * ret[paper_id][target][user_id] = name
      */
-    public static function arr_pu_revname()
+    public static function arr_pu_revname(): array
     {
         $ret = [];
         foreach (Review::all() as $a) {
@@ -292,7 +289,7 @@ class Review extends MetaModel
     /**
      * 査読割り当ての前に、全査読者の利害を抽出する
      */
-    public static function extractAllCoAuthorRigais()
+    public static function extractAllCoAuthorRigais(): void
     {
         // 査読者とメタ査読者
         $roles = Role::where("name", "like", "%rev")->get();
@@ -320,7 +317,7 @@ class Review extends MetaModel
     }
 
     // status 0は未回答、1は回答中、2は完了 を更新する
-    public function validateOneRev()
+    public function validateOneRev(): void
     {
         $finish_vpids_ary = Score::where('review_id', $this->id)->whereNotNull('valuestr')->whereHas('viewpoint', function ($query) {
             $query->where('mandatory', 1);
@@ -351,7 +348,7 @@ class Review extends MetaModel
      * @param $only_score が 1のとき、number が含まれるものだけに限定する（通常はしないので0）
      * @param $accepted が 0のとき、doReturnAcceptOnly が 1のものは表示しない
      */
-    public function scores_and_comments($only_doreturn = 1, $only_score = 0, $accepted = 1)
+    public function scores_and_comments(int $only_doreturn = 1, int $only_score = 0, int $accepted = 1): array
     {
         $aryscores = $this->scores->pluck("valuestr", "viewpoint_id")->toArray();
         // $vps = Viewpoint::where('category_id', $this->category_id)->orderBy('orderint')->get();
@@ -369,7 +366,7 @@ class Review extends MetaModel
         return $ret;
     }
     // 判定
-    public function judge()
+    public function judge(): string
     {
         $ret = $this->scores_and_comments(1, 0, 0);
         return $ret['判定結果'] ?? $ret['措置'] ?? '??';
@@ -378,14 +375,14 @@ class Review extends MetaModel
     /**
      * txtに含まれるURLをリンクに変換する
      */
-    public static function urllink($txt)
+    public static function urllink(string $txt): string
     {
         $txt = preg_replace_callback("/(<a [^>]+?>.+?<\/a>)|(https?:\/\/[a-zA-Z0-9_\.\/\~\%\:\#\?=&\;\-]+)/i", ["App\Models\Review", "urllink_callback"], $txt);
         $txt = strip_tags($txt, "<a>");
         return $txt;
     }
 
-    public static function urllink_callback($match)
+    public static function urllink_callback(mixed $match): ?string
     {
         if ($match[1]) {
             // 最初から<a>タグで囲まれている場合
@@ -407,12 +404,13 @@ class Review extends MetaModel
                 htmlspecialchars($match[2]),
             );
         }
+        return null;
     }
 
     /**
      * すべてのstatusを更新する（査読未完了のチェックの前に実行する）
      */
-    public static function validateAllRev()
+    public static function validateAllRev(): void
     {
         $all = Review::all();
         foreach ($all as $rev) {
@@ -430,7 +428,7 @@ class Review extends MetaModel
      * $ret['scores'] = $scores;
      * $ret['descs'] = $descs;
      */
-    public static function my_scores($uid, $cat_id)
+    public static function my_scores(int $uid, int $cat_id): array
     {
         // review list
         $sql1 =
@@ -469,7 +467,7 @@ class Review extends MetaModel
      * @param int $cat_id
      * 
      */
-    public static function get_scores($paper_id, $cat_id)
+    public static function get_scores(int $paper_id, int $cat_id): array
     {
         $sql1 =
             'select reviews.id, paper_id, title, name, affil, target, status from reviews ' .
@@ -505,7 +503,7 @@ class Review extends MetaModel
         return $ret;
     }
 
-    public function heads()
+    public function heads(): array
     {
         // $fs = ['target','status','request_at','start_at','end_at','created_at','updated_at'];
         $fs = ['target', 'status', 'request_at', 'start_at', 'end_at'];
@@ -517,7 +515,7 @@ class Review extends MetaModel
         }
         return $heads;
     }
-    public function deleteTask()
+    public function deleteTask(): void
     {
         // この査読に関連するタスクを削除する
         $task = Task::where('submit_id', $this->submit_id)->where('subject_id', $this->user_id)->first();

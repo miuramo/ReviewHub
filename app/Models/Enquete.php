@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -23,7 +24,7 @@ class Enquete extends MetaModel
     /**
      * デモ希望をだしているPaperID を返す
      */
-    public static function paperids_demoifaccepted($cat_id){
+    public static function paperids_demoifaccepted(int $cat_id): array {
         $demoenqitem = EnqueteItem::where("name", "demoifaccepted")->first();
         if ($demoenqitem != null) {
             $demoenqitemid = $demoenqitem->id;
@@ -42,7 +43,7 @@ class Enquete extends MetaModel
     /**
      * 必要なアンケートを返す
      */
-    public static function needForSubmit(Paper $paper)
+    public static function needForSubmit(Paper $paper): array
     {
         $cat_id = $paper->category_id;
 
@@ -78,7 +79,7 @@ class Enquete extends MetaModel
     /**
      * 参加登録に必要なアンケートを返す
      */
-    public static function needForPart(Participant $part)
+    public static function needForPart(Participant $part): array
     {
         $configs = EventConfig::where('event_id', $part->event_id)->orderBy('orderint')->get();
         $canedit = [];
@@ -97,7 +98,7 @@ class Enquete extends MetaModel
         return ["canedit" => $canedit, "readonly" => $readonly, "until" => $until];
     }
 
-    public static function validateEnquetes(Paper $paper)
+    public static function validateEnquetes(Paper $paper): array
     {
         $errorary = [];
         $needFor = Enquete::needForSubmit($paper)['canedit'];
@@ -115,7 +116,7 @@ class Enquete extends MetaModel
     /**
      * 未回答アンケート項目(EnqItem) id=>desc の配列をかえす。[] ならエラーなし。
      */
-    public function validateOneEnq(Paper $paper)
+    public function validateOneEnq(Paper $paper): array
     {
         $eis = $this->items;
         // exist answers: select enquete_item_id from enquete_answers where paper_id =
@@ -129,7 +130,7 @@ class Enquete extends MetaModel
         return $eis;
     }
 
-    public static function in_csv($csv, $findlet)
+    public static function in_csv(string $csv, string $findlet): bool
     {
         $arycsv = explode(",", $csv);
         foreach ($arycsv as $n => $v) {
@@ -138,7 +139,7 @@ class Enquete extends MetaModel
         return false;
     }
 
-    public static function checkdayduration($openstart, $openend)
+    public static function checkdayduration(string $openstart, string $openend): bool
     {
         $s = array_map("intval", explode("-", $openstart));
         $e = array_map("intval", explode("-", $openend));
@@ -152,7 +153,7 @@ class Enquete extends MetaModel
         return ($begin <= $now && $now <= $end);
     }
 
-    public static function mm_dd_fancy($mmdd)
+    public static function mm_dd_fancy(string $mmdd): string
     {
         $e = array_map("intval", explode("-", $mmdd));
         return "{$e[0]}月{$e[1]}日";
@@ -161,7 +162,7 @@ class Enquete extends MetaModel
     /**
      * OrderInt をstep ずつで再設定する
      */
-    public static function reorderint($step = 10)
+    public static function reorderint(int $step = 10): void
     {
         $all = Enquete::all();
         foreach ($all as $enq) {
@@ -178,7 +179,7 @@ class Enquete extends MetaModel
      * 
      * 配列で返すなら、$returnAry = true
      */
-    public static function accessibleEnquetes($returnAry = false)
+    public static function accessibleEnquetes(bool $returnAry = false): Collection|array
     {
         $uid = auth()->id();
         $rolename_id = User::find($uid)

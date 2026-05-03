@@ -9,7 +9,7 @@ class EnqueteConfig extends Model
 {
     use HasFactory;
 
-    public function isopen()
+    public function isopen(): bool
     {
         return Enquete::checkdayduration($this->openstart, $this->openend);
     }
@@ -23,7 +23,7 @@ class EnqueteConfig extends Model
      * 明日、受付開始するアンケートを取得する
      * ただし、01-01開始のアンケートは除外する
      */
-    public static function tomorrowOpenEnquetes($debugmonth = null, $debugday = null)
+    public static function tomorrowOpenEnquetes($debugmonth = null, $debugday = null): array
     {
         $month = $debugmonth ?? date('n');
         $day = $debugday ?? date('j');
@@ -32,13 +32,13 @@ class EnqueteConfig extends Model
         return EnqueteConfig::with('enquete')->where('openstart', $tomorrow)
             ->where('valid', true)
             ->whereNotIn('openstart', ['01-01']) // 01-01開始のアンケートは除外
-            ->get();
+            ->get()->toArray();
     }
     /**
      * 今日が最終日のアンケートを取得する
      * ただし、12-31終了のアンケートは除外する
      */
-    public static function todayCloseEnquetes($debugmonth = null, $debugday = null)
+    public static function todayCloseEnquetes($debugmonth = null, $debugday = null): array
     {
         $month = $debugmonth ?? date('n');
         $day = $debugday ?? date('j');
@@ -47,7 +47,7 @@ class EnqueteConfig extends Model
         return EnqueteConfig::with('enquete')->where('openend', $today)
             ->where('valid', true)
             ->whereNotIn('openend', ['12-31']) // 12-31終了のアンケートは除外
-            ->get();
+            ->get()->toArray();
     }
 
     public function toString()

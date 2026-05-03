@@ -12,13 +12,13 @@ class Ror extends Model
     ];
     //
 
-    public static function affil2ror()
+    public static function affil2ror(): array
     {
         $rors = self::where('valid', true)->pluck('ror', 'affil')->toArray();
         return $rors;
     }
 
-    public static function getRor(string $affil)
+    public static function getRor(string $affil): ?string
     {
         $from_db = self::where('affil', $affil)->where('valid', true)->first();
         if (!$from_db) {
@@ -41,7 +41,7 @@ class Ror extends Model
      * ROR取得
      * https://ror.org/ から所属機関のRORを取得する
      */
-    private static function fetchRor(string $affil = "")
+    private static function fetchRor(string $affil = ""): ?string
     {
         $affil = trim($affil);
         if (strlen($affil) == 0) return null;

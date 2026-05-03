@@ -14,7 +14,7 @@ class MailTemplate extends Model
     /**
      * Role member追加から呼ばれる。
      */
-    public static function bundleUser($uids, $sub, $body)
+    public static function bundleUser(array $uids, string $sub, string $body): void
     {
         $targets = User::whereIn('id', $uids)->get();
         $mt = MailTemplate::create();
@@ -32,14 +32,14 @@ class MailTemplate extends Model
     /**
      * 査読者への最初のメッセージ：パスワード設定について
      */
-    public static function send_first_message($uid)
+    public static function send_first_message(int $uid): void
     {
         $mt = MailTemplate::find(7); // TODO: 7を設定で変えられるようにする
         $target = User::find($uid);
         (new ForAuthor($target, $mt))->process_send();
     }
 
-    public function getreplacetxt(Paper|User $p_or_u)
+    public function getreplacetxt(Paper|User $p_or_u): array
     {
         if (strpos(get_class($p_or_u), "User") > 0) {
             $replacetxt["UID"] = $p_or_u->id;
@@ -77,7 +77,7 @@ class MailTemplate extends Model
         $body .= "\n\n-----\n[" . env("APP_NAME") . "](" . env("APP_URL") . ")";
         return $body;
     }
-    public function handle_to()
+    public function handle_to(): Collection
     {
         // && や || を、セミコロンに変換する
         // $this->to = str_replace("&&", ";", $this->to);

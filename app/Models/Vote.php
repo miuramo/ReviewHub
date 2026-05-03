@@ -20,7 +20,7 @@ class Vote extends Model
     }
 
 
-    public static function init($isclose = 0)
+    public static function init($isclose = 0): void
     {
         Vote::firstOrCreate(
             [

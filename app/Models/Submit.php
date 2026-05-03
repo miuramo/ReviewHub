@@ -64,7 +64,7 @@ class Submit extends MetaModel
     {
         return $this->hasMany(Task::class);
     }
-    public function isAssigned(string $rollname)
+    public function isAssigned(string $rollname): bool
     {
         // まずは、該当するWorkflowを取得
         $workflow = Workflow::where('object', $rollname)->first();
@@ -79,7 +79,7 @@ class Submit extends MetaModel
     /**
      * 最終判定のresultを取得する
      */
-    public function getReviewResult($key)
+    public function getReviewResult(string $key): ?string
     {
         $vpid = Viewpoint::where('name', $key)->first()->id;
         $revids = $this->reviews->pluck('id');
@@ -92,43 +92,15 @@ class Submit extends MetaModel
      * 著者に帰る査読結果のURLを生成する
      * @return string
      */
-    public function url_reviewresult_for_author()
+    public function url_reviewresult_for_author(): string
     {
         return route('paper.review', ['sub' => $this->id, 'token' => $this->paper->token()]);
     }
 
-    // public function updateStatus()
-    // {
-    // if ($this->rev1()->user_id != null && $this->rev2()->user_id != null) {
-    //     $this->paper->status_id = 5;
-    //     $this->paper->save();
-    // } else if ($this->meta()->user_id != null) {
-    //     $this->paper->status_id = 4;
-    //     $this->paper->save();
-    // }
-    // }
 
-    public function init_reviews()
-    {
-        // $revs = Review::factory(1)->create([
-        //     'submit_id' => $this->id,
-        //     'category_id' => $this->category_id,
-        //     'paper_id' => $this->paper_id,
-        //     'target' => 2,
-        // ]);
-        // $revs = Review::factory(1)->create([
-        //     'submit_id' => $this->id,
-        //     'category_id' => $this->category_id,
-        //     'paper_id' => $this->paper_id,
-        //     'target' => 1,
-        // ]);
-        // $revs = Review::factory(2)->create([
-        //     'submit_id' => $this->id,
-        //     'category_id' => $this->category_id,
-        //     'paper_id' => $this->paper_id,
-        //     'target' => 0,
-        // ]);
-    }
+    // public function init_reviews(): void
+    // {
+    // }
 
     /**
      * デフォルトのワークフローから、タスク群を生成する

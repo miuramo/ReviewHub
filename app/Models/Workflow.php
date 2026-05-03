@@ -25,7 +25,7 @@ class Workflow extends Model
     /**
      * 新しいタスクを、submitに対して作成する
      */
-    public static function createTasks(Submit $sub)
+    public static function createTasks(Submit $sub): void
     {
         $wkfls = Workflow::get();
         // $days = 0;
@@ -82,7 +82,7 @@ class Workflow extends Model
     //     }
     // }
 
-    public function obj_role_name()
+    public function obj_role_name(): string
     {
         if ($this->object == "rev1") {
             return "rev";
@@ -96,7 +96,7 @@ class Workflow extends Model
     }
 
     // ワークフローを進める from TaskController.update => Task.process => ココ
-    public function process(Task $task, Request $req)
+    public function process(Task $task, Request $req): bool
     {
         // TODO: joinであるとき、joinのタスクが終了していない場合は、失敗して、進めない
         if ($task->join) {
@@ -178,7 +178,7 @@ class Workflow extends Model
     /**
      * 承認が得られたので、次のタスクに進む from Task.approve
      */
-    public function proceed_workflow(Task $task, Request $req = null, bool $started = true)
+    public function proceed_workflow(Task $task, Request $req = null, bool $started = true): bool
     {
         // タスク終了時に、Paperのstatusを更新
         if ($task->workflow->status_id_at_ended){
@@ -219,7 +219,7 @@ class Workflow extends Model
      * 無事、承認された場合や、承認不要でプロセスが進んだ場合
      * 
      */
-    public function assign_forward(Task $task, int $oid)
+    public function assign_forward(Task $task, int $oid): void
     {
         // まだスタートはしないが、次のタスクのsubjectを割り当てる
 
@@ -245,7 +245,7 @@ class Workflow extends Model
         // // submitのstatusを更新
         // $task->submit->updateStatus();
     }
-    public function assign_backward(Task $task)
+    public function assign_backward(Task $task): void
     {
         $task->started = false;
         if ($this->object == "aec") {
@@ -264,11 +264,11 @@ class Workflow extends Model
         // $task->submit->updateStatus();
     }
 
-    public function submit_forward(Task $task)
+    public function submit_forward(Task $task): void
     {
         // 次のタスクのsubjectを設定
     }
-    public function confirm_forward(Task $task)
+    public function confirm_forward(Task $task): void
     {
         // 次のタスクのsubjectを設定
     }

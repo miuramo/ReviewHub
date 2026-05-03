@@ -15,7 +15,7 @@ class Accept extends Model
         return $this->belongsTo(Submit::class); //逆はhasOne
     }
 
-    public static function acc_status($include_paperid = false)
+    public static function acc_status(bool $include_paperid = false): array
     {
         $fs = [
             "papers.category_id as origcat",
@@ -48,7 +48,7 @@ class Accept extends Model
         }
     }
 
-    public static function nodes(){
+    public static function nodes(): array {
         $nodes = [];
         $links = [];
         // 最初に、カテゴリのノードを作成

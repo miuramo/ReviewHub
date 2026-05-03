@@ -32,7 +32,7 @@ class Viewpoint extends Model
      * ターゲットは、査読者向けなら0、メタなら1、幹事なら2。
      * ==関連して、Review.target を1つ増やす必要があるが、まずは変更なしで。将来的に、0は無効にしたい。== →とりあえずそのままで。
      */
-    public static function by_category_target(int $cat_id, int $target012 = 0)
+    public static function by_category_target(int $cat_id, int $target012 = 0): \Illuminate\Database\Eloquent\Collection
     {
         $bitmask_target = pow(2, $target012); // 0,1,2,3 -> 1,2,4,8
         // Viewpointテーブルのtargetカラムはビットマスクになっている。target012に対応するビットが立っていれば、取得される。
@@ -42,7 +42,7 @@ class Viewpoint extends Model
     /**
      * コロンではなくセミコロンに変更
      */
-    public static function change_separator()
+    public static function change_separator(): string
     {
         $pre = ":";
         $post = self::$separator;
@@ -80,7 +80,7 @@ class Viewpoint extends Model
     /**
      * OrderInt をstep ずつで再設定する
      */
-    public static function reorderint($cat_id, $step = 10)
+    public static function reorderint(int $cat_id, int $step = 10): void
     {
         $items = Viewpoint::where("category_id", $cat_id)->orderBy("orderint")->get();
         $num = $step;
@@ -91,7 +91,7 @@ class Viewpoint extends Model
         }
     }
 
-    public static function firstContent($desc)
+    public static function firstContent(string $desc): ?string
     {
         $vp = Viewpoint::where("desc", $desc)->first();
         if ($vp == null) {
@@ -104,7 +104,7 @@ class Viewpoint extends Model
     /**
      * targetをビットマスクに変換する。0は無効、1は査読者向け、2はメタ向け、4は幹事向け。複数指定する場合は足す（例：7はすべて）。すでにビットマスクになっている場合は何もしない。
      */
-    public static function fix_target_as_bitmask()
+    public static function fix_target_as_bitmask(): void
     {
         // 適用済みかどうかを、targetに0が一つでもあるかどうかで判断する。複数回適用するとデータが壊れるため。
         $target_min = Viewpoint::min("target");
