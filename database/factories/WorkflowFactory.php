@@ -17,7 +17,14 @@ class WorkflowFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->words(3, true),
+            'description' => $this->faker->sentence(),
+            'subject' => $this->faker->randomElement(['ec', 'aec', 'meta', 'rev1', 'rev2', 'rev3']),
+            'task' => $this->faker->randomElement(['assign', 'approve', 'submit', 'confirm']),
+            'object' => $this->faker->randomElement(['ec', 'aec', 'meta', 'rev1', 'rev2', 'rev3']),
+            'num_of_days' => $this->faker->numberBetween(1, 30),
+            'next_workflow_id' => [],
+            'join' => [],
         ];
     }
 }
