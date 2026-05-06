@@ -8,6 +8,7 @@ use App\Http\Controllers\EnqueteAnswerController;
 use App\Http\Controllers\EnqueteController;
 use App\Http\Controllers\FailedJobController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\LogTestController;
 use App\Http\Controllers\LogAccessController;
 use App\Http\Controllers\MailTemplateController;
 use App\Http\Controllers\ManagerController;
@@ -366,3 +367,11 @@ Route::controller(WebAuthnLoginController::class)->middleware('guest')->group(fu
     Route::post('/webauthn/login/options', 'options')->name('webauthn.login.options');
     Route::post('/webauthn/login', 'login')->name('webauthn.login');
 });
+
+// テスト用ルート（本番環境では削除すること）
+// Route::prefix('log-test')->group(function () {
+//     Route::get('/error', [LogTestController::class, 'testError'])->name('log-test.error');
+//     Route::get('/451-error', [LogTestController::class, 'test451Error'])->name('log-test.451-error');
+//     Route::get('/normal-error', [LogTestController::class, 'testNormalError'])->name('log-test.normal-error');
+//     Route::get('/simple', [LogTestController::class, 'testSimpleMessage'])->name('log-test.simple');
+// });
