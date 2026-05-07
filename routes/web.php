@@ -284,8 +284,8 @@ Route::middleware('auth')->group(function () {
     Route::get('viewpoints/itmsetting', [ViewpointController::class, 'itmsetting'])->name('viewpoint.itmsetting');
 
     // 掲示板
-    Route::get('bb', [BbController::class, 'index'])->name('bb.index');
-    Route::get('bb_for_pub', [BbController::class, 'index_for_pub'])->name('bb.index_for_pub');
+    // Route::get('bb', [BbController::class, 'index'])->name('bb.index');
+    // Route::get('bb_for_pub', [BbController::class, 'index_for_pub'])->name('bb.index_for_pub');
     Route::get('bb_gen/{serial}', [BbController::class, 'create'])->name('bb.gen'); // シリアル（sub_id, type, rev_id）から作成
     Route::post('bb', [BbController::class, 'store'])->name('bb.createnew'); // まとめて作成
     Route::delete('bb', [BbController::class, 'destroy'])->name('bb.destroy'); // 全削除
