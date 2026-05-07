@@ -186,7 +186,7 @@
         </x-element.linkbutton>
     </x-element.h1> --}}
 
-    <x-element.h1>査読者一覧と利害表明者 <span class="px-2"></span>
+    {{-- <x-element.h1>査読者一覧と利害表明者 <span class="px-2"></span>
         @foreach ($cats as $catid => $catname)
             @isset($cat_arrange_review[$catid])
                 <x-element.linkbutton href="{{ route('revcon.revname', ['cat' => $catid]) }}" color="lime">
@@ -202,7 +202,7 @@
                 </x-element.linkbutton>
             @endisset
         @endforeach
-    </x-element.h1>
+    </x-element.h1> --}}
 
 
     {{-- <x-element.h1>査読割り当て <span class="px-2"></span>
@@ -239,7 +239,7 @@
 
 
 
-    <x-element.h1>ファイルと書誌情報の保護
+    {{-- <x-element.h1>ファイルと書誌情報の保護
         <span class="px-3"></span>
         <x-element.linkbutton href="{{ route('file.adminlock') }}" color="orange">
             投稿ファイルの管理
@@ -249,7 +249,7 @@
         <x-element.linkbutton href="{{ route('paper.adminlock') }}" color="green">
             書誌情報(Paper)の管理
         </x-element.linkbutton> <span class="text-sm mx-2 mr-10">書誌情報（タイトル、著者名と所属、概要など）の編集権限をカテゴリ別に設定できる画面が開きます。</span>
-    </x-element.h1>
+    </x-element.h1> --}}
 
 
     <x-element.h1>査読観点(Viewpoint)の管理
