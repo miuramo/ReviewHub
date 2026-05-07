@@ -118,10 +118,11 @@
         <x-element.linkbutton href="{{ route('mt.index') }}" color="pink">
             メール雛形
         </x-element.linkbutton>
-        <span class="px-3">掲示板</span>
+        <span class="px-3"></span>
+        {{-- <span class="px-3">掲示板</span>
         <x-element.linkbutton href="{{ route('bb.index') }}" color="pink">
             掲示板一覧
-        </x-element.linkbutton>
+        </x-element.linkbutton> --}}
         <span class="px-3">アンケート</span>
         <x-element.linkbutton href="{{ route('enq.index') }}" color="green">
             アンケート一覧
