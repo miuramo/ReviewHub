@@ -18,27 +18,27 @@ class BbController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        if (!auth()->user()->can('role_any', 'admin|manager|ec')) abort(403);
+    // public function index()
+    // {
+    //     if (!auth()->user()->can('role_any', 'admin|manager|ec')) abort(403);
 
-        for ($i = 1; $i < 4; $i++) {
-            $bbs[$i] = Bb::with("paper")->with("category")->where("type", $i)->get();
-        }
-        return view("bb.index")->with(compact("bbs"));
-        //
-    }
+    //     for ($i = 1; $i < 4; $i++) {
+    //         $bbs[$i] = Bb::with("paper")->with("category")->where("type", $i)->get();
+    //     }
+    //     return view("bb.index")->with(compact("bbs"));
+    //     //
+    // }
 
-    public function index_for_pub()
-    {
-        if (!auth()->user()->can('role_any', 'admin|manager|ec|pub')) abort(403);
+    // public function index_for_pub()
+    // {
+    //     if (!auth()->user()->can('role_any', 'admin|manager|ec|pub')) abort(403);
 
-        $i = 3;
-        $bbs[$i] = Bb::with("paper")->with("category")->where("type", $i)->get();
+    //     $i = 3;
+    //     $bbs[$i] = Bb::with("paper")->with("category")->where("type", $i)->get();
 
-        return view("bb.index_for_pub")->with(compact("bbs"));
-        //
-    }
+    //     return view("bb.index_for_pub")->with(compact("bbs"));
+    //     //
+    // }
 
     /**
      * Show the form for creating a new resource.
