@@ -29,16 +29,16 @@ class BbController extends Controller
     //     //
     // }
 
-    // public function index_for_pub()
-    // {
-    //     if (!auth()->user()->can('role_any', 'admin|manager|ec|pub')) abort(403);
+    public function index_for_pub()
+    {
+        if (!auth()->user()->can('role_any', 'admin|manager|ec|pub')) abort(403);
 
-    //     $i = 3;
-    //     $bbs[$i] = Bb::with("paper")->with("category")->where("type", $i)->get();
+        $i = 3;
+        $bbs[$i] = Bb::with("paper")->with("category")->where("type", $i)->get();
 
-    //     return view("bb.index_for_pub")->with(compact("bbs"));
-    //     //
-    // }
+        return view("bb.index_for_pub")->with(compact("bbs"));
+        //
+    }
 
     /**
      * Show the form for creating a new resource.
