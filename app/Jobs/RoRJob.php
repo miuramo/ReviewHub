@@ -34,7 +34,7 @@ class RoRJob implements ShouldQueue
             // まだ設定されていなければ、作成する
             if (strlen($sub->paper->ror) < 1000) {
                 $out = $sub->paper->fetchRoR();
-                Log::info("RoRJob: paper_id={$sub->paper->id} fetchRoR result: \r\n" . $out);
+                // Log::info("RoRJob: paper_id={$sub->paper->id} fetchRoR result: \r\n" . $out);
             }
         }
     }
