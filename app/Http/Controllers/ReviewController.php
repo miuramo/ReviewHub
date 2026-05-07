@@ -352,7 +352,7 @@ class ReviewController extends Controller
     public function restore(int $revid)
     {
         if (!auth()->user()->can('role_any', 'rev|meta')) return abort(403);
-        info($revid);
+        // info($revid);
         $review = Review::onlyTrashed()->findOrFail($revid);
         $review->restore();
         return back()->with('feedback.success', '復活させました。');

@@ -20,7 +20,7 @@ class EnqueteAnswerController extends Controller
     {
         if (!auth()->user()->can('role_any', 'ec|demo')) abort(403);
         if ($req->method() === 'POST') {
-            info($req->all());
+            // info($req->all());
             $pids = $req->input('pids');
             $pidary = explode(",", $pids);
             $pidary = array_map('trim', $pidary);

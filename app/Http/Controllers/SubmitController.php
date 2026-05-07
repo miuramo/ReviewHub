@@ -283,7 +283,7 @@ class SubmitController extends Controller
     public function update_maydirty(Request $req)
     {
         if (!auth()->user()->can('role_any', 'ec|pub|web')) abort(403);
-        info($req->all());
+        // info($req->all());
         $pid = $req->input("pid");
         $paper = Paper::findOrFail($pid);
         $field = $req->input("field");
