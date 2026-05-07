@@ -45,6 +45,9 @@ class SkipOn451Tap
             $context = $record['context'] ?? [];
         }
 
+        // message が配列/オブジェクトの場合でも stripos で落ちないよう文字列化する
+        $message = self::toSearchableString($message);
+
         // ① メッセージに "451" または "4.4.2" が含まれる場合はスキップ
         if (stripos($message, '451') !== false && stripos($message, '4.4.2') !== false) {
             return false; // ログを送信しない
@@ -93,6 +96,27 @@ class SkipOn451Tap
 
         // それ以外は送信する
         return true;
+    }
+
+    /**
+     * stripos 用の安全な文字列へ変換する
+     */
+    private static function toSearchableString($value): string
+    {
+        if (is_string($value)) {
+            return $value;
+        }
+
+        if (is_scalar($value) || $value === null) {
+            return (string) $value;
+        }
+
+        if ($value instanceof \Stringable) {
+            return (string) $value;
+        }
+
+        $json = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR);
+        return is_string($json) ? $json : '';
     }
 
     protected function isSlackHandler($handler): bool

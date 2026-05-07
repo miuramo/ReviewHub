@@ -122,7 +122,11 @@
             @endforeach
             <x-bb.bb_link :submit="$paper->currentsubmit" type="4"></x-bb.bb_link>
             <span class="mx-2"></span>
-            <x-bb.bb_link :submit="$paper->currentsubmit" type="3"></x-bb.bb_link>
+            {{-- <x-bb.bb_link :submit="$paper->currentsubmit" type="3"></x-bb.bb_link>
+            <span class="mx-2"></span> --}}
+            <x-element.linkbutton2 href="{{ route('paper.bb_summary', ['paper' => $paper->id]) }}" color="green" target="_blank">
+                すべての書込みを時系列で見る（やりとり一覧）
+            </x-element.linkbutton2>
             <span class="mx-2"></span>
             @can('manage_papermanager', $paper->id)
                 <x-element.linkbutton href="{{ route('paper.manage_papermanager', ['paper' => $paper->id]) }}"

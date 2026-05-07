@@ -95,6 +95,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/paper/{paper}/manage_papermanager', [PaperController::class, 'manage_papermanager'])->name('paper.manage_papermanager');
     // 編集委員による査読状況の確認
     Route::get('/paper/{paper}/revstatus', [PaperController::class, 'revstatus'])->name('paper.revstatus');
+    // 投稿に関する掲示板のサマリー
+    Route::get('/paper/{paper}/bb_summary', [PaperController::class, 'bb_summary'])->name('paper.bb_summary');
 
 
     //アンケート回答

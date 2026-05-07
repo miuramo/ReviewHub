@@ -127,6 +127,9 @@
                                 @endif
                             </div>
                         @endforeach
+                        <x-element.linkbutton2 href="{{ route('paper.bb_summary', ['paper' => $paper->id]) }}" color="green" size="xs" target="_blank">
+                            やりとり一覧
+                        </x-element.linkbutton2>
                     @else
                         (hidden)
                     @endif

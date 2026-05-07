@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PaperStoreRequest;
 use App\Mail\Submitted;
 use App\Models\Accept;
+use App\Models\Bb;
+use App\Models\BbMes;
 use App\Models\Category;
 use App\Models\Confirm;
 use App\Models\Enquete;
@@ -264,7 +266,7 @@ class PaperController extends Controller
             if (!Gate::allows('show_paper', $paper)) {
                 abort(403, 'forbidden_for_others');
             }
-            $id_03d = sprintf(env('PID_FORMAT','%04d'), $id);
+            $id_03d = sprintf(env('PID_FORMAT', '%04d'), $id);
 
             // 回答可能(canedit)または参照可能(readonly)
             $enqs = Enquete::needForSubmit($paper);
@@ -293,7 +295,7 @@ class PaperController extends Controller
             if (!Gate::allows('edit_paper', $paper)) {
                 abort(403, 'forbidden_for_coauthor_or_others');
             }
-            $id_03d = sprintf(env('PID_FORMAT','%04d'), $id);
+            $id_03d = sprintf(env('PID_FORMAT', '%04d'), $id);
             $all = File::where('user_id', Auth::user()->id)->where('paper_id', $id)->get()->sortByDesc("id");
 
             // 回答可能(canedit)または参照可能(readonly)
@@ -398,7 +400,7 @@ class PaperController extends Controller
                 'round' => $sub->round + 1,
                 'resubmit_until' => date('Y-m-d', strtotime('+30 days')),
                 'previous_submit_id' => $sub->id,
-            ]);// ->init_reviews();
+            ]); // ->init_reviews();
 
             return redirect()->route('paper.edit', ['paper' => $sub->paper])->with('feedback.success', '査読結果の確認ありがとうございました。再投稿は指定期日までに論文PDFと回答書PDFをアップロードしてください。（回答書PDFのフォーマット指定はありません）');
         } else if ($sub->accept_id >= 6) { // 不採録や取り下げの場合 // Submit.updateCurrentDecisionに書いてある。採録なら1、条件付きなら2,不採録なら6,取り下げなら7
@@ -567,10 +569,10 @@ class PaperController extends Controller
         $pids = [];
         foreach ($res2 as $res) {
             if (is_array(@$pids[$res->category_id][$res->valid][$res->locked])) {
-                $pids[$res->category_id][$res->valid][$res->locked][] = sprintf(env('PID_FORMAT','%04d'), $res->id);
+                $pids[$res->category_id][$res->valid][$res->locked][] = sprintf(env('PID_FORMAT', '%04d'), $res->id);
             } else {
                 $pids[$res->category_id][$res->valid][$res->locked] = [];
-                $pids[$res->category_id][$res->valid][$res->locked][] = sprintf(env('PID_FORMAT','%04d'), $res->id);
+                $pids[$res->category_id][$res->valid][$res->locked][] = sprintf(env('PID_FORMAT', '%04d'), $res->id);
             }
         }
         return view('admin.paperlock')->with(compact("cols", "pids"));
@@ -618,5 +620,29 @@ class PaperController extends Controller
         $revrole = Role::findByIdOrName('rev');
         $candidates = $revrole->users_except_paper_manager($paper_id)->where('valid', 1)->get();
         return view('paper.manage_papermanager')->with(compact("paper", "users", "revrole", "candidates"));
+    }
+
+    public function bb_summary(int $paper_id)
+    {
+        $paper = Paper::findOrFail($paper_id);
+        if (!auth()->user()->can('manage_review', $paper_id)) abort(403, "you are not a paper manager");
+        // 著者との掲示板、査読者との掲示板、編集委員との掲示板でのやりとりをまとめて時系列順に表示する。
+
+        $bbids = Bb::where('paper_id', $paper_id)
+            ->whereNot('type', 3)
+            ->orderBy('type', 'asc')
+            ->orderBy('rev_id', 'asc')
+            ->pluck('id')
+            ->toArray();
+        $bbmessages = BbMes::with('bb','user')->whereIn('bb_id', $bbids)->orderBy('created_at')->get();
+        // 関連するメッセージのuser_id をすべて取得する。
+        $user_ids = $bbmessages->pluck('user_id')->unique()->toArray();
+
+        $bbs = Bb::where('paper_id', $paper_id)
+            ->orderBy('type', 'asc')
+            ->orderBy('rev_id', 'asc')
+            ->get();
+
+        return view('paper.bb_summary')->with(compact("paper", "bbids", "bbmessages", "bbs", "user_ids"));
     }
 }

@@ -35,7 +35,7 @@ class Bb extends MetaModel
     }
     public function submit()
     {
-        return $this->belongsTo(Category::class, 'submit_id');
+        return $this->belongsTo(Submit::class, 'submit_id');
     }
     public function messages()
     {
@@ -46,6 +46,11 @@ class Bb extends MetaModel
     {
         // メッセージの数を返す        
         return $this->hasMany(BbMes::class, 'bb_id')->count();
+    }
+
+    public function review()
+    {
+        return $this->belongsTo(Review::class, 'rev_id');
     }
 
     /**
