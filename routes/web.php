@@ -197,12 +197,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/role/{role}/revassign/{cat}', [RoleController::class, 'revassign'])->name('role.revassign');
     Route::post('/role/{role}/revassign/{cat}', [RoleController::class, 'revassignpost'])->name('role.revassignpost');
     // Bidding結果のExcel
-    Route::get('/role/{role}/revassign_excel/{cat}', [RoleController::class, 'revassign_excel'])->name('role.revassign_excel');
+    // Route::get('/role/{role}/revassign_excel/{cat}', [RoleController::class, 'revassign_excel'])->name('role.revassign_excel');
     // 査読結果
-    Route::get('/reviewresult/{cat}', [ReviewController::class, 'result'])->name('review.result');
-    Route::post('/reviewresult/{cat}', [ReviewController::class, 'resultpost'])->name('review.resultpost');
-    Route::get('/reviewcomment/{cat}', [ReviewController::class, 'comment'])->name('review.comment'); // ?excel=dl でExcel
-    Route::get('/reviewcomment_scoreonly/{cat}', [ReviewController::class, 'comment_scoreonly'])->name('review.comment_scoreonly'); // ?excel=dl でExcel
+    // Route::get('/reviewresult/{cat}', [ReviewController::class, 'result'])->name('review.result');
+    // Route::post('/reviewresult/{cat}', [ReviewController::class, 'resultpost'])->name('review.resultpost');
+    // Route::get('/reviewcomment/{cat}', [ReviewController::class, 'comment'])->name('review.comment'); // ?excel=dl でExcel
+    // Route::get('/reviewcomment_scoreonly/{cat}', [ReviewController::class, 'comment_scoreonly'])->name('review.comment_scoreonly'); // ?excel=dl でExcel
     Route::get('/reviewcomment/cat/{cat}/paper/{paper}/{token}', [ReviewController::class, 'comment_paper'])->name('review.commentpaper'); //判定会議で見る用
     Route::get('/reviewcomment_sub/{sub}/{token}', [ReviewController::class, 'comment_submit'])->name('review.commentsubmit'); //編集委員用の査読結果
 

@@ -31,7 +31,7 @@ class ReplaceKutenMiddleware
         $excludedRoutes = [
             route('paper.dragontext', ['paper' => 'NUM']),
             route('admin.paperlist'),
-            route('review.result', ['cat' => 'NUM']),
+            // route('review.result', ['cat' => 'NUM']),
             route('paper.review', ['sub' => 'NUM', 'token' => 'HEX']), // 著者に返る査読結果
             route('review.commentpaper', ['cat' => 'NUM', 'paper' => 'NUM', 'token' => 'HEX']), // 委員会での共有画面
             route('admin.crud'),
