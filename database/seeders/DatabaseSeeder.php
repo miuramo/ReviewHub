@@ -49,7 +49,6 @@ class DatabaseSeeder extends Seeder
                     'abbr' => $name,
                 ]);
                 $tmp->users()->attach(1);
-                if (env('APP_DEBUG')) $tmp->users()->attach(2);
             }
             $brev = Role::findByIdOrName('brev');
             $brev->navi = "x";
@@ -89,6 +88,13 @@ class DatabaseSeeder extends Seeder
                 for ($i = 2; $i <= 12; $i++) {
                     Paper::factory()->cat(1)->owner($i)->create();
                 }
+            }
+        }
+
+        // testing / debug 時は user_id=2 に全ロールを確実に付与する。
+        if ((env('APP_DEBUG') || env('APP_ENV') === 'testing') && User::whereKey(2)->exists()) {
+            foreach (Role::all() as $role) {
+                $role->users()->syncWithoutDetaching([2]);
             }
         }
 
