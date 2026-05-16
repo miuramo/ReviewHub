@@ -39,7 +39,7 @@ class Review extends MetaModel
         return $this->belongsTo(Submit::class, 'submit_id');
     }
 
-    public function save_user_id(int $user_id): void
+    public function save_user_id(?int $user_id): void
     {
         $this->user_id = $user_id;
         $this->save();
