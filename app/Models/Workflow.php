@@ -241,8 +241,11 @@ class Workflow extends Model
      * 無事、承認された場合や、承認不要でプロセスが進んだ場合
      * 
      */
-    public function assign_forward(Task $task, int $oid): void
+    public function assign_forward(Task $task, ?int $oid): void
     {
+        if ($oid === null) {
+            return;
+        }
         // まだスタートはしないが、次のタスクのsubjectを割り当てる
 
         if ($this->object == "aec") {
