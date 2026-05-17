@@ -142,9 +142,9 @@ class File extends Model
         return true;
     }
 
-    public function makePdfHeadThumb(): string
+    public function makePdfHeadThumb(): string|null
     {
-        $fullpath_pdf = storage_path(File::apf() . '/' . $this->fname); // 元のPDFファイル名
+        // $fullpath_pdf = storage_path(File::apf() . '/' . $this->fname); // 元のPDFファイル名
         $dir = substr($this->fname, 0, -4);
         $fullpath_png = storage_path(File::apf() . '/' . $dir . ".png"); // PNGファイル名
         $dirpath = storage_path(File::apf() . '/' . $dir); // /でおわらないので注意
