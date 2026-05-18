@@ -60,10 +60,14 @@ class Role extends Model
 
     public static function checkRoleUser(string|int $role_id, int $user_id): bool
     {
+        $role = null;
         if (is_integer($role_id)) {
             $role = Role::find($role_id);
         } else if (is_string($role_id)) {
             $role = Role::where("name", $role_id)->first();
+        }
+        if ($role === null) {
+            return false;
         }
         return $role->containsUser($user_id);
     }

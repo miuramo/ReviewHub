@@ -60,6 +60,10 @@ class Submit extends MetaModel
     {
         return $this->reviews()->where('target', 0)->skip(1)->first();
     }
+    public function rev3()
+    {
+        return $this->reviews()->where('target', 0)->skip(2)->first();
+    }
     public function tasks()
     {
         return $this->hasMany(Task::class);

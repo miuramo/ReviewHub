@@ -200,7 +200,7 @@ class Workflow extends Model
     /**
      * 承認が得られたので、次のタスクに進む from Task.approve
      */
-    public function proceed_workflow(Task $task, Request $req = null, bool $started = true): bool
+    public function proceed_workflow(Task $task, ?Request $req = null, bool $started = true): bool
     {
         // タスク終了時に、Paperのstatusを更新
         if ($task->workflow->status_id_at_ended){
@@ -241,8 +241,11 @@ class Workflow extends Model
      * 無事、承認された場合や、承認不要でプロセスが進んだ場合
      * 
      */
-    public function assign_forward(Task $task, int $oid): void
+    public function assign_forward(Task $task, ?int $oid): void
     {
+        if ($oid === null) {
+            return;
+        }
         // まだスタートはしないが、次のタスクのsubjectを割り当てる
 
         if ($this->object == "aec") {
@@ -274,13 +277,13 @@ class Workflow extends Model
             $task->submit->aec_id = null;
             $task->submit->save();
         } else if ($this->object == "meta") {
-            $task->submit->meta()->save_user_id(null);
+            $task->submit->meta()?->save_user_id(null);
         } else if ($this->object == "rev1") {
-            $task->submit->rev1()->save_user_id(null);
+            $task->submit->rev1()?->save_user_id(null);
         } else if ($this->object == "rev2") {
-            $task->submit->rev2()->save_user_id(null);
+            $task->submit->rev2()?->save_user_id(null);
         } else if ($this->object == "rev3") {
-            $task->submit->rev3()->save_user_id(null);
+            $task->submit->rev3()?->save_user_id(null);
         }
         // // submitのstatusを更新
         // $task->submit->updateStatus();

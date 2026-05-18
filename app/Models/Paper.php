@@ -522,9 +522,9 @@ class Paper extends Model
         } else if (count($checkary[1]) > 1) {
             $errorary[] = "論文PDFは1つのファイルのみ受け付けます。";
         }
-        if (isset($checkary[2]) && count($checkary[2]) > 1) {
-            $errorary[] = "回答書は1つのファイルのみ受け付けます。";
-        }
+        // if (isset($checkary[2]) && count($checkary[2]) == 0) {
+        //     $errorary[] = "回答書は必須です。";
+        // }
         if (isset($checkary[3]) && count($checkary[3]) > 1) {
             $errorary[] = "対照表は1つのファイルのみ受け付けます。";
         }
