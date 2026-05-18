@@ -52,8 +52,13 @@
 @endphp
 <!-- components.role.pc -->
 @if (count($tasks) > 0)
-    <div class="px-6 py-4">
-        <x-element.h1>未完了のタスクがあります</x-element.h1>
+    <div class="px-6 pt-4">
+        <x-element.h1c color="yellow">未完了の査読タスクがあります →
+            <span class="mx-2"></span>
+            <x-element.linkbutton href="{{ route('role.top', ['role'=>'rev']) }}" color="orange" size="sm">
+                査読一覧
+            </x-element.linkbutton>
+        </x-element.h1>
         {{-- @foreach ($tasks as $task)
             <div class="mx-6">
                 <x-task.panel :task="$task" />
@@ -63,7 +68,7 @@
 @endif
 
 @if (count($approvetasks) > 0)
-    <div class="px-6 py-4">
+    <div class="px-6 pt-4">
         <x-element.h1>未完了の承認タスクがあります</x-element.h1>
         @foreach ($approvetasks as $task)
             <div class="mx-6">
@@ -74,10 +79,7 @@
 @endif
 
 
-
-<div class="px-6 py-4">
-
-
+<div class="px-6 pt-4">
     <div>
         {{-- 投稿論文一覧 --}}
         <x-paper.psummarytable />
