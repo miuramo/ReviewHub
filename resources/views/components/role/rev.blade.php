@@ -83,7 +83,7 @@
             ->limit(6)
             ->get();
     @endphp
-    @if (count($recentapproved) > 0)
+    {{-- @if (count($recentapproved) > 0)
         <div class="px-6 py-4">
             <x-element.h1>最近完了した査読タスク</x-element.h1>
             @foreach ($recentapproved as $task)
@@ -92,7 +92,7 @@
                 </div>
             @endforeach
         </div>
-    @endif
+    @endif --}}
 
 
     @php

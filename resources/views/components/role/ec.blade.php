@@ -54,11 +54,11 @@
 @if (count($tasks) > 0)
     <div class="px-6 py-4">
         <x-element.h1>未完了のタスクがあります</x-element.h1>
-        @foreach ($tasks as $task)
+        {{-- @foreach ($tasks as $task)
             <div class="mx-6">
                 <x-task.panel :task="$task" />
             </div>
-        @endforeach
+        @endforeach --}}
     </div>
 @endif
 
