@@ -63,7 +63,7 @@
                 <td class="p-1 text-center block break-all text-{{ $size }}">{{ $paper->title }}
                     @if (auth()->user()->can('manage_review', $paper->id))
                         @if ($paper->pdf_file_id != 0)
-                            <a class="underline text-blue-600 hover:bg-lime-200"
+                            <a class="underline text-blue-600 hover:bg-lime-200 inline-block whitespace-nowrap break-normal"
                                 href="{{ route('file.showhash', ['file' => $paper->pdf_file_id, 'hash' => substr($paper->pdf_file->key, 0, 8)]) }}"
                                 target="_blank">
                                 {{ $paper->pdf_file->pagenum }}page
@@ -75,7 +75,7 @@
                             <span class="mx-4"></span>
                         {{-- 管理できないので、表示だけ --}}
                         @if ($paper->pdf_file_id != 0)
-                            {{ $paper->pdf_file->pagenum }}page
+                            <span class="inline-block whitespace-nowrap break-normal">{{ $paper->pdf_file->pagenum }}page</span>
                         @else
                             No PDF
                         @endif
