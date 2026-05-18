@@ -142,7 +142,7 @@ class File extends Model
         return true;
     }
 
-    public function makePdfHeadThumb(): string
+    public function makePdfHeadThumb(): void
     {
         $fullpath_pdf = storage_path(File::apf() . '/' . $this->fname); // 元のPDFファイル名
         $dir = substr($this->fname, 0, -4);
@@ -169,8 +169,7 @@ class File extends Model
             sleep(1);
         }
         // Log::info("convert {$fullpath_png} -crop {$crop_w}x{$crop_h}+{$crop_x}+{$crop_y} {$dirpath}/h-00001.png");
-        $out = shell_exec("convert {$fullpath_png} -crop {$crop_w}x{$crop_h}+{$crop_x}+{$crop_y} {$dirpath}/h-00001.png 2>&1");
-        return $out;
+        shell_exec("convert {$fullpath_png} -crop {$crop_w}x{$crop_h}+{$crop_x}+{$crop_y} {$dirpath}/h-00001.png 2>&1");
     }
 
 
