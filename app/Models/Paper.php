@@ -954,17 +954,17 @@ class Paper extends Model
         }
         return implode("<br>", $dates);
     }
-    public function get_review_duration_display(): string
+    public function get_review_duration(): int
     {
         // 関連Submit をすべて取得
         $firstsub = $this->submits()->where('round', 1)->first();
         $lastsub = $this->currentsubmit()->first();
-        if ($firstsub == null || $lastsub == null) return "";
-        if ($firstsub->submitted_at == null || $lastsub->ec_decision_at == null) return "";
+        if ($firstsub == null || $lastsub == null) return 0;
+        if ($firstsub->submitted_at == null || $lastsub->ec_decision_at == null) return 0;
         $diff = Carbon::parse($firstsub->submitted_at)->diffInDays(Carbon::parse($lastsub->ec_decision_at));
         // 小数なので、切り上げる
         $diff = ceil($diff);
-        return (string)$diff;
+        return (int)$diff;
     }
 
 
