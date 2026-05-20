@@ -11,18 +11,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
+use Laravel\Passkeys\Contracts\PasskeyUser;
+use Laravel\Passkeys\PasskeyAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
-use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
-use Laragear\WebAuthn\WebAuthnAuthentication;
 
 // composer require laragear/webauthn
 // ./artisan webauthn:install
 // ./artisan migrate
 // composer update
 
-class User extends Authenticatable implements MustVerifyEmail, WebAuthnAuthenticatable
+class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
-    use HasApiTokens, HasFactory, Notifiable, WebAuthnAuthentication;
+    use HasApiTokens, HasFactory, Notifiable, PasskeyAuthenticatable;
     use FindByIdOrNameTrait; // Role::findByIdOrName(id数値でも nameでもよい)
     use SoftDeletes;
 

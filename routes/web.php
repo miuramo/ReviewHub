@@ -359,21 +359,4 @@ Route::middleware('guest')->group(function () {
 
 require __DIR__ . '/auth.php';
 
-// WebAuthn Routes
-Route::controller(WebAuthnRegisterController::class)->middleware('auth')->group(function () {
-    Route::get('/webauthn/register/options', 'options')->name('webauthn.register.options');
-    Route::post('/webauthn/register', 'register')->name('webauthn.register');
-});
-
-Route::controller(WebAuthnLoginController::class)->middleware('guest')->group(function () {
-    Route::post('/webauthn/login/options', 'options')->name('webauthn.login.options');
-    Route::post('/webauthn/login', 'login')->name('webauthn.login');
-});
-
-// テスト用ルート（本番環境では削除すること）
-// Route::prefix('log-test')->group(function () {
-//     Route::get('/error', [LogTestController::class, 'testError'])->name('log-test.error');
-//     Route::get('/451-error', [LogTestController::class, 'test451Error'])->name('log-test.451-error');
-//     Route::get('/normal-error', [LogTestController::class, 'testNormalError'])->name('log-test.normal-error');
-//     Route::get('/simple', [LogTestController::class, 'testSimpleMessage'])->name('log-test.simple');
-// });
+// Passkeys (WebAuthn) routes are auto-registered by laravel/passkeys
