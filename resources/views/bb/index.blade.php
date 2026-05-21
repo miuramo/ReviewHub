@@ -20,7 +20,8 @@
     @endif
 
     @php
-        $opts = [1 => '投稿管理者と著者', 2 => '投稿管理者と査読者', 3 => '投稿管理者と全査読者'/*, 4 => '投稿管理者同士'*/];
+        $name_of_managers = \App\Models\Setting::getValue("NAME_OF_MANAGERS");
+        $opts = [1 => "{$name_of_managers}と著者", 2 => "{$name_of_managers}と査読者", 3 => "{$name_of_managers}と全査読者"/*, 4 => "{$name_of_managers}同士"*/];
         $colors = [1 => 'cyan', 2 => 'pink', 3 => 'teal', 4 => 'lime'];
     @endphp
 

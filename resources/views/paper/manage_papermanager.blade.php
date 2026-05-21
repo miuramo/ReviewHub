@@ -1,7 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
+        @php
+            $name_of_managers = \App\Models\Setting::getValue('NAME_OF_MANAGERS');
+        @endphp
         <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400 ">
-            {{ __('投稿管理者の管理') }}
+            {{ $name_of_managers }}{{ __('の管理') }}
             <span class="mx-2"></span>
             <x-element.paperid size=1 :paper_id="$paper->id"></x-element.paperid>
             <span class="mx-6"></span>
@@ -25,7 +28,7 @@
             </div>
 
             <div class="py-2 px-4">
-                <x-element.h1c color="yellow"> 現在の投稿管理者：
+                <x-element.h1c color="yellow"> 現在の{{ $name_of_managers }}：
                     @foreach ($paper->managers as $user)
                         <x-element.login_as :user="$user"></x-element.login_as>
                         <x-role.remove_manager_force :submit_id="$paper->currentsubmit->id" :user_id="$user->id"></x-role.remove_manager_force>
@@ -34,7 +37,7 @@
                 </x-element.h1c>
             </div>
 
-            <div class="py-2 px-4">投稿管理者候補：
+            <div class="py-2 px-4">{{ $name_of_managers }}候補：
                 @foreach ($candidates as $user)
                     <x-element.login_as :user="$user"></x-element.login_as>
                     <x-role.add_manager_force :submit_id="$paper->currentsubmit->id" :user_id="$user->id"></x-role.add_manager_force>

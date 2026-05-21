@@ -27,9 +27,10 @@ class BbNotify extends RetryMailable
     /**
      * Create a new message instance.
      */
-    public function __construct($_bb, $_bbmes)
+    public function __construct(Bb $_bb, BbMes $_bbmes)
     {
-        $names = [1=>"著者との", 2=>"査読者との", 3=>"全査読者との", 4=>"投稿管理者同士の"];
+        $name_of_managers = Setting::getValue("NAME_OF_MANAGERS");
+        $names = [1=>"著者との", 2=>"査読者との", 3=>"全査読者との", 4=>"{$name_of_managers}同士の"];
         $this->bb = $_bb;
         $this->bbmes = $_bbmes;
         $this->paper = $_bb->paper;

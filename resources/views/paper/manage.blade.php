@@ -21,6 +21,10 @@
         }
     </style>
     @section('title', 'P' . $paper->id . ' ' . $paper->title)
+    @php
+        $name_of_managers = \App\Models\Setting::getValue('NAME_OF_MANAGERS');
+
+    @endphp
 
     @if (session('feedback.success'))
         <x-alert.success>{{ session('feedback.success') }}</x-alert.success>
@@ -31,10 +35,10 @@
     <div class="mx-6 my-2 dark:text-gray-300">
         <x-paper.shoshi_list :paper="$paper">
         </x-paper.shoshi_list>
-        投稿者：<x-element.login_as :user="$paper->paperowner"></x-element.login_as> ({{$paper->paperowner->email}})
+        投稿者：<x-element.login_as :user="$paper->paperowner"></x-element.login_as> ({{ $paper->paperowner->email }})
         <span class="mx-2"></span>
 
-        <span class="text-sm">投稿連絡用メールアドレス： {{ str_replace("\r\n", ", ", $paper->contactemails) }}</span>
+        <span class="text-sm">投稿連絡用メールアドレス： {{ str_replace("\r\n", ', ', $paper->contactemails) }}</span>
 
         <span class="mx-2"></span>
         @if ($paper->pdf_file_id != 0)
@@ -112,7 +116,7 @@
 
 
     <div class="py-2 px-6">
-        <x-element.h1c color="yellow">投稿管理者：
+        <x-element.h1c color="yellow">{{ $name_of_managers }}：
             @foreach ($paper->managers as $user)
                 <x-element.login_as :user="$user"></x-element.login_as>
                 @if ($user->id == Auth::user()->id)
@@ -124,21 +128,22 @@
             <span class="mx-2"></span>
             {{-- <x-bb.bb_link :submit="$paper->currentsubmit" type="3"></x-bb.bb_link>
             <span class="mx-2"></span> --}}
-            <x-element.linkbutton2 href="{{ route('paper.bb_summary', ['paper' => $paper->id]) }}" color="green" target="_blank">
+            <x-element.linkbutton2 href="{{ route('paper.bb_summary', ['paper' => $paper->id]) }}" color="green"
+                target="_blank">
                 すべての書込みを時系列で見る（やりとり一覧）
             </x-element.linkbutton2>
             <span class="mx-2"></span>
             @can('manage_papermanager', $paper->id)
                 <x-element.linkbutton href="{{ route('paper.manage_papermanager', ['paper' => $paper->id]) }}"
                     color="cyan" size="xs" target="_self">
-                    投稿管理者を管理する
+                    {{ $name_of_managers }}を管理する
                 </x-element.linkbutton>
             @endcan
-            @if(count($paper->managers) == 0)
-                <span class="text-red-500">投稿管理者がいません！</span>
+            @if (count($paper->managers) == 0)
+                <span class="text-red-500">{{ $name_of_managers }}がいません！</span>
                 <x-element.linkbutton href="{{ route('paper.manage_papermanager', ['paper' => $paper->id]) }}"
                     color="cyan" size="xs" target="_self">
-                    投稿管理者を追加・管理する
+                    {{ $name_of_managers }}を追加・管理する
                 </x-element.linkbutton>
             @endif
         </x-element.h1c>

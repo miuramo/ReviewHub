@@ -71,7 +71,7 @@
                     <textarea class="w-full p-1 text-sm text-black  bg-white dark:text-gray-200 dark:bg-gray-800" name="body"
                         id="" cols="80" rows="10">[:AFFIL:] [:NAME:] 様
 
-[:CONFTITLE:] 投稿管理者です。
+[:CONFTITLE:] システム管理者です。
 
 以下の手順にしたがって、[:CONFTITLE:] 投稿・査読システムのパスワードを設定してください。
 

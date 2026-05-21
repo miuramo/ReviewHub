@@ -305,33 +305,36 @@ class RoleController extends Controller
     /** 本人が自発的に、投稿管理者から外れる */
     public function remove_manager(Request $req)
     {
+        $name_of_managers = Setting::getValue("NAME_OF_MANAGERS");
         // info($req->all());
         if (auth()->id() != $req->input('user_id')) {
-            return redirect()->route('role.top', ['role' => 'ec'])->with('feedback.error', '他者を投稿管理者から外すことはできません');
+            return redirect()->route('role.top', ['role' => 'ec'])->with('feedback.error', "他者を{$name_of_managers}から外すことはできません");
         }
         $paper = Paper::find($req->input('paper_id'));
         $paper->managers()->detach($req->input('user_id'));
         $paper->save();
 
-        return redirect()->route('role.top', ['role' => 'ec'])->with('feedback.success', '投稿管理者を脱退しました。' . sprintf(env('PID_FORMAT','%04d'), $req->input('paper_id')) . "の状況は今後参照できなくなります。");
+        return redirect()->route('role.top', ['role' => 'ec'])->with('feedback.success', "{$name_of_managers}を脱退しました。" . sprintf(env('PID_FORMAT','%04d'), $req->input('paper_id')) . "の状況は今後参照できなくなります。");
     }
     /** managerが他者を強制的に投稿管理者から外す */
     public function remove_manager_force(Request $req)
     {
         if (!auth()->user()->can('role_any', 'manager')) abort(403, 'manager権限が必要です');
+        $name_of_managers = Setting::getValue("NAME_OF_MANAGERS");
         $paper = Paper::find($req->input('paper_id'));
         if (!auth()->user()->can('manage_papermanager', $paper)) {
-            return back()->with('feedback.error', 'この論文の投稿管理者を外す権限がありません。');
+            return back()->with('feedback.error', "この論文の{$name_of_managers}を外す権限がありません。");
         }
         $paper->managers()->detach($req->input('user_id'));
         $paper->save();
         $user = User::find($req->input('user_id'));
-        return back()->with('feedback.success', "{$user->name}さんを投稿管理者から外しました。");
+        return back()->with('feedback.success', "{$user->name}さんを{$name_of_managers}から外しました。");
     }
     /** managerが他者を強制的に投稿管理者に追加する */
     public function add_manager_force(Request $req)
     {
         if (!auth()->user()->can('role_any', 'manager')) abort(403, 'manager権限が必要です');
+        $name_of_managers = Setting::getValue("NAME_OF_MANAGERS");
         $paper = Paper::find($req->input('paper_id'));
         if (!auth()->user()->can('manage_papermanager', $paper)) {
             // もし、現在の論文に誰も投稿管理者がいなければ、例外的に追加する。
@@ -339,14 +342,14 @@ class RoleController extends Controller
                 $paper->managers()->attach($req->input('user_id'));
                 $paper->save();
                 $user = User::find($req->input('user_id'));
-                return back()->with('feedback.success', "{$user->name}さんを投稿管理者に追加しました。（この論文には投稿管理者が一人もいなかったため、例外的に追加されました）");
+                return back()->with('feedback.success', "{$user->name}さんを{$name_of_managers}に追加しました。（この論文には{$name_of_managers}が一人もいなかったため、例外的に追加されました）");
             }
-            return back()->with('feedback.error', 'この論文の投稿管理者に追加する権限がありません。');
+            return back()->with('feedback.error', "この論文の{$name_of_managers}に追加する権限がありません。");
         }
         $paper->managers()->attach($req->input('user_id'));
         $paper->save();
         $user = User::find($req->input('user_id'));
-        return back()->with('feedback.success', "{$user->name}さんを投稿管理者に追加しました。");
+        return back()->with('feedback.success', "{$user->name}さんを{$name_of_managers}に追加しました。");
     }
 
     /**

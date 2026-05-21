@@ -1,6 +1,8 @@
 <x-app-layout>
     @php
-        $names = [1 => '著者と投稿管理者の連絡', 2 => '査読者との', 3 => '全査読者との', 4 => '投稿管理者同士の'];
+        $name_of_managers = \App\Models\Setting::getValue("NAME_OF_MANAGERS");
+
+        $names = [1 => '著者と' . $name_of_managers . 'の連絡', 2 => '査読者との', 3 => '全査読者との', 4 => $name_of_managers . '同士の'];
 
         // もし、type=2(査読掲示板) で、bbs->rev_id でとってきたReview.user_id （査読者）が同じ、かつpaper_idが同じなら、
         // 兄弟Bbを探してくる。
@@ -62,7 +64,8 @@
 
         <div class="py-0.5"></div>
         @if ($isEC)
-            <x-element.button id="toggleButton" size="sm" value="参加者をみる（投稿管理者のみ）" color="lime"
+
+            <x-element.button id="toggleButton" size="sm" value="参加者をみる（{{ $name_of_managers }}のみ）" color="lime"
                 onclick="openclose('div_bbparticipants')">
             </x-element.button>
             @php
@@ -83,7 +86,7 @@
             </div>
             <span class="mx-4"></span>
             <x-element.linkbutton :href="route('paper.manage', ['paper' => $bb->paper_id])" color="gray" size="sm">
-                論文管理画面（投稿管理者のみ）
+                論文管理画面（{{ $name_of_managers }}のみ）
             </x-element.linkbutton>
         @endif
 
@@ -141,7 +144,7 @@
                 </div>
             </form>
             @if ($isEC)
-                <x-element.button id="toggleButton" size="sm" value="定型文の選択画面をひらく（投稿管理者のみ）" color="teal"
+                <x-element.button id="toggleButton" size="sm" value="定型文の選択画面をひらく（{{ $name_of_managers }}のみ）" color="teal"
                     onclick="openclose('div_bbtemplate')">
                 </x-element.button>
                 <div class="hidden-content p-2 bg-teal-100" style="display:none" id="div_bbtemplate">

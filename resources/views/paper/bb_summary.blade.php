@@ -11,6 +11,9 @@
     <!-- paper.bb_summary -->
     @section('title', 'P' . $paper->id . ' ' . $paper->title)
 
+    @php
+        $name_of_managers = \App\Models\Setting::getValue("NAME_OF_MANAGERS");
+    @endphp
     <div class="py-2">
         @if (session('feedback.success'))
             <x-alert.success>{{ session('feedback.success') }}</x-alert.success>
@@ -30,7 +33,7 @@
                     <th class="border border-gray-300 px-2 py-2">著者</th>
                     <th class="border border-gray-300 px-2 py-2">査読者</th>
                     <th class="border border-gray-300 px-2 py-2"></th>
-                    <th class="border border-gray-300 px-2 py-2">投稿管理者同士</th>
+                    <th class="border border-gray-300 px-2 py-2">{{ $name_of_managers }}同士</th>
                 </tr>
             </thead>
             <tbody>

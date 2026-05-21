@@ -3,6 +3,8 @@
 ])
 <!-- components.task.panel -->
 @php
+    $name_of_managers = \App\Models\Setting::getValue("NAME_OF_MANAGERS");
+
     $sub = App\Models\Submit::find($task->submit_id);
     $paper = App\Models\Paper::find($sub->paper_id);
 
@@ -194,7 +196,7 @@
         </x-element.linkbutton>
         <span class="mx-2"></span>
         <x-bb.bb_link :submit="$rev->submit" type="2" :rev_id="$rev->id" size="sm"
-            label="投稿管理者に連絡する"></x-bb.bb_link>
+            label="{{ $name_of_managers }}に連絡する"></x-bb.bb_link>
         {{-- @endif --}}
         <span class="mx-2"></span>
         {{-- メタまたは幹事なら、査読結果がみえる --}}
@@ -248,7 +250,7 @@
             をおしてください。
             <span class="mx-2"></span>
             <x-bb.bb_link :submit="$rev->submit" type="2" :rev_id="$rev->id" size="md"
-                label="投稿管理者に連絡する"></x-bb.bb_link>
+                label="{{ $name_of_managers }}に連絡する"></x-bb.bb_link>
             <div class="w-1/2">
                 <x-file.paperheadimg :paper="$rev->paper">
                 </x-file.paperheadimg>

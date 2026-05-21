@@ -21,6 +21,9 @@
         }
     </style>
     @section('title', 'P' . $paper->id . ' ' . $paper->title)
+    @php
+        $name_of_managers = \App\Models\Setting::getValue('NAME_OF_MANAGERS');
+    @endphp
 
     @if (session('feedback.success'))
         <x-alert.success>{{ session('feedback.success') }}</x-alert.success>
@@ -79,7 +82,7 @@
         </x-element.h1>
 
         @foreach ($paper->submits_desc as $sub)
-            @if($sub->round == $paper->currentsubmit->round)
+            @if ($sub->round == $paper->currentsubmit->round)
                 @continue
             @endif
             @if ($sub->ec_decision_at != null)
@@ -91,7 +94,7 @@
     </div>
 
     <div class="py-2 px-6">
-        <x-element.h1c color="yellow">投稿管理者：
+        <x-element.h1c color="yellow">{{ $name_of_managers }}：
             @foreach ($paper->managers as $user)
                 <x-element.login_as :user="$user"></x-element.login_as>
                 <span class="mx-2"></span>

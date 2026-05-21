@@ -128,6 +128,7 @@ class TaskController extends Controller
         $jumprole = str_replace('2', '', $jumprole);
         $jumprole = str_replace('3', '', $jumprole);
 
+        $name_of_manager = Setting::getValue("NAME_OF_MANAGER");
 
         if ($ret) {
             if ($task->workflow->task == "submit") {
@@ -135,7 +136,7 @@ class TaskController extends Controller
                     $task->submit,
                     2,
                     '査読完了の報告',
-                    "投稿管理者のかたへ\n査読報告の編集が完了しましたことを、報告します。",
+                    "{$name_of_manager}のかたへ\n査読報告の編集が完了しましたことを、報告します。",
                     $req->rev_id,
                 );
                 return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.success', '査読へのご協力ありがとうございました。');

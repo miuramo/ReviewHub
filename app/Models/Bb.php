@@ -77,11 +77,13 @@ class Bb extends MetaModel
 
     public static function make_bb(Submit $sub, int $type = 1, int $rev_id = 0): Bb
     {
+        $name_of_managers = Setting::getValue("NAME_OF_MANAGERS");
+
         $firstmes = [
-            1 => "ここは投稿管理者と著者の掲示板です。",
-            2 => "ここは投稿管理者と査読者の掲示板です。他の査読者の方はメンバーに含まれていません。",
-            3 => "ここは投稿管理者と全査読者の掲示板です。\n査読者は自身を名乗らないでください。必要があればRevIDを用いてください。RevIDは送信フォームに表示されています。\n（RevIDが表示されていない場合は、査読を担当していません。）\n注：RevIDは査読者のIDではなく、査読割当てごとに異なるIDです。",
-            4 => "ここは投稿管理者同士の掲示板です。\n査読者はメンバーに含まれていません。",
+            1 => "ここは{$name_of_managers}と著者の掲示板です。",
+            2 => "ここは{$name_of_managers}と査読者の掲示板です。他の査読者の方はメンバーに含まれていません。",
+            3 => "ここは{$name_of_managers}と全査読者の掲示板です。\n査読者は自身を名乗らないでください。必要があればRevIDを用いてください。RevIDは送信フォームに表示されています。\n（RevIDが表示されていない場合は、査読を担当していません。）\n注：RevIDは査読者のIDではなく、査読割当てごとに異なるIDです。",
+            4 => "ここは{$name_of_managers}同士の掲示板です。\n査読者はメンバーに含まれていません。",
         ];
         $bb = Bb::firstOrCreate([
             'paper_id' => $sub->paper_id,

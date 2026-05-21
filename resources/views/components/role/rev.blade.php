@@ -1,4 +1,6 @@
 @php
+    $name_of_managers = \App\Models\Setting::getValue("NAME_OF_MANAGERS");
+
     $reviews = App\Models\Review::where('user_id', auth()->id())->get();
 
     $tasks = App\Models\Task::with('submit')
@@ -140,7 +142,7 @@
                         著者に通知した査読結果 </x-element.linkbutton2>
                 @endif
                 <span class="mx-4"></span>
-                <x-bb.bb_link :submit="$rev->submit" type="2" :rev_id="$rev->id" size="sm" label="投稿管理者との掲示板">
+                <x-bb.bb_link :submit="$rev->submit" type="2" :rev_id="$rev->id" size="sm" label="{{ $name_of_managers }}との掲示板">
                 </x-bb.bb_link>
             </div>
         @endforeach

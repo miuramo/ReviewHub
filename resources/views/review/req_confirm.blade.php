@@ -3,6 +3,8 @@
     @section('title', '以下の査読をお願いします')
 
     @php
+        $name_of_managers = \App\Models\Setting::getValue("NAME_OF_MANAGERS");
+
         $paper = $review->submit->paper;
         $conf = App\Models\Setting::where('name', 'CONFTITLE')->first();
     @endphp
@@ -25,14 +27,14 @@
             お引き受けいただける場合は、「承諾する」を押してください。<br>
         </div>
         <div class="px-4 pb-6 text-md text-blue-600">※「承諾する」または「今回は辞退する」を押すと、確認画面がでます。<br>
-            確認画面でOKを押すと、以下に入力された連絡事項とともに、投稿管理者に通知されます。</div>
+            確認画面でOKを押すと、以下に入力された連絡事項とともに、{{ $name_of_managers }}に通知されます。</div>
         <form action="{{ route('review.req_confirm_post', ['review' => $review, 'token' => $token]) }}" method="post"
             id="req_confirm_form">
             @csrf
             @method('post')
 
             <textarea name="comment" id="comment" rows="4" class="w-full p-2 border border-gray-300 rounded-md"
-                placeholder="査読期間への要望や辞退の理由など、投稿管理者への連絡事項がありましたら、ここに入力してください。なお、標準的な査読期間は24日間となっております。"></textarea>
+                placeholder="査読期間への要望や辞退の理由など、{{ $name_of_managers }}への連絡事項がありましたら、ここに入力してください。なお、標準的な査読期間は24日間となっております。"></textarea>
             <x-element.submitbutton value="accept" color="cyan" confirm="「承諾する」で送信して、よろしいですか？">承諾する (Accept)
             </x-element.submitbutton>
             <span class="mx-4"></span>
