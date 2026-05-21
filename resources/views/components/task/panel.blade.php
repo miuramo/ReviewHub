@@ -8,6 +8,9 @@
 
     if ($task->submit->round >= 2) {
         $answerfile = $paper->answer_file();
+        $previous_review_sub = App\Models\Submit::where('paper_id', $paper->id)
+            ->where('round', $task->submit->round - 1)
+            ->first();
     }
 @endphp
 <x-element.component_name>panel</x-element.component_name>
@@ -153,6 +156,14 @@
                 color="orange" target="_blank">
                 回答書 をひらく
             </x-element.linkbutton2>
+
+            {{-- 回答書があるということは、前回の査読結果があるはずなので、表示する。 --}}
+            @isset($previous_review_sub)
+                <span class="mx-2"></span>
+                <x-element.linkbutton2 href="{{ $previous_review_sub->url_reviewresult_for_author() }}" color="purple"
+                    target="_blank" size="sm">
+                    著者に通知した査読結果 </x-element.linkbutton2>
+            @endisset
         @endisset
         <div class="mx-2 my-2"></div>
         <span class="mx-2"></span>
