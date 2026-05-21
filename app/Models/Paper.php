@@ -7,6 +7,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -186,6 +187,17 @@ class Paper extends Model
         return $this->belongsToMany(User::class, 'paper_manager');
     }
 
+    /**
+     * managers から、査読者（メタ・一般査読者）を抜いたUsersをかえす
+     */
+    public function managers_without_meta(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        // 査読者を集める
+        $reviewer_uids = Review::where('paper_id', $this->id)->where('target', '<', 2)
+            ->where('status', '>', -1)->get()->pluck('user_id')->toArray();
+        return $this->belongsToMany(User::class, 'paper_manager')->whereNotIn('user_id', $reviewer_uids);
+    }
+
     public function currentstatus(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Status::class, 'status_id');
@@ -228,7 +240,7 @@ class Paper extends Model
 
     public function id_03d(): string
     {
-        return sprintf(env('PID_FORMAT','%04d'), $this->id);
+        return sprintf(env('PID_FORMAT', '%04d'), $this->id);
     }
     public function pdf_file(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -948,7 +960,7 @@ class Paper extends Model
         if ($firstsub) {
             $dates[] = "（" . $this->format_ymd($firstsub->submitted_at) . "受付）";
         }
-        if ($lastsub && isset($lastsub->ec_decision_at) ) {
+        if ($lastsub && isset($lastsub->ec_decision_at)) {
             $dates[] = "（" . $this->format_ymd($lastsub->ec_decision_at) . "採録）";
             $dates[] = "【" . $lastsub->round . "回目で採録】";
         }

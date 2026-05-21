@@ -41,6 +41,7 @@ class ReviewRequest extends RetryMailable
             if ($u->email == auth()->user()->email) continue; // 操作者以外をBCCに追加する。（メタ査読者も投稿管理者や幹事団に含める可能性があるので、全員をCCには入れないことにした。）
             $this->mail_to_cc['bcc'][] = $u->email;
         }
+        $managers_without_meta = $this->paper->managers_without_meta()->get();
 
         $organization = env('MAIL_ORGANIZATION', '日本創造学会 論文編集委員会'); // 環境変数から組織名を取得
         $conftitle = \App\Models\Setting::getval('CONFTITLE');
@@ -65,7 +66,7 @@ class ReviewRequest extends RetryMailable
                     'operator' => auth()->user()->name,
                     'name_of_manager' => \App\Models\Setting::getval('NAME_OF_MANAGER'),
                     'name_of_managers' => \App\Models\Setting::getval('NAME_OF_MANAGERS'),
-                    'managers' => $this->paper->managers,
+                    'managers' => $managers_without_meta,
                 ],
             );
         } else {
@@ -86,7 +87,7 @@ class ReviewRequest extends RetryMailable
                     'operator' => auth()->user()->name,
                     'name_of_manager' => \App\Models\Setting::getval('NAME_OF_MANAGER'),
                     'name_of_managers' => \App\Models\Setting::getval('NAME_OF_MANAGERS'),
-                    'managers' => $this->paper->managers,
+                    'managers' => $managers_without_meta,
                 ],
             );
         }

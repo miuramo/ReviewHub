@@ -28,13 +28,6 @@
 </x-mail::button>
 
 
-本投稿の査読プロセスを管理する{{ $name_of_managers }}のメンバーは、以下の通りです。
-
-<pre style="text-align: center; border: 2px dotted #aaa; padding: 10px; margin: 10px 80px;">
-@foreach ($managers as $manager)
-   {{ $manager->name }} （{{ $manager->affil }}）
-@endforeach
-</pre>
 
 ---
 # PaperID：{{ $paperid }}
@@ -44,7 +37,18 @@
 ![Embedded Image](cid:firstpage.png)
 
 
+<div style="border-bottom: 2px dotted #aaa; padding: 2px; margin: 20px 0;"></div>
+
+本投稿の査読プロセスを管理する{{ $name_of_managers }}のメンバーは、以下の通りです。
+
+<pre style="text-align: center; border: 2px dotted #aaa; padding: 10px; margin: 10px 80px;">
+@foreach ($managers as $manager)
+   {{ $manager->name }} （{{ $manager->affil }}）
+@endforeach
+</pre>
+
 ---
+
 [{{ env('MAIL_FROM_NAME') }}]({{ env('APP_URL') }})
 
 </x-mail::message>

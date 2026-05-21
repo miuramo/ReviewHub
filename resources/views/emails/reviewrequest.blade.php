@@ -27,22 +27,13 @@
 <div style="border-bottom: 2px dotted #aaa; padding: 2px; margin: 20px 0;"></div>
 
 
-査読をお願いしたい論文の「著者名・所属・概要・タイトル」につきましては、以下（本メール末尾）に示しております。
+査読をお願いしたい論文の「著者名・所属・概要・タイトル」につきましては、以下（論文1ページ目の画像）に示しております。
 
-査読の可否につきまして、数日中に本メール返信、または以下のボタンにて、{{ $name_of_manager }}までお知らせいただければ幸いです。
+査読の可否につきまして、数日中に以下のボタンにて、{{ $name_of_manager }}までお知らせいただければ幸いです。
 
 <x-mail::button :url="$replyurl" color="success">
 査読の承諾（または辞退）を連絡する
 </x-mail::button>
-
-
-本投稿の査読プロセスを管理する{{ $name_of_managers }}のメンバーは、以下の通りです。
-
-<pre style="text-align: center; border: 2px dotted #aaa; padding: 10px; margin: 10px 80px;">
-@foreach ($managers as $manager)
-   {{ $manager->name }} （{{ $manager->affil }}）
-@endforeach
-</pre>
 
 
 ---
@@ -52,6 +43,18 @@
 
 ![Embedded Image](cid:firstpage.png)
 
+
+<div style="border-bottom: 2px dotted #aaa; padding: 2px; margin: 20px 0;"></div>
+
+本投稿の査読プロセスを管理する{{ $name_of_managers }}のメンバーは、以下の通りです。
+
+<pre style="text-align: center; border: 2px dotted #aaa; padding: 10px; margin: 10px 80px;">
+@foreach ($managers as $manager)
+   {{ $manager->name }} （{{ $manager->affil }}）
+@endforeach
+</pre>
+
+お忙しいところすみませんが、ご協力のほど、よろしくお願いいたします。
 
 ---
 [{{ env('MAIL_FROM_NAME') }}]({{ env('APP_URL') }})
