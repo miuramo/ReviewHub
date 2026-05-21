@@ -36,9 +36,12 @@ class ReviewRequest extends RetryMailable
         // 以下をつかうと、利害のある編集長にもメールが飛んでしまう
         // $ec_role = \App\Models\Role::findByIdOrName('ec');
         // $ec_users = $ec_role->users;
+        $this->mail_to_cc['cc'][] = auth()->user()->email; // 操作者をCCに追加
         foreach ($ec_users as $u) {
-            $this->mail_to_cc['cc'][] = $u->email;
+            if ($u->email == auth()->user()->email) continue; // 操作者以外をBCCに追加する。（メタ査読者も投稿管理者や幹事団に含める可能性があるので、全員をCCには入れないことにした。）
+            $this->mail_to_cc['bcc'][] = $u->email;
         }
+
         $organization = env('MAIL_ORGANIZATION', '日本創造学会 論文編集委員会'); // 環境変数から組織名を取得
         $conftitle = \App\Models\Setting::getval('CONFTITLE');
         // 1回目？2回目
@@ -56,7 +59,7 @@ class ReviewRequest extends RetryMailable
                     'conftitle' => $conftitle,
                     'organization' => $organization,
                     'reviewer' => $this->reviewer,
-                    'replyurl' => $url = route('review.req_confirm', ['review' => $this->rev, 'token' => $this->rev->token_for_request()]),
+                    'replyurl' => route('review.req_confirm', ['review' => $this->rev, 'token' => $this->rev->token_for_request()]),
                     'round' => $round,
                     'review_duration' => $review_duration,
                     'operator' => auth()->user()->name,
@@ -77,7 +80,7 @@ class ReviewRequest extends RetryMailable
                     'conftitle' => $conftitle,
                     'organization' => $organization,
                     'reviewer' => $this->reviewer,
-                    'replyurl' => $url = route('review.req_confirm', ['review' => $this->rev, 'token' => $this->rev->token_for_request()]),
+                    'replyurl' => route('review.req_confirm', ['review' => $this->rev, 'token' => $this->rev->token_for_request()]),
                     'round' => $round,
                     'review_duration' => $review_duration,
                     'operator' => auth()->user()->name,

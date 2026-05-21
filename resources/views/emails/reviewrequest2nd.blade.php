@@ -28,9 +28,9 @@
 </x-mail::button>
 
 
-本投稿の査読プロセスを管理する{{ $name_of_managers }}メンバーは、以下の通りです。
+本投稿の査読プロセスを管理する{{ $name_of_managers }}のメンバーは、以下の通りです。
 
-<pre style="text-align: center; border: 2px dotted #aaa; padding: 10px; margin: 10px 40px;">
+<pre style="text-align: center; border: 2px dotted #aaa; padding: 10px; margin: 10px 80px;">
 @foreach ($managers as $manager)
    {{ $manager->name }} （{{ $manager->affil }}）
 @endforeach
