@@ -59,6 +59,10 @@ class ReviewRequest extends RetryMailable
                     'replyurl' => $url = route('review.req_confirm', ['review' => $this->rev, 'token' => $this->rev->token_for_request()]),
                     'round' => $round,
                     'review_duration' => $review_duration,
+                    'operator' => auth()->user()->name,
+                    'name_of_manager' => \App\Models\Setting::getval('NAME_OF_MANAGER'),
+                    'name_of_managers' => \App\Models\Setting::getval('NAME_OF_MANAGERS'),
+                    'managers' => $this->paper->managers,
                 ],
             );
         } else {
@@ -76,6 +80,10 @@ class ReviewRequest extends RetryMailable
                     'replyurl' => $url = route('review.req_confirm', ['review' => $this->rev, 'token' => $this->rev->token_for_request()]),
                     'round' => $round,
                     'review_duration' => $review_duration,
+                    'operator' => auth()->user()->name,
+                    'name_of_manager' => \App\Models\Setting::getval('NAME_OF_MANAGER'),
+                    'name_of_managers' => \App\Models\Setting::getval('NAME_OF_MANAGERS'),
+                    'managers' => $this->paper->managers,
                 ],
             );
         }
