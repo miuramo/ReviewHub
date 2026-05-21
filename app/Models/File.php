@@ -6,6 +6,7 @@ use App\Jobs\OcrJob;
 use App\Jobs\PdfJob;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Normalizer;
 
@@ -41,7 +42,7 @@ class File extends Model
         return 'public/' . File::$filedir;
     }
 
-    public static function createnew(File $tmp, int $pid = 0, int $uid = 0): File
+    public static function createnew(UploadedFile $tmp, int $pid = 0, int $uid = 0): File
     {
         // フォルダがなければ作る
         File::mkdir_ifnot(storage_path(File::apf()));
