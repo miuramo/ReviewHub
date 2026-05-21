@@ -30,7 +30,7 @@
 
 本投稿の査読プロセスを管理する{{ $name_of_managers }}メンバーは、以下の通りです。
 
-<pre style="text-align: center; border: 2px dotted #aaa; padding: 10px; margin: 10px;">
+<pre style="text-align: center; border: 2px dotted #aaa; padding: 10px; margin: 10px 40px;">
 @foreach ($managers as $manager)
    {{ $manager->name }} （{{ $manager->affil }}）
 @endforeach

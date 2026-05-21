@@ -35,10 +35,13 @@
 </x-mail::button>
 
 
-（以下のメンバーが、本投稿の査読プロセスを管理する{{ $name_of_managers }}です。）
+本投稿の査読プロセスを管理する{{ $name_of_managers }}メンバーは、以下の通りです。
+
+<pre style="text-align: center; border: 2px dotted #aaa; padding: 10px; margin: 10px 40px;">
 @foreach ($managers as $manager)
-    {{ $manager->affil }} {{ $manager->name }}<br>
+   {{ $manager->name }} （{{ $manager->affil }}）
 @endforeach
+</pre>
 
 
 ---
