@@ -315,7 +315,7 @@
                                     href="{{ route('paper.sendsubmitted', ['paper' => $paper->id]) }}" color="cyan"
                                     confirm="本当にメール送信しますか？">
                                     投稿完了通知メールを送信
-                                </x-element.linkbutton> を押すと、投稿完了となります。（{{ $name_of_managers }}にも通知が届きます。）
+                                </x-element.linkbutton> を押すと、投稿完了となります。（{{ $name_of_managers }}に通知が届きます。）
                             @endif
                         </div>
                     @else
