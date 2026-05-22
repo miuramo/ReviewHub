@@ -109,13 +109,13 @@ class Paper extends Model
     {
         $koumoku = [
             'title' => '和文題名',
-            'abst' => '和文アブストラクト',
-            'keyword' => '和文キーワード',
             'authorlist' => '和文著者名(所属)',
             'etitle' => '英文題名',
+            'eauthorlist' => '英文著者名(所属)',
+            'abst' => '概要',
+            'keyword' => 'キーワード',
             'eabst' => '英文Abstract',
             'ekeyword' => '英文Keyword',
-            'eauthorlist' => '英文著者名(所属)'
         ];
         $skip_bibinfo = Setting::getval("SKIP_BIBINFO");
         $skip_bibinfo = json_decode($skip_bibinfo);

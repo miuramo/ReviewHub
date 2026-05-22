@@ -4,6 +4,7 @@
 
     // Setting seeder
     App\Models\Setting::seeder();
+    App\Models\BibEntry::seeder();
     // Confirm seeder
     App\Models\Confirm::seeder_policy();
 

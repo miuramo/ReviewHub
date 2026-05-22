@@ -57,12 +57,12 @@
 
     @php
         $koumoku = [
-            'title' => '和文タイトル',
+            'title' => '和文題目',
             'authorlist' => '和文著者・所属',
-            'abst' => '和文アブストラクト',
-            'keyword' => '和文キーワード',
             'etitle' => '英文Title',
             'eauthorlist' => '英文著者・所属',
+            'abst' => '概要',
+            'keyword' => 'キーワード',
             'eabst' => '英文Abstract',
             'ekeyword' => '英文Keyword',
             'ror' => 'ROR',
