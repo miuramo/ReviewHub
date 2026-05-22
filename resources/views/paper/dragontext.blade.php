@@ -112,12 +112,12 @@
         {{-- </div> --}}
     </div>
     <div class="mx-4">
-        <div class="bg-cyan-500 text-white px-3 pb-1 pt-2" id="confirm_shoshi">設定確認画面
+        <div class="bg-cyan-500 text-white px-3 pb-1 pt-2 font-bold text-lg" id="confirm_shoshi">設定確認画面
         </div>
         <table class="border-cyan-500 border-2">
             @foreach ($koumoku_including_optional as $k => $v)
-                <tr class="{{ $loop->iteration % 2 === 1 ? 'bg-cyan-50' : 'bg-white dark:bg-cyan-100' }}">
-                    <td class="px-2 py-1">{{ $v }}</td>
+                <tr class="{{ $loop->iteration % 2 === 1 ? 'bg-cyan-50' : 'bg-white dark:bg-cyan-100 border-2 border-cyan-500' }}">
+                    <td class="px-2 py-1 border-r-2 border-r-cyan-500 whitespace-nowrap">{{ $v }}</td>
                     <td class="px-2 py-1" id="confirm_{{ $k }}">{!! nl2br($paper->{$k}) !!}</td>
                 </tr>
             @endforeach
