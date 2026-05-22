@@ -37,9 +37,9 @@
                     {{ implode('、', array_values($koumoku)) }}
                     ）を設定していただきます。
                     <div class="my-2"></div>
-                    ここでは、「和文題名」を例にして、設定方法を説明します。<br>最初に、画面下部の<span
+                    ここでは、「{{ $koumoku['title'] }}」を例にして、設定方法を説明します。<br>最初に、画面下部の<span
                         class="border border-gray-600 bg-cyan-50 p-0.5">PDFから抽出したテキスト</span>
-                    の和文題名部分を、マウスドラッグによって選択してください。<br>
+                    の{{ $koumoku['title'] }}部分を、マウスドラッグによって選択してください。<br>
                     選択したテキストが下の <span class="border border-gray-600 bg-yellow-100 p-0.5">エディタ</span>
                     にコピーされます。必要があれば修正してください。（例：和文中の不要な空白を除去）
                     <div class="my-2 mx-4 bg-pink-50 px-4 py-1">
@@ -49,16 +49,16 @@
                             {{-- color="purple" confirm="本当に直接入力モードにしますか？必要がなければキャンセルを押してください。"> --}}
                         </x-element.button>
                         {{-- <span class="border border-gray-600 bg-purple-200 p-0.5">直接入力モードに切替</span> --}}
-                        <b>を押して編集してください。直接入力モードの使用は必要最小限でお願いします。和文著者名(所属)を入力する際は改行が必要となるため、</b>
+                        <b>を押して編集してください。直接入力モードの使用は必要最小限でお願いします。{{ $koumoku['authorlist'] }}を入力する際は改行が必要となるため、</b>
                         <span class="bg-purple-200 p-0.5">直接入力モード</span> <b>を使用するか、前画面のフォームを使用してください。</b><br>
                         <span class="bg-purple-200 p-0.5">直接入力モード</span> から
                         <span class="bg-yellow-100 p-0.5">通常モード</span> に戻すには、<span
                             class="border border-gray-600 bg-cyan-50 p-0.5">PDFから抽出したテキスト</span> を再度ドラッグで選択してください。
                     </div>
 
-                    修正がおわったら、エディタ下の「和文題名に設定」ボタンを押すと、エディタ内のテキストを和文題名として設定します。
+                    修正がおわったら、エディタ下の「{{ $koumoku['title'] }}に設定」ボタンを押すと、エディタ内のテキストを{{ $koumoku['title'] }}として設定します。
 
-                    この手順を繰り返し、英文題名等についても、設定してください。
+                    この手順を繰り返し、ほかの項目についても、設定してください。
                     <div class="my-2"></div>
 
                     <a href="#confirm_shoshi"
@@ -85,7 +85,7 @@
 
 
         <textarea class="p-2 w-full text-xl bg-yellow-100 font-monaca" id="seltext" rows=6
-            placeholder="（ここは直接入力できません。下のテキストをマウスでドラッグして、選択してください。）"></textarea>
+            placeholder="この「エディタ」には直接入力・編集できません。下のテキストをマウスでドラッグして、選択してください。（「直接入力モード」に切替えると、自由に編集できます。）"></textarea>
         <div class="mb-2">
             <x-element.button onclick="return removespaces();" value="半角スペースを削除" size="sm"
                 color="orange"></x-element.button>
