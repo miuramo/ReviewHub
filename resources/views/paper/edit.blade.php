@@ -47,7 +47,7 @@
             ->get()
             ->pluck('status__revedit_on', 'id')
             ->toArray();
-        $koumoku = App\Models\Paper::including_optional_bibs(); //必須書誌情報
+        $koumoku = App\Models\Paper::including_optional_bibs(); //必須＋任意書誌情報
     @endphp
 
     <div class="py-2">
@@ -201,9 +201,10 @@
                         書誌情報の設定
                     </x-element.linkbutton>
                     から、以下の項目を設定してください。
+                    {{-- 
                     @if (count($optional_entries) > 0)
-                        ただし、{{ implode('、', array_values($optional_entries)) }} は任意項目です。
-                    @endif
+                        ただし、{{ implode('、', array_values($optional_entries)) }} は記事の記述言語が英語のときは任意項目です。
+                    @endif --}}
                     @if ($paper->locked)
                         <span class="text-red-500 dark:text-red-400">（現在、投稿はロックされているため、書誌情報の設定はできません。）</span>
                     @endif
