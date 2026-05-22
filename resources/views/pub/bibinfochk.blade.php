@@ -56,28 +56,8 @@
     </div>
 
     @php
-        $koumoku = [
-            'title' => '和文題目',
-            'authorlist' => '和文著者・所属',
-            'etitle' => '英文Title',
-            'eauthorlist' => '英文著者・所属',
-            'abst' => '概要',
-            'keyword' => 'キーワード',
-            'eabst' => '英文Abstract',
-            'ekeyword' => '英文Keyword',
-            'ror' => 'ROR',
-        ];
-        $dtype = [
-            'title' => 'varchar',
-            'authorlist' => 'mediumtext',
-            'abst' => 'mediumtext',
-            'keyword' => 'varchar',
-            'etitle' => 'varchar',
-            'eauthorlist' => 'mediumtext',
-            'eabst' => 'mediumtext',
-            'ekeyword' => 'varchar',
-            'ror' => 'mediumtext',
-        ];
+        $koumoku = \App\Models\BibEntry::orderBy('display_order')->pluck('name_jp', 'key')->toArray();
+        $dtype = \App\Models\BibEntry::pluck('dtype', 'key')->toArray();
 
         if (count($subs) == 0) {
             $subs = $subs2;
@@ -206,16 +186,5 @@
         var mode_br = true; // 改行反映する
         var sizecols = 90; // 横幅
     </script>
-
-    {{-- @push('localjs')
-        <script src="/js/jquery.min.js"></script>
-        <script src="https://d3js.org/d3.v5.min.js"></script>
-        <script src="/js/d3groupedit.js"></script>
-        <script src="/js/d3contextmenu.js"></script>
-        <script src="/js/d3booth.js"></script>
-    @endpush --}}
-    {{-- <script>
-        var subpapers = {!! json_encode($subs) !!};
-    </script> --}}
 
 </x-app-layout>

@@ -107,16 +107,27 @@ class Paper extends Model
 
     public static function mandatory_bibs(): array
     {
-        $koumoku = [
-            'title' => '和文題名',
-            'authorlist' => '和文著者名(所属)',
-            'etitle' => '英文題名',
-            'eauthorlist' => '英文著者名(所属)',
-            'abst' => '概要',
-            'keyword' => 'キーワード',
-            'eabst' => '英文Abstract',
-            'ekeyword' => '英文Keyword',
-        ];
+        $koumoku = \App\Models\BibEntry::where('is_required', 1)->where('for_manage', 0)->orderBy('display_order')->pluck('name_jp', 'key')->toArray();
+        $skip_bibinfo = Setting::getval("SKIP_BIBINFO");
+        $skip_bibinfo = json_decode($skip_bibinfo);
+        foreach ($skip_bibinfo as $key) {
+            unset($koumoku[$key]);
+        }
+        return $koumoku;
+    }
+    public static function including_optional_bibs(): array
+    {
+        $koumoku = \App\Models\BibEntry::where('for_manage', 0)->orderBy('display_order')->pluck('name_jp', 'key')->toArray();
+        $skip_bibinfo = Setting::getval("SKIP_BIBINFO");
+        $skip_bibinfo = json_decode($skip_bibinfo);
+        foreach ($skip_bibinfo as $key) {
+            unset($koumoku[$key]);
+        }
+        return $koumoku;
+    }
+    public static function optional_bibs(): array
+    {
+        $koumoku = \App\Models\BibEntry::where('is_required', 0)->where('for_manage', 0)->orderBy('display_order')->pluck('name_jp', 'key')->toArray();
         $skip_bibinfo = Setting::getval("SKIP_BIBINFO");
         $skip_bibinfo = json_decode($skip_bibinfo);
         foreach ($skip_bibinfo as $key) {

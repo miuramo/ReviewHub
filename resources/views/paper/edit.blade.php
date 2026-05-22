@@ -47,6 +47,7 @@
             ->get()
             ->pluck('status__revedit_on', 'id')
             ->toArray();
+        $koumoku = App\Models\Paper::including_optional_bibs(); //必須書誌情報
     @endphp
 
     <div class="py-2">
@@ -189,17 +190,20 @@
                 </x-paper.authorlist>
             @endif
 
+                @php
+                    $optional_entries = \App\Models\Paper::optional_bibs();
+                @endphp
 
             <div class="m-6">
-
-
-
                 <x-element.h1>
                     PDFファイルをアップロードしたあとで、 <x-element.linkbutton
                         href="{{ route('paper.dragontext', ['paper' => $paper->id]) }}" color="blue" size="md">
                         書誌情報の設定
                     </x-element.linkbutton>
-                    から、題名（和文・英文）を設定してください。
+                    から、以下の項目を設定してください。
+                    @if (count($optional_entries) > 0)
+                        ただし、{{ implode('、', array_values($optional_entries)) }} は任意項目です。
+                    @endif
                     @if ($paper->locked)
                         <span class="text-red-500 dark:text-red-400">（現在、投稿はロックされているため、書誌情報の設定はできません。）</span>
                     @endif
@@ -212,7 +216,11 @@
                             @foreach ($koumoku as $k => $v)
                                 <tr
                                     class="{{ $loop->iteration % 2 === 1 ? 'bg-cyan-50 dark:text-gray-700' : 'bg-white dark:bg-cyan-100 dark:text-gray-700' }}">
-                                    <td class="px-2 py-1 whitespace-nowrap">{{ $v }}</td>
+                                    <td class="px-2 py-1 whitespace-nowrap">{{ $v }}
+                                        @isset($optional_entries[$k])
+                                            <span class="text-sm text-gray-500">（任意）</span> 
+                                        @endisset
+                                    </td>
                                     @if (strlen($paper->{$k}) < 2)
                                         <td class="px-2 py-1 text-red-600 font-bold" id="confirm_{{ $k }}">
                                             （未設定）</td>

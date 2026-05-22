@@ -435,15 +435,12 @@ class PaperController extends Controller
         $pdftext = $paper->pdf_file->getPdfText();
         $pdftext = $this->normalizeSpaces($pdftext);
 
-        // 書誌情報の設定項目
-        $koumoku = Paper::mandatory_bibs();
-        $koumokucolor = ['title' => 'teal', 'abst' => 'teal', 'keyword' => 'teal', 'authorlist' => 'teal', 'etitle' => 'lime', 'eabst' => 'lime', 'ekeyword' => 'lime', 'eauthorlist' => 'lime'];
         // $pdftext = mb_ereg_replace('\n+',"\n",$pdftext);
         $reps = ["ﬁ" => "fi", "ﬀ" => "ff", "ﬃ" => "ffi"];
         foreach ($reps as $riga => $non) {
             $pdftext = mb_ereg_replace($riga, $non, $pdftext);
         }
-        return view('paper.dragontext', ['paper' => $id])->with(compact("pdftext", "paper", "koumoku", "koumokucolor"));
+        return view('paper.dragontext', ['paper' => $id])->with(compact("pdftext", "paper"));
     }
 
     /**

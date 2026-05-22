@@ -13,6 +13,12 @@
         <link rel="stylesheet" href="{{ asset('/css/dragtext.css') }}">
         <link rel="stylesheet" href="{{ asset('/css/localflash.css') }}">
     @endpush
+    @php
+        // 書誌情報の設定項目
+        $koumoku = \App\Models\Paper::mandatory_bibs();
+        $koumoku_including_optional = \App\Models\Paper::including_optional_bibs();
+        $koumokucolor = \App\Models\BibEntry::whereIn('key', array_keys($koumoku_including_optional))->get()->pluck('color', 'key')->toArray();
+    @endphp
 
     <div class="m-4">
         <x-element.h1>
@@ -94,7 +100,7 @@
 
         <div class="mb-2  dark:text-gray-400">
             エディタのテキストを
-            @foreach ($koumoku as $key => $val)
+            @foreach ($koumoku_including_optional as $key => $val)
                 <x-element.button onclick="valset('{{ $key }}')" value="{{ $val }}に設定" size="sm"
                     color="{{ $koumokucolor[$key] }}"></x-element.button>
             @endforeach
@@ -109,7 +115,7 @@
         <div class="bg-cyan-500 text-white px-3 pb-1 pt-2" id="confirm_shoshi">設定確認画面
         </div>
         <table class="border-cyan-500 border-2">
-            @foreach ($koumoku as $k => $v)
+            @foreach ($koumoku_including_optional as $k => $v)
                 <tr class="{{ $loop->iteration % 2 === 1 ? 'bg-cyan-50' : 'bg-white dark:bg-cyan-100' }}">
                     <td class="px-2 py-1">{{ $v }}</td>
                     <td class="px-2 py-1" id="confirm_{{ $k }}">{!! nl2br($paper->{$k}) !!}</td>
