@@ -5,70 +5,164 @@ namespace App\Http\Controllers;
 use App\Exports\VoteAnswersExport;
 use App\Http\Requests\StorevotesRequest;
 use App\Http\Requests\UpdatevotesRequest;
+use App\Mail\VoteTicketEmail;
 use App\Models\Submit;
 use App\Models\Vote;
 use App\Models\VoteAnswer;
 use App\Models\VoteItem;
+use App\Models\VoteTicket;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Unique;
 
 class VoteController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * 案内表示
      */
     public function index(Request $req)
     {
-        if ($req->method() === 'POST') {
-            // info($req->all());
-            if (strlen($req->input("sssname")) < 3 ||   strlen($req->input("sssaffil")) < 2) {
-                return redirect('/vote')->with('feedback.error', '氏名と所属の両方を入力してください。');
+        if (Auth::check()) {
+            $uid = auth()->id();
+            $ticket = VoteTicket::where('user_id', $uid)->where('activated', true)->where('valid', true)->first();
+            if (!$ticket) {
+                return view('vote.vote_error')->with('reason', 'メールで届く投票URLをクリックしてから、こちらの投票ページに遷移してください。');
+                // abort(403, 'メールで届く投票URLをクリックしてから、こちらの投票ページに遷移してください。');
             }
-            $formData = json_encode($req->all());
-            $minutes = 60 * 24 * 3; // 3日間有効なクッキー
-            Cookie::queue('formData', $formData, $minutes);
-            return redirect('/vote')->with('feedback.success', '氏名と所属を一時保存しました。');
+        } else {
+            $cookie_token = Cookie::get('vote_ticket_token');
+            info("index - Cookieから投票トークンを取得: " . ($cookie_token ? $cookie_token : 'null'));
+            
+            // Cookie取得失敗時の詳細ログ
+            if (!$cookie_token) {
+                info("index - Cookieが存在しない理由の可能性: ブラウザでCookie無効、HTTPS/HTTP不一致、ドメイン不一致");
+            }
+            
+            $ticket = VoteTicket::where('token', $cookie_token)->where('activated', true)->where('valid', true)->first();
+            if (!$ticket) {
+                info("index - 有効なチケットが見つからない: Token=" . ($cookie_token ? $cookie_token : 'null'));
+                return view('vote.vote_error')->with('reason', 'メールで届く投票URLをクリックしてから、同じブラウザで、こちらの投票ページに遷移してください。投票トークンをアカウントに紐づけている場合は、ログインしてください。');
+                // abort(403, 'メールで届く投票URLをクリックしてから、同じブラウザで、こちらの投票ページに遷移してください。');
+            }
         }
-        $formData = json_decode(Cookie::get('formData'), true);
-        return view("vote.index")->with(compact("formData"));
+        return view("vote.index")->with(compact("ticket"));
     }
+    /**
+     * 投票権の有効化（token付きのURL）
+     */
+    public function activate(string $token)
+    {
+        $ticket = VoteTicket::where('token', $token)->first();
+        if (!$ticket) {
+            return view('vote.activate_error')->with('reason', '無効なトークンです。');
+        }
+        // if ($ticket->activated) {
+        //     return view('vote.activate_error')->with('reason', 'この投票トークンはすでに有効化されています。');
+        // }
+        if ($ticket->valid) {
+            if (Auth::check()) {
+                // すでに投票トークンが紐づけられている場合は、有効化をキャンセルする
+                $existingTicket = VoteTicket::where('user_id', auth()->id())->where('activated', true)->where('valid', true)->first();
+                if ($existingTicket) {
+                    if ($existingTicket->token !== $token) {
+                        return view('vote.activate_error')->with('reason', '現在ログインしているアカウントには、すでに別の投票権が紐づけられています。そのため、この投票トークンを有効化することはできません。');
+                    } else {
+                        // 以前と同じトークンなので、そのまま投票ページに遷移する
+                        info("既に有効化済みのトークンでリダイレクト: " . $token);
+                        return redirect('/vote'); // ->with('feedback.success', '注：この投票トークンは以前有効化されています。');
+                    }
+                }
+                // ユーザーIDを設定して有効化
+                info("ログイン済みユーザーに投票権を紐付け - User ID: " . auth()->id() . ", Token: " . $token);
+                $ticket->user_id = auth()->id();
+            } else {
+                // 未ログインユーザーの場合、Cookieに投票トークンを設定
+                info("未ログインユーザーのCookieにトークンを設定: " . $token);
+                $this->setSecureVoteTokenCookie($token);
+            }
+            $ticket->activated = true;
+            $ticket->save();
+            info("チケット有効化完了 - ID: " . $ticket->id . ", Token: " . $token);
+        } else {
+            info("無効なチケットのため処理をスキップ - Token: " . $token . ", Valid: " . ($ticket->valid ? 'true' : 'false'));
+            return view('vote.activate_error')->with('reason', 'この投票トークンは無効です。');
+        }
+        return redirect('/vote')->with('feedback.success', '投票権が有効化されました。');
+    }
+    // public function activate_error()
+    // {
+    //     return view('vote.activate_error');
+    // }
     public function vote(Request $req, Vote $vote)
     {
         if (Auth::check()) {
             $uid = auth()->id();
-            $formData = ["uid" => $uid, "_token" => "uid_" . $uid];
+            $ticket = VoteTicket::where('user_id', $uid)->where('activated', true)->where('valid', true)->first();
+            if (!$ticket) {
+                return view('vote.vote_error')->with('reason', 'メールで届く投票URLをクリックしてから、こちらの投票ページに遷移してください。');
+            }
         } else {
             $uid = null;
-            $formData = json_decode(Cookie::get('formData'), true);
+            $cookie_token = Cookie::get('vote_ticket_token');
+            info("vote - Cookieから投票トークンを取得: " . ($cookie_token ? $cookie_token : 'null'));
+            
+            // Cookie取得失敗時の詳細ログ
+            if (!$cookie_token) {
+                info("vote - Cookieが存在しない理由の可能性: ブラウザでCookie無効、HTTPS/HTTP不一致、ドメイン不一致");
+            }
+            
+            $ticket = VoteTicket::where('token', $cookie_token)->where('activated', true)->where('valid', true)->first();
+            if (!$ticket) {
+                info("vote - 有効なチケットが見つからない: Token=" . ($cookie_token ? $cookie_token : 'null'));
+                return view('vote.vote_error')->with('reason', 'メールで届く投票URLをクリックしてから、同じブラウザで、こちらの投票ページに遷移してください。投票トークンをアカウントに紐づけている場合は、ログインしてください。');
+            }
         }
-        if (!$formData) return redirect('/vote')->with('feedback.error', '投票のまえに、氏名と所属を入力してください。');
         if (!$vote->isopen || $vote->isclose) {
             return redirect('/vote')->with('feedback.error', '期間外の投票はできません。');
+        }
+        if ($vote->for_pc){
+            if (!auth()->check() || !auth()->user()->is_pc_member()) {
+                return redirect('/vote')->with('feedback.error', 'あなたが開こうとした投票ページはプログラム委員のみが投票できます。プログラム委員の方は、ログインしてから投票してください。');
+            }
         }
         if ($req->method() === 'POST') {
             if (!$vote->isopen || $vote->isclose) {
                 return redirect('/vote')->with('feedback.error', '期間外の投票はできません。');
             }
             // info($req->all());
+            // 件数チェック
+            $cnt = 0;
+            foreach($req->all() as $booth=>$val){
+                if ($val == 'on') {
+                    $cnt++;
+                }
+            }
+            if ($cnt < 1) {
+                return redirect()->route('vote.vote', ['vote' => $vote])->with('feedback.error', '1件以上の投票を選択してください。');
+            }
+
             // 一旦、これまでのデータをすべて消す。
-            DB::transaction(function () use ($vote, $uid, $formData) {
-                VoteAnswer::where("vote_id", $vote->id)->where(function ($query) use ($uid, $formData) {
-                    $query->where("user_id", $uid)->orWhere("token", $formData['_token']);
-                })->delete();
-            });
+            // DB::transaction(function () use ($vote, $uid, $ticket) {
+            //     VoteAnswer::where("vote_id", $vote->id)->where(function ($query) use ($uid, $ticket) {
+            //         $query->where("user_id", $uid)->orWhere("token", $ticket->token);
+            //     })->delete();
+            // });
             $subbooth2id = Submit::select("id", "booth")->get()->pluck("id", "booth")->toArray();
-            // info($subbooth2id);
-            $student_boothes = VoteItem::student_boothes();
+
+            // $student_boothes = VoteItem::student_boothes();
             foreach ($req->all() as $booth => $val) {
                 if ($val == 'on') {
                     VoteAnswer::firstOrCreate([
                         'user_id' => $uid,
-                        'token' => $formData['_token'],
+                        'token' => $ticket->token,
                         'submit_id' => $subbooth2id[$booth],
-                        'valid' => (isset($student_boothes[$booth]) ? 2 : 1),
+                        'valid' => 1,// (isset($student_boothes[$booth]) ? 2 : 1),
                     ], [
                         'comment' => $req->input('comment'),
                         'vote_id' => $vote->id,
@@ -77,20 +171,23 @@ class VoteController extends Controller
                 }
             }
 
+            // 投票完了後、セキュリティのためCookieを削除（オプション）
+            // 必要に応じてコメントアウトを外してください
+            // $this->clearVoteTokenCookie();
+            
             return redirect()->route('vote.vote', ['vote' => $vote])->with('feedback.success', '投票結果を保存しました。');
         }
         // チェック再現のため、保存データを取得する
-        $vas = VoteAnswer::where("vote_id", $vote->id)->where(function ($query) use ($uid, $formData) {
-            $query->where("user_id", $uid)->orWhere("token", $formData['_token']);
+        $vas = VoteAnswer::where("vote_id", $vote->id)->where(function ($query) use ($uid, $ticket) {
+            $query->where("user_id", $uid)->orWhere("token", $ticket->token);
         })->get()->pluck("submit_id", "booth")->toArray();
-        return view("vote.vote")->with(compact("vote", "formData", "uid", "vas"));
+        return view("vote.vote")->with(compact("vote", "ticket", "uid", "vas"));
     }
 
-    public function download_answers()
+    public function download_answers(int $vote_id = 0)
     {
         if (!auth()->user()->can('role_any', 'award')) abort(403);
-
-        return Excel::download(new VoteAnswersExport(), "投票結果.xlsx");
+        return Excel::download(new VoteAnswersExport($vote_id), "投票結果_{$vote_id}.xlsx");
     }
 
     /**
@@ -107,51 +204,182 @@ class VoteController extends Controller
         VoteItem::init();
         return redirect()->route('role.top', ['role' => 'award']);
     }
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+
+    public function create_tickets(Request $req)
     {
-        //
+        if (!auth()->user()->can('role_any', 'award')) abort(403);
+        if ($req->has('emails')) {
+            $emails = explode("\n", $req->input('emails'));
+            $emails = array_map('trim', $emails);
+            $emails = array_filter($emails, function ($email) {
+                return filter_var($email, FILTER_VALIDATE_EMAIL);
+            });
+            // VoteTicket::truncate();
+            // 重複していたら作成しない。
+            foreach ($emails as $em) {
+                $token = Str::random(30);
+                try {
+                    $ticket = VoteTicket::create([
+                        'email' => $em,
+                        'token' => $token,
+                        'token_hash' => hash('sha256', $token),
+                    ]);
+                } catch (UniqueConstraintViolationException $e) {
+                    // 既に存在する場合はスキップ
+                    continue;
+                }
+            }
+            return back()->with('feedback.success', '投票チケットを作成しました');
+        }
+        return view('vote.create_tickets')->with([
+            'emails' => '',
+        ]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * 有効なチケットをメール送信する （send_tickets_checkedに統合した）
      */
-    public function store(StorevotesRequest $request)
+    // public function send_tickets()
+    // {
+    //     if (!auth()->user()->can('role_any', 'award')) abort(403);
+    //     $tickets = VoteTicket::where('valid', true)->get();
+    //     if ($tickets->isEmpty()) {
+    //         return redirect()->route('role.top', ['role' => 'award'])->with('feedback.error', '有効な投票チケットがありません。');
+    //     }
+    //     foreach ($tickets as $ticket) {
+    //         (new VoteTicketEmail($ticket))->process_send();
+    //     }
+    //     return back()->with('feedback.success', '投票チケットをメール送信しました。');
+    // }
+
+    /**
+     * チェックされたチケットをメール送信する
+     */
+    public function send_tickets_checked(Request $req)
     {
-        //
+        if (!auth()->user()->can('role_any', 'award')) abort(403);
+        if ($req->input('action') === 'chkdestroy') { // chksend なら 送信
+            return $this->destroy_tickets_checked($req);
+        }
+        $ticket_ids = $req->input('ticket_ids', []);
+        if (empty($ticket_ids)) {
+            return redirect()->route('vote.create_tickets')->with('feedback.error', '送信するチケットを選択してください。');
+        }
+        $tickets = VoteTicket::whereIn('id', $ticket_ids)->where('valid', true)->get();
+        if ($tickets->isEmpty()) {
+            return redirect()->route('vote.create_tickets')->with('feedback.error', '選択されたチケットは有効ではありません。');
+        }
+        foreach ($tickets as $ticket) {
+            (new VoteTicketEmail($ticket, $req->input('subject'), $req->input('body')))->process_send();
+        }
+        return back()->with('feedback.success', '選択されたチケットをメール送信しました。');
+    }
+
+    public function destroy_tickets(Request $req)
+    {
+        if (!auth()->user()->can('role_any', 'award')) abort(403);
+        VoteTicket::truncate();
+        return redirect()->route('vote.create_tickets')->with('feedback.success', '既存の投票チケットを削除しました');
+    }
+    public function destroy_tickets_checked(Request $req)
+    {
+        if (!auth()->user()->can('role_any', 'award')) abort(403);
+        $ticket_ids = $req->input('ticket_ids', []);
+        if (empty($ticket_ids)) {
+            return redirect()->route('vote.create_tickets')->with('feedback.error', '削除するチケットを選択してください。');
+        }
+        VoteTicket::whereIn('id', $ticket_ids)->delete();
+        return redirect()->route('vote.create_tickets')->with('feedback.success', '選択された投票チケットを削除しました');
+    }
+
+
+    public function edit_voteitem(VoteItem $voteitem)
+    {
+        if (!auth()->user()->can('role_any', 'award')) abort(403);
+        return view('vote.edit_voteitem')->with(compact('voteitem'));
+    }
+    public function update_voteitem(Request $req, VoteItem $voteitem)
+    {
+        if (!auth()->user()->can('role_any', 'award')) abort(403);
+        // pid2booth
+        $pid2booth = Submit::where('category_id', $req->input('category_id'))->select('paper_id', 'booth')->get()->pluck('booth', 'paper_id')->toArray();
+        // info($pid2booth);
+        // info($req->all());
+        if ($req->has('pid_str')) {
+            $pid_str = $req->input('pid_str');
+            $pids = array_map('trim', explode(',', $pid_str));
+            $pids = array_filter($pids, function ($pid) {
+                return is_numeric($pid) && (int)$pid > 0;
+            });
+            if (empty($pids)) {
+                return redirect()->route('vote.edit_voteitem', ['voteitem' => $voteitem->id])->with('feedback.error', '有効なPaperIDを入力してください。');
+            }
+            $submits = [];
+            foreach ($pids as $pid) {
+                $submits[ $pid2booth[intval($pid)] ] = (int)$pid;
+            }
+            ksort($submits);
+            $voteitem->submits = json_encode($submits);
+            $voteitem->save();
+        }
+        return redirect()->route('vote.edit_voteitem', ['voteitem' => $voteitem->id])->with('feedback.success', '投票項目を更新しました。');
+    }
+    public function exclude_voteitem(Request $req, VoteItem $voteitem)
+    {
+        if (!auth()->user()->can('role_any', 'award')) abort(403);
+        // pid2booth
+        $pid2booth = Submit::select('paper_id', 'booth')->get()->pluck('booth', 'paper_id')->toArray();
+        if ($req->has('pids')) {
+            $pids = $req->input('pids');
+            $pids = array_filter($pids, function ($pid) {
+                return is_numeric($pid) && (int)$pid > 0;
+            });
+            if (empty($pids)) {
+                return redirect()->route('vote.edit_voteitem', ['voteitem' => $voteitem->id])->with('feedback.error', '有効なPaperIDを入力してください。');
+            }
+            $submits = [];
+            foreach ($pids as $pid) {
+                $submits[ $pid2booth[$pid] ] = (int)$pid;
+            }
+            ksort($submits);
+            $voteitem->submits = json_encode($submits);
+            $voteitem->save();
+        }
+        return redirect()->route('vote.edit_voteitem', ['voteitem' => $voteitem->id])->with('feedback.success', '投票項目を更新しました。');
     }
 
     /**
-     * Display the specified resource.
+     * 投票トークンのCookieを削除する
      */
-    public function show(votes $votes)
+    private function clearVoteTokenCookie()
     {
-        //
+        Cookie::queue(Cookie::forget('vote_ticket_token'));
+        info("投票トークンCookieを削除しました");
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * セキュアなCookie設定のヘルパー
      */
-    public function edit(votes $votes)
+    private function setSecureVoteTokenCookie(string $token, int $minutes = 0)
     {
-        //
+        if ($minutes === 0) {
+            $minutes = 60 * 24 * 3; // デフォルト3日間
+        }
+        
+        $secure = request()->secure();
+        Cookie::queue(
+            'vote_ticket_token', 
+            $token, 
+            $minutes, 
+            '/', 
+            null, 
+            $secure, 
+            true, 
+            false, 
+            'Strict'
+        );
+        
+        info("セキュアCookie設定完了 - Token: " . $token . ", 有効期限: " . $minutes . "分, Secure: " . ($secure ? 'true' : 'false'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatevotesRequest $request, votes $votes)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(votes $votes)
-    {
-        //
-    }
 }

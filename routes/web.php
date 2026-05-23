@@ -341,6 +341,17 @@ Route::middleware('auth')->group(function () {
     Route::get('down_voteanswers', [VoteController::class, 'download_answers'])->name('vote.download_answers');
     Route::get('resetall_voteanswers/{isclose}', [VoteController::class, 'resetall'])->name('vote.resetall'); // すべて削除
 
+    // 投票チケット作成
+    Route::get('vote_create_tickets', [VoteController::class, 'create_tickets'])->name('vote.create_tickets');
+    Route::post('vote_create_tickets', [VoteController::class, 'create_tickets'])->name('vote.create_tickets');
+    // Route::get('vote_send_tickets', [VoteController::class, 'send_tickets'])->name('vote.send_tickets');
+    Route::delete('vote_destroy_tickets', [VoteController::class, 'destroy_tickets'])->name('vote.destroy_tickets');
+    Route::post('vote_send_tickets_checked', [VoteController::class, 'send_tickets_checked'])->name('vote.send_tickets_checked');
+    Route::delete('vote_destroy_tickets_checked', [VoteController::class, 'destroy_tickets_checked'])->name('vote.destroy_tickets_checked');
+
+    Route::get('vote_activate/{token}', [VoteController::class, 'activate'])->name('vote.activate');
+    Route::get('vote_activate_error', [VoteController::class, 'activate_error'])->name('vote.activate_error');
+    Route::get('vote_error', [VoteController::class, 'vote_error'])->name('vote_error');
 });
 
 Route::middleware('auth')->group(function () {
