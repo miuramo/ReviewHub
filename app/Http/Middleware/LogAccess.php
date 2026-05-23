@@ -35,8 +35,12 @@ class LogAccess
         array_walk_recursive($allreq, function (&$value) {
             if (is_string($value)) {
                 // 不正なUTF-8文字を除去/置換
-                $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
-
+                $encoded = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+                if ($encoded === false) {
+                    $value = '(invalid UTF-8)';
+                } else {
+                    $value = $encoded;
+                }
                 // null バイトを除去
                 $value = str_replace("\0", '', $value ?? '');
 

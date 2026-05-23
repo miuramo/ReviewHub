@@ -335,21 +335,25 @@ Route::middleware('auth')->group(function () {
     Route::get('/term', [TermController::class, 'index'])->name('term.index');
 });
 
-Route::get('/login-as/{user}', function ($user) {
-    $targetUser = User::find($user);
-    if ($targetUser) {
-        Auth::login($targetUser);
-        return redirect()->route('role.top', ['role' => $targetUser->maxRole()])->with('feedback.success', '代理ログインしました: ' . $targetUser->name);
-    }
-    return redirect('/')->with('error', 'ユーザが見つかりません');
-})->middleware(['auth'])->name('role.login-as'); // 必要に応じて認可や認証のミドルウェアを適用
-// })->middleware(['auth', 'can:admin']); // 必要に応じて認可や認証のミドルウェアを適用
+// 投票はログインしている人だけ。
+Route::middleware('auth')->group(function () {
+    Route::get('vote', [VoteController::class, 'index'])->name('vote.index');
+    Route::post('vote', [VoteController::class, 'index'])->name('vote.index');
+    Route::get('vote/{vote}/vote', [VoteController::class, 'vote'])->name('vote.vote');
+    Route::post('vote/{vote}/vote', [VoteController::class, 'vote'])->name('vote.vote');
+});
 
-// 投票
-Route::get('vote', [VoteController::class, 'index'])->name('vote.index');
-Route::post('vote', [VoteController::class, 'index'])->name('vote.index');
-Route::get('vote/{vote}/vote', [VoteController::class, 'vote'])->name('vote.vote');
-Route::post('vote/{vote}/vote', [VoteController::class, 'vote'])->name('vote.vote');
+Route::middleware('auth')->group(function () {
+    Route::get('/login-as/{user}', function ($user) {
+        $targetUser = User::find($user);
+        if ($targetUser) {
+            Auth::login($targetUser);
+            return redirect()->route('role.top', ['role' => $targetUser->maxRole()])->with('feedback.success', '代理ログインしました: ' . $targetUser->name);
+        }
+        return redirect('/')->with('error', 'ユーザが見つかりません');
+    })->middleware(['auth'])->name('role.login-as'); // 必要に応じて認可や認証のミドルウェアを適用
+    // })->middleware(['auth', 'can:admin']); // 必要に応じて認可や認証のミドルウェアを適用
+});
 
 Route::middleware('guest')->group(function () {
     Route::get('/entry', [UserController::class, 'entry0'])->name('entry0');
