@@ -123,8 +123,8 @@ class LogAccess
             ]);
             $accessLog->save();
         } catch (\Exception $e) {
-            info("LogAccess Middleware Error: " . $e->getMessage());
-            info($allreq);
+            Log::channel('single')->error("LogAccess Middleware Error: " . $e->getMessage());
+            Log::channel('single')->info(json_encode($allreq));
         }
 
         return $hozon;
