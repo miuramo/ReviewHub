@@ -41,7 +41,7 @@ class VoteItem extends Model
             [
                 'orderint' => 1,
                 'show_pdf_link' => true,
-                'upperlimit' => 3,
+                'upperlimit' => 2,
                 'submits' => json_encode($subs),
             ]
         );
