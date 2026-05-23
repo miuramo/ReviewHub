@@ -24,15 +24,7 @@ class Vote extends Model
     {
         Vote::firstOrCreate(
             [
-                'name' => '優れた口頭発表に対する投票',
-            ],
-            [
-                'isclose' => $isclose,
-            ]
-        );
-        Vote::firstOrCreate(
-            [
-                'name' => '優れたデモ・ポスター発表に対する投票',
+                'name' => '優秀論文賞 2026 (29巻)',
             ],
             [
                 'isclose' => $isclose,

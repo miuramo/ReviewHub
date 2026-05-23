@@ -301,10 +301,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('part', ParticipantController::class);
     // Route::get('part/create', [ParticipantController::class, 'create'])->name('part.create');
 
-    // 投票結果
-    Route::get('down_voteanswers', [VoteController::class, 'download_answers'])->name('vote.download_answers');
-    Route::get('resetall_voteanswers/{isclose}', [VoteController::class, 'resetall'])->name('vote.resetall'); // すべて削除
-
     // ログアクセス
     Route::get('/logac/paper/{paper}', [LogAccessController::class, 'index'])->name('logac.paper');
     Route::post('/logac/paper/{paper}', [LogAccessController::class, 'index'])->name('logac.paper');
@@ -341,6 +337,10 @@ Route::middleware('auth')->group(function () {
     Route::post('vote', [VoteController::class, 'index'])->name('vote.index');
     Route::get('vote/{vote}/vote', [VoteController::class, 'vote'])->name('vote.vote');
     Route::post('vote/{vote}/vote', [VoteController::class, 'vote'])->name('vote.vote');
+    // 投票結果
+    Route::get('down_voteanswers', [VoteController::class, 'download_answers'])->name('vote.download_answers');
+    Route::get('resetall_voteanswers/{isclose}', [VoteController::class, 'resetall'])->name('vote.resetall'); // すべて削除
+
 });
 
 Route::middleware('auth')->group(function () {
