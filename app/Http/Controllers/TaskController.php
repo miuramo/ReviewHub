@@ -128,7 +128,7 @@ class TaskController extends Controller
         $jumprole = str_replace('2', '', $jumprole);
         $jumprole = str_replace('3', '', $jumprole);
 
-        $name_of_manager = Setting::getValue("NAME_OF_MANAGER");
+        $name_of_manager = \App\Models\Setting::getValue("NAME_OF_MANAGER");
 
         if ($ret) {
             if ($task->workflow->task == "submit") {

@@ -16,9 +16,8 @@
 @endphp
 
 @foreach ($votes as $vid => $vname)
-    @foreach ([1 => '一般', 2 => '学生'] as $sid => $stu)
-        <div class="rounded-lg bg-{{ $sid ===1 ? 'blue': 'lime' }}-200 py-2 px-3 my-2 text-lg">{{ $vname }} 【{{ $stu }}】の集計結果</div>
-        @isset($res[$vid][$sid])
+        <div class="rounded-lg bg-lime-200 py-2 px-3 my-2 text-lg">{{ $vname }} の集計結果</div>
+        @isset($res[$vid])
             <table class="min-w divide-y divide-gray-200 mx-6">
                 <thead>
                     <tr>
@@ -29,7 +28,7 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
 
-                    @foreach ($res[$vid][$sid] as $booth => $count)
+                    @foreach ($res[$vid] as $booth => $count)
                         <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200' : 'bg-white' }}">
                             <td class="text-center">
                                 {{ $booth }}
@@ -50,6 +49,5 @@
             @else
             <span class="mx-6 text-blue-400">まだ該当する投票がありません。</span>
         @endisset
-    @endforeach
 @endforeach
 
