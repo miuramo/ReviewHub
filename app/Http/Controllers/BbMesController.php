@@ -8,6 +8,7 @@ use App\Mail\BbNotify;
 use App\Models\Bb;
 use App\Models\BbMes;
 use App\Models\File;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 
 class BbMesController extends Controller
@@ -100,7 +101,7 @@ class BbMesController extends Controller
         }
 
 
-        $file_desc = Setting::getval('FILE_DESCRIPTIONS');
+        $file_desc = Setting::getValue('FILE_DESCRIPTIONS');
         $ft = json_decode($file_desc, true);
 
         $file_id = $req->input("file_id");
