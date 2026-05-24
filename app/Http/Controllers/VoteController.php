@@ -366,7 +366,7 @@ class VoteController extends Controller
             $minutes = 60 * 24 * 3; // デフォルト3日間
         }
         
-        $secure = request()->secure();
+        $secure = request()->isSecure();
         Cookie::queue(
             'vote_ticket_token', 
             $token, 
