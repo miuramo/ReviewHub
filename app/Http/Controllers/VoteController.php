@@ -37,16 +37,16 @@ class VoteController extends Controller
             }
         } else {
             $cookie_token = Cookie::get('vote_ticket_token');
-            info("index - Cookieから投票トークンを取得: " . ($cookie_token ? $cookie_token : 'null'));
+            // info("index - Cookieから投票トークンを取得: " . ($cookie_token ? $cookie_token : 'null'));
             
             // Cookie取得失敗時の詳細ログ
             if (!$cookie_token) {
-                info("index - Cookieが存在しない理由の可能性: ブラウザでCookie無効、HTTPS/HTTP不一致、ドメイン不一致");
+                // info("index - Cookieが存在しない理由の可能性: ブラウザでCookie無効、HTTPS/HTTP不一致、ドメイン不一致");
             }
             
             $ticket = VoteTicket::where('token', $cookie_token)->where('activated', true)->where('valid', true)->first();
             if (!$ticket) {
-                info("index - 有効なチケットが見つからない: Token=" . ($cookie_token ? $cookie_token : 'null'));
+                // info("index - 有効なチケットが見つからない: Token=" . ($cookie_token ? $cookie_token : 'null'));
                 return view('vote.vote_error')->with('reason', 'メールで届く投票URLをクリックしてから、同じブラウザで、こちらの投票ページに遷移してください。投票トークンをアカウントに紐づけている場合は、ログインしてください。');
                 // abort(403, 'メールで届く投票URLをクリックしてから、同じブラウザで、こちらの投票ページに遷移してください。');
             }
@@ -74,23 +74,23 @@ class VoteController extends Controller
                         return view('vote.activate_error')->with('reason', '現在ログインしているアカウントには、すでに別の投票権が紐づけられています。そのため、この投票トークンを有効化することはできません。');
                     } else {
                         // 以前と同じトークンなので、そのまま投票ページに遷移する
-                        info("既に有効化済みのトークンでリダイレクト: " . $token);
+                        // info("既に有効化済みのトークンでリダイレクト: " . $token);
                         return redirect('/vote'); // ->with('feedback.success', '注：この投票トークンは以前有効化されています。');
                     }
                 }
                 // ユーザーIDを設定して有効化
-                info("ログイン済みユーザーに投票権を紐付け - User ID: " . auth()->id() . ", Token: " . $token);
+                // info("ログイン済みユーザーに投票権を紐付け - User ID: " . auth()->id() . ", Token: " . $token);
                 $ticket->user_id = auth()->id();
             } else {
                 // 未ログインユーザーの場合、Cookieに投票トークンを設定
-                info("未ログインユーザーのCookieにトークンを設定: " . $token);
+                // info("未ログインユーザーのCookieにトークンを設定: " . $token);
                 $this->setSecureVoteTokenCookie($token);
             }
             $ticket->activated = true;
             $ticket->save();
-            info("チケット有効化完了 - ID: " . $ticket->id . ", Token: " . $token);
+            // info("チケット有効化完了 - ID: " . $ticket->id . ", Token: " . $token);
         } else {
-            info("無効なチケットのため処理をスキップ - Token: " . $token . ", Valid: " . ($ticket->valid ? 'true' : 'false'));
+            // info("無効なチケットのため処理をスキップ - Token: " . $token . ", Valid: " . ($ticket->valid ? 'true' : 'false'));
             return view('vote.activate_error')->with('reason', 'この投票トークンは無効です。');
         }
         return redirect('/vote')->with('feedback.success', '投票権が有効化されました。');
@@ -110,16 +110,16 @@ class VoteController extends Controller
         } else {
             $uid = null;
             $cookie_token = Cookie::get('vote_ticket_token');
-            info("vote - Cookieから投票トークンを取得: " . ($cookie_token ? $cookie_token : 'null'));
+            // info("vote - Cookieから投票トークンを取得: " . ($cookie_token ? $cookie_token : 'null'));
             
             // Cookie取得失敗時の詳細ログ
             if (!$cookie_token) {
-                info("vote - Cookieが存在しない理由の可能性: ブラウザでCookie無効、HTTPS/HTTP不一致、ドメイン不一致");
+                // info("vote - Cookieが存在しない理由の可能性: ブラウザでCookie無効、HTTPS/HTTP不一致、ドメイン不一致");
             }
             
             $ticket = VoteTicket::where('token', $cookie_token)->where('activated', true)->where('valid', true)->first();
             if (!$ticket) {
-                info("vote - 有効なチケットが見つからない: Token=" . ($cookie_token ? $cookie_token : 'null'));
+                // info("vote - 有効なチケットが見つからない: Token=" . ($cookie_token ? $cookie_token : 'null'));
                 return view('vote.vote_error')->with('reason', 'メールで届く投票URLをクリックしてから、同じブラウザで、こちらの投票ページに遷移してください。投票トークンをアカウントに紐づけている場合は、ログインしてください。');
             }
         }
