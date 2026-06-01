@@ -355,7 +355,7 @@
                         @endif
                     @endif
 
-                    <div class="mx-6 my-2">
+                    <div class="mx-6 mt-8">
                         <div class="container">
                             <x-element.button class="" id="toggleButton" value="投稿連絡用メールアドレス修正画面の開閉"
                                 color='yellow' size='md' onclick="openclose('editcontact')">
@@ -367,11 +367,15 @@
                             <x-paper.contactemail :paper="$paper">
                             </x-paper.contactemail>
                         </div>
+
                     </div>
+                    <div class="mx-6 my-8">
+                        <x-element.linkbutton href="{{ route('paper.change_owner', ['paper' => $paper->id]) }}" color="orange" size="md">
+                            この投稿の「投稿者」を変更する
+                        </x-element.linkbutton> 
                 </div>
 
-                <div class="my-10"></div>
-
+                {{-- <div class="my-10"></div> --}}
             </div>
         </div>
 

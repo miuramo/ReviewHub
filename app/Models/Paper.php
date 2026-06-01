@@ -1006,4 +1006,28 @@ class Paper extends Model
         ksort($result);
         return $result;
     }
+
+    public function change_owner(int $new_owner_id): void
+    {
+        // 投稿 Paper
+        $this->owner = $new_owner_id;
+        $this->save();
+        // ファイル
+        foreach ($this->files as $file) {
+            $file->user_id = $new_owner_id;
+            $file->save();
+        }
+        // アンケート回答
+        foreach ($this->enqans as $enqan) {
+            $enqan->user_id = $new_owner_id;
+            $enqan->save();
+        }
+        // submits
+        foreach ($this->submits as $submit) {
+            $submit->user_id = $new_owner_id;
+            $submit->save();
+        }
+        // bbmessages は変えない。
+
+    }
 }

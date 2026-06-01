@@ -631,7 +631,7 @@ class PaperController extends Controller
             ->orderBy('rev_id', 'asc')
             ->pluck('id')
             ->toArray();
-        $bbmessages = BbMes::with('bb','user')->whereIn('bb_id', $bbids)->orderBy('created_at')->get();
+        $bbmessages = BbMes::with('bb', 'user')->whereIn('bb_id', $bbids)->orderBy('created_at')->get();
         // 関連するメッセージのuser_id をすべて取得する。
         $user_ids = $bbmessages->pluck('user_id')->unique()->toArray();
 
@@ -641,5 +641,33 @@ class PaperController extends Controller
             ->get();
 
         return view('paper.bb_summary')->with(compact("paper", "bbids", "bbmessages", "bbs", "user_ids"));
+    }
+
+    public function change_owner(Request $req, int $paper_id)
+    {
+        $paper = Paper::findOrFail($paper_id);
+        if (!Gate::allows('edit_paper', $paper)) {
+            abort(403, 'forbidden_for_coauthor_or_others');
+        }
+        // $paperの投稿連絡用メールアドレスに設定したアカウントを列挙する。
+        $coauthors = new Collection();
+        foreach ($paper->contacts as $contact) {
+            $u = User::where('email', $contact->email)->first();
+            if ($u != null) {
+                $coauthors->push($u);
+            }
+        }
+        // postされたら、paperのownerを変更する。
+        if ($req->method() === 'POST') {
+            $new_owner_id = $req->input('new_owner');
+            $new_owner = User::find($new_owner_id);
+            if ($new_owner != null) {
+                $paper->change_owner($new_owner_id);
+                return redirect()->route('paper.index')->with('feedback.success', "投稿の所有者を{$new_owner->name}さんに変更しました。");  
+            } else {
+                return redirect()->route('paper.edit', ['paper' => $paper])->with('feedback.error', "選択されたユーザーが見つかりませんでした。");
+            }
+        }
+        return view('paper.change_owner')->with(compact("paper", "coauthors"));
     }
 }

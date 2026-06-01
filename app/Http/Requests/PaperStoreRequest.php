@@ -152,26 +152,26 @@ class PaperStoreRequest extends FormRequest
     // 上との違いは最後のメッセージと、リダイレクト先と、DB更新処理
     public function shori_update(int $id): object
     {
-        // $validator = $this->validate_em();
-        // if ($validator == null) {
-        //     return redirect()->route('paper.edit', ['paper' => $id])
-        //         ->with('feedback.error', "投稿連絡用メールアドレスは1件以上" . env('CONTACTEMAILS_MAX', 5) . "件以内で入力してください。");
-        // } else if ($validator->fails()) {
-        //     // エラーがある場合の処理
-        //     $ary = [];
-        //     $errors = $validator->errors()->all();
-        //     foreach ($errors as $error) {
-        //         // 数字をとりだす The ema.1 field must be a valid email address. => 1
-        //         if (preg_match('/\d+/', $error, $matches)) {
-        //             // 最初にマッチした数字を取得
-        //             $number = $matches[0];
-        //             $ary[] = $this->emlist[$number];
-        //         }
-        //     }
-        //     $mes = implode("】【", $ary);
-        //     return redirect()->route('paper.edit', ['paper' => $id])
-        //         ->with('feedback.error', "以下の投稿連絡用メールアドレスを修正して再入力してください。【" . $mes . "】");
-        // } else {
+        $validator = $this->validate_em();
+        if ($validator == null) {
+            return redirect()->route('paper.edit', ['paper' => $id])
+                ->with('feedback.error', "投稿連絡用メールアドレスは1件以上" . env('CONTACTEMAILS_MAX', 5) . "件以内で入力してください。");
+        } else if ($validator->fails()) {
+            // エラーがある場合の処理
+            $ary = [];
+            $errors = $validator->errors()->all();
+            foreach ($errors as $error) {
+                // 数字をとりだす The ema.1 field must be a valid email address. => 1
+                if (preg_match('/\d+/', $error, $matches)) {
+                    // 最初にマッチした数字を取得
+                    $number = $matches[0];
+                    $ary[] = $this->emlist[$number];
+                }
+            }
+            $mes = implode("】【", $ary);
+            return redirect()->route('paper.edit', ['paper' => $id])
+                ->with('feedback.error', "以下の投稿連絡用メールアドレスを修正して再入力してください。【" . $mes . "】");
+        }// else {
         // バリデーションが成功した場合の処理
         $em = implode("\n", $this->emlist());
         try {
