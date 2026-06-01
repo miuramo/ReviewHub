@@ -364,8 +364,7 @@
                         </div>
                         <div class="hidden-content mt-2 bg-yellow-200 dark:bg-cyan-600 p-2" id="editcontact"
                             style="display:none;">
-                            <x-paper.contactemail :paper="$paper">
-                            </x-paper.contactemail>
+                            <livewire:contact-email-editor :paper="$paper" />
                         </div>
 
                     </div>
