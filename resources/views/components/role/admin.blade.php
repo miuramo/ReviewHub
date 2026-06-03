@@ -21,6 +21,9 @@
     // Viewpointのtargetをビットマスクに変更する（0が一つでもある場合に限る。複数回適用するとデータが壊れるため。）
     App\Models\Viewpoint::fix_target_as_bitmask();
 
+    // 役職をつくる。（役職に対して、年度とユーザを関連付け、任期を設定していく）
+    \Database\Seeders\PostSeeder::init();
+
 @endphp
 <div class="px-4 py-4">
     <x-element.h1>あなたのRole</x-element.h1>

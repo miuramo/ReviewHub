@@ -34,4 +34,12 @@ class PostSeeder extends Seeder
 
         //
     }
+
+    public static function init()
+    {
+        if (Post::count() == 0) {
+            $seeder = new self();
+            $seeder->run();
+        }
+    }
 }
