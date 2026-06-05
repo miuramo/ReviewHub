@@ -1,6 +1,7 @@
 {
     "Profile": "登録情報",
     "Profile Information": "登録情報の修正",
+    "Yomi": "氏名ふりがな （姓と名の間は半角スペース）",
     "Update your account's profile information and email address.":"氏名・所属・Eメールを修正できます。",
     "Name": "氏 名",
     "Affiliation": "所属",

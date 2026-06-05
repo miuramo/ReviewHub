@@ -50,6 +50,7 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         'affil',
         'email',
         'password',
+        'yomi',
     ];
 
     /**

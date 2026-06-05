@@ -17,6 +17,7 @@ class ProfileUpdateRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255', 'not_in:'.User::$initialName, 'regex:/\s/'],
+            'yomi' => ['required', 'string', 'max:255', 'not_in:'.User::$initialName, 'regex:/\s/'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
             'affil' => ['required', 'string', 'max:255' ],
         ];
@@ -27,6 +28,8 @@ class ProfileUpdateRequest extends FormRequest
         return [
             'name.not_in' => '氏名を正しく入力してください。氏と名のあいだにはかならず「半角スペース」をいれてください。',
             'name.regex' => '氏と名のあいだにはかならず「半角スペース」をいれてください。',
+            'yomi.not_in' => '氏名ふりがなを正しく入力してください。姓と名のあいだにはかならず「半角スペース」をいれてください。',
+            'yomi.regex' => '姓と名のあいだにはかならず「半角スペース」をいれてください。',
         ];
     }
 }

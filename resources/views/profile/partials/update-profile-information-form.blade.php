@@ -17,10 +17,17 @@
         @csrf
         @method('patch')
 
+        <div class="columns-2 gap-2">
         <div>
             <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" placeholder="(例)投稿 太郎"/>
+            <x-text-input id="name" name="name" type="text" class="mt-1 block w-64" :value="old('name', $user->name)" required autofocus autocomplete="name" placeholder="(例)投稿 太郎"/>
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
+       </div>
+        <div>
+            <x-input-label for="yomi" :value="__('Yomi')" />
+            <x-text-input id="yomi" name="yomi" type="text" class="mt-1 block w-80" :value="old('yomi', $user->yomi)" required autofocus autocomplete="yomi" placeholder="(例)とうこう たろう"/>
+            <x-input-error class="mt-2" :messages="$errors->get('yomi')" />
+        </div>
         </div>
 
         <div>
