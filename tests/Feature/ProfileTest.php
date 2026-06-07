@@ -31,6 +31,7 @@ class ProfileTest extends TestCase
                 'name' => 'Test User',
                 'email' => 'test@example.com',
                 'affil' => 'TestUniv',
+                'yomi' => 'てすと ゆーざ',
             ]);
 
         $response
@@ -42,6 +43,7 @@ class ProfileTest extends TestCase
         $this->assertSame('Test User', $user->name);
         $this->assertSame('test@example.com', $user->email);
         $this->assertSame('TestUniv', $user->affil);
+        $this->assertSame('てすと ゆーざ', $user->yomi);
         $this->assertNull($user->email_verified_at);
     }
 
@@ -55,6 +57,7 @@ class ProfileTest extends TestCase
                 'name' => 'Test User',
                 'email' => $user->email,
                 'affil' => 'TestUniv',
+                'yomi' => 'てすと ゆーざ',
             ]);
 
         $response
@@ -62,6 +65,7 @@ class ProfileTest extends TestCase
             ->assertRedirect('/profile');
 
         $this->assertNotNull($user->refresh()->email_verified_at);
+        $this->assertSame('てすと ゆーざ', $user->refresh()->yomi);
     }
 
     public function test_user_can_delete_their_account(): void
