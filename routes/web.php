@@ -331,6 +331,7 @@ Route::middleware('auth')->group(function () {
 
     // 役職Role+年=Term の管理
     Route::get('/term', [TermController::class, 'index'])->name('term.index');
+    Route::get('/term_year/{year}', [TermController::class, 'index'])->name('term.index_year');
 });
 
 // 投票はログインしている人だけ。

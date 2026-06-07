@@ -12,6 +12,15 @@
         <x-alert.success>{{ session('feedback.success') }}</x-alert.success>
     @endif
 
+    <div class="mx-6 my-4">
+        @foreach ($years as $year)
+            <a href="{{ route('term.index_year', ['year' => $year]) }}"
+                class="mx-1 rounded px-3 py-1 text-sm {{ $selectedYear == $year ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' }} dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600">
+                {{ $year }}
+            </a>
+        @endforeach
+    </div>
+
     <div class="mx-6">
         <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
             <thead class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
@@ -19,16 +28,16 @@
                     <th scope="col" class="px-6 py-3">年度</th>
                     <th scope="col" class="px-6 py-3">役職</th>
                     <th scope="col" class="px-6 py-3">氏名（所属）</th>
-                    <th scope="col" class="px-6 py-3">よみがな</th>
+                    {{-- <th scope="col" class="px-6 py-3">よみがな</th> --}}
                 </tr>
             </thead>
             <tbody>
                 @foreach ($terms as $term)
                     <tr class="border-b bg-white dark:border-gray-700 dark:bg-gray-800">
-                        <td class="px-6 py-4">{{ $term->year }}</td>
-                        <td class="px-6 py-4">{{ $term->post->name }}</td>
-                        <td class="px-6 py-4">{{ $term->user->name }} ({{ $term->user->affil }})</td>
-                        <td class="px-6 py-4">{{ $term->user->yomi }}</td>
+                        <td class="px-6 py-2">{{ $term->year }}</td>
+                        <td class="px-6 py-2">{{ $term->post->name }}</td>
+                        <td class="px-6 py-2">{{ $term->user->name }} ({{ $term->user->affil }})</td>
+                        {{-- <td class="px-6 py-2">{{ $term->user->yomi }}</td> --}}
 
                     </tr>
                 @endforeach
