@@ -64,6 +64,9 @@ class SkipOn451Tap
         if (stripos($message, 'but got empty code') !== false) {
             return false; // ログを送信しない 
         }
+        if (stripos($message, 'Unable to find component') !== false) {
+            return false; // ログを送信しない 
+        }
 
         // ② context に exception がある場合はその中身をチェック
         // if (!empty($context['exception']) && is_object($context['exception'])) {
