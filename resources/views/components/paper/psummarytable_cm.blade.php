@@ -10,7 +10,10 @@
     } elseif ($size === 'md') {
         $size_s = 'sm';
     }
-
+    $show_aec_name = App\Models\Setting::isTrue('show_aec_name');
+    if ($show_aec_name) {
+        $heads = ['担当幹事', 'id', '種別', 'status', 'title', '査-状況'];
+    }
 @endphp
 <x-element.component_name>
     psummarytable_cm
@@ -27,6 +30,11 @@
         @foreach ($all as $paper)
             <tr
                 class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-400' : 'bg-white dark:bg-slate-300' }}">
+                @if ($show_aec_name)
+                    <td class="p-1 text-center text-{{ $size }}">
+                        {{ $paper->aec ? $paper->aec->name : '未設定' }}
+                    </td>
+                @endif
                 <td class="p-1 text-center text-{{ $size }}">
                     {{ $paper->id_03d() }}
                 </td>
@@ -38,7 +46,7 @@
                             $sub = $paper->currentsubmit;
                         @endphp
                         <a href="{{ route('paper.revstatus', ['paper' => $paper]) }}"
-                            class="underline text-blue-600 hover:bg-lime-200">
+                            class="underline text-blue-600 hover:bg-lime-200" target="_blank">
                             {{ $paper->currentsubmit->round }}回目
                             {{ $paper->currentstatus->name }}
                         </a>
@@ -48,6 +56,8 @@
                         {{ $paper->currentstatus->name }}
                     @endif
                 </td>
+
+
                 <td class="p-1 text-center block break-all text-{{ $size }}">{{ $paper->title }}
                     @if (auth()->user()->can('manage_review', $paper->id))
                         @if ($paper->pdf_file_id != 0)
@@ -80,4 +90,5 @@
     </tbody>
 </table>
 
-<!-- components.paper.psummarytable2 end -->
+
+<!-- components.paper.psummarytable_cm end -->

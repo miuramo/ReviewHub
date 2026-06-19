@@ -76,6 +76,10 @@
         </div>
     @endif
 
+    @push('localjs')
+        <script src="/js/sortable.js"></script>
+    @endpush
+
 
     <div class="py-2 px-6">
         <livewire:inf-list-cm />

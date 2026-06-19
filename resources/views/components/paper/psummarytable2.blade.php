@@ -18,6 +18,10 @@
         $size_s = 'sm';
     }
 
+    $show_aec_name = App\Models\Setting::isTrue('show_aec_name');
+    if ($show_aec_name) {
+        $heads = ['担当幹事', 'id', '種別', 'status', 'title', '投稿日時', '投稿者', '査-状況'];
+    }
 @endphp
 <x-element.component_name>
     psummarytable2
@@ -34,6 +38,11 @@
         @foreach ($all as $paper)
             <tr
                 class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-400' : 'bg-white dark:bg-slate-300' }}">
+                @if ($show_aec_name)
+                    <td class="p-1 text-center text-{{ $size }}">
+                        {{ $paper->aec ? $paper->aec->name : '未設定' }}
+                    </td>
+                @endif
                 <td class="p-1 text-center text-{{ $size }}">
                     {{ $paper->id_03d() }}
                 </td>
@@ -60,6 +69,8 @@
                         <span class="text-sm font-bold text-blue-600">{{$paper->currentsubmit->booth}}</span>
                     @endif
                 </td>
+
+
                 <td class="p-1 text-center block break-all text-{{ $size }}">{{ $paper->title }}
                     @if (auth()->user()->can('manage_review', $paper->id))
                         @if ($paper->pdf_file_id != 0)

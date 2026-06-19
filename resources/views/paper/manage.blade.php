@@ -147,6 +147,7 @@
                 </x-element.linkbutton>
             @endif
         </x-element.h1c>
+        <livewire:paper-aec :paper="$paper"></livewire:paper-aec>
     </div>
 
     <div class="py-2 px-6">

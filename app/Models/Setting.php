@@ -220,6 +220,17 @@ class Setting extends Model
             'misc' => '投稿管理者の呼称（複数形）。例: "投稿管理者"、"幹事団"など',
         ]);
 
+        Setting::firstOrCreate([
+            'name' => "SHOW_AEC_NAME",
+        ], [
+            'value' => "true",
+            'isnumber' => false,
+            'isbool' => true,
+            'valid' => true,
+            'misc' => '幹事の名前を投稿論文一覧（査読中）に表示する',
+        ]);
+
+
         Vote::init();
         VoteItem::init();
 

@@ -48,7 +48,7 @@ class InfListCm extends Component
     public function render()
     {
         return view('livewire.inf-list-cm', [
-            'papers' => Paper::latest()->take($this->perPage)->get(),
+            'papers' => Paper::latest()->take($this->perPage)->get()->sortByDesc('aec_id'),
         ]);
     }
 }

@@ -102,6 +102,7 @@ class Paper extends Model
         'updated_at',
         'deleted_at',
         'status_id',
+        'aec_id',
     ];
 
 
@@ -196,6 +197,11 @@ class Paper extends Model
     public function managers(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(User::class, 'paper_manager');
+    }
+    
+    public function aec()
+    {
+        return $this->belongsTo(User::class, 'aec_id');
     }
 
     /**
