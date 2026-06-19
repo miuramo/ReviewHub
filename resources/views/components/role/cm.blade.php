@@ -85,5 +85,8 @@
         <livewire:inf-list-cm />
     </div>
 
-
+    <div class="py-2 px-6">
+    <x-element.linkbutton href="{{ route('term.index') }}" color="cyan">
+        編集委員名簿
+    </x-element.linkbutton>
 </div>

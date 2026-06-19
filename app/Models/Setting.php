@@ -226,7 +226,7 @@ class Setting extends Model
             'value' => "true",
             'isnumber' => false,
             'isbool' => true,
-            'valid' => true,
+            'valid' => false,
             'misc' => '幹事の名前を投稿論文一覧（査読中）に表示する',
         ]);
 
