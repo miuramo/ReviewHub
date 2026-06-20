@@ -332,6 +332,14 @@ Route::middleware('auth')->group(function () {
     // 役職Role+年=Term の管理
     Route::get('/term', [TermController::class, 'index'])->name('term.index');
     Route::get('/term_year/{year}', [TermController::class, 'index'])->name('term.index_year');
+
+    // 委員会共有フォーラム（任期年度内メンバーのみ閲覧・書き込み可）
+    Route::get('forum', [\App\Http\Controllers\ForumController::class, 'index'])->name('forum.index');
+    Route::get('forum/create', [\App\Http\Controllers\ForumController::class, 'create'])->name('forum.create');
+    Route::post('forum', [\App\Http\Controllers\ForumController::class, 'store'])->name('forum.store');
+    Route::get('forum/{forum}', [\App\Http\Controllers\ForumController::class, 'show'])->name('forum.show');
+    Route::post('forum/{forum}/mes', [\App\Http\Controllers\ForumController::class, 'storeMes'])->name('forum.mes.store');
+    Route::delete('forum/{forum}', [\App\Http\Controllers\ForumController::class, 'destroy'])->name('forum.destroy');
 });
 
 // 投票はログインしている人だけ。

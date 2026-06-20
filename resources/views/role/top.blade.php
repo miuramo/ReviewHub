@@ -2,7 +2,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400">
-            {{ $role->desc }} Toppage 
+            {{ $role->desc }} Toppage
             {{-- &nbsp;
             <x-element.linkbutton href="{{ route('file.create') }}" color="cyan">
                 Upload New File</x-element.linkbutton>
@@ -15,6 +15,9 @@
                     href="https://scrapbox.io/reviewhub/%E7%B7%A8%E9%9B%86%E9%95%B7%E3%81%AE%E4%BD%9C%E6%A5%AD"
                     color="cyan" size="sm" target="_blank">
                     編集管理マニュアル (Cosense/Scrapbox)</x-element.linkbutton>
+                <span class="mx-2"></span>
+                <x-element.linkbutton2 href="{{ route('forum.index') }}" color="blue" size="sm" target="_blank">
+                    フォーラム</x-element.linkbutton2>
             @endif
             @if ($role->name == 'rev')
                 <x-element.linkbutton
@@ -27,6 +30,15 @@
                     href="https://scrapbox.io/reviewhub/%E5%87%BA%E7%89%88%E3%81%AB%E5%90%91%E3%81%91%E3%81%9F%E4%BD%9C%E6%A5%AD"
                     color="lime" size="sm" target="_blank">
                     出版マニュアル (Cosense/Scrapbox)</x-element.linkbutton>
+            @endif
+            @if ($role->name == 'cm')
+                <x-element.linkbutton
+                    href="https://scrapbox.io/reviewhub/%E7%B7%A8%E9%9B%86%E5%A7%94%E5%93%A1%E3%83%9E%E3%83%8B%E3%83%A5%E3%82%A2%E3%83%AB"
+                    color="cyan" size="sm" target="_blank">
+                    編集委員マニュアル (Cosense/Scrapbox)</x-element.linkbutton>
+                <span class="mx-2"></span>
+                <x-element.linkbutton2 href="{{ route('forum.index') }}" color="blue" size="sm" target="_blank">
+                    フォーラム</x-element.linkbutton2>
             @endif
         </h2>
     </x-slot>
