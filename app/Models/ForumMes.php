@@ -13,6 +13,7 @@ class ForumMes extends Model
 
     protected $fillable = [
         'forum_id',
+        'parent_id',
         'user_id',
         'subject',
         'mes',
@@ -26,5 +27,15 @@ class ForumMes extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(ForumMes::class, 'parent_id');
+    }
+
+    public function replies()
+    {
+        return $this->hasMany(ForumMes::class, 'parent_id')->orderBy('created_at');
     }
 }

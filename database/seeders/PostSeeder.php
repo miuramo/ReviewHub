@@ -14,21 +14,24 @@ class PostSeeder extends Seeder
     public function run(): void
     {
         Post::create([
-            'name' => '編集委員',
-            'menutext' => '編集委員',
-            'menulink' => '/cm',
+            'name'      => '編集委員',
+            'rank'      => 1,
+            'menutext'  => '編集委員',
+            'menulink'  => '/cm',
             'rolenames' => 'cm',
         ]);
         Post::create([
-            'name' => '幹事',
-            'menutext' => '幹事',
-            'menulink' => '/aec',
+            'name'      => '幹事',
+            'rank'      => 2,
+            'menutext'  => '幹事',
+            'menulink'  => '/aec',
             'rolenames' => 'aec',
         ]);
         Post::create([
-            'name' => '編集長',
-            'menutext' => '編集長',
-            'menulink' => '/ec',
+            'name'      => '編集長',
+            'rank'      => 3,
+            'menutext'  => '編集長',
+            'menulink'  => '/ec',
             'rolenames' => 'ec',
         ]);
 

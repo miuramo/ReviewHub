@@ -38,9 +38,9 @@
             @endif
         </div>
 
-        {{-- メッセージ一覧 --}}
+        {{-- メッセージ一覧（スレッド表示） --}}
         @foreach ($forum->messages as $mes)
-            <x-forum.mes :mes="$mes"></x-forum.mes>
+            <x-forum.mes :mes="$mes" :depth="0" :is-close="$forum->isclose"></x-forum.mes>
         @endforeach
 
         {{-- 書き込みフォーム --}}

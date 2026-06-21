@@ -16,6 +16,7 @@ class PostFactory extends Factory
     {
         return [
             'name'      => fake()->jobTitle(),
+            'rank'      => 1,
             'menutext'  => fake()->word(),
             'menulink'  => '/' . fake()->slug(2),
             'rolenames' => fake()->word(),

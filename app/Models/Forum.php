@@ -51,39 +51,48 @@ class Forum extends Model
     }
 
     /**
-     * 指定ユーザが「Forum.created_at の年度内に有効な任期を持つか」を判定する。
-     * Term.valid == true かつ Term.year == Forum の年度 のレコードが存在すれば閲覧・書き込み可。
+     * 指定ユーザが「Forum.created_at の年度内に有効な任期を持ち、かつ
+     * フォーラムの post.rank 以上の rank の任期を持つか」を判定する。
      */
     public function can_access(User $user): bool
     {
-        $fy = $this->fiscal_year();
+        $fy        = $this->fiscal_year();
+        $forumRank = $this->post->rank ?? 0;
+
         return Term::where('user_id', $user->id)
             ->where('year', $fy)
             ->where('valid', true)
+            ->whereHas('post', fn ($q) => $q->where('rank', '>=', $forumRank))
             ->exists();
     }
 
     /**
      * 認証中のユーザが閲覧・書き込み可能な Forum のクエリスコープ。
+     * 「任期年度が一致する AND ユーザの任期 rank >= フォーラムの post.rank」の条件を満たすものを返す。
      */
     public static function accessible_for(User $user): \Illuminate\Database\Eloquent\Builder
     {
-        // ユーザが任期を持つ年度の一覧
-        $years = Term::where('user_id', $user->id)
+        $terms = Term::where('user_id', $user->id)
             ->where('valid', true)
-            ->pluck('year');
+            ->with('post')
+            ->get();
 
-        // 各年度の 4/1〜翌年 3/31 の範囲に created_at が含まれる Forum を取得
-        $query = static::query()->where(function ($q) use ($years) {
-            foreach ($years as $fy) {
-                $q->orWhereBetween('created_at', [
-                    "{$fy}-04-01 00:00:00",
-                    ($fy + 1) . "-03-31 23:59:59",
-                ]);
+        if ($terms->isEmpty()) {
+            return static::query()->whereRaw('0 = 1');
+        }
+
+        return static::query()->where(function ($q) use ($terms) {
+            foreach ($terms as $term) {
+                $fy   = $term->year;
+                $rank = $term->post->rank ?? 0;
+                $q->orWhere(function ($inner) use ($fy, $rank) {
+                    $inner->whereBetween('created_at', [
+                        "{$fy}-04-01 00:00:00",
+                        ($fy + 1) . "-03-31 23:59:59",
+                    ])->whereHas('post', fn ($pq) => $pq->where('rank', '<=', $rank));
+                });
             }
         });
-
-        return $query;
     }
 
     /**

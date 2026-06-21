@@ -12,19 +12,24 @@ class ForumController extends Controller
 {
     /**
      * アクセス可能なフォーラム一覧を表示。
-     * 自分の任期年度内に作成されたフォーラムのみ表示する。
+     * 役職種別（編集委員用・幹事用・編集長用）ごとにグループ化して渡す。
      */
     public function index()
     {
         $user = auth()->user();
 
-        // 任期を1件以上持つことを前提に、アクセス可能フォーラムを取得
         $forums = Forum::accessible_for($user)
-            ->with(['user', 'post'])
+            ->with(['user', 'post', 'messages'])
             ->orderByDesc('created_at')
             ->get();
 
-        return view('forum.index', compact('forums'));
+        $userMaxRank     = $this->user_max_rank($user);
+        $accessiblePosts = Post::where('rank', '<=', $userMaxRank)
+            ->orderBy('rank')
+            ->get();
+        $groupedForums   = $forums->groupBy('post_id');
+
+        return view('forum.index', compact('groupedForums', 'accessiblePosts'));
     }
 
     /**
@@ -38,7 +43,7 @@ class ForumController extends Controller
             abort(403, '有効な任期がないため、フォーラムを作成できません。');
         }
 
-        $posts = Post::orderBy('id')->get();
+        $userMaxRank = $this->user_max_rank($user);        $posts = Post::where('rank', '<=', $userMaxRank)->orderBy('rank')->get();
         return view('forum.create', compact('posts'));
     }
 
@@ -56,6 +61,13 @@ class ForumController extends Controller
             'title'   => 'required|string|max:255',
             'post_id' => 'required|integer|exists:posts,id',
         ]);
+
+        // 指定役職の rank がユーザの最大 rank 以下か確認
+        $post        = Post::findOrFail($req->input('post_id'));
+        $userMaxRank = $this->user_max_rank($user);
+        if ($post->rank > $userMaxRank) {
+            abort(403, 'この役職のフォーラムを作成する権限がありません。');
+        }
 
         $forum = Forum::create([
             'post_id' => $req->input('post_id'),
@@ -87,7 +99,15 @@ class ForumController extends Controller
             abort(403, 'このフォーラムを閲覧する権限がありません。（任期年度が一致しません）');
         }
 
-        $forum->load(['messages.user', 'user', 'post']);
+        $forum->load([
+            'messages' => fn ($q) => $q->whereNull('parent_id')->orderBy('created_at'),
+            'messages.user',
+            'messages.replies.user',
+            'messages.replies.replies.user',
+            'messages.replies.replies.replies.user',
+            'user',
+            'post',
+        ]);
         return view('forum.show', compact('forum'));
     }
 
@@ -108,14 +128,16 @@ class ForumController extends Controller
         }
 
         $req->validate([
-            'mes' => 'required|string|min:1',
+            'mes'       => 'required|string|min:1',
+            'parent_id' => 'nullable|integer|exists:forum_mes,id',
         ]);
 
         ForumMes::create([
-            'forum_id' => $forum->id,
-            'user_id'  => $user->id,
-            'subject'  => $req->input('sub', ''),
-            'mes'      => $req->input('mes'),
+            'forum_id'  => $forum->id,
+            'parent_id' => $req->input('parent_id'),
+            'user_id'   => $user->id,
+            'subject'   => $req->input('sub', ''),
+            'mes'       => $req->input('mes'),
         ]);
 
         return redirect()->route('forum.show', ['forum' => $forum->id])
@@ -148,5 +170,16 @@ class ForumController extends Controller
         return Term::where('user_id', $user->id)
             ->where('valid', true)
             ->exists();
+    }
+
+    /**
+     * ユーザが持つ有効な任期の役職 rank の最大値を返す。
+     */
+    private function user_max_rank(\App\Models\User $user): int
+    {
+        return (int) Term::where('user_id', $user->id)
+            ->where('valid', true)
+            ->join('posts', 'terms.post_id', '=', 'posts.id')
+            ->max('posts.rank');
     }
 }
