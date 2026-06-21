@@ -40,7 +40,8 @@ class ForumMesNotify extends RetryMailable
         // process_send() に必要なため初期値を設定（sendIfRecipients 内で上書きする）
         $this->mail_to_cc = ['to' => '', 'cc' => []];
 
-        $this->subject = "【{$organization}】フォーラム「{$forum->title}」に投稿がありました";
+        // $this->subject = "【{$organization}】フォーラム「{$forum->title}」に投稿がありました";
+        $this->subject = $forumMes->subject . " / {$forum->title} / ".($forum->post->name ?? '') . "フォーラム";
 
         // メッセージ本文中のURLをアンカーに変換
         $body = htmlspecialchars($forumMes->mes ?? '', ENT_QUOTES, 'UTF-8');
