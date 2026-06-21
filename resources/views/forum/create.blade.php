@@ -41,7 +41,7 @@
             </div>
 
             <div class="flex gap-3">
-                <x-element.submitbutton color="green">作成する</x-element.submitbutton>
+                <x-element.submitbutton color="indigo">作成する</x-element.submitbutton>
                 <x-element.linkbutton href="{{ route('forum.index') }}" color="gray" size="sm">キャンセル</x-element.linkbutton>
             </div>
         </form>

@@ -15,7 +15,7 @@
 
     <div class="py-4 px-6">
         <div class="mb-4">
-            <x-element.linkbutton href="{{ route('forum.create') }}" color="green" size="sm">
+            <x-element.linkbutton href="{{ route('forum.create') }}" color="indigo" size="sm">
                 + 新しいフォーラムを作成
             </x-element.linkbutton>
         </div>
