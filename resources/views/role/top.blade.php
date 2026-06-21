@@ -16,7 +16,7 @@
                     color="cyan" size="sm" target="_blank">
                     編集管理マニュアル (Cosense/Scrapbox)</x-element.linkbutton>
                 <span class="mx-2"></span>
-                <x-element.linkbutton2 href="{{ route('forum.index') }}" color="blue" size="sm" target="_blank">
+                <x-element.linkbutton2 href="{{ route('forum.index') }}" color="indigo" size="sm" target="_blank">
                     フォーラム</x-element.linkbutton2>
             @endif
             @if ($role->name == 'rev')
@@ -37,7 +37,7 @@
                     color="cyan" size="sm" target="_blank">
                     編集委員マニュアル (Cosense/Scrapbox)</x-element.linkbutton>
                 <span class="mx-2"></span>
-                <x-element.linkbutton2 href="{{ route('forum.index') }}" color="blue" size="sm" target="_blank">
+                <x-element.linkbutton2 href="{{ route('forum.index') }}" color="indigo" size="sm" target="_blank">
                     フォーラム</x-element.linkbutton2>
             @endif
         </h2>

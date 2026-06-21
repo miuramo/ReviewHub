@@ -12,24 +12,11 @@ class ForumController extends Controller
 {
     /**
      * アクセス可能なフォーラム一覧を表示。
-     * 役職種別（編集委員用・幹事用・編集長用）ごとにグループ化して渡す。
+     * フォーラム一覧は Livewire コンポーネント（ForumIndex）で描画する。
      */
     public function index()
     {
-        $user = auth()->user();
-
-        $forums = Forum::accessible_for($user)
-            ->with(['user', 'post', 'messages'])
-            ->orderByDesc('created_at')
-            ->get();
-
-        $userMaxRank     = $this->user_max_rank($user);
-        $accessiblePosts = Post::where('rank', '<=', $userMaxRank)
-            ->orderBy('rank')
-            ->get();
-        $groupedForums   = $forums->groupBy('post_id');
-
-        return view('forum.index', compact('groupedForums', 'accessiblePosts'));
+        return view('forum.index');
     }
 
     /**
