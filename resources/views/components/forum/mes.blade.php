@@ -23,7 +23,7 @@
     $nameColor = $is_mine   ? 'text-indigo-800' : 'text-slate-700';
 @endphp
 
-<div style="margin-left: {{ $indent }}rem" class="my-1">
+<div id="mes-{{ $mes->id }}" style="margin-left: {{ $indent }}rem" class="my-1">
     @if ($is_system)
         {{-- システムメッセージ --}}
         <div class="bg-yellow-50 border border-yellow-200 rounded-md px-3 py-2 text-sm text-gray-600">

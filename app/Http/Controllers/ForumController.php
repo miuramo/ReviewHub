@@ -6,6 +6,7 @@ use App\Models\Forum;
 use App\Models\ForumMes;
 use App\Models\Post;
 use App\Models\Term;
+use App\Mail\ForumMesNotify;
 use Illuminate\Http\Request;
 
 class ForumController extends Controller
@@ -119,13 +120,16 @@ class ForumController extends Controller
             'parent_id' => 'nullable|integer|exists:forum_mes,id',
         ]);
 
-        ForumMes::create([
+        $forumMes = ForumMes::create([
             'forum_id'  => $forum->id,
             'parent_id' => $req->input('parent_id'),
             'user_id'   => $user->id,
             'subject'   => $req->input('sub', ''),
             'mes'       => $req->input('mes'),
         ]);
+
+        $forum->loadMissing('post');
+        (new ForumMesNotify($forum, $forumMes, $user))->sendIfRecipients();
 
         return redirect()->route('forum.show', ['forum' => $forum->id])
             ->with('feedback.success', '書き込みました。');
