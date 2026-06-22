@@ -345,7 +345,7 @@ class AdminController extends Controller
     }
     public function crud(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ec')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin')) abort(403);
         //テーブル指定があるか？
         // $connection = config('database.default');
         $driver = DB::connection()->getDriverName();
@@ -414,7 +414,7 @@ class AdminController extends Controller
      */
     public function crudpost(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ec|pub|demo|web')) abort(403); // Note: 出版担当もbibinfochkから修正できる。
+        if (!auth()->user()->can('role_any', 'admin|manager|ec|pub')) abort(403); // Note: 出版担当もbibinfochkから修正できる。
         // whereBy__ ほにゃららがある場合は、crud に飛ばす。
         $whereBy_keys = [];
         $all = $req->all();
@@ -441,7 +441,7 @@ class AdminController extends Controller
     }
     public function crudnew(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ec')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin')) abort(403);
         $tableName = $req->input("table");
         $eloModelName = 'App\\Models\\' . Str::studly(Str::singular($tableName)); //　studly でUpperCamelCaseにする
         if (class_exists($eloModelName)) {
@@ -451,7 +451,7 @@ class AdminController extends Controller
     }
     public function crudtruncate(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'admin|manager')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin')) abort(403);
         $tableName = $req->input("table");
         $eloModelName = 'App\\Models\\' . Str::studly(Str::singular($tableName)); //　studly でUpperCamelCaseにする
         if (class_exists($eloModelName)) {
@@ -463,7 +463,7 @@ class AdminController extends Controller
     }
     public function crudcopy(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ec')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin')) abort(403);
         $tableName = $req->input("table");
         $row = $req->input("row");
         $eloModelName = 'App\\Models\\' . Str::studly(Str::singular($tableName)); //　studly でUpperCamelCaseにする
@@ -479,7 +479,7 @@ class AdminController extends Controller
     }
     public function cruddelete(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ec')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin')) abort(403);
         $tableName = $req->input("table");
         $row = $req->input("row");
         $eloModelName = 'App\\Models\\' . Str::studly(Str::singular($tableName)); //　studly でUpperCamelCaseにする
@@ -495,7 +495,7 @@ class AdminController extends Controller
     /** チェックした行を削除またはコピー */
     public function crudchkdelete(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ec')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin')) abort(403);
         $tableName = $req->input("table");
         $eloModelName = 'App\\Models\\' . Str::studly(Str::singular($tableName)); //　studly でUpperCamelCaseにする
         if (class_exists($eloModelName)) {
@@ -524,7 +524,7 @@ class AdminController extends Controller
     /** autoincrement値を設定する */
     public function crud_setautoinc(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'admin|manager|ec')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin')) abort(403);
         $tableName = $req->input("table");
         $autoinc = $req->input("autoinc");
         if (!is_numeric($autoinc) || intval($autoinc) < 1) {
@@ -624,7 +624,7 @@ class AdminController extends Controller
      */
     public function resetpaper()
     {
-        if (!auth()->user()->can('role_any', 'ec')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin')) abort(403);
 
         $all = File::all();
         foreach ($all as $f) {
@@ -652,7 +652,7 @@ class AdminController extends Controller
     }
     public function resetaccesslog()
     {
-        if (!auth()->user()->can('role_any', 'ec')) abort(403);
+        if (!auth()->user()->can('role_any', 'admin')) abort(403);
         LogAccess::truncate();
         return redirect()->route('admin.dashboard')->with('feedback.success', 'アクセスログをすべてリセットしました');
     }
