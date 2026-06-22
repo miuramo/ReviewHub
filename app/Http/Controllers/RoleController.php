@@ -62,7 +62,7 @@ class RoleController extends Controller
 
         $users = $role->users;
         $roles = Role::orderBy("id")->get();
-        return view('role/edit', ["role" => $name])->with(compact("users", "role", "roles"));
+        return view('role.edit', ["role" => $name])->with(compact("users", "role", "roles"));
     }
 
     /**
@@ -170,6 +170,24 @@ class RoleController extends Controller
                 return redirect()->route('role.edit', ["role" => $name])->with('feedback.success', "メールを送信しました。");
             }
             return redirect()->route('role.edit', ["role" => $name])->with('feedback.error', "メールを送信するユーザにチェックをいれてください。");
+        } else if ($req->has("action") && $req->input("action") == "removerole") {
+            $target_users = [];
+            foreach ($req->all() as $k => $v) {
+                if ($v == 'on' && strpos($k, 'u_') === 0) {
+                    $uid = explode("_", $k)[1];
+                    if (is_numeric($uid)) $target_users[] = $uid;
+                }
+            }
+            if (count($target_users) === 0) {
+                return redirect()->route('role.edit', ["role" => $name])->with('feedback.error', "脱退させるユーザにチェックをいれてください。");
+            }
+            foreach ($target_users as $uuid) {
+                $u = User::find($uuid);
+                if ($u != null) {
+                    $u->roles()->detach($role);
+                }
+            }
+            return redirect()->route('role.edit', ["role" => $name])->with('feedback.success', count($target_users) . "人を Role『{$role->desc}』から脱退させました。");
         } else if ($req->has("action") && $req->input("action") == "adduser") {
             $adduser = $req->input("adduser");
             $lines = explode("\n", $adduser);

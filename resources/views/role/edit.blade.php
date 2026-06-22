@@ -58,6 +58,11 @@
             <x-element.submitbutton value="excel" color="lime">
                 Role『{{ $role->desc }}』のメンバーをExcel出力する
             </x-element.submitbutton>
+            &nbsp;
+            <x-element.submitbutton value="removerole" color="red"
+                confirm="チェックをいれた人を Role『{{ $role->desc }}』から脱退させます。よろしいですか？">
+                チェックをいれた人を Role『{{ $role->desc }}』から脱退させる
+            </x-element.submitbutton>
         </div>
 
         <div class="mx-6">

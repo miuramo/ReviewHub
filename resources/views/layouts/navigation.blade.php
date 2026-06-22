@@ -39,8 +39,8 @@
                             $navs_active[$role->navi] = url()->current() === $navs_href[$role->navi];
                         }
                         if(auth()->user()->can('has_managed_papers')){
-                            $navs_href['管理者'] = route('role.top', ['role' => 'ec']);
-                            $navs_active['管理者'] = url()->current() === $navs_href['管理者'];
+                            $navs_href['メタ担当'] = route('role.top', ['role' => 'ec']);
+                            $navs_active['メタ担当'] = url()->current() === $navs_href['メタ担当'];
                         }
                     @endphp
 

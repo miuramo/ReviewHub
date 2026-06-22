@@ -29,7 +29,7 @@ class ReviewAssign extends Component
     {
         $this->search = trim($this->search);
         if ($this->search == '') {
-            $this->users = User::whereIn('id', $this->revuids)->orderByDesc('id')->limit(5)->get();
+            $this->users = collect();//User::whereIn('id', $this->revuids)->orderByDesc('id')->limit(5)->get();
         } else {
             $search = $this->search;
             $this->users = User::whereIn('id', $this->revuids)->where(function($qr) use ($search){
