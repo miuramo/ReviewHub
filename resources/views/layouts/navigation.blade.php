@@ -38,7 +38,8 @@
                             $navs_href[$role->navi] = route('role.top', ['role' => $role->name]);
                             $navs_active[$role->navi] = url()->current() === $navs_href[$role->navi];
                         }
-                        if(auth()->user()->can('has_managed_papers')){
+                        // 編集長ではなく、メタ担当の論文がある場合、メタ担当のリンクを追加する
+                        if(auth()->user()->can('has_managed_papers') && !array_key_exists('編集長', $navs_href)) {
                             $navs_href['メタ担当'] = route('role.top', ['role' => 'ec']);
                             $navs_active['メタ担当'] = url()->current() === $navs_href['メタ担当'];
                         }
