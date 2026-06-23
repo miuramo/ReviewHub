@@ -690,18 +690,18 @@ class PaperController extends Controller
 
             // バリデーション
             if ($new_id <= 0) {
-                return redirect()->route('paper.change_owner', ['paper' => $paper_id])
+                return redirect()->route('paper.edit', ['paper' => $paper_id])
                     ->with('feedback.error', '新しいIDは1以上の整数を入力してください。');
             }
             if ($new_id === $paper_id) {
-                return redirect()->route('paper.change_owner', ['paper' => $paper_id])
+                return redirect()->route('paper.edit', ['paper' => $paper_id])
                     ->with('feedback.error', '変更前と同じIDが入力されました。');
             }
 
             // 新IDが既に存在するか（ソフトデリート済みも含む）
             $exists = Paper::withTrashed()->where('id', $new_id)->exists();
             if ($exists) {
-                return redirect()->route('paper.change_owner', ['paper' => $paper_id])
+                return redirect()->route('paper.edit', ['paper' => $paper_id])
                     ->with('feedback.error', "投稿ID {$new_id} は既に存在するため変更できません。");
             }
 
