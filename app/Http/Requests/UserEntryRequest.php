@@ -58,6 +58,7 @@ class UserEntryRequest extends FormRequest
                 'name' => User::$initialName,
                 'email' => $em,
                 'password' => Hash::make($em),
+                'email_verified_at' => now(),
             ]);
         } catch (QueryException $e) {
             if ($e->errorInfo[0] == 23000) {

@@ -721,16 +721,16 @@ class PaperController extends Controller
             } catch (\Throwable $e) {
                 DB::statement('SET FOREIGN_KEY_CHECKS=1');
                 Log::error("change_paper_id failed: {$e->getMessage()}");
-                return redirect()->route('paper.change_owner', ['paper' => $paper_id])
+                return redirect()->route('paper.edit', ['paper' => $paper_id])
                     ->with('feedback.error', 'ID変更中にエラーが発生しました: ' . $e->getMessage());
             }
 
-            return redirect()->route('paper.change_owner', ['paper' => $new_id])
+            return redirect()->route('paper.edit', ['paper' => $new_id])
                 ->with('feedback.success', "投稿IDを {$paper_id} から {$new_id} に変更しました。");
         }
 
         // GETの場合: 変更可能かどうかのチェック情報を返す
-        return redirect()->route('paper.change_owner', ['paper' => $paper_id]);
+        return redirect()->route('paper.edit', ['paper' => $paper_id]);
     }
 
     /**
@@ -752,14 +752,14 @@ class PaperController extends Controller
 
         // メールアドレスが既存ユーザと重複していないか確認
         if (User::where('email', $email)->exists()) {
-            return redirect()->route('paper.change_owner', ['paper' => $paper_id])
+            return redirect()->route('paper.edit', ['paper' => $paper_id])
                 ->with('feedback.error', "メールアドレス「{$email}」は既に登録されているユーザです。既存ユーザへの委譲には上のフォームをご利用ください。");
         }
 
         $authorlist = $paper->authorlist_ary();
         $idx = (int) $req->input('author_index');
         if (!isset($authorlist[$idx])) {
-            return redirect()->route('paper.change_owner', ['paper' => $paper_id])
+            return redirect()->route('paper.edit', ['paper' => $paper_id])
                 ->with('feedback.error', '著者リストのインデックスが無効です。');
         }
         $author = $authorlist[$idx];
@@ -772,12 +772,13 @@ class PaperController extends Controller
             'affil'    => $affil,
             'email'    => $email,
             'password' => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(24)),
+            'email_verified_at' => now(),
         ]);
 
         // オーナー変更
         $paper->change_owner($new_user->id);
 
-        return redirect()->route('paper.change_owner', ['paper' => $paper_id])
+        return redirect()->route('paper.index')
             ->with('feedback.success', "新しいユーザー「{$name}」（{$email}）を作成し、投稿の所有者を変更しました。");
     }
 
@@ -823,7 +824,7 @@ class PaperController extends Controller
         $new_owner = User::findOrFail($req->input('user_id'));
         $paper->change_owner($new_owner->id);
 
-        return redirect()->route('paper.change_owner', ['paper' => $paper_id])
+        return redirect()->route('paper.index', ['paper' => $paper_id])
             ->with('feedback.success', "投稿の所有者を「{$new_owner->name}」（{$new_owner->email}）に変更しました。");
     }
 }

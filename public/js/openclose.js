@@ -5,6 +5,8 @@ function openclose(elemid) {
         setTimeout(function() {
             content.style.opacity = '1';
         }, 10);
+        // elemid の要素をページ内に表示するようにスクロールする
+        content.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else {
         content.style.opacity = '0';
         setTimeout(function() {

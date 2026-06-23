@@ -48,6 +48,11 @@
         </div>
 
     </div>
+
+    <div class="py-2 px-6">
+        <x-element.linkbutton href="{{route('paper.manage', ['paper' => $paper->id])}}" color="gray" size="lg">
+            &larr; 投稿管理 {{ $paper->id_03d() }} に戻る
+        </x-element.linkbutton>
     <script>
         function CheckAll(formname) {
             for (var i = 0; i < document.forms[formname].elements.length; i++) {

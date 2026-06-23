@@ -190,9 +190,9 @@
                 </x-paper.authorlist>
             @endif
 
-                @php
-                    $optional_entries = \App\Models\Paper::optional_bibs();
-                @endphp
+            @php
+                $optional_entries = \App\Models\Paper::optional_bibs();
+            @endphp
 
             <div class="m-6">
                 <x-element.h1>
@@ -219,7 +219,7 @@
                                     class="{{ $loop->iteration % 2 === 1 ? 'bg-cyan-50 dark:text-gray-700' : 'bg-white dark:bg-cyan-100 dark:text-gray-700 border-2 border-cyan-500' }}">
                                     <td class="px-2 py-1 whitespace-nowrap text-sm">{{ $v }}
                                         @isset($optional_entries[$k])
-                                            <span class="text-sm text-gray-500">（任意）</span> 
+                                            <span class="text-sm text-gray-500">（任意）</span>
                                         @endisset
                                     </td>
                                     @if (strlen($paper->{$k}) < 2)
@@ -302,7 +302,7 @@
             @endisset
 
             @php
-                $name_of_managers = \App\Models\Setting::getval("NAME_OF_MANAGERS");
+                $name_of_managers = \App\Models\Setting::getval('NAME_OF_MANAGERS');
             @endphp
             <div class="m-6">
                 <div class="text-lg my-5 p-1 bg-slate-200 rounded-lg dark:bg-slate-800 dark:text-slate-400">
@@ -369,9 +369,11 @@
 
                     </div>
                     <div class="mx-6 my-8">
-                        <x-element.linkbutton href="{{ route('paper.change_owner', ['paper' => $paper->id]) }}" color="orange" size="md">
+                        <x-element.linkbutton href="{{ route('paper.change_owner', ['paper' => $paper->id]) }}"
+                            color="orange" size="md">
                             この投稿の「投稿者」を変更する
-                        </x-element.linkbutton> 
+                        </x-element.linkbutton>
+                    </div>
                 </div>
 
                 {{-- <div class="my-10"></div> --}}
@@ -383,6 +385,18 @@
                 &larr; 投稿一覧に戻る
             </x-element.linkbutton>
         </div>
+
+        
+        @can('role_any', 'ec|aec')
+            <x-admin.change_paper_id :paper="$paper" />
+            <x-admin.change_paper_owner :paper="$paper" />
+        @endcan
+
+        @can('admin')
+            <x-admin.change_paper_owner_exist :paper="$paper" />
+        @endcan
+
+
 
         @push('localjs')
             <script src="/js/jquery.min.js"></script>
