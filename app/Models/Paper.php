@@ -1028,11 +1028,6 @@ class Paper extends Model
             $enqan->user_id = $new_owner_id;
             $enqan->save();
         }
-        // submits
-        foreach ($this->submits as $submit) {
-            $submit->user_id = $new_owner_id;
-            $submit->save();
-        }
         // bbmessages は変えない。
 
     }

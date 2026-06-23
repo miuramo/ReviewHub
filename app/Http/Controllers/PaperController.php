@@ -26,8 +26,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class PaperController extends Controller
 {
@@ -668,6 +671,159 @@ class PaperController extends Controller
                 return redirect()->route('paper.edit', ['paper' => $paper])->with('feedback.error', "選択されたユーザーが見つかりませんでした。");
             }
         }
-        return view('paper.change_owner')->with(compact("paper", "coauthors"));
+        $authorlist = $paper->authorlist_ary();
+        return view('paper.change_owner')->with(compact("paper", "coauthors", "authorlist"));
+    }
+
+    /**
+     * EC/AEC専用: paper.id の変更
+     */
+    public function change_paper_id(Request $req, int $paper_id)
+    {
+        if (!Gate::allows('role_any', 'ec|aec')) {
+            abort(403, 'forbidden');
+        }
+        $paper = Paper::withTrashed()->findOrFail($paper_id);
+
+        if ($req->method() === 'POST') {
+            $new_id = (int) $req->input('new_paper_id');
+
+            // バリデーション
+            if ($new_id <= 0) {
+                return redirect()->route('paper.change_owner', ['paper' => $paper_id])
+                    ->with('feedback.error', '新しいIDは1以上の整数を入力してください。');
+            }
+            if ($new_id === $paper_id) {
+                return redirect()->route('paper.change_owner', ['paper' => $paper_id])
+                    ->with('feedback.error', '変更前と同じIDが入力されました。');
+            }
+
+            // 新IDが既に存在するか（ソフトデリート済みも含む）
+            $exists = Paper::withTrashed()->where('id', $new_id)->exists();
+            if ($exists) {
+                return redirect()->route('paper.change_owner', ['paper' => $paper_id])
+                    ->with('feedback.error', "投稿ID {$new_id} は既に存在するため変更できません。");
+            }
+
+            try {
+                DB::transaction(function () use ($paper_id, $new_id) {
+                    DB::statement('SET FOREIGN_KEY_CHECKS=0');
+                    DB::table('papers')->where('id', $paper_id)->update(['id' => $new_id]);
+                    foreach ([
+                        'files', 'submits', 'bbs', 'reviews',
+                        'rev_conflicts', 'paper_contact', 'enquete_answers',
+                        'paper_manager',
+                    ] as $tbl) {
+                        DB::table($tbl)->where('paper_id', $paper_id)->update(['paper_id' => $new_id]);
+                    }
+                    DB::statement('SET FOREIGN_KEY_CHECKS=1');
+                });
+            } catch (\Throwable $e) {
+                DB::statement('SET FOREIGN_KEY_CHECKS=1');
+                Log::error("change_paper_id failed: {$e->getMessage()}");
+                return redirect()->route('paper.change_owner', ['paper' => $paper_id])
+                    ->with('feedback.error', 'ID変更中にエラーが発生しました: ' . $e->getMessage());
+            }
+
+            return redirect()->route('paper.change_owner', ['paper' => $new_id])
+                ->with('feedback.success', "投稿IDを {$paper_id} から {$new_id} に変更しました。");
+        }
+
+        // GETの場合: 変更可能かどうかのチェック情報を返す
+        return redirect()->route('paper.change_owner', ['paper' => $paper_id]);
+    }
+
+    /**
+     * EC/AEC専用: 著者リストから新ユーザーを作成してオーナーを変更
+     */
+    public function create_user_owner_ec(Request $req, int $paper_id)
+    {
+        if (!Gate::allows('role_any', 'ec|aec')) {
+            abort(403, 'forbidden');
+        }
+        $paper = Paper::findOrFail($paper_id);
+
+        $req->validate([
+            'author_index' => ['required', 'integer', 'min:0'],
+            'new_user_email' => ['required', 'string', 'email', 'max:255'],
+        ]);
+
+        $email = strtolower(trim($req->input('new_user_email')));
+
+        // メールアドレスが既存ユーザと重複していないか確認
+        if (User::where('email', $email)->exists()) {
+            return redirect()->route('paper.change_owner', ['paper' => $paper_id])
+                ->with('feedback.error', "メールアドレス「{$email}」は既に登録されているユーザです。既存ユーザへの委譲には上のフォームをご利用ください。");
+        }
+
+        $authorlist = $paper->authorlist_ary();
+        $idx = (int) $req->input('author_index');
+        if (!isset($authorlist[$idx])) {
+            return redirect()->route('paper.change_owner', ['paper' => $paper_id])
+                ->with('feedback.error', '著者リストのインデックスが無効です。');
+        }
+        $author = $authorlist[$idx];
+        $name  = $author[0] ?? '';
+        $affil = $author[1] ?? '';
+
+        // ユーザ作成
+        $new_user = User::create([
+            'name'     => $name,
+            'affil'    => $affil,
+            'email'    => $email,
+            'password' => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(24)),
+        ]);
+
+        // オーナー変更
+        $paper->change_owner($new_user->id);
+
+        return redirect()->route('paper.change_owner', ['paper' => $paper_id])
+            ->with('feedback.success', "新しいユーザー「{$name}」（{$email}）を作成し、投稿の所有者を変更しました。");
+    }
+
+    /**
+     * Admin専用: ユーザー検索 (JSON)
+     */
+    public function user_search_admin(Request $req, int $paper_id)
+    {
+        if (!Gate::allows('admin')) {
+            abort(403, 'forbidden');
+        }
+        $q = trim($req->input('q', ''));
+        if (mb_strlen($q) < 1) {
+            return response()->json([]);
+        }
+        $users = User::where(function ($query) use ($q) {
+            $query->where('name', 'like', '%' . $q . '%')
+                  ->orWhere('email', 'like', '%' . $q . '%')
+                  ->orWhere('affil', 'like', '%' . $q . '%');
+        })
+        ->select('id', 'name', 'affil', 'email')
+        ->orderBy('id')
+        ->limit(30)
+        ->get();
+
+        return response()->json($users);
+    }
+
+    /**
+     * Admin専用: 既存ユーザーを選択してオーナーを変更
+     */
+    public function assign_owner_admin(Request $req, int $paper_id)
+    {
+        if (!Gate::allows('admin')) {
+            abort(403, 'forbidden');
+        }
+        $paper = Paper::findOrFail($paper_id);
+
+        $req->validate([
+            'user_id' => ['required', 'integer', 'exists:users,id'],
+        ]);
+
+        $new_owner = User::findOrFail($req->input('user_id'));
+        $paper->change_owner($new_owner->id);
+
+        return redirect()->route('paper.change_owner', ['paper' => $paper_id])
+            ->with('feedback.success', "投稿の所有者を「{$new_owner->name}」（{$new_owner->email}）に変更しました。");
     }
 }

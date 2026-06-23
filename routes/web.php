@@ -88,6 +88,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/paper/{paper}/update_authorlist', [PaperController::class, 'update_authorlist'])->name('paper.update_authorlist');
     Route::get('/paper/{paper}/change_owner', [PaperController::class, 'change_owner'])->name('paper.change_owner');
     Route::post('/paper/{paper}/change_owner', [PaperController::class, 'change_owner'])->name('paper.change_ownerpost');
+    Route::post('/paper/{paper}/change_paper_id', [PaperController::class, 'change_paper_id'])->name('paper.change_paper_id');
+    Route::post('/paper/{paper}/create_user_owner_ec', [PaperController::class, 'create_user_owner_ec'])->name('paper.create_user_owner_ec');
+    Route::get('/paper/{paper}/user_search_admin', [PaperController::class, 'user_search_admin'])->name('paper.user_search_admin');
+    Route::post('/paper/{paper}/assign_owner_admin', [PaperController::class, 'assign_owner_admin'])->name('paper.assign_owner_admin');
 
     Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile.edit');
     //査読管理者による査読者の割り当て等の操作
