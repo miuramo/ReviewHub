@@ -7,6 +7,10 @@
 
         $paper = $review->submit->paper;
         $conf = App\Models\Setting::where('name', 'CONFTITLE')->first();
+        $review_duration_days = App\Models\Setting::getary('REVIEW_DURATION_DAYS');
+        $review_type = $review->target;
+        $review_type_name = $review->review_type_name();
+        $review_duration = $review_duration_days[$review_type];
     @endphp
 
     <x-slot name="header">
@@ -23,7 +27,7 @@
 
     <div class="py-2 px-6">
         <div class="text-lg py-4">
-            {{ $conf->value }} に投稿された以下の論文につきまして、{{ $review->user->name }} さまにぜひ査読をお願いしたいと考えております。<br>
+            {{ $conf->value }} に投稿された以下の論文につきまして、{{ $review->user->name }} さまにぜひ {{ $review_type_name }} をお願いしたいと考えております。<br>
             お引き受けいただける場合は、「承諾する」を押してください。<br>
         </div>
         <div class="px-4 pb-6 text-md text-blue-600">※「承諾する」または「今回は辞退する」を押すと、確認画面がでます。<br>
@@ -34,7 +38,7 @@
             @method('post')
 
             <textarea name="comment" id="comment" rows="4" class="w-full p-2 border border-gray-300 rounded-md"
-                placeholder="査読期間への要望や辞退の理由など、{{ $name_of_managers }}への連絡事項がありましたら、ここに入力してください。なお、標準的な査読期間は24日間となっております。"></textarea>
+                placeholder="査読期間への要望や辞退の理由など、{{ $name_of_managers }}への連絡事項がありましたら、ここに入力してください。なお、標準的な査読期間は{{ $review_duration }}日間となっております。"></textarea>
             <x-element.submitbutton value="accept" color="cyan" confirm="「承諾する」で送信して、よろしいですか？">承諾する (Accept)
             </x-element.submitbutton>
             <span class="mx-4"></span>

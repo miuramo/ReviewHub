@@ -15,7 +15,7 @@
 {{$organization}} における検討の結果、{{ $reviewer->name }} さまに
 
 {{$conftitle}} に投稿された
-以下の論文の査読{{$round}}をお願いできればと考えております。
+以下の論文の{{ $review_type_name }}{{$round}}をお願いできればと考えております。
 
 査読期間は、承諾いただいた日から{{$review_duration}}日間です。
 

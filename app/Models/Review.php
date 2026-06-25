@@ -49,6 +49,18 @@ class Review extends MetaModel
     {
         return $this->hasOne(Task::class, 'submit_id', 'submit_id')->where('subject_id', $this->user_id);
     }
+    /**
+     * 査読の種類を返す
+     */
+    public function review_type_name(): string
+    {
+        $ary = [
+            0 => '査読',
+            1 => 'メタ査読',
+            2 => '最終判定',
+        ];
+        return $ary[$this->target] ?? "査読";
+    }
 
     /**
      * この査読のトークンを生成（査読者同士の参照用）

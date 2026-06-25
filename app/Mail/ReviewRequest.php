@@ -49,9 +49,10 @@ class ReviewRequest extends RetryMailable
         $revobj = \App\Models\Review::find($this->rev->id);
         $submit = \App\Models\Submit::find($revobj->submit_id);
         $review_duration = \App\Models\Setting::getary('REVIEW_DURATION_DAYS')[$this->rev->target];
+        $review_type_name = $this->rev->review_type_name();
         if ($submit->round > 1) {
             $round = "（{$submit->round}回目）";
-            $this->subject = "改訂稿が投稿されましたので、再査読{$round}をお願いしたいです (ID : " . $this->paper->id_03d() . ')';
+            $this->subject = "改訂稿が投稿されましたので、{$review_type_name}{$round}をお願いしたいです (ID : " . $this->paper->id_03d() . ')';
             $this->content = new Content(
                 markdown: 'emails.reviewrequest2nd',
                 with: [
@@ -61,6 +62,7 @@ class ReviewRequest extends RetryMailable
                     'organization' => $organization,
                     'reviewer' => $this->reviewer,
                     'replyurl' => route('review.req_confirm', ['review' => $this->rev, 'token' => $this->rev->token_for_request()]),
+                    'review_type_name' => $review_type_name,
                     'round' => $round,
                     'review_duration' => $review_duration,
                     'operator' => auth()->user()->name,
@@ -71,7 +73,7 @@ class ReviewRequest extends RetryMailable
             );
         } else {
             $round = '';
-            $this->subject = "【{$organization}より】" . $this->reviewer->name . "さまに査読{$round}をお願いしたいです (ID : " . $this->paper->id_03d() . ')';
+            $this->subject = "【{$organization}より】" . $this->reviewer->name . "さまに{$review_type_name}{$round}をお願いしたいです (ID : " . $this->paper->id_03d() . ')';
 
             $this->content = new Content(
                 markdown: 'emails.reviewrequest',
@@ -82,6 +84,7 @@ class ReviewRequest extends RetryMailable
                     'organization' => $organization,
                     'reviewer' => $this->reviewer,
                     'replyurl' => route('review.req_confirm', ['review' => $this->rev, 'token' => $this->rev->token_for_request()]),
+                    'review_type_name' => $review_type_name,
                     'round' => $round,
                     'review_duration' => $review_duration,
                     'operator' => auth()->user()->name,
