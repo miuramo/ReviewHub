@@ -3,7 +3,7 @@
 ])
 <!-- components.task.panel -->
 @php
-    $name_of_managers = \App\Models\Setting::getValue("NAME_OF_MANAGERS");
+    $name_of_managers = \App\Models\Setting::getValue('NAME_OF_MANAGERS');
 
     $sub = App\Models\Submit::find($task->submit_id);
     $paper = App\Models\Paper::find($sub->paper_id);
@@ -19,7 +19,11 @@
 
 <x-element.h1c color="yellow" dark=300 :options="['font-bold', 'mb-0']">
     {{-- 論文 --}}
-    <x-element.paperid size=1 :paper_id="$paper->id" />
+    <x-element.paperid size=2 :paper_id="$paper->id" />
+    <span class="mx-1"></span>
+    <x-element.category :cat="$paper->category_id">
+    </x-element.category>
+
     <span class="mx-1"></span>
     {{-- 誰が --}}
     {{ $task->subject->name }} 様が、
