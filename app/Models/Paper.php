@@ -448,7 +448,7 @@ class Paper extends Model
                 $bcclist[] = $bcc;
             }
         }
-        return ["to" => $this->paperowner->email, "cc" => $cclist, "bcc" => $bcclist];
+        return ["to" => $this->paperowner?->email, "cc" => $cclist, "bcc" => $bcclist];
     }
     public function get_mail_manager(): array
     {

@@ -285,7 +285,7 @@ class ManagerController extends Controller
             $submit,
             1, // type=1 投稿管理者と著者の掲示板
             "【".env('MAIL_ORGANIZATION', '日本創造学会論文編集委員会'). "より】第{$numround}回査読結果の開示",
-            "{$paper->paperowner->affil}  {$paper->paperowner->name}様\n\n".env('MAIL_ORGANIZATION', '日本創造学会論文編集委員会'). "の {$myname} と申します。\n\n" .
+            "{$paper->paperowner?->affil}  {$paper->paperowner?->name}様\n\n".env('MAIL_ORGANIZATION', '日本創造学会論文編集委員会'). "の {$myname} と申します。\n\n" .
                 "投稿いただいておりました論文「{$submit->paper->title}」の、\n第{$numround}回査読結果を開示いたしました。\n\n" .
                 "査読結果は、投稿一覧 → 第{$numround}回査読結果（オレンジ色のボタン）から、確認してください。\n" .
                 "査読結果を確認されましたら、査読結果ページ上部の「査読結果を確認した」ボタンを押してください。\n\n" .
