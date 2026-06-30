@@ -153,14 +153,13 @@ class Viewpoint extends Model
             $newvp->orderint = $num;
             $newvp->name = $vp->name;
             $newvp->desc = $vp->desc;
+            $newvp->mandatory = $vp->mandatory;
             $newvp->content = $vp->content;
             $newvp->contentafter = $vp->contentafter;
-            $newvp->forrev = $vp->forrev;
-            $newvp->formeta = $vp->formeta;
+            $newvp->target = $vp->target;
             $newvp->weight = $vp->weight;
             $newvp->doReturn = $vp->doReturn;
             $newvp->doReturnAcceptOnly = $vp->doReturnAcceptOnly;
-            $newvp->target = $vp->target;
             $newvp->subdesc = $vp->subdesc;
             $newvp->save();
             $num += 10;
