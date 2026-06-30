@@ -133,4 +133,37 @@ class Viewpoint extends Model
         }
         Log::channel('plain')->info("Viewpoint: fixed target as bitmask");
     }
+
+    /**
+     * 論文用の査読観点を、ショートペーパー用にコピーする。その際、orderint順に作成していく。
+     */
+    public static function bundle_copy(int $src_cat_id = 1, int $dest_cat_id = 2): void
+    {
+        // もし、すでにショートペーパー用の査読観点が存在する場合は、コピーしない。
+        $count = Viewpoint::where("category_id", $dest_cat_id)->count();
+        if ($count > 0) {
+            return;
+        }
+
+        $vps = Viewpoint::where("category_id", $src_cat_id)->orderBy("orderint")->get();
+        $num = 10;
+        foreach ($vps as $vp) {
+            $newvp = new Viewpoint();
+            $newvp->category_id = $dest_cat_id;
+            $newvp->orderint = $num;
+            $newvp->name = $vp->name;
+            $newvp->desc = $vp->desc;
+            $newvp->content = $vp->content;
+            $newvp->contentafter = $vp->contentafter;
+            $newvp->forrev = $vp->forrev;
+            $newvp->formeta = $vp->formeta;
+            $newvp->weight = $vp->weight;
+            $newvp->doReturn = $vp->doReturn;
+            $newvp->doReturnAcceptOnly = $vp->doReturnAcceptOnly;
+            $newvp->target = $vp->target;
+            $newvp->subdesc = $vp->subdesc;
+            $newvp->save();
+            $num += 10;
+        }
+    }
 }
