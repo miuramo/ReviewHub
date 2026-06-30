@@ -23,6 +23,8 @@
     @section('title', 'P' . $paper->id . ' ' . $paper->title)
     @php
         $name_of_managers = \App\Models\Setting::getValue('NAME_OF_MANAGERS');
+
+        $can_manage = auth()->user()->can('manage_review', $paper->id);
     @endphp
 
     @if (session('feedback.success'))
