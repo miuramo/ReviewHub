@@ -258,6 +258,7 @@ class ReviewController extends Controller
     {
         if (!auth()->user()->can('role_any', 'ec|aec|rev|meta')) return abort(403);
         if ($review->user_id != auth()->id()) return abort(403, "THIS IS NOT YOUR REVIEW");
+        if ($review->locked) return abort(403, "THIS REVIEW IS LOCKED");
 
         $viewpoints = Viewpoint::by_category_target($review->category_id, $review->target);
         // 既存回答
@@ -291,6 +292,7 @@ class ReviewController extends Controller
         if (!auth()->user()->can('role_any', 'rev|meta|aec|ec')) return abort(403);
         $review = Review::find($reviewid);
         if ($review->user_id != auth()->id()) return abort(403, "THIS IS NOT YOUR REVIEW");
+        if ($review->locked) return abort(403, "THIS REVIEW IS LOCKED");
 
         if ($request->ajax()) return $request->shori();
         else {
@@ -306,6 +308,7 @@ class ReviewController extends Controller
     public function destroy(Review $review)
     {
         if (!auth()->user()->can('manage_review', $review->paper->id)) abort(403, "you are not a manager");
+        if ($review->locked) return abort(403, "THIS REVIEW IS LOCKED");
         // $review->status = -1; // 辞退
         // $review->save();
         $review->deleteTask();

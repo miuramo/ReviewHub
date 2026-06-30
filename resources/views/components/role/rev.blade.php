@@ -1,5 +1,5 @@
 @php
-    $name_of_managers = \App\Models\Setting::getValue("NAME_OF_MANAGERS");
+    $name_of_managers = \App\Models\Setting::getValue('NAME_OF_MANAGERS');
 
     $reviews = App\Models\Review::where('user_id', auth()->id())->get();
 
@@ -129,9 +129,15 @@
                 </x-element.linkbutton>
                 <span class="mx-4"></span>
                 @if (!$rev->submit->ec_decision_at)
-                    <x-element.linkbutton href="{{ route('review.edit', ['review' => $rev]) }}" color="blue">
-                        査読報告の修正
-                    </x-element.linkbutton>
+                    @if ($rev->locked)
+                        <span
+                            class="text-sm text-gray-500 ">{{ substr($rev->submit->ec_decision_at, 0, 10) }}
+                            修正ロック中</span>
+                    @else
+                        <x-element.linkbutton href="{{ route('review.edit', ['review' => $rev]) }}" color="blue">
+                            査読報告の修正
+                        </x-element.linkbutton>
+                    @endif
                 @else
                     <span
                         class="text-sm text-gray-300 hover:text-gray-500">{{ substr($rev->submit->ec_decision_at, 0, 10) }}
@@ -142,7 +148,8 @@
                         著者に通知した査読結果 </x-element.linkbutton2>
                 @endif
                 <span class="mx-4"></span>
-                <x-bb.bb_link :submit="$rev->submit" type="2" :rev_id="$rev->id" size="sm" label="{{ $name_of_managers }}との掲示板">
+                <x-bb.bb_link :submit="$rev->submit" type="2" :rev_id="$rev->id" size="sm"
+                    label="{{ $name_of_managers }}との掲示板">
                 </x-bb.bb_link>
             </div>
         @endforeach
