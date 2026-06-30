@@ -31,14 +31,14 @@ class ReviewRequest extends RetryMailable
         $this->reviewer = $_reviewer;
         $this->rev = $_rev;
         $this->mail_to_cc['to'][] = $this->reviewer->email;
-        // 編集長をCCに追加
+        // 編集長をBCCに追加
         $ec_users = $this->paper->managers;
         // 以下をつかうと、利害のある編集長にもメールが飛んでしまう
         // $ec_role = \App\Models\Role::findByIdOrName('ec');
         // $ec_users = $ec_role->users;
         $this->mail_to_cc['cc'][] = auth()->user()->email; // 操作者をCCに追加
         foreach ($ec_users as $u) {
-            if ($u->email == auth()->user()->email) continue; // 操作者以外をBCCに追加する。（メタ査読者も投稿管理者や幹事団に含める可能性があるので、全員をCCには入れないことにした。）
+            if ($u->email == auth()->user()->email) continue; // 操作者以外をBCCに追加する。（メタ査読者も投稿管理者や幹事団に含める可能性があるので、全員をCCには入れずBCCに追加することにした。）
             $this->mail_to_cc['bcc'][] = $u->email;
         }
         $managers_without_meta = $this->paper->managers_without_meta()->get();

@@ -36,13 +36,13 @@ class ReviewRequestReply extends RetryMailable
             $this->comment = strip_tags($comment);
         }
         $this->mail_to_cc['to'][] = $this->reviewer->email;
-        // 編集長をCCに追加
+        // 編集長をBCCに追加
         $ec_users = $this->paper->managers; 
         // 以下をつかうと、利害のある編集長にもメールが飛んでしまう
         // $ec_role = \App\Models\Role::findByIdOrName('ec');
         // $ec_users = $ec_role->users;
         foreach($ec_users as $u){
-            $this->mail_to_cc['cc'][] = $u->email;
+            $this->mail_to_cc['bcc'][] = $u->email;
         }
         $organization = env('MAIL_ORGANIZATION', '日本創造学会 論文編集委員会'); // 環境変数から組織名を取得
         $this->subject = "【{$organization}より】ご回答ありがとうございました (ID : ".$this->paper->id_03d().')';
