@@ -184,7 +184,7 @@
                 <input type="hidden" name="task" value="{{ $task->id }}">
                 <input type="hidden" name="rev_id" value="{{ $rev->id }}">
                 <input type="hidden" name="redirect_role" value="{{ $task->workflow->subject }}">
-                <x-element.submitbutton color="pink" value="assign" size="2xl">査読完了を報告する</x-element.submitbutton>
+                <x-element.submitbutton color="pink" value="assign" confirm="本当に査読完了を報告しますか？（掲示板経由で報告します。）" size="2xl">査読完了を報告する</x-element.submitbutton>
             </form>
         @endif
 
