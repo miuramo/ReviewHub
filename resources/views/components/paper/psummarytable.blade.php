@@ -96,7 +96,7 @@
                         </td>
                         <td class="p-1 text-center">
                             <x-element.login_as :user="$paper->paperowner"></x-element.login_as>
-                            ({{ $paper->paperowner->affil }})
+                            ({{ $paper->paperowner?->affil }})
                         </td>
                         <td class="p-1 text-center leading-tight text-nowrap">
                             (hidden)
