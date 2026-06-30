@@ -1,6 +1,6 @@
 <div>または、
     <input type="text" wire:model.live.debounce.500ms="search" wire:keydown.escape="resetSearch" placeholder="名前やメール等の一部"
-        x-init="$el.focus()" /> で検索して、割り当てボタンをおしてください。
+        x-init="$el.focus()" /> で検索して、「候補者にする」ボタンをおしてください。
     @php
         $fs = ['氏名', '所属', 'メール', '割り当て'];
     @endphp
@@ -38,9 +38,9 @@
                                 <option value="2">メタ査読</option>
                                 <option value="3">最終判定</option>
                             </select>
-                            を
+                            の
                             <x-element.submitbutton color="blue" size="sm"
-                                value="sadoku_wariate">割り当てる</x-element.submitbutton>
+                                value="sadoku_wariate">候補者にする</x-element.submitbutton>
                         </form>
                     </td>
                 </tr>

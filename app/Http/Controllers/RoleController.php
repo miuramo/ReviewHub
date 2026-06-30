@@ -12,6 +12,7 @@ use App\Models\Post;
 use App\Models\Review;
 use App\Models\Role;
 use App\Models\Setting;
+use App\Models\Submit;
 use App\Models\Term;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -237,6 +238,8 @@ class RoleController extends Controller
         if (!auth()->user()->can('role_any', 'meta|ec|aec|rev')) abort(403);
         $role = Role::findByIdOrName($req->input("role"));
         $user = str_replace("　", " ", $req->user);
+        // 半角スペースが２つ以上連続していたら、半角スペース１つにする。
+        $user = preg_replace('/\s+/', ' ', $user);
         $affil = $req->affil;
         $email = str_replace("＠", "@", $req->email);
         $user = trim($user);
@@ -245,7 +248,17 @@ class RoleController extends Controller
         $u = User::where("email", $email)->first();
         if ($u == null) {
             if ($user == "" || $affil == "" || $email == "") {
-                return redirect()->route('role.top', ["role" => $req->redirect_role])->with('feedback.error', 'ユーザ情報が不足しています (査読者の新規作成に失敗しました)');
+                if ($req->has("submit_id")) {
+                    return redirect()->route('paper.manage', ['paper' => Submit::find($req->input("submit_id"))->paper])->with('feedback.error', 'ユーザ情報が不足しています (査読者の新規作成に失敗しました)');
+                }
+                // もし、$user に半角スペースが1つも含まれていなければ、リダイレクトする
+                if (strpos($user, " ") === false) {
+                    if ($req->has("submit_id")) {
+                        return redirect()->route('paper.manage', ['paper' => Submit::find($req->input("submit_id"))->paper])->with('feedback.error', 'ユーザ名に半角スペースが含まれていません (査読者の新規作成に失敗しました)');
+                    }
+                    return back()->with('feedback.error', 'ユーザ名に半角スペースが含まれていません (査読者の新規作成に失敗しました)');
+                }
+                return back()->with('feedback.error', 'ユーザ情報が不足しています (査読者の新規作成に失敗しました)');
             }
             $u = User::factory()->create([
                 'name' => $user,
@@ -256,6 +269,15 @@ class RoleController extends Controller
         }
         if (!$role->containsUser($u->id)) { // ふくまれていなければ
             $u->roles()->attach($role);
+        }
+        if ($req->has("submit_id")) { // 査読者の新規作成と同時に、査読割り当てをする場合
+            $sub = Submit::find($req->input("submit_id"));
+            if ($sub != null) {
+                Review::review_assign($sub->id, $u->id,  $req->input('target'));
+                return redirect()->route('paper.manage', ['paper' => Submit::find($req->input("submit_id"))->paper])->with('feedback.success', "査読者（{$user}）を新規作成し、候補者に追加しました");
+            } else {
+                return back()->with('feedback.error', 'Submitが見つかりませんでした (査読者の新規作成に失敗しました)');
+            }
         }
         return back()->with('feedback.success', "査読者（{$user}）を新規作成しました");
         // return redirect($req->input("redirect_page"))->with('feedback.success', 'ユーザを追加しました');
@@ -332,7 +354,7 @@ class RoleController extends Controller
         $paper->managers()->detach($req->input('user_id'));
         $paper->save();
 
-        return redirect()->route('role.top', ['role' => 'ec'])->with('feedback.success', "{$name_of_managers}を脱退しました。" . sprintf(env('PID_FORMAT','%04d'), $req->input('paper_id')) . "の状況は今後参照できなくなります。");
+        return redirect()->route('role.top', ['role' => 'ec'])->with('feedback.success', "{$name_of_managers}を脱退しました。" . sprintf(env('PID_FORMAT', '%04d'), $req->input('paper_id')) . "の状況は今後参照できなくなります。");
     }
     /** managerが他者を強制的に投稿管理者から外す */
     public function remove_manager_force(Request $req)

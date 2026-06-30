@@ -22,14 +22,14 @@
             <option value="{{ $reviewer->id }}">{{ $reviewer->name }} （{{$reviewer->affil}}）</option>
         @endforeach
     </select>
-    さんに
+    さんを
     <select name="target" id="target">
         <option value="1">通常査読</option>
         <option value="2">メタ査読</option>
         <option value="3">最終判定</option>
     </select>
-    を
-    <x-element.submitbutton color="blue" value="assign">割り当てる</x-element.submitbutton>
-    <span class="text-sm text-gray-500">※「割り当てる」を押しても、候補に追加されるのみで、解除可能です。メール送信もしません。</span>
+    の
+    <x-element.submitbutton color="blue" value="assign">候補者にする</x-element.submitbutton>
+    <span class="text-sm text-gray-500">※「候補者にする」を押しても、候補に追加されるのみで、解除可能です。メール送信もしません。</span>
 </form>
 

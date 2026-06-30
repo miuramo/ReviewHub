@@ -87,7 +87,7 @@
             <x-sub.substatus :submit_id="$paper->currentsubmit->id"></x-sub.substatus>
         </div>
 
-        <x-element.button id="toggleButton" value="査読者の割り当て画面をひらく" color="blue" onclick="openclose('div_rassign')">
+        <x-element.button id="toggleButton" value="査読候補者の追加画面をひらく" color="blue" onclick="openclose('div_rassign')">
         </x-element.button>
 
         <div class="hidden-content p-2 bg-cyan-100" style="display:none" id="div_rassign">

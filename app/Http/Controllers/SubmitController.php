@@ -525,7 +525,7 @@ class SubmitController extends Controller
         $sub = Submit::findOrFail($sub_id);
         if (!auth()->user()->can('manage_review', $sub->paper->id)) abort(403, "you are not a manager (manage_review)");
         Review::review_assign($sub->id, $req->input("reviewer_id"),  $req->input('target'));
-        return redirect($req->input("redirect_page"))->with('feedback.success', '査読者を割り当てました');
+        return redirect($req->input("redirect_page"))->with('feedback.success', '査読候補者を追加しました');
     }
     /**
      * ひとつ前のRoundの査読者を割り当てる
@@ -539,7 +539,7 @@ class SubmitController extends Controller
         foreach ($previews as $pre) {
             Review::review_assign($sub->id, $pre->user_id,  $pre->target + 1);
         }
-        return redirect($req->input("redirect_page"))->with('feedback.success', "以前とおなじ査読者を割り当てました");
+        return redirect($req->input("redirect_page"))->with('feedback.success', "以前とおなじ査読者を候補者に追加しました");
     }
     /**
      * 査読結果を著者に開示する

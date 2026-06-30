@@ -69,8 +69,8 @@
                 @if (!$readonly)
                     <span class="mx-1"></span>
                     <x-element.deletebutton action="{{ route('review.destroy', ['review' => $review]) }}" color="orange"
-                        size="sm" confirm="本当に{{ $review->user->name }}さんを査読担当から外してよいですか？（復元はできます）">
-                        査読担当から外す
+                        size="sm" confirm="本当に{{ $review->user->name }}さんを査読候補者から外してよいですか？（復元はできます）">
+                        査読候補者から外す
                     </x-element.deletebutton>
                 @endif
                 <div class="p-2">

@@ -218,7 +218,7 @@ class Bb extends MetaModel
         $conftitle = Setting::getval('CONFTITLE');
         // 前回査読の報告を検索
         $vpid_score = Viewpoint::where('name', 'score')->where('category_id', 1)->first()
-            ->id;
+            ?->id ?? 0;
         // この査読者の、直前の査読の点数を取得する
         $allscore =
             Score::with('review')->where('viewpoint_id', $vpid_score)->whereHas('review', function ($q) use ($paper_id, $revuser) {
