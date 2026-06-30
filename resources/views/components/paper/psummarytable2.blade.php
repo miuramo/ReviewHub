@@ -104,7 +104,7 @@
                 </td>
                 <td class="p-1 text-center text-{{ $size }}">
                     @if (auth()->user()->can('manage_review', $paper->id))
-                        <x-element.login_as :user="$paper->paperowner"></x-element.login_as> ({{ $paper->paperowner->affil }})
+                        <x-element.login_as :user="$paper->paperowner"></x-element.login_as> ({{ $paper->paperowner?->affil }})
                     @else
                         (hidden)
                     @endif
