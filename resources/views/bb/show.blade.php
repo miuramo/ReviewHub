@@ -79,7 +79,7 @@
                         </div>
                     @else
                         <div class="inline-block bg-lime-200 p-1 m-1 rounded-md">
-                            {{ $uc->email }}
+                            {{ $uc?->email }}
                         </div>
                     @endif
                 @endforeach
