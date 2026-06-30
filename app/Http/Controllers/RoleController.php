@@ -337,7 +337,7 @@ class RoleController extends Controller
     /** managerが他者を強制的に投稿管理者から外す */
     public function remove_manager_force(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'manager')) abort(403, 'manager権限が必要です');
+        if (!auth()->user()->can('role_any', 'ec|manager')) abort(403, 'manager権限が必要です');
         $name_of_managers = \App\Models\Setting::getValue("NAME_OF_MANAGERS");
         $paper = Paper::find($req->input('paper_id'));
         if (!auth()->user()->can('manage_papermanager', $paper)) {
@@ -351,7 +351,7 @@ class RoleController extends Controller
     /** managerが他者を強制的に投稿管理者に追加する */
     public function add_manager_force(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'manager')) abort(403, 'manager権限が必要です');
+        if (!auth()->user()->can('role_any', 'ec|manager')) abort(403, 'manager権限が必要です');
         $name_of_managers = \App\Models\Setting::getValue("NAME_OF_MANAGERS");
         $paper = Paper::find($req->input('paper_id'));
         if (!auth()->user()->can('manage_papermanager', $paper)) {
