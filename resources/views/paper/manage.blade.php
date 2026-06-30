@@ -95,6 +95,10 @@
                     <x-enquete.view :enq="$enq" :enqans="$enqans" :inline="true">
                     </x-enquete.view>
                 @endforeach
+                @foreach ($enqs['readonly'] as $enq)
+                    <x-enquete.view :enq="$enq" :enqans="$enqans" :inline="true">
+                    </x-enquete.view>
+                @endforeach
             </div>
         </div>
 
