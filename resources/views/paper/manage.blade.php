@@ -73,104 +73,128 @@
             @endforeach
         </div>
 
-    </div>
-
-
-    <div class="py-2 px-6">
-        <x-element.h1>
-            現在の査読ラウンド
-            <x-element.component_name type="span">
-                manage
-            </x-element.component_name>
-        </x-element.h1>
-        <div class="block">
-            <x-sub.substatus :submit_id="$paper->currentsubmit->id"></x-sub.substatus>
-        </div>
-
-        <x-element.button id="toggleButton" value="査読候補者の追加画面をひらく" color="blue" onclick="openclose('div_rassign')">
-        </x-element.button>
-
-        <div class="hidden-content p-2 bg-cyan-100" style="display:none" id="div_rassign">
-            <div class="py-2 px-6">
-                <x-review.rassign :submit_id="$paper->currentsubmit->id"></x-review.rassign>
-            </div>
-            <div class="py-2 px-6">
-                <livewire:review-assign :submit_id="$paper->currentsubmit->id" :paper_id="$paper->id"></livewire:review-assign>
-            </div>
-            <div class="py-2 px-6">
-                <x-role.add_rev :submit_id="$paper->currentsubmit->id"></x-role.add_rev>
-            </div>
-        </div>
-    </div>
-    <div class="py-2 px-6">
-        <div class="block">
+        <div>
             @php
-                $tasks = $paper->currentsubmit->tasks;
+                // 回答可能(canedit)または参照可能(readonly)
+                $enqs = \App\Models\Enquete::needForSubmit($paper);
+
+                // 既存回答
+                $eans = \App\Models\EnqueteAnswer::where('paper_id', $paper->id)->get();
+                $enqans = [];
+                foreach ($eans as $ea) {
+                    $enqans[$ea->enquete_id][$ea->enquete_item_id] = $ea;
+                }
+
             @endphp
-            @foreach ($tasks as $task)
-                <x-task.taskstatus :task="$task"></x-task.taskstatus>
+            <x-element.button id="toggleButton" value="著者が入力したアンケート回答をみる" color="lime"
+                onclick="openclose('div_enqans')">
+            </x-element.button>
+
+            <div class="hidden-content p-2 bg-lime-100 text-sm" style="display:none" id="div_enqans">
+                @foreach ($enqs['canedit'] as $enq)
+                    <x-enquete.view :enq="$enq" :enqans="$enqans" :inline="true">
+                    </x-enquete.view>
+                @endforeach
+            </div>
+        </div>
+
+
+        <div class="py-2 px-6">
+            <x-element.h1>
+                現在の査読ラウンド
+                <x-element.component_name type="span">
+                    manage
+                </x-element.component_name>
+            </x-element.h1>
+            <div class="block">
+                <x-sub.substatus :submit_id="$paper->currentsubmit->id"></x-sub.substatus>
+            </div>
+
+            <x-element.button id="toggleButton" value="査読候補者の追加画面をひらく" color="blue"
+                onclick="openclose('div_rassign')">
+            </x-element.button>
+
+            <div class="hidden-content p-2 bg-cyan-100" style="display:none" id="div_rassign">
+                <div class="py-2 px-6">
+                    <x-review.rassign :submit_id="$paper->currentsubmit->id"></x-review.rassign>
+                </div>
+                <div class="py-2 px-6">
+                    <livewire:review-assign :submit_id="$paper->currentsubmit->id" :paper_id="$paper->id"></livewire:review-assign>
+                </div>
+                <div class="py-2 px-6">
+                    <x-role.add_rev :submit_id="$paper->currentsubmit->id"></x-role.add_rev>
+                </div>
+            </div>
+        </div>
+        <div class="py-2 px-6">
+            <div class="block">
+                @php
+                    $tasks = $paper->currentsubmit->tasks;
+                @endphp
+                @foreach ($tasks as $task)
+                    <x-task.taskstatus :task="$task"></x-task.taskstatus>
+                @endforeach
+            </div>
+
+        </div>
+
+
+        <div class="py-2 px-6">
+            <x-element.h1c color="yellow">{{ $name_of_managers }}：
+                @foreach ($paper->managers as $user)
+                    <x-element.login_as :user="$user"></x-element.login_as>
+                    @if ($user->id == Auth::user()->id)
+                        <x-role.remove_manager :submit_id="$paper->currentsubmit->id" :user_id="$user->id"></x-role.remove_manager>
+                    @endif
+                    <span class="mx-2"></span>
+                @endforeach
+                <x-bb.bb_link :submit="$paper->currentsubmit" type="4"></x-bb.bb_link>
+                <span class="mx-2"></span>
+                {{-- <x-bb.bb_link :submit="$paper->currentsubmit" type="3"></x-bb.bb_link>
+            <span class="mx-2"></span> --}}
+                <x-element.linkbutton2 href="{{ route('paper.bb_summary', ['paper' => $paper->id]) }}" color="green"
+                    target="_blank">
+                    すべての書込みを時系列で見る（やりとり一覧）
+                </x-element.linkbutton2>
+                <span class="mx-2"></span>
+                @can('manage_papermanager', $paper->id)
+                    <x-element.linkbutton href="{{ route('paper.manage_papermanager', ['paper' => $paper->id]) }}"
+                        color="cyan" size="xs" target="_self">
+                        {{ $name_of_managers }}を管理する
+                    </x-element.linkbutton>
+                @endcan
+                @if (count($paper->managers) == 0)
+                    <span class="text-red-500">{{ $name_of_managers }}がいません！</span>
+                    <x-element.linkbutton href="{{ route('paper.manage_papermanager', ['paper' => $paper->id]) }}"
+                        color="cyan" size="xs" target="_self">
+                        {{ $name_of_managers }}を追加・管理する
+                    </x-element.linkbutton>
+                @endif
+            </x-element.h1c>
+            <livewire:paper-aec :paper="$paper"></livewire:paper-aec>
+        </div>
+
+        <div class="py-2 px-6">
+            <x-element.h1>
+                過去の査読ラウンド
+            </x-element.h1>
+
+            @foreach ($paper->submits_desc as $sub)
+                @if ($sub->round == $paper->currentsubmit->round)
+                    @continue
+                @endif
+
+                @if ($sub->ec_decision_at != null)
+                    <div class="block">
+                        <x-sub.substatus :submit_id="$sub->id" readonly="1"></x-sub.substatus>
+                    </div>
+                @endif
             @endforeach
         </div>
 
-    </div>
 
-
-    <div class="py-2 px-6">
-        <x-element.h1c color="yellow">{{ $name_of_managers }}：
-            @foreach ($paper->managers as $user)
-                <x-element.login_as :user="$user"></x-element.login_as>
-                @if ($user->id == Auth::user()->id)
-                    <x-role.remove_manager :submit_id="$paper->currentsubmit->id" :user_id="$user->id"></x-role.remove_manager>
-                @endif
-                <span class="mx-2"></span>
-            @endforeach
-            <x-bb.bb_link :submit="$paper->currentsubmit" type="4"></x-bb.bb_link>
-            <span class="mx-2"></span>
-            {{-- <x-bb.bb_link :submit="$paper->currentsubmit" type="3"></x-bb.bb_link>
-            <span class="mx-2"></span> --}}
-            <x-element.linkbutton2 href="{{ route('paper.bb_summary', ['paper' => $paper->id]) }}" color="green"
-                target="_blank">
-                すべての書込みを時系列で見る（やりとり一覧）
-            </x-element.linkbutton2>
-            <span class="mx-2"></span>
-            @can('manage_papermanager', $paper->id)
-                <x-element.linkbutton href="{{ route('paper.manage_papermanager', ['paper' => $paper->id]) }}"
-                    color="cyan" size="xs" target="_self">
-                    {{ $name_of_managers }}を管理する
-                </x-element.linkbutton>
-            @endcan
-            @if (count($paper->managers) == 0)
-                <span class="text-red-500">{{ $name_of_managers }}がいません！</span>
-                <x-element.linkbutton href="{{ route('paper.manage_papermanager', ['paper' => $paper->id]) }}"
-                    color="cyan" size="xs" target="_self">
-                    {{ $name_of_managers }}を追加・管理する
-                </x-element.linkbutton>
-            @endif
-        </x-element.h1c>
-        <livewire:paper-aec :paper="$paper"></livewire:paper-aec>
-    </div>
-
-    <div class="py-2 px-6">
-        <x-element.h1>
-            過去の査読ラウンド
-        </x-element.h1>
-
-        @foreach ($paper->submits_desc as $sub)
-            @if ($sub->round == $paper->currentsubmit->round)
-                @continue
-            @endif
-
-            @if ($sub->ec_decision_at != null)
-                <div class="block">
-                    <x-sub.substatus :submit_id="$sub->id" readonly="1"></x-sub.substatus>
-                </div>
-            @endif
-        @endforeach
-    </div>
-
-
-    @push('localjs')
-        <script src="/js/jquery.min.js"></script>
-        <script src="/js/openclose.js"></script>
-    @endpush
+        @push('localjs')
+            <script src="/js/jquery.min.js"></script>
+            <script src="/js/openclose.js"></script>
+        @endpush
 </x-app-layout>

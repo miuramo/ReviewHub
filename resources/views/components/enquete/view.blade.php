@@ -1,9 +1,13 @@
 @props([
     'enq' => [],
     'enqans' => [],
+    'inline' => false,
 ])
 
 <!-- components.enquete.view (呼び出し元は paper.show や paper.edit など) -->
+@if ($inline)
+<div class="inline-block align-top mr-4">
+@endif
 <table class="table-auto">
     <tbody>
         @forelse ($enq->items as $itm)
@@ -18,3 +22,6 @@
         @endforelse
     </tbody>
 </table>
+@if ($inline)
+</div>
+@endif
