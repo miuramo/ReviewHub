@@ -24,6 +24,9 @@
     // 役職をつくる。（役職に対して、年度とユーザを関連付け、任期を設定していく）
     \Database\Seeders\PostSeeder::init();
 
+    // 開示済みのレビューは、ロックする
+    App\Models\Review::lock_disclosed_reviews();
+
 @endphp
 <div class="px-4 py-4">
     <x-element.h1>あなたのRole</x-element.h1>

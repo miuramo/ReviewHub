@@ -524,4 +524,15 @@ class Review extends MetaModel
             Task::destroy($task->id);
         }
     }
+
+    public static function lock_disclosed_reviews(): void
+    {
+        $disclosed_reviews = Review::where('status', 2)->get(); // status 2は完了済みの査読
+        foreach ($disclosed_reviews as $review) {
+            if ($review->submit->ec_decision_at) {
+                $review->locked = true;
+                $review->save();
+            }
+        }
+    }
 }

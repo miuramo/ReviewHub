@@ -15,6 +15,9 @@
 @isset($task)
     @if ($task->completed)
         査読完了
+        <span class="text-sm">
+        <livewire:review-lock :review="$review" />
+        </span>
     @else
         査読タスク依頼中
     @endif
