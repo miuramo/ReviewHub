@@ -5,6 +5,8 @@
             {{ __('投稿管理') }}
             <span class="mx-2"></span>
             <x-element.paperid size=2 :paper_id="$paper->id"></x-element.paperid>
+            <x-element.category :cat="$paper->category_id">
+            </x-element.category>
 
             <span class="mx-6"></span>
             <x-element.linkbutton

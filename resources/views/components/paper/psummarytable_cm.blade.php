@@ -116,7 +116,7 @@
                 <td class="p-1 text-center leading-tight text-nowrap text-{{ $size_s }}">
                     @if (auth()->user()->can('see_review', $paper->id))
                         @foreach ($paper->judge() as $num => $judge)
-                            <div>({{ $num }}回目) {{ $judge }}</div>
+                            <div>【{{ mb_convert_kana($num, 'N') }}回目】 {{ $judge }}</div>
                         @endforeach
                     @else
                         <span class="text-xs text-white bg-red-400 rounded px-1 py-0.5">参照不可</span>

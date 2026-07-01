@@ -233,12 +233,14 @@ class Submit extends MetaModel
 
     public function judge()
     {
-        $out = [];
+        $revout = ["？","？","？"]; // 0
         foreach ($this->reviews as $review) {
-            $out[] = mb_substr($review->judge(), 0, 1);
+            if (isset($revout[$review->target]) && $revout[$review->target] != "？") {
+                $revout[$review->target] .= "＋" . mb_substr($review->judge(), 0, 1);
+            } else {
+                $revout[$review->target] = mb_substr($review->judge(), 0, 1);
+            }
         }
-        $meta = array_shift($out);
-        $rev12 = implode('＋', $out);
-        return $rev12 . "→" . $meta;
+        return $revout[0] . "→" . $revout[1] . " ⇒ " . ($revout[2] ?? "？");
     }
 }
