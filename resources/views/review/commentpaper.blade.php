@@ -8,6 +8,21 @@
         $nameofmeta = App\Models\Setting::getval('name_of_meta');
 
         $count = 0;
+
+        // スティッキーナビ用リスト
+        $navItems = [];
+        $navCount = 0;
+        foreach ($sub->reviews as $navIdx => $navRev) {
+            if ($navRev->target == 1) {
+                $navLabel = 'メタ査読者';
+            } elseif ($navRev->target == 2) {
+                $navLabel = '判定結果';
+            } else {
+                $navCount++;
+                $navLabel = '査読者' . mb_convert_kana($navCount, 'N');
+            }
+            $navItems[] = ['id' => 'review-table-' . $navIdx, 'label' => $navLabel];
+        }
     @endphp
     @section('title', $paper->id_03d() . ' スコア')
     <x-slot name="header">
@@ -99,17 +114,40 @@
         <x-review.paperscores :paper_id="$paper->id" :cat_id="$paper->category_id" :bb_id=null size="lg"></x-review.paperscores>
     </div> --}}
     {{-- //    プライマリの査読結果（Primary部分のみ6項目）を表示する。 --}}
+
+    {{-- スティッキーナビゲーション --}}
+    <div id="sticky-nav"
+        class="fixed top-0 left-0 right-0 z-40 bg-white dark:bg-slate-800 shadow-md py-2 px-4 transition-transform duration-300 -translate-y-full">
+        <div class="flex flex-wrap gap-2 items-center">
+            <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 mr-2">目次：</span>
+            @foreach ($navItems as $item)
+                <a href="#{{ $item['id'] }}"
+                    class="text-sm mx-1 px-4 py-1 bg-slate-200 hover:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-500 dark:text-slate-200 rounded transition-colors">
+                    {{ $item['label'] }}
+                </a>
+            @endforeach
+        </div>
+    </div>
+
     @foreach ($sub->reviews as $rev)
         <div class="m-6">
-            <table class="table-auto">
-                @php
-                    $count++;
-                @endphp
+            <table id="review-table-{{ $loop->index }}" class="table-auto scroll-mt-14">
 
                 <thead>
                     <tr>
                         <th colspan=2 class="bg-slate-300 border-4 border-slate-300 text-left pl-10">
-                            査読者{{$count}} <span class="text-gray-200 ml-10">（査{{ $rev->id }}）</span>
+                            @if ($rev->target == 1)
+                                メタ査読者
+                            @elseif ($rev->target == 2)
+                                判定結果
+                            @else
+                                @php
+                                    $count++;
+                                @endphp
+                                査読者{{ mb_convert_kana($count, 'N') }}
+                            @endif
+
+                            <span class="text-gray-200 ml-10">（査{{ $rev->id }}）</span>
 
                             @if ($rev->ismeta)
                                 <span class="mx-2 font-bold text-purple-500">({{ $nameofmeta }}) </span>
@@ -148,5 +186,33 @@
         </div>
     @endforeach
     {{-- // また、その下に、各査読者のスコアとコメントをすべて表示する。 --}}
+
+@push('localjs')
+<script>
+    (function () {
+        const stickyNav = document.getElementById('sticky-nav');
+        if (!stickyNav) return;
+
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 200) {
+                stickyNav.classList.remove('-translate-y-full');
+            } else {
+                stickyNav.classList.add('-translate-y-full');
+            }
+        });
+
+        // スムーススクロール
+        stickyNav.querySelectorAll('a').forEach(function (anchor) {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    })();
+</script>
+@endpush
 
 </x-app-layout>
