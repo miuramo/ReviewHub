@@ -98,7 +98,7 @@
 
 
     @php
-        $myreviews = App\Models\Review::where('user_id', auth()->id())
+        $myreviews = App\Models\Review::with('paper', 'submit')->where('user_id', auth()->id())
             ->whereNotNull('end_at')
             ->orderBy('created_at', 'desc')
             ->get();
@@ -115,6 +115,7 @@
                 <div class="bg-gray-200 text-sm p-2 mx-2 dark:text-gray-300 dark:bg-gray-500">
                     論文ファイル：
                     @foreach ($rev->paper->past_pdf_files() as $file)
+                    {{-- @foreach ($rev->paper->files as $file) --}}
                         <a class="underline text-blue-600 hover:bg-lime-200 dark:text-blue-200 dark:hover:bg-lime-500"
                             href="{{ route('file.showhash', ['file' => $file->id, 'hash' => substr($file->key, 0, 10)]) }}"
                             target="_blank"> {{ $file->origname }} </a>

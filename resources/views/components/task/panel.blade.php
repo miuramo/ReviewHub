@@ -184,19 +184,20 @@
                 <input type="hidden" name="task" value="{{ $task->id }}">
                 <input type="hidden" name="rev_id" value="{{ $rev->id }}">
                 <input type="hidden" name="redirect_role" value="{{ $task->workflow->subject }}">
-                <x-element.submitbutton color="pink" value="assign" confirm="本当に査読完了を報告しますか？（掲示板経由で報告します。）" size="2xl">査読完了を報告する</x-element.submitbutton>
+                <x-element.submitbutton color="pink" value="assign" confirm="本当に査読完了を報告しますか？（掲示板経由で報告します。）"
+                    size="2xl">査読完了を報告する</x-element.submitbutton>
             </form>
+            <span class="mx-2"></span>
+            <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green" size="sm"
+                target="_blank">
+                {{ $types[$rev->target] }}の参照
+            </x-element.linkbutton>
         @endif
 
         <span class="mx-2"></span>
 
         <x-element.linkbutton href="{{ route('review.edit', ['review' => $rev]) }}" color="blue" size="lg">
             {{ $types[$rev->target] }}の編集
-        </x-element.linkbutton>
-        <span class="mx-2"></span>
-        <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green" size="sm"
-            target="_blank">
-            {{ $types[$rev->target] }}の参照
         </x-element.linkbutton>
         <span class="mx-2"></span>
         <x-bb.bb_link :submit="$rev->submit" type="2" :rev_id="$rev->id" size="sm"

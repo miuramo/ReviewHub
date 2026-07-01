@@ -60,6 +60,35 @@
             @endforeach
         </div>
 
+        <div>
+            @php
+                // 回答可能(canedit)または参照可能(readonly)
+                $enqs = \App\Models\Enquete::needForSubmit($paper);
+
+                // 既存回答
+                $eans = \App\Models\EnqueteAnswer::where('paper_id', $paper->id)->get();
+                $enqans = [];
+                foreach ($eans as $ea) {
+                    $enqans[$ea->enquete_id][$ea->enquete_item_id] = $ea;
+                }
+
+            @endphp
+            <div class="p-2 bg-lime-100 text-sm" id="div_enqans">
+                @foreach ($enqs['canedit'] as $enq)
+                    @can('see_enquete', $enq)
+                        <x-enquete.view :enq="$enq" :enqans="$enqans" :inline="true">
+                        </x-enquete.view>
+                    @endcan
+                @endforeach
+                @foreach ($enqs['readonly'] as $enq)
+                    @can('see_enquete', $enq)
+                        <x-enquete.view :enq="$enq" :enqans="$enqans" :inline="true">
+                        </x-enquete.view>
+                    @endcan
+                @endforeach
+            </div>
+        </div>
+
     </div>
 
 

@@ -484,7 +484,7 @@ class Paper extends Model
     {
         if ($this->owner == $u->id) return true;
         if ($this->isCoAuthorEmail($u->email)) return true;
-        // check author name 
+        // check author name 著者名の名前と、ユーザの名前が一致するかどうかをチェックする
         $authorlist = explode("\n", $this->authorlist);
         $ufirst_ulast = explode(" ", trim($u->name));
         foreach ($authorlist as $author) {

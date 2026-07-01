@@ -8,8 +8,8 @@ class TermController extends Controller
 {
     //
     public function index(int $year = 0) {
-        if (!auth()->user()->can("role", "manager")) {
-            abort(403, "この機能を利用する権限(manager)がありません。");
+        if (!auth()->user()->can("role_any", "ec|cm|manager")) {
+            abort(403, "この機能を利用する権限(ec|cm|manager)がありません。");
         }
         if ($year == 0) {
             $year = date("Y");

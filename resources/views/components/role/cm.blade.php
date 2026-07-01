@@ -27,7 +27,13 @@
 @endphp
 
 <!-- components.role.reviewer -->
+
 <div class="px-6 py-4">
+    <div class="py-2 px-6">
+        <x-element.linkbutton href="{{ route('term.index') }}" color="cyan">
+            編集委員名簿
+        </x-element.linkbutton>
+    </div>
 
     @if (count($approvetasks) > 0)
         <div class="px-6 py-4">
@@ -65,6 +71,17 @@
     @endif
 
     @if (count($tasks) > 0)
+        <div class="px-6 pt-0">
+            <x-element.h1c color="yellow">未完了の査読タスクがあります →
+                <span class="mx-2"></span>
+                <x-element.linkbutton href="{{ route('role.top', ['role' => 'rev']) }}" color="orange" size="md">
+                    査読一覧
+                </x-element.linkbutton>
+                </x-element.h1>
+        </div>
+    @endif
+
+    {{-- @if (count($tasks) > 0)
         <div class="px-6 py-4">
             <x-element.h1>以下の査読について、ご対応をお願いします。<br><span
                     class="text-pink-500 font-extrabold">（「査読報告の編集」が完了したあとに表示される「査読完了を報告する」ボタンを押してください。）</span></x-element.h1>
@@ -74,7 +91,7 @@
                 </div>
             @endforeach
         </div>
-    @endif
+    @endif --}}
 
     @push('localjs')
         <script src="/js/sortable.js"></script>
@@ -84,9 +101,3 @@
     <div class="py-2 px-6">
         <livewire:inf-list-cm />
     </div>
-
-    <div class="py-2 px-6">
-    <x-element.linkbutton href="{{ route('term.index') }}" color="cyan">
-        編集委員名簿
-    </x-element.linkbutton>
-</div>

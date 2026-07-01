@@ -157,5 +157,17 @@ class AuthServiceProvider extends ServiceProvider
             // Termの期間と、投稿判定の期間が重なっているか。
             return false;
         });
+
+        /**
+         * アンケート参照権限がある
+         */
+        Gate::define('see_enquete', function ($user, $enq) {
+            foreach($enq->roles as $rl){
+                if ($user->can('role', $rl->name)) return true;
+            }
+            // もし、編集長または編集委員なら、true
+            // if ($user->can('role_any', 'ec|cm')) return true;
+            return false;
+        });
     }
 }

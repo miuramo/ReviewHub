@@ -92,12 +92,16 @@
 
             <div class="hidden-content p-2 bg-lime-100 text-sm" style="display:none" id="div_enqans">
                 @foreach ($enqs['canedit'] as $enq)
-                    <x-enquete.view :enq="$enq" :enqans="$enqans" :inline="true">
-                    </x-enquete.view>
+                    @can('see_enquete', $enq)
+                        <x-enquete.view :enq="$enq" :enqans="$enqans" :inline="true">
+                        </x-enquete.view>
+                    @endcan
                 @endforeach
                 @foreach ($enqs['readonly'] as $enq)
-                    <x-enquete.view :enq="$enq" :enqans="$enqans" :inline="true">
-                    </x-enquete.view>
+                    @can('see_enquete', $enq)
+                        <x-enquete.view :enq="$enq" :enqans="$enqans" :inline="true">
+                        </x-enquete.view>
+                    @endcan
                 @endforeach
             </div>
         </div>

@@ -3,7 +3,7 @@
     <x-paper.psummarytable_cm :all="$papers" :heads="$heads" size="sm" />
 
     {{-- スクロール検知用 --}}
-    <div x-data x-intersect="$wire.loadMore()" class="h-10"></div>
+    {{-- <div x-data x-intersect="$wire.loadMore()" class="h-10"></div> --}}
 
     <div wire:loading wire:target="loadMore" class="text-center p-4">
         読み込み中...
@@ -11,10 +11,10 @@
 
     {{-- 「続きを表示」ボタン（スクロールで反応しない場合や明示的に押したいユーザー用） --}}
     @if ($perPage < $total)
-        <div class="text-center my-4">
+        <div class="text-center my-4" x-data>
             <button
                 type="button"
-                wire:click="loadMore"
+                @click="$wire.loadMore().then(() => sortables_init())"
                 wire:loading.attr="disabled"
                 wire:target="loadMore"
                 @disabled($isLoading)

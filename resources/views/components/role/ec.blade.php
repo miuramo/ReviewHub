@@ -59,11 +59,6 @@
                 査読一覧
             </x-element.linkbutton>
         </x-element.h1>
-        {{-- @foreach ($tasks as $task)
-            <div class="mx-6">
-                <x-task.panel :task="$task" />
-            </div>
-        @endforeach --}}
     </div>
 @endif
 
