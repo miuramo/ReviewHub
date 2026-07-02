@@ -114,6 +114,7 @@ class PaperStoreRequest extends FormRequest
                 'category_id' => $this->input("action"),
                 'contactemails' => $em,
                 'owner' => Auth::user()->id,
+                'authorlist' => Auth::user()->name . " (". Auth::user()->affil.")",
             ]);
 
             // もし、$paper->id が年の下2桁ではじまっていない場合は、autoincrementを再セットして、再度生成する。例：2024年なら、24で始まるべき
@@ -135,6 +136,7 @@ class PaperStoreRequest extends FormRequest
                         'category_id' => $this->input("action"),
                         'contactemails' => $em,
                         'owner' => Auth::user()->id,
+                        'authorlist' => Auth::user()->name . " (". Auth::user()->affil.")",
                     ]);
                 }
             }
