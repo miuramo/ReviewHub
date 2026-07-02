@@ -243,7 +243,7 @@
                 @foreach ($enqs['canedit'] as $enq)
                     <div class="text-lg mt-5 mb-1 p-3 bg-slate-200 rounded-lg dark:bg-slate-800 dark:text-gray-400">
                         {{ $enq->name }}
-                        @if (!$enq->showonpaperindex)
+                        @if (!$enq->showonpaperindex && !$paper->locked)
                             &nbsp; → <x-element.linkbutton
                                 href="{{ route('enquete.pageedit', ['paper' => $paper, 'enq' => $enq]) }}"
                                 color="cyan">
@@ -252,18 +252,25 @@
                         @endif
                         {{-- <x-element.gendospan>{{ $enqs['until'][$enq->id] }}まで修正可</x-element.gendospan> --}}
                     </div>
-                    @if ($enq->showonpaperindex)
-                        <form action="{{ route('enquete.update', ['paper' => $paper->id, 'enq' => $enq]) }}"
-                            method="post" id="enqform{{ $enq->id }}">
-                            @csrf
-                            @method('put')
-                            <input type="hidden" name="paper_id" value="{{ $paper->id }}">
-                            <input type="hidden" name="enq_id" value="{{ $enq->id }}">
-                            <div class="mx-10">
-                                <x-enquete.edit :enq="$enq" :enqans="$enqans">
-                                </x-enquete.edit>
-                            </div>
-                        </form>
+                    @if($paper->locked)
+                        <div class="mx-10">
+                            <x-enquete.view :enq="$enq" :enqans="$enqans">
+                            </x-enquete.view>
+                        </div>
+                    @else
+                        @if ($enq->showonpaperindex)
+                            <form action="{{ route('enquete.update', ['paper' => $paper->id, 'enq' => $enq]) }}"
+                                method="post" id="enqform{{ $enq->id }}">
+                                @csrf
+                                @method('put')
+                                <input type="hidden" name="paper_id" value="{{ $paper->id }}">
+                                <input type="hidden" name="enq_id" value="{{ $enq->id }}">
+                                <div class="mx-10">
+                                    <x-enquete.edit :enq="$enq" :enqans="$enqans">
+                                    </x-enquete.edit>
+                                </div>
+                            </form>
+                        @endif
                     @endif
                 @endforeach
                 @foreach ($enqs['readonly'] as $enq)
