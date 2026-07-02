@@ -3,10 +3,10 @@
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400 ">
             <span class="mx-2"></span>
-            {{ __('任期役職管理') }}
+            {{ __('役職・任期の確認') }}
         </h2>
     </x-slot>
-    @section('title', '任期役職管理')
+    @section('title', '役職・任期の確認')
 
     @if (session('feedback.success'))
         <x-alert.success>{{ session('feedback.success') }}</x-alert.success>

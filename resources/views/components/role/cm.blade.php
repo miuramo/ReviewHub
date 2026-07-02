@@ -30,7 +30,7 @@
 
 <div class="px-6 py-4">
     <div class="py-2 px-6">
-        <x-element.linkbutton href="{{ route('term.index') }}" color="cyan">
+        <x-element.linkbutton href="{{ route('term.index') }}" color="cyan" target="_blank" size="md">
             編集委員名簿
         </x-element.linkbutton>
     </div>
