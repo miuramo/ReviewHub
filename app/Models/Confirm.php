@@ -81,7 +81,7 @@ class Confirm extends Model
         Confirm::firstOrCreate(
             [
                 "grp" => 0,
-                "name" => "policy6"
+                "name" => "policy06"
             ],
             [
                 "mes" => "確認事項に追加や変更が発生した場合、ログイン後の画面にて再度確認をしていただく場合があります。あらかじめご了承ください。",
