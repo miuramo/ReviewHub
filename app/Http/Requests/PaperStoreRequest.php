@@ -46,7 +46,7 @@ class PaperStoreRequest extends FormRequest
         return $kakunin;
     }
 
-    public function withValidator($validator)
+    public function withValidator(\Illuminate\Validation\Validator $validator)
     {
         $validator->after(function ($validator) {
             $emValidator = $this->validate_em();
