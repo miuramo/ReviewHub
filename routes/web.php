@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AffilController;
 use App\Http\Controllers\BbController;
 use App\Http\Controllers\BbMesController;
+use App\Http\Controllers\ConfirmController;
 use App\Http\Controllers\EnqueteAnswerController;
 use App\Http\Controllers\EnqueteController;
 use App\Http\Controllers\FailedJobController;
@@ -344,6 +345,12 @@ Route::middleware('auth')->group(function () {
     Route::get('forum/{forum}', [\App\Http\Controllers\ForumController::class, 'show'])->name('forum.show');
     Route::post('forum/{forum}/mes', [\App\Http\Controllers\ForumController::class, 'storeMes'])->name('forum.mes.store');
     Route::delete('forum/{forum}', [\App\Http\Controllers\ForumController::class, 'destroy'])->name('forum.destroy');
+
+    // 確認事項の編集
+    Route::get('confirm_edit/{grp?}', [ConfirmController::class, 'edit'])->name('confirm.edit');
+    Route::get('confirm_edit_copy/{copy_id}/{grp}', [ConfirmController::class, 'edit_copy'])->name('confirm.edit_copy');
+    Route::get('confirm_edit_delete/{del_id}/{grp}', [ConfirmController::class, 'edit_delete'])->name('confirm.edit_delete');
+    Route::get('confirm_renumber_name/{grp}', [ConfirmController::class, 'renumber_name'])->name('confirm.renumber_name');
 });
 
 // 投票はログインしている人だけ。

@@ -71,6 +71,11 @@
                     {{ $key }}
                 </x-element.linkbutton>
             @endforeach
+            <span class="mx-2"></span>
+            <x-element.linkbutton2 color="lime" href="{{ route('confirm.edit') }}" target="_blank">
+                Confirms
+            </x-element.linkbutton2>
+
         </div>
     </div>
 
