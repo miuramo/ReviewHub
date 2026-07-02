@@ -27,7 +27,7 @@
         </div>
     @else
         <div class="text-center my-4 text-sm text-gray-500">
-            これ以上の投稿はありません
+            これより前の投稿はありません
         </div>
     @endif
 </div>

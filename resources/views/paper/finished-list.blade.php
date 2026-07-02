@@ -13,5 +13,9 @@
     <div class="py-2 px-6">
         <livewire:inf-list />
     </div>
+    
+    @push('localjs')
+        <script src="/js/sortable.js"></script>
+    @endpush
 
 </x-app-layout>
