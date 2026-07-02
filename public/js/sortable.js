@@ -39,6 +39,43 @@ function sortables_init() {
   }
 }
 
+/* ---- ソート状態の保存・復元 ---- */
+var _savedSortCol = -1;
+var _savedSortDir = null; // 'desc' or 'asc'
+
+function ts_saveSortState() {
+  _savedSortCol = -1;
+  _savedSortDir = null;
+  var allSpans = document.getElementsByTagName('span');
+  for (var i = 0; i < allSpans.length; i++) {
+    if (allSpans[i].className === 'sarrow') {
+      var sortdir = allSpans[i].getAttribute('sortdir');
+      if (sortdir) {
+        var link = allSpans[i].parentNode;
+        var id = link ? link.getAttribute('id') : null;
+        if (id && id.indexOf('th_') === 0) {
+          _savedSortCol = parseInt(id.substring(3));
+          // sortdir='up' のとき ▼ 表示（降順）、sortdir='down' のとき ▲ 表示（昇順）
+          _savedSortDir = (sortdir === 'up') ? 'desc' : 'asc';
+        }
+        break;
+      }
+    }
+  }
+}
+
+function ts_restoreSortState() {
+  if (_savedSortCol < 0) return;
+  var link = document.getElementById('th_' + _savedSortCol);
+  if (!link) return;
+  // 初期化直後は未ソート状態なので、1クリックで降順、2クリックで昇順
+  link.click();
+  if (_savedSortDir === 'asc') {
+    link.click();
+  }
+}
+/* -------------------------------- */
+
 function ts_makeSortable(t) {
   if (t.rows && t.rows.length > 0) {
     if (t.tHead && t.tHead.rows.length > 0) {

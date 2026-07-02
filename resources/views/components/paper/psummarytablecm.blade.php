@@ -3,7 +3,7 @@
     'heads' => ['id', '種別', 'status', 'title / author', '査-状況'],
     'size' => 'md',
 ])
-<!-- components.paper.psummarytable_cm -->
+<!-- components.paper.psummarytablecm -->
 @php
     if ($size === 'sm') {
         $size_s = 'xs';
@@ -32,7 +32,7 @@
     $editor_hash = array_flip($editor_names);
 @endphp
 <x-element.component_name>
-    psummarytable_cm
+    psummarytablecm
 </x-element.component_name>
 
 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-400 sortable" id="psummarytable">
@@ -128,4 +128,4 @@
 
 
 
-<!-- components.paper.psummarytable_cm end -->
+<!-- components.paper.psummarytablecm end -->
