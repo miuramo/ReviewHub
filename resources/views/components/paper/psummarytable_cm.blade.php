@@ -3,7 +3,7 @@
     'heads' => ['id', '種別', 'status', 'title / author', '査-状況'],
     'size' => 'md',
 ])
-<!-- components.paper.summarytable -->
+<!-- components.paper.psummarytable_cm -->
 @php
     if ($size === 'sm') {
         $size_s = 'xs';
@@ -45,6 +45,7 @@
     </thead>
     <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-300">
         @foreach ($all as $paper)
+            @if($paper->pdf_file_id == 0) @continue @endif
             <tr
                 class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-400' : 'bg-white dark:bg-slate-300' }}">
                 @if ($show_aec_name)
@@ -55,7 +56,10 @@
                 <td class="p-1 text-center text-{{ $size }}">
                     {{ $paper->id_03d() }}
                 </td>
-                <td class="p-1 text-center text-{{ $size }}">{{ $paper->category->name }}</td>
+                <td class="p-1 text-center text-{{ $size }}">
+                    {{-- {{ $paper->category->name }} --}}
+                    <x-element.category :cat="$paper->category_id" size="xs" />
+                </td>
 
                 <td class="p-1 text-center text-{{ $size }}">
                     @if (auth()->user()->can('see_review', $paper->id))
@@ -88,17 +92,9 @@
                         @else
                             No PDF
                         @endif
-                    {{-- @else
-                        <span class="mx-4"></span>
-                        {{-- 管理できないので、表示だけ --}}
-                        {{-- @if ($paper->pdf_file_id != 0)
-                            {{ $paper->pdf_file->pagenum }}page
-                        @else
-                            No PDF
-                        @endif
-                    @endif --}} 
                     {{-- 著者名リスト --}}
                     <div class="w-full text-xs">
+                        @if(strlen($paper->authorlist) > 10)
                         @foreach (explode("\n", $paper->authorlist) as $author)
                             @php
                                 $aname = trim(explode('(', $author)[0]);
@@ -110,6 +106,9 @@
                                 <span class="text-left mr-2 text-gray-500">{{ $author }}</span>
                             @endif
                         @endforeach
+                        @else
+                            <span class="text-gray-400">{{ $paper->paperowner->name }} （{{ $paper->paperowner->affil }}）が投稿申請中</span>
+                        @endif
                     </div>
                 </td>
 

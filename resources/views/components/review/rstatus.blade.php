@@ -80,30 +80,34 @@
                         査読活動ログ（別タブ）
                     </x-element.linkbutton>
                 </div>
-                <form class="inline" action="{{ route('admin.crud') }}?table=reviews" method="post" target="_blank"
-                    id="admincrudwhereid{{ $review->id }}">
-                    @csrf
-                    @method('post')
-                    <input id="whereby" type="hidden"
-                        class="whereBy text-sm bg-slate-100 font-thin mr-2 p-0 h-5 w-full" name="whereBy__id"
-                        value={{ $review->id }}>
-                    <x-element.submitbutton color="white" size="xs">編集({{ $review->id }})（別タブ）
-                    </x-element.submitbutton>
-                </form>
+                @can('role', 'admin')
+                    <form class="inline" action="{{ route('admin.crud') }}?table=reviews" method="post" target="_blank"
+                        id="admincrudwhereid{{ $review->id }}">
+                        @csrf
+                        @method('post')
+                        <input id="whereby" type="hidden"
+                            class="whereBy text-sm bg-slate-100 font-thin mr-2 p-0 h-5 w-full" name="whereBy__id"
+                            value={{ $review->id }}>
+                        <x-element.submitbutton color="white" size="xs">編集({{ $review->id }})（別タブ）
+                        </x-element.submitbutton>
+                    </form>
+                @endcan
 
                 <x-element.component_name>
                     rstatus {{ $review->id }}
                 </x-element.component_name>
 
                 @if ($task && $task->completed == 0)
-                    <form action="{{ route('task.update', ['task' => $task]) }}" method="post" class="inline-block text-xs">
-                    @csrf
-                    @method('PUT')
-                    <input type="hidden" name="task" value="{{ $task->id }}">
-                    <input type="hidden" name="rev_id" value="{{ $review->id }}">
-                    <input type="hidden" name="redirect_role" value="{{ $task->workflow->subject }}">
-                    <x-element.submitbutton2 color="pink" value="assign" confirm="本当に代理で査読完了にしますか？">代理で査読完了にする</x-element.submitbutton>
-                </form>
+                    <form action="{{ route('task.update', ['task' => $task]) }}" method="post"
+                        class="inline-block text-xs">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="task" value="{{ $task->id }}">
+                        <input type="hidden" name="rev_id" value="{{ $review->id }}">
+                        <input type="hidden" name="redirect_role" value="{{ $task->workflow->subject }}">
+                        <x-element.submitbutton2 color="pink" value="assign"
+                            confirm="本当に代理で査読完了にしますか？">代理で査読完了にする</x-element.submitbutton>
+                    </form>
                 @endif
             </td>
         </tr>

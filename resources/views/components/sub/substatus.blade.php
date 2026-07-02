@@ -95,19 +95,20 @@
                                 </div>
                                 <span class="mx-2"></span>
 
-
-                                SubID: {{ $sub->id }}
-                                <form class="inline" action="{{ route('admin.crud') }}?table=submits" method="post"
-                                    target="_blank" id="admincrudwhereid{{ $sub->id }}">
-                                    @csrf
-                                    @method('post')
-                                    <input id="whereby" type="hidden"
-                                        class="whereBy text-sm bg-slate-100 font-thin mr-2 p-0 h-5 w-full"
-                                        name="whereBy__id" value={{ $sub->id }}>
-                                    <x-element.submitbutton color="white"
-                                        size="xs">編集(Sub{{ $sub->id }})（別タブ）
-                                    </x-element.submitbutton>
-                                </form>
+                                @can('role', 'admin')
+                                    SubID: {{ $sub->id }}
+                                    <form class="inline" action="{{ route('admin.crud') }}?table=submits" method="post"
+                                        target="_blank" id="admincrudwhereid{{ $sub->id }}">
+                                        @csrf
+                                        @method('post')
+                                        <input id="whereby" type="hidden"
+                                            class="whereBy text-sm bg-slate-100 font-thin mr-2 p-0 h-5 w-full"
+                                            name="whereBy__id" value={{ $sub->id }}>
+                                        <x-element.submitbutton color="white"
+                                            size="xs">編集(Sub{{ $sub->id }})（別タブ）
+                                        </x-element.submitbutton>
+                                    </form>
+                                @endcan
                             @endif
                         </div>
                     @endif

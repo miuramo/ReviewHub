@@ -198,7 +198,7 @@ class Paper extends Model
     {
         return $this->belongsToMany(User::class, 'paper_manager');
     }
-    
+
     public function aec()
     {
         return $this->belongsTo(User::class, 'aec_id');
@@ -279,13 +279,22 @@ class Paper extends Model
      */
     public function past_pdf_files(): \Illuminate\Database\Eloquent\Collection
     {
-        return File::where('paper_id', $this->id)
+        $cor = File::where('paper_id', $this->id)
             ->where('filetype_id', 1) // PDF file
             ->where('valid', 1)
             ->where('deleted', 0)
             ->where('pending', 0)
-            ->where('archived', 1)
+            ->where('archived', 1) // 最初は、アーカイブ済みだけを探す
             ->orderBy('created_at', 'desc')->get();
+        if (count($cor) == 0) { // もし0件になってしまったら、アーカイブされていないものも含めて、すべてを返す。
+            $cor = File::where('paper_id', $this->id)
+                ->where('filetype_id', 1) // PDF file
+                ->where('valid', 1)
+                ->where('deleted', 0)
+                ->where('pending', 0)
+                ->orderBy('created_at', 'desc')->get();
+        }
+        return $cor;
     }
     public function enqans(): \Illuminate\Database\Eloquent\Relations\HasMany
     {

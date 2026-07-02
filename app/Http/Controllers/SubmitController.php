@@ -524,7 +524,10 @@ class SubmitController extends Controller
     {
         $sub = Submit::findOrFail($sub_id);
         if (!auth()->user()->can('manage_review', $sub->paper->id)) abort(403, "you are not a manager (manage_review)");
-        Review::review_assign($sub->id, $req->input("reviewer_id"),  $req->input('target'));
+        $ret = Review::review_assign($sub->id, $req->input("reviewer_id"),  $req->input('target'));
+        if ($ret === false) {
+            return redirect($req->input("redirect_page"))->with('feedback.error', '査読者の割り当てに失敗しました。');
+        }
         return redirect($req->input("redirect_page"))->with('feedback.success', '査読候補者を追加しました');
     }
     /**

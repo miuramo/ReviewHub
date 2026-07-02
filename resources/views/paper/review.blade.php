@@ -9,7 +9,7 @@
             第{{ $sub->round }}回 {{ __('査読結果') }}
         </h2>
     </x-slot>
-    @section('title', '査読結果 '. $sub->paper->id_03d())
+    @section('title', '査読結果 ' . $sub->paper->id_03d())
     @if (session('feedback.success'))
         <x-alert.success>{{ session('feedback.success') }}</x-alert.success>
     @endif
@@ -85,6 +85,9 @@
                         {{ $item['label'] }}
                     </a>
                 @endforeach
+                <span class="mx-4"></span>
+                <span class="text-sm text-gray-500 dark:text-gray-400">※数字キー(1〜4)でも移動できます。0 or Escapeで最上部へスクロールします。</span>
+
             </div>
         </div>
 
@@ -146,32 +149,52 @@
         </x-element.linkbutton>
     </div>
 
-@push('localjs')
-<script>
-    (function () {
-        const stickyNav = document.getElementById('sticky-nav');
-        if (!stickyNav) return;
+    @push('localjs')
+        <script>
+            (function() {
+                const stickyNav = document.getElementById('sticky-nav');
+                if (!stickyNav) return;
 
-        window.addEventListener('scroll', function () {
-            if (window.scrollY > 200) {
-                stickyNav.classList.remove('-translate-y-full');
-            } else {
-                stickyNav.classList.add('-translate-y-full');
-            }
-        });
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > 200) {
+                        stickyNav.classList.remove('-translate-y-full');
+                    } else {
+                        stickyNav.classList.add('-translate-y-full');
+                    }
+                });
 
-        // スムーススクロール
-        stickyNav.querySelectorAll('a').forEach(function (anchor) {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
-        });
-    })();
-</script>
-@endpush
+                // スムーススクロール
+                stickyNav.querySelectorAll('a').forEach(function(anchor) {
+                    anchor.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const target = document.querySelector(this.getAttribute('href'));
+                        if (target) {
+                            target.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    });
+                });
+
+                // 数字キー(1〜4)でナビボタンをクリック、0/Escapeで最上部へスクロール
+                document.addEventListener('keydown', function(e) {
+                    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target
+                        .isContentEditable) return;
+                    if (e.key === '0' || e.key === 'Escape') {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        return;
+                    }
+                    const index = parseInt(e.key, 10);
+                    if (index >= 1 && index <= 4) {
+                        const links = stickyNav.querySelectorAll('a');
+                        const link = links[index - 1];
+                        if (link) link.click();
+                    }
+                });
+
+            })();
+        </script>
+    @endpush
 
 </x-app-layout>

@@ -82,19 +82,6 @@
             color="purple" target="_blank" size="sm">
             著者がみる査読結果 </x-element.linkbutton2>
 
-        {{-- @if ($bb2 && $bb2->ismeta_myself())
-            <span class="mx-4"></span>
-            @isset($bb2->paper)
-                <x-element.linkbutton href="{{ route('bb.show', ['bb' => $bb2->id, 'key' => $bb2->key]) }}" color="pink"
-                    target="_blank" size="sm">
-                    {{$nameofmeta}}と著者の掲示板
-                    ({{ $bb2->nummessages() }} messages)
-                </x-element.linkbutton>
-            @else
-                <div>Error: No Paper associated {{ $bb2->id }}</div>
-            @endisset
-        @endif --}}
-
     </div>
 
     <div class="mx-6 mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -109,11 +96,6 @@
             @endif
         </div>
     </div>
-    {{-- 査読スコアのサマリー表示 bb_id=null にすると、掲示板に表示したもののプライマリの名前も表示しない。 --}}
-    {{-- <div class="mx-6 mt-4">
-        <x-review.paperscores :paper_id="$paper->id" :cat_id="$paper->category_id" :bb_id=null size="lg"></x-review.paperscores>
-    </div> --}}
-    {{-- //    プライマリの査読結果（Primary部分のみ6項目）を表示する。 --}}
 
     {{-- スティッキーナビゲーション --}}
     <div id="sticky-nav"
@@ -126,6 +108,8 @@
                     {{ $item['label'] }}
                 </a>
             @endforeach
+            <span class="mx-4"></span>
+            <span class="text-sm text-gray-500 dark:text-gray-400">※数字キー(1〜4)でも移動できます。0 or Escapeで最上部へスクロールします。</span>
         </div>
     </div>
 
@@ -187,32 +171,51 @@
     @endforeach
     {{-- // また、その下に、各査読者のスコアとコメントをすべて表示する。 --}}
 
-@push('localjs')
-<script>
-    (function () {
-        const stickyNav = document.getElementById('sticky-nav');
-        if (!stickyNav) return;
+    @push('localjs')
+        <script>
+            (function() {
+                const stickyNav = document.getElementById('sticky-nav');
+                if (!stickyNav) return;
 
-        window.addEventListener('scroll', function () {
-            if (window.scrollY > 200) {
-                stickyNav.classList.remove('-translate-y-full');
-            } else {
-                stickyNav.classList.add('-translate-y-full');
-            }
-        });
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > 200) {
+                        stickyNav.classList.remove('-translate-y-full');
+                    } else {
+                        stickyNav.classList.add('-translate-y-full');
+                    }
+                });
 
-        // スムーススクロール
-        stickyNav.querySelectorAll('a').forEach(function (anchor) {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
-        });
-    })();
-</script>
-@endpush
+                // スムーススクロール
+                stickyNav.querySelectorAll('a').forEach(function(anchor) {
+                    anchor.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const target = document.querySelector(this.getAttribute('href'));
+                        if (target) {
+                            target.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    });
+                });
+
+                // 数字キー(1〜4)でナビボタンをクリック、0/Escapeで最上部へスクロール
+                document.addEventListener('keydown', function(e) {
+                    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target
+                        .isContentEditable) return;
+                    if (e.key === '0' || e.key === 'Escape') {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        return;
+                    }
+                    const index = parseInt(e.key, 10);
+                    if (index >= 1 && index <= 4) {
+                        const links = stickyNav.querySelectorAll('a');
+                        const link = links[index - 1];
+                        if (link) link.click();
+                    }
+                });
+            })();
+        </script>
+    @endpush
 
 </x-app-layout>

@@ -15,9 +15,15 @@
 @isset($task)
     @if ($task->completed)
         査読完了
+        <span class="mx-1"></span>
         <span class="text-sm">
-        <livewire:review-lock :review="$review" />
+            <livewire:review-lock :review="$review" />
         </span>
+        <span class="mx-1"></span>
+        <x-element.linkbutton2 href="{{ route('review.show', ['review' => $review]) }}" color="purple" size="xs"
+            target="_blank">
+            査読報告
+        </x-element.linkbutton2>
     @else
         査読タスク依頼中
     @endif
@@ -25,7 +31,7 @@
     @if ($review->request_at)
         <span class="text-cyan-600 font-extrabold">査読依頼送信済み</span>
         <span class="text-cyan-600 text-sm">
-            @foreach($dates_sendrequest as $logac)
+            @foreach ($dates_sendrequest as $logac)
                 {{ substr($logac->created_at, 5, 11) }}<br>
             @endforeach
         </span>

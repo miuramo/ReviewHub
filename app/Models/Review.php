@@ -167,8 +167,13 @@ class Review extends MetaModel
      * 査読割り当て
      * status 3が最終判定 2がメタ 1が通常 0以下が解除
      */
-    public static function review_assign(int $submit_id, int $user_id, int $ismeta2): void
+    public static function review_assign(int $submit_id, int $user_id, int $ismeta2): bool
     {
+        // すでに、user_idがsubmit_idに割り当てられている場合は、エラーとしてfalseを返す
+        $existing = Review::where('user_id', $user_id)->where('submit_id', $submit_id)->first();
+        if ($existing) {
+            return false;
+        }
         $ismeta2 = intval($ismeta2);
         $submit = Submit::find($submit_id);
         if ($ismeta2 > 0) {
@@ -200,6 +205,7 @@ class Review extends MetaModel
                 $r->delete();
             }
         }
+        return true;
     }
 
     /**
@@ -370,6 +376,7 @@ class Review extends MetaModel
     public function judge(): string
     {
         $ret = $this->scores_and_comments(1, 0, 0);
+        $ret = str_replace(["(", ")"], "", $ret); // (未入力) の括弧を消す
         return $ret['判定結果'] ?? $ret['措置'] ?? $ret['査読結果'] ?? '??';
     }
 
