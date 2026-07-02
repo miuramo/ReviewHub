@@ -2,6 +2,10 @@
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400">
             {{ __('委員会フォーラム一覧') }}
+            <span class="mx-8"></span>
+            <x-element.linkbutton href="{{ route('term.index') }}" color="cyan" target="_blank" size="sm">
+                編集委員名簿
+            </x-element.linkbutton>
         </h2>
     </x-slot>
     @section('title', '委員会フォーラム')
