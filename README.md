@@ -9,7 +9,7 @@ ReviewHub is a journal paper submission and peer review system developed using L
 
 ## License
 
-ReviewHub is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+ReviewHub is open-sourced software licensed under the [Apache-2.0 license](https://www.apache.org/licenses/LICENSE-2.0).
 
 
 ## First Step
