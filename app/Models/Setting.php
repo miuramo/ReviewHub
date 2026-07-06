@@ -204,6 +204,15 @@ class Setting extends Model
         ]);
 
         Setting::firstOrCreate([
+            'name' => "RESUBMIT_DURATION_DAYS",
+        ], [
+            'value' => "[0, 60, 60]",
+            'isnumber' => false,
+            'isbool' => false,
+            'misc' => '再投稿期間の日数。カテゴリごとに指定する。例: [0, 60, 60]',
+        ]);
+
+        Setting::firstOrCreate([
             'name' => "NAME_OF_MANAGER",
         ], [
             'value' => "投稿管理者",

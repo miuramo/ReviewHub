@@ -400,11 +400,13 @@ class PaperController extends Controller
             // 古いファイルはアーカイブする
             $sub->paper->archiveFiles();
 
+            // 再投稿期限までの日数を取得する。カテゴリごとに設定できる。
+            $resubmit_duration_days = Setting::getary('RESUBMIT_DURATION_DAYS')[$sub->paper->category_id] ?? 30; //
             Submit::factory()->create([
                 'paper_id' => $sub->paper->id,
                 'category_id' => $sub->paper->category_id,
                 'round' => $sub->round + 1,
-                'resubmit_until' => date('Y-m-d', strtotime('+30 days')),
+                'resubmit_until' => date('Y-m-d', strtotime('+' . $resubmit_duration_days . ' days')),
                 'previous_submit_id' => $sub->id,
             ]); // ->init_reviews();
 
