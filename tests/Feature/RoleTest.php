@@ -67,7 +67,7 @@ class RoleTest extends TestCase
     public function test_manager_role(): void
     {
         // var_dump(self::$users);
-        $response = $this->actingAs(self::$users['manager'])->get(route('admin.dashboard'));
+        $response = $this->actingAs(self::$users['manager'])->get(route('paper.index'));
         $response->assertStatus(200);
 
         $response = $this->actingAs(self::$users['manager'])

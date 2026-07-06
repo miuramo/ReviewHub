@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Actions\StorePasskey;
+use App\Actions\VerifyPasskey;
 use App\Models\Accept;
 use App\Models\Bidding;
 use App\Models\Contact;
@@ -25,6 +27,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Passkeys\Passkeys;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,7 +36,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // カスタム Passkey アクションを IoC コンテナに登録する
+        $this->app->bind(\Laravel\Passkeys\Actions\StorePasskey::class, StorePasskey::class);
+        $this->app->bind(\Laravel\Passkeys\Actions\VerifyPasskey::class, VerifyPasskey::class);
     }
 
     /**
@@ -43,6 +48,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(\Illuminate\Routing\UrlGenerator $url): void
     {
+        // カスタム Passkey モデルを使用する
+        Passkeys::usePasskeyModel(\App\Models\Passkey::class);
+
         User::observe(UserObserver::class);
         Paper::observe(PaperObserver::class);
         File::observe(FileObserver::class);
@@ -61,7 +69,7 @@ class AppServiceProvider extends ServiceProvider
         // if (PHP_OS == "Linux") { // 本番環境なら
         //     $url->forceScheme('https'); //  追加
         // }
-        if (config('app.env') == "production"){ // App::environment(['production'])) {
+        if (config('app.env') == "production") { // App::environment(['production'])) {
             URL::forceScheme('https');
         }
         // Schema::defaultStringLength(191);
