@@ -82,9 +82,10 @@
                                 href="{{ route('paper.review', ['sub' => $sub->id, 'token' => $sub->paper->token()]) }}"
                                 color="purple" target="_blank" size="sm">
                                 著者がみる査読結果 </x-element.linkbutton2>
-
-
-                            @if (!$readonly && $sub->accept_id != 5)
+                            @php
+                                $neutral_accept_id = \App\Models\Accept::where('name', '---')->first()?->id ?? 5;
+                            @endphp
+                            @if (!$readonly && $sub->accept_id != $neutral_accept_id)
                                 <div>
                                     <x-sub.disclose :sub="$sub"></x-sub.disclose>
 
@@ -94,22 +95,21 @@
                                     </x-element.linkbutton>
                                 </div>
                                 <span class="mx-2"></span>
-
-                                @can('role', 'admin')
-                                    SubID: {{ $sub->id }}
-                                    <form class="inline" action="{{ route('admin.crud') }}?table=submits" method="post"
-                                        target="_blank" id="admincrudwhereid{{ $sub->id }}">
-                                        @csrf
-                                        @method('post')
-                                        <input id="whereby" type="hidden"
-                                            class="whereBy text-sm bg-slate-100 font-thin mr-2 p-0 h-5 w-full"
-                                            name="whereBy__id" value={{ $sub->id }}>
-                                        <x-element.submitbutton color="white"
-                                            size="xs">編集(Sub{{ $sub->id }})（別タブ）
-                                        </x-element.submitbutton>
-                                    </form>
-                                @endcan
                             @endif
+
+                            @can('role', 'admin')
+                                SubID: {{ $sub->id }}
+                                <form class="inline" action="{{ route('admin.crud') }}?table=submits" method="post"
+                                    target="_blank" id="admincrudwhereid{{ $sub->id }}">
+                                    @csrf
+                                    @method('post')
+                                    <input id="whereby" type="hidden"
+                                        class="whereBy text-sm bg-slate-100 font-thin mr-2 p-0 h-5 w-full"
+                                        name="whereBy__id" value={{ $sub->id }}>
+                                    <x-element.submitbutton color="white" size="xs">編集(Sub{{ $sub->id }})（別タブ）
+                                    </x-element.submitbutton>
+                                </form>
+                            @endcan
                         </div>
                     @endif
 

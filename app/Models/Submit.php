@@ -85,7 +85,7 @@ class Submit extends MetaModel
      */
     public function getReviewResult(string $key): ?string
     {
-        $vpid = Viewpoint::where('name', $key)->first()->id;
+        $vpid = Viewpoint::where('name', $key)->where('category_id', $this->category_id)->first()->id;
         $revids = $this->reviews->pluck('id');
         $score = Score::where('viewpoint_id', $vpid)->whereIn('review_id', $revids)->first();
         if ($score == null) return null;
@@ -193,42 +193,62 @@ class Submit extends MetaModel
     public function updateCurrentDecision()
     {
         $result = $this->getReviewResult("result");
-        if (strpos($result, "条件付き") !== false) {
-            $this->accept_id = 2; //条件付き
-        } elseif (strpos($result, "採") === 0) {
-            $this->accept_id = 1; //採録
-        } elseif (strpos($result, "不") === 0) {
-            $this->accept_id = 6; //不採録
-        } elseif (strpos($result, "取り下げ") === 0) {
-            $this->accept_id = 7; //取り下げ（勝手に増やさない。不採録+1にしている理由は、statusの11不採録,12取り下げに合わせるため）
+        // $this->accept_id を、 result の文字列に応じて、Acceptのidに設定する
+        if ($result == null) {
+            $this->accept_id = 0;
+        } else {
+            $accept = Accept::where('name', $result)->first();
+            if ($accept) $this->accept_id = $accept->id;
+            else $this->accept_id = 0;
         }
         $this->save();
+        // $accept->judgeを、statuses.id に合わせる。 9なら査読結果通知済み→再投稿、10なら採録決定、11なら不採録決定、12なら取り下げ
+
+        // if (strpos($result, "条件付き") !== false) {
+        //     $this->accept_id = 2; //条件付き
+        // } elseif (strpos($result, "採") === 0) {
+        //     $this->accept_id = 1; //採録
+        // } elseif (strpos($result, "不") === 0) {
+        //     $this->accept_id = 6; //不採録
+        // } elseif (strpos($result, "取り下げ") === 0) {
+        //     $this->accept_id = 7; //取り下げ（勝手に増やさない。不採録+1にしている理由は、statusの11不採録,12取り下げに合わせるため）
+        // }
     }
 
     public function setDecision()
     {
-        define('STATUS_ACCEPTED', 10); // TODO: 定数を適切な場所に移動、設定を読み込むかDBで「採録」がある行から取得する
-
+        // define('STATUS_ACCEPTED', 10); // TODO: 定数を適切な場所に移動、設定を読み込むかDBで「採録」がある行から取得する
+        if ($this->accept_id == 0){ // 未定義
+            return;
+        }
+        $accept = Accept::find($this->accept_id);
+        if ($accept == null) {
+            return;
+        }
         $this->updateCurrentDecision();
         $this->paper->lockAll(true); // これまでのファイルはロックする。
         $this->paper->archiveAll(true);
-        if ($this->accept_id == 2) { // 条件付きの場合
-            // そのうえで、新しいファイルをアップロード可能にする(false=Paperロック解除)
-            $this->paper->lockMe(false);
-            $this->paper->status_id = 9; //査読結果通知済み
-            $this->paper->save();
-        } else if ($this->accept_id == 1) { // 採録の場合
-            // そのうえで、新しいファイルをアップロード可能にする(false=Paperロック解除)
-            $this->paper->lockMe(false);
-            $this->paper->status_id = STATUS_ACCEPTED; //採録決定
-            $this->paper->save();
-        } else { // 不採録の場合
-            $this->paper->lockMe(true);
-            $this->paper->status_id = 9; //査読結果通知済み
-            $this->paper->save();
-        }
+
+        $this->paper->lockMe($accept->do_lock); // 採録のあと、最終ファイルをUpしてもらうならfalseにする。
+        $this->paper->status_id = $accept->paper_status_id; // 9にすると、査読結果通知済み。10にすると採録決定。11にすると不採録決定。12にすると取り下げ
+        $this->paper->save();
         $this->ec_decision_at = now();
         $this->save();
+        // if ($this->accept_id == 2) { // 条件付きの場合
+        //     // そのうえで、新しいファイルをアップロード可能にする(false=Paperロック解除)
+        //     $this->paper->lockMe(false);
+        //     $this->paper->status_id = 9; //査読結果通知済み
+        //     $this->paper->save();
+        // } else if ($this->accept_id == 1) { // 採録の場合
+        //     // そのうえで、新しいファイルをアップロード可能にする(false=Paperロック解除)
+        //     $this->paper->lockMe(false);
+        //     $this->paper->status_id = STATUS_ACCEPTED; //採録決定
+        //     $this->paper->save();
+        // } else { // 不採録の場合 (以前は 6 or 7) 
+        //     $this->paper->lockMe(true);
+        //     $this->paper->status_id = 9; //査読結果通知済み
+        //     $this->paper->save();
+        // }
     }
 
     public function judge()
