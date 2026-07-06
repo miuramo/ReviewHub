@@ -388,8 +388,11 @@ class PaperController extends Controller
         // review result を確認済みにする
         $sub->notify_at = ((new DateTime())->format('Y-m-d H:i:s'));
         $sub->save();
+        // sub->accept_id から accept を取得
+        $accept = Accept::find($sub->accept_id);
         // sub->accept_id が 2であれば次のSubmitをつくる。
-        if ($sub->accept_id == 2) {
+
+        if (strpos($accept->name, '条件付') !== false || $accept->judge == 0) { // 条件付き採録の場合
             $sub->paper->lockMe(false); // Paperロックを解除（じつは開示時点でやっている）
             $sub->paper->status_id = 1; //投稿準備中に戻す。ラウンドは以下で1つ増える
             $sub->paper->save();
@@ -406,9 +409,10 @@ class PaperController extends Controller
             ]); // ->init_reviews();
 
             return redirect()->route('paper.edit', ['paper' => $sub->paper])->with('feedback.success', '査読結果の確認ありがとうございました。再投稿は指定期日までに論文PDFと回答書PDFをアップロードしてください。（回答書PDFのフォーマット指定はありません）');
-        } else if ($sub->accept_id >= 6) { // 不採録や取り下げの場合 // Submit.updateCurrentDecisionに書いてある。採録なら1、条件付きなら2,不採録なら6,取り下げなら7
+        } else if ($accept->judge < 0) { // 不採録や取り下げの場合 // Submit.updateCurrentDecisionに書いてある。採録なら1、条件付きなら2,不採録なら6,取り下げなら7
             // reject の場合、Paperを無効にする
             $sub->paper->status_id = $sub->accept_id + 5; // statusの11不採録,12取り下げに合わせる
+            // TODO: 本来は、$sub->accept_id から accept->name を取得して、status を検索し、paper->status_id をセットする。
             $sub->paper->save();
         }
 
