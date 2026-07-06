@@ -57,6 +57,7 @@
             </x-primary-button>
         </div>
     </form>
+    <script>window.SERVICE_LABEL = "{{ e(config('app.name')) }} for {{ e(env('JOURNAL_ABB')) }}";</script>
     <script type="module" src="/js/webauthn.js"></script>
 
 </x-guest-layout>

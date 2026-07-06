@@ -29,6 +29,7 @@
                 </div>
             </div>
 
+            <script>window.SERVICE_LABEL = "{{ e(config('app.name')) }} for {{ e(env('JOURNAL_ABB')) }}";</script>
             <script type="module" src="/js/webauthn.js"></script>
 
             <div id="passkeys-section" class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
