@@ -24,7 +24,11 @@
                     @if ($sub->paper->submits->first == $sub)
                         {{ $sub->paper->currentstatus->name }}
                     @else
-                        {{ $accepts[$sub->accept_id] }}
+                        @isset($accepts[$sub->accept_id])
+                            {{ $accepts[$sub->accept_id] }}
+                        @else
+                            --- {{ $sub->accept_id }}
+                        @endisset
                     @endif
                 </th>
             </tr>

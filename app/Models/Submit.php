@@ -195,11 +195,11 @@ class Submit extends MetaModel
         $result = $this->getReviewResult("result");
         // $this->accept_id を、 result の文字列に応じて、Acceptのidに設定する
         if ($result == null) {
-            $this->accept_id = 0;
+            $this->accept_id = 5;
         } else {
             $accept = Accept::where('name', $result)->first();
             if ($accept) $this->accept_id = $accept->id;
-            else $this->accept_id = 0;
+            else $this->accept_id = 5;
         }
         $this->save();
         // $accept->judgeを、statuses.id に合わせる。 9なら査読結果通知済み→再投稿、10なら採録決定、11なら不採録決定、12なら取り下げ
