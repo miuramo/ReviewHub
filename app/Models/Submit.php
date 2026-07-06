@@ -230,7 +230,7 @@ class Submit extends MetaModel
         $this->paper->archiveAll(true);
 
         $this->paper->lockMe($accept->do_lock); // 採録のあと、最終ファイルをUpしてもらうならfalseにする。
-        $this->paper->status_id = $accept->paper_status_id; // 9にすると、査読結果通知済み。10にすると採録決定。11にすると不採録決定。12にすると取り下げ
+        $this->paper->status_id = $accept->status_id; // 9にすると、査読結果通知済み。10にすると採録決定。11にすると不採録決定。12にすると取り下げ
         $this->paper->save();
         $this->ec_decision_at = now();
         $this->save();
