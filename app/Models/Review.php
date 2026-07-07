@@ -380,6 +380,12 @@ class Review extends MetaModel
         return $ret['判定結果'] ?? $ret['措置'] ?? $ret['査読結果'] ?? '??';
     }
 
+    public function lockme(bool $lock = true): void
+    {
+        $this->locked = $lock;
+        $this->save();
+    }
+
     /**
      * txtに含まれるURLをリンクに変換する
      */

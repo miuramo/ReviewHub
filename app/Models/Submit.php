@@ -250,6 +250,12 @@ class Submit extends MetaModel
         //     $this->paper->save();
         // }
     }
+    public function lockReviews()
+    {
+        foreach ($this->reviews as $review) {
+            $review->lockMe(true);
+        }
+    }
 
     public function judge()
     {
