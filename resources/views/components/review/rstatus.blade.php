@@ -1,6 +1,7 @@
 @props([
     'review' => null,
     'readonly' => false,
+    'archived' => false,
 ])
 @php
     // $review = App\Models\Review::find($review);
@@ -67,7 +68,7 @@
                     <x-task.tswitch :review="$review"></x-task.tswitch>
                 </div>
                 <x-bb.bb_link :submit="$review->submit" type="2" :rev_id="$review->id" size="sm"></x-bb.bb_link>
-                @if (!$readonly)
+                @if (!$archived)
                     <span class="mx-1"></span>
                     <x-element.deletebutton action="{{ route('review.destroy', ['review' => $review]) }}" color="orange"
                         size="sm" confirm="本当に{{ $review->user->name }}さんを査読候補者から外してよいですか？（復元はできます）">

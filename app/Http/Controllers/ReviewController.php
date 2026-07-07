@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Models\Viewpoint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use ZipArchive;
@@ -201,6 +202,11 @@ class ReviewController extends Controller
     public function show(Review $review)
     {
         if (!auth()->user()->can('role_any', 'ec|aec|rev|meta')) return abort(403);
+        // TODO: 任期をチェックする。任期が切れている場合は、403にする。
+        // もし、自分が著者・共著者なら、査読結果をみせない
+        $paper = Paper::find($review->paper_id);
+        // if ($paper->owner == auth()->id()) return abort(403, "THIS IS YOUR PAPER");
+        if (Gate::allows('show_paper', $paper)) return abort(403, 'forbidden_for_coauthor_or_others');
         // else if ($review->user_id != auth()->id()) return abort(403, "THIS IS NOT YOUR REVIEW");
 
         // $viewpoints = Viewpoint::where("category_id", $review->category_id)->where("target", $review->target)->orderBy("orderint")->get();
@@ -220,7 +226,7 @@ class ReviewController extends Controller
      */
     public function pubshow(Review $review, string $token)
     {
-        if (!auth()->user()->can('role_any', 'ec|aec|rev|meta',)) return abort(403);
+        if (!auth()->user()->can('role_any', 'ec|aec|rev|meta')) return abort(403);
         if ($review->token() != $token) return abort(403, "Review Browse TOKEN ERROR");
 
         $viewpoints = Viewpoint::by_category_target($review->category_id, $review->target);

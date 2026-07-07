@@ -12,7 +12,7 @@
         査読結果を著者に開示する
     </x-element.linkbutton2>
 @else
-    <div class="text-pink-300 p-2">査読結果は著者に開示済み（判定通知日時）</div>
+    <div class="text-red-400 p-2">査読結果は著者に開示済み</div>
 @endif
 <x-element.component_name>
     disclose

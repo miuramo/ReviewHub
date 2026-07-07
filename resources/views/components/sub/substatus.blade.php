@@ -1,6 +1,7 @@
 @props([
     'submit_id' => null,
     'readonly' => false,
+    'archived' => false,
 ])
 @php
     $sub = App\Models\Submit::find($submit_id);
@@ -59,11 +60,14 @@
                                 <span class="text-pink-300">受領通知送信済み</span><br>
                             @endif
                         @endif
-                        @if ($sub->ec_decision_at != null)
-                            <x-element.linkbutton href="{{ route('manage.sendreceipt_final', ['sub' => $sub->id]) }}"
-                                color="teal" size="sm"
-                                confirm="★★注意！！こちらは、最終原稿を受領した場合の通知です。「最終原稿を受領いたしました。出版までしばらくお時間いただく場合がありますがご了承ください。」といった案内になります。★★（確認）あなたの名前で、受領通知を送ってよいですか？（著者との掲示板に書き込み、メール送信します）">最終原稿受領通知を送る
-                            </x-element.linkbutton> <br>
+                        @if (!$archived && $sub->accept_id != 5)
+                            @if ($sub->ec_decision_at != null)
+                                <x-element.linkbutton
+                                    href="{{ route('manage.sendreceipt_final', ['sub' => $sub->id]) }}" color="teal"
+                                    size="sm"
+                                    confirm="★★注意！！こちらは、最終原稿を受領した場合の通知です。「最終原稿を受領いたしました。出版までしばらくお時間いただく場合がありますがご了承ください。」といった案内になります。★★（確認）あなたの名前で、受領通知を送ってよいですか？（著者との掲示板に書き込み、メール送信します）">最終原稿受領通知を送る
+                                </x-element.linkbutton> <br>
+                            @endif
                         @endif
                     @endif
 
@@ -102,7 +106,8 @@
                             @endif
 
                             @can('role', 'admin')
-                                SubID: {{ $sub->id }}
+                                <br>
+                                {{-- SubID: {{ $sub->id }} --}}
                                 <form class="inline" action="{{ route('admin.crud') }}?table=submits" method="post"
                                     target="_blank" id="admincrudwhereid{{ $sub->id }}">
                                     @csrf
@@ -126,7 +131,7 @@
 @if (!$readonly)
     @if (count($sub->reviews) > 0)
         @foreach ($sub->reviews as $review)
-            <x-review.rstatus :review="$review" :readonly="$readonly"></x-review.rstatus>
+            <x-review.rstatus :review="$review" :readonly="$readonly" :archived="$archived"></x-review.rstatus>
         @endforeach
     @else
         <div class="m-6 p-4 bg-yellow-200 inline-block align-top">

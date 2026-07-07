@@ -196,7 +196,7 @@
 
                 @if ($sub->ec_decision_at != null)
                     <div class="block">
-                        <x-sub.substatus :submit_id="$sub->id" readonly="1"></x-sub.substatus>
+                        <x-sub.substatus :submit_id="$sub->id" readonly="0" archived="1"></x-sub.substatus>
                     </div>
                 @endif
             @endforeach
