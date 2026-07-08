@@ -24,11 +24,11 @@
             $navItems[] = ['id' => 'review-table-' . $navIdx, 'label' => $navLabel];
         }
     @endphp
-    @section('title', $paper->id_03d() . ' スコア')
+    @section('title', $paper->id_03d() . ' r' . $sub->round . ' 査読結果（審議用）')
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400">
 
-            {{ __('査読結果') }} &nbsp; {{ $paper->id_03d() }} &nbsp; {{ $paper->title }} &nbsp;
+            第{{ $sub->round }}回 {{ __('査読結果') }} &nbsp; {{ $paper->id_03d() }} &nbsp; {{ $paper->title }} &nbsp;
 
             {!! $catspans[$cat_id] !!}
 
