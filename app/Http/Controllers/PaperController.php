@@ -406,7 +406,7 @@ class PaperController extends Controller
                 'paper_id' => $sub->paper->id,
                 'category_id' => $sub->paper->category_id,
                 'round' => $sub->round + 1,
-                'resubmit_until' => date('Y-m-d', strtotime('+' . $resubmit_duration_days . ' days')),
+                'resubmit_until' => date('Y-m-d', strtotime($sub->ec_decision_at . ' + ' . $resubmit_duration_days . ' days')), // TODO:ここを現在からではなく、1つ前のSubmitの、判定通知日時からの日時にする。
                 'previous_submit_id' => $sub->id,
             ]); // ->init_reviews();
 
