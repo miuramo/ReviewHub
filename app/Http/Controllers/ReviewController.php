@@ -199,15 +199,16 @@ class ReviewController extends Controller
     /**
      * 査読者自身の参照用
      */
-    public function show(Review $review)
+    public function show(Review $review, string $token)
     {
         if (!auth()->user()->can('role_any', 'ec|aec|rev|meta')) return abort(403);
         // TODO: 任期をチェックする。任期が切れている場合は、403にする。
         // もし、自分が著者・共著者なら、査読結果をみせない
-        $paper = Paper::find($review->paper_id);
-        // if ($paper->owner == auth()->id()) return abort(403, "THIS IS YOUR PAPER");
-        if (Gate::allows('show_paper', $paper)) return abort(403, 'forbidden_for_coauthor_or_others');
+        // $paper = Paper::find($review->paper_id);
+        // // if ($paper->owner == auth()->id()) return abort(403, "THIS IS YOUR PAPER");
+        // if (Gate::allows('show_paper', $paper)) return abort(403, 'forbidden_for_coauthor_or_others');
         // else if ($review->user_id != auth()->id()) return abort(403, "THIS IS NOT YOUR REVIEW");
+        if ($review->token() != $token) return abort(403, "TOKEN ERROR FOR REVIEW");
 
         // $viewpoints = Viewpoint::where("category_id", $review->category_id)->where("target", $review->target)->orderBy("orderint")->get();
         $viewpoints = Viewpoint::by_category_target($review->category_id, $review->target);
@@ -219,6 +220,13 @@ class ReviewController extends Controller
         }
         return view("review.show")->with(compact("review", "viewpoints", "scores"));
         //
+    }
+    public function show_without_token(Review $review)
+    {
+        if (!auth()->user()->can('role_any', 'ec|aec|rev|meta')) return abort(403);
+        // if ($review->user_id != auth()->id()) return abort(403, "THIS IS NOT YOUR REVIEW");
+        // return redirect()->route('review.show', ['review' => $review, 'token' => $review->token()]);
+        return abort(403, "査読結果閲覧用のトークンが指定されていません。");
     }
 
     /**

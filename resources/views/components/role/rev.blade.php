@@ -127,7 +127,7 @@
 
                 {{-- <span class="mx-2"></span> --}}
 
-                <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green">
+                <x-element.linkbutton href="{{ route('review.show', ['review' => $rev, 'token' => $rev->token()]) }}" color="green">
                     査読報告の参照
                 </x-element.linkbutton>
                 <span class="mx-4"></span>

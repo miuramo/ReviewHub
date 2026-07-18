@@ -20,7 +20,7 @@
             <livewire:review-lock :review="$review" />
         </span>
         <span class="mx-1"></span>
-        <x-element.linkbutton2 href="{{ route('review.show', ['review' => $review]) }}" color="purple" size="xs"
+        <x-element.linkbutton2 href="{{ route('review.show', ['review' => $review, 'token' => $review->token()]) }}" color="purple" size="xs"
             target="_blank">
             査読報告
         </x-element.linkbutton2>

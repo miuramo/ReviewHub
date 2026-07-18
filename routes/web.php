@@ -137,12 +137,15 @@ Route::middleware('auth')->group(function () {
     // 査読フォーム
     Route::get('/review/{review}/edit', [ReviewController::class, 'edit'])->name('review.edit');
     Route::put('/review/{review}', [ReviewController::class, 'update'])->name('review.update'); //査読フォームの変更を受けとる
-    Route::get('/review/{review}', [ReviewController::class, 'show'])->name('review.show');
+    Route::get('/review/{review}', [ReviewController::class, 'show_without_token'])->name('review.show_without_token'); // 査読者自身の参照用（トークンなし）
+    Route::get('/review/{review}/show/{token}', [ReviewController::class, 'show'])->name('review.show'); // 安全のため、個別参照はトークンが必要
     Route::put('/review/{review}/start', [ReviewController::class, 'start'])->name('review.start');
 
     Route::get('/review/{review}/pubkey/{token}', [ReviewController::class, 'pubshow'])->name('review.pubshow'); // 査読者同士の相互参照用
 
     Route::get('/review', [ReviewController::class, 'index'])->name('review.index');
+
+    // Route::get('/review/{review}/show/{token}', [ReviewController::class, 'show_with_token'])->name('review.show_with_token'); // 安全のため、個別参照はトークンが必要
     Route::get('/review/{review}/restore', [ReviewController::class, 'restore'])->name('review.restore'); //復活
     Route::delete('/review/{review}', [ReviewController::class, 'destroy'])->name('review.destroy');
     Route::get('/review_indexcat/{cat}', [ReviewController::class, 'indexcat'])->name('review.indexcat');
