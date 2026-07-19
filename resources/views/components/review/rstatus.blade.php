@@ -43,7 +43,11 @@
                         }
                         $kv[-1] = '（辞退）';
                     @endphp
-                    <td class="p-1 text-center">{{ $kv[$review->{$h}] }}</td>
+                    @if ($h == 'target' && $review->request_at == null)
+                        <livewire:change-review-target :review="$review" :selection="$kv" />
+                    @else
+                        <td class="p-1 text-center">{{ $kv[$review->{$h}] }}</td>
+                    @endif
                 @else
                     @if ($h == 'end_at' && $review->end_at == null)
                         <td class="p-1 text-center text-red-400 dark:text-red-700 font-bold text-sm">
