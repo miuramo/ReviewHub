@@ -11,6 +11,7 @@ use App\Mail\DisableEmail;
 use App\Mail\ForAuthor;
 use App\Models\Bb;
 use App\Models\BbMes;
+use App\Models\Confirm;
 use App\Models\Contact;
 use App\Models\EnqueteAnswer;
 use App\Models\File;
