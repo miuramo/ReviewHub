@@ -108,6 +108,8 @@
             (use "production" for https)<br>
             App::environment(APP_DEBUG): {{ env('APP_DEBUG') }} <span class="mx-4"></span>1の場合、component_name
             を表示する。<br>
+            App::environment(MAIL_ORGANIZATION): {{ env('MAIL_ORGANIZATION') }} <br>
+            App::environment(JOURNAL_NAME): {{ env('JOURNAL_NAME') }} <br>
             DB_Setting FILEPUT_DIR: {{ $fileput_dir }} <br>
             DB_Setting LAST_QUEUEWORK_DATE: {{ $queuework_date }}<br>
             config('database.default'): {{ $domain }} <br>

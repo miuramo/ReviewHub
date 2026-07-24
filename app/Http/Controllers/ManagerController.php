@@ -222,8 +222,8 @@ class ManagerController extends Controller
         Bb::add_message(
             $submit,
             1, // type=1 投稿管理者と著者の掲示板
-            "【".env('MAIL_ORGANIZATION', '日本創造学会論文編集委員会'). "より】論文を受領いたしました",
-            "{$paper->paperowner->affil}  {$paper->paperowner->name}様\n\n".env('MAIL_ORGANIZATION', '日本創造学会論文編集委員会'). "の {$myname} と申します。\n\n" .
+            "【" . env('MAIL_ORGANIZATION', '論文編集委員会') . "より】論文を受領いたしました",
+            "{$paper->paperowner->affil}  {$paper->paperowner->name}様\n\n" . env('MAIL_ORGANIZATION', '論文編集委員会') . "の {$myname} と申します。\n\n" .
                 "論文「{$submit->paper->title}」を受領いたしました。\n" .
                 "{$mesround}査読に進みますので、しばらくお待ちください。\n\n"
         );
@@ -243,14 +243,18 @@ class ManagerController extends Controller
         }
         $myname = auth()->user()->name;
         $paper = $submit->paper;
+        // additional_message は、Confirmの、grp=7の、valid=1のものを、nameで指定して取得する
+        $addmesary = Confirm::where('grp', 7)->where('valid', 1)->select('name', 'mes')->get()->pluck('mes', 'name')->toArray();
+        $addmes = implode("\n\n", $addmesary);
+
         Bb::add_message(
             $submit,
             1, // type=1 投稿管理者と著者の掲示板
-            "【".env('MAIL_ORGANIZATION', '日本創造学会論文編集委員会'). "より】論文を受領いたしました",
-            "{$paper->paperowner->affil}  {$paper->paperowner->name}様\n\n".env('MAIL_ORGANIZATION', '日本創造学会論文編集委員会'). "の {$myname} と申します。\n\n" .
-                "論文「{$submit->paper->title}」の最終原稿を受領いたしました。\n" .
-                "なお、論文誌の発行（J-STAGE掲載）は、年に2回（6月・12月）のスケジュールを予定しております。\n\n" .
-                "出版までしばらくお時間をいただく場合がありますが、どうかご了承ください。\n\n"
+            "【" . env('MAIL_ORGANIZATION', '論文編集委員会') . "より】論文を受領いたしました",
+            "{$paper->paperowner->affil}  {$paper->paperowner->name}様\n\n" . env('MAIL_ORGANIZATION', '論文編集委員会') . "の {$myname} と申します。\n\n" .
+                "論文「{$submit->paper->title}」の最終原稿を受領いたしました。\n\n" . $addmes . "\n\n"
+                // "なお、論文誌の発行（J-STAGE掲載）は、年に2回（6月・12月）のスケジュールを予定しております。\n\n" .
+                // "出版までしばらくお時間をいただく場合がありますが、どうかご了承ください。\n\n"
         );
         return back()->with('feedback.success', "受領通知を送信しました。");
     }
@@ -275,7 +279,9 @@ class ManagerController extends Controller
             $mesround = "";
         }
         if ($submit->accept_id == 2) {
-            $conditional_accept_message = "再投稿期限は、本日より30日後の " . date('Y年m月d日', strtotime('+30 days')) . " です。\n";
+            $resubmit_duration_days = Setting::getary('RESUBMIT_DURATION_DAYS')[$submit->paper->category_id] ?? 30; //
+
+            $conditional_accept_message = "再投稿期限は、本日より{$resubmit_duration_days}日後の " . date('Y年m月d日', strtotime('+' . $resubmit_duration_days . ' days')) . " です。\n";
             $conditional_accept_message .= "（再投稿期限は、著者による査読結果確認のあと、投稿一覧画面でも確認することができます。）\n\n";
             $conditional_accept_message .= "再投稿の方法は、投稿一覧 → 論文サムネイル画像をクリック → 投稿編集画面上部 に記載されますので、こちらの指示に従ってください。\n\n";
         } else {
@@ -284,8 +290,8 @@ class ManagerController extends Controller
         Bb::add_message(
             $submit,
             1, // type=1 投稿管理者と著者の掲示板
-            "【".env('MAIL_ORGANIZATION', '日本創造学会論文編集委員会'). "より】第{$numround}回査読結果の開示",
-            "{$paper->paperowner?->affil}  {$paper->paperowner?->name}様\n\n".env('MAIL_ORGANIZATION', '日本創造学会論文編集委員会'). "の {$myname} と申します。\n\n" .
+            "【" . env('MAIL_ORGANIZATION', '論文編集委員会') . "より】第{$numround}回査読結果の開示",
+            "{$paper->paperowner?->affil}  {$paper->paperowner?->name}様\n\n" . env('MAIL_ORGANIZATION', '論文編集委員会') . "の {$myname} と申します。\n\n" .
                 "投稿いただいておりました論文「{$submit->paper->title}」の、\n第{$numround}回査読結果を開示いたしました。\n\n" .
                 "査読結果は、投稿一覧 → 第{$numround}回査読結果（オレンジ色のボタン）から、確認してください。\n" .
                 "査読結果を確認されましたら、査読結果ページ上部の「査読結果を確認した」ボタンを押してください。\n\n" .

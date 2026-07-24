@@ -43,7 +43,7 @@ class ReviewRequest extends RetryMailable
         }
         $managers_without_meta = $this->paper->managers_without_meta()->get();
 
-        $organization = env('MAIL_ORGANIZATION', '日本創造学会 論文編集委員会'); // 環境変数から組織名を取得
+        $organization = env('MAIL_ORGANIZATION', '論文編集委員会'); // 環境変数から組織名を取得
         $conftitle = \App\Models\Setting::getval('CONFTITLE');
         // 1回目？2回目
         $revobj = \App\Models\Review::find($this->rev->id);

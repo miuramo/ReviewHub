@@ -18,7 +18,7 @@ class ForumMesNotify extends RetryMailable
 
     public function __construct(Forum $forum, ForumMes $forumMes, User $sender)
     {
-        $organization = env('MAIL_ORGANIZATION', '日本創造学会 論文編集委員会');
+        $organization = env('MAIL_ORGANIZATION', '論文編集委員会');
 
         $this->forum    = $forum;
         $this->forumMes = $forumMes;

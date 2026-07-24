@@ -44,7 +44,7 @@ class ReviewRequestReply extends RetryMailable
         foreach($ec_users as $u){
             $this->mail_to_cc['bcc'][] = $u->email;
         }
-        $organization = env('MAIL_ORGANIZATION', '日本創造学会 論文編集委員会'); // 環境変数から組織名を取得
+        $organization = env('MAIL_ORGANIZATION', '論文編集委員会'); // 環境変数から組織名を取得
         $this->subject = "【{$organization}より】ご回答ありがとうございました (ID : ".$this->paper->id_03d().')';
         
         $conftitle = \App\Models\Setting::getval('CONFTITLE');
