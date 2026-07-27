@@ -67,6 +67,9 @@ class SkipOn451Tap
         if (stripos($message, 'Unable to find component') !== false) {
             return false; // ログを送信しない 
         }
+        if (stripos($message, 'Malformed UTF-8 characters') !== false) {
+            return false; // 不正アクセスによる UTF-8 エラーは Slack 通知しない
+        }
 
         // ② context に exception がある場合はその中身をチェック
         // if (!empty($context['exception']) && is_object($context['exception'])) {
