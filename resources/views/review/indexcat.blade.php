@@ -84,7 +84,7 @@
                             </x-element.linkbutton>
                         @endif
                     @else
-                        <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green">
+                        <x-element.linkbutton href="{{ route('review.show', ['review' => $rev, 'token' => $rev->token()]) }}" color="green">
                             View
                         </x-element.linkbutton>
                     @endif
@@ -106,7 +106,7 @@
                         @if (!$revoff[$rev->category_id])
                             <a href="{{ route('review.edit', ['review' => $rev]) }}">
                             @else
-                                <a href="{{ route('review.show', ['review' => $rev]) }}">
+                                <a href="{{ route('review.show', ['review' => $rev, 'token' => $rev->token()]) }}">
                         @endif
                         {{-- <a href="{{ route('file.altimgshow', ['file' => $rev->paper->pdf_file_id, 'hash' => substr($rev->paper->pdf_file->key, 0, 8)]) }}"
                                 target="_blank"> --}}

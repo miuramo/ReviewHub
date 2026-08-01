@@ -74,16 +74,16 @@
                 </x-element.linkbutton>
                 <span class="mx-2"></span>
 
-                <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green">
+                <x-element.linkbutton href="{{ route('review.show', ['review' => $rev, 'token' => $rev->token()]) }}" color="green">
                     View
                 </x-element.linkbutton>
 
                 <span class="mx-2"></span>
                 @if($rev->target==1)
-                    <x-element.linkbutton href="{{ route('review.show', ['review' => $rev->submit->rev1()]) }}" color="green">
+                    <x-element.linkbutton href="{{ route('review.show', ['review' => $rev->submit->rev1(), 'token' => $rev->submit->rev1()->token()]) }}" color="green">
                         View Rev1
                     </x-element.linkbutton>
-                    <x-element.linkbutton href="{{ route('review.show', ['review' => $rev->submit->rev2()]) }}" color="green">
+                    <x-element.linkbutton href="{{ route('review.show', ['review' => $rev->submit->rev2(), 'token' => $rev->submit->rev2()->token()]) }}" color="green">
                         View Rev2
                     </x-element.linkbutton>
                 @endif

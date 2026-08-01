@@ -104,7 +104,7 @@
             ->where('user_id', $task->object->id)
             ->first();
     @endphp
-    <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green" target="_blank">
+    <x-element.linkbutton href="{{ route('review.show', ['review' => $rev, 'token' => $rev->token()]) }}" color="green" target="_blank">
         View
     </x-element.linkbutton>
 
@@ -188,7 +188,7 @@
                     size="2xl">査読完了を報告する</x-element.submitbutton>
             </form>
             <span class="mx-2"></span>
-            <x-element.linkbutton href="{{ route('review.show', ['review' => $rev]) }}" color="green" size="sm"
+            <x-element.linkbutton href="{{ route('review.show', ['review' => $rev, 'token' => $rev->token()]) }}" color="green" size="sm"
                 target="_blank">
                 {{ $types[$rev->target] }}の参照
             </x-element.linkbutton>
