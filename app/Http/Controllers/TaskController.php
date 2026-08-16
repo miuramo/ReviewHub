@@ -174,4 +174,14 @@ class TaskController extends Controller
     {
         //
     }
+
+    /**
+     * 完了したタスクを、未完了に戻す
+     */
+    public function revert(Task $task)
+    {
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
+        $task->revert();
+        return redirect()->back()->with('feedback.success', 'タスクを未完了に戻しました');
+    }
 }

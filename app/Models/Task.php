@@ -259,4 +259,23 @@ class Task extends Model
         $this->submit->setDecision();
     }
 
+    /**
+     * 一旦完了したタスクを、未完了に戻す
+     */
+    public function revert(): void
+    {
+        $this->completed = 0;
+        $this->completed_at = null;
+        $this->approved = 0;
+        $this->approved_at = null;
+        $this->save();
+
+        // reviewの終了日時も nullにする
+        $review = Review::where('submit_id', $this->submit_id)->where('user_id', $this->subject_id)->first();
+        if ($review) {
+            $review->end_at = null;
+            $review->save();
+        }
+    }
+
 }

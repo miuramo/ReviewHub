@@ -6,7 +6,7 @@
 @endphp
 <!-- components.task.taskstatus -->
 <x-element.component_name>
-    taskstatus
+    taskstatus {{ $task->id }}
 </x-element.component_name>
 <div class="bg-{{ $bgcolor }}-100 p-2 text-sm dark:bg-{{ $bgcolor }}-600">
     {{-- 誰が --}}
@@ -34,16 +34,25 @@
 
     <span class="mx-2"></span>
     （報告完了日時: {{ $task->completed_at }}）
-    {{-- <span class="mx-2"></span>
+    <span class="mx-2"></span>
 
-    （承認日時：{{ $task->approved_at }}）
+    {{-- （承認日時：{{ $task->approved_at }}）
     <span class="mx-2"></span>
     @foreach ($task->log as $log)
         <span class="bg-slate-200 p-2 text-xs">
             コメント:{{ $log['comment'] ?? '未設定' }} 日時:{{ $log['datetime'] }}
         </span>
-    @endforeach
+    @endforeach --}}
+    @if ($task->completed && auth()->user()->can('role_any', 'ec'))
+        <span class="mx-2"></span>
+        <form action="{{ route('task.revert', $task) }}" method="POST" class="inline">
+            @csrf
+            @method('PUT')
+            <x-element.submitbutton2 size="xs" type="submit" color="pink" confirm="本当に未完了に戻しますか？">
+                未完了に戻す
+            </x-element.submitbutton2>
+        </form>
+    @endif
 
     <span class="mx-2"></span>
-    TaskID: {{ $task->id }} --}}
 </div>

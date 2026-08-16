@@ -190,6 +190,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/task_sendrequest/{review}/{revuid}', [TaskController::class, 'sendrequest'])->name('task.sendrequest');
     Route::get('/task_sendfirstmessage/{review}/{revuid}', [TaskController::class, 'sendfirstmessage'])->name('task.sendfirstmessage');
     Route::put('/task/{task}/approve', [TaskController::class, 'approve'])->name('task.approve');
+
+    Route::put('/task/{task}/revert', [TaskController::class, 'revert'])->name('task.revert'); // 完了したタスクを、未完了に戻す
     // Route::get('/task/{submit}/createhantei', [TaskController::class, 'createhantei'])->name('task.createhantei');
 
 
