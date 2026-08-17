@@ -324,7 +324,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/logac/user/{user?}', [LogAccessController::class, 'index'])->name('logac.user');
     Route::post('/logac/user/{user?}', [LogAccessController::class, 'index'])->name('logac.user');
 
-    // 統計情報
+    // 統計情報（査読担当回数）
     Route::get('/stats', [ManagerController::class, 'stats'])->name('admin.stats');
 
     // 所属修正
