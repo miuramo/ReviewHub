@@ -345,6 +345,7 @@ Route::middleware('auth')->group(function () {
     // 役職Role+年=Term の管理
     Route::get('/term', [TermController::class, 'index'])->name('term.index');
     Route::get('/term_year/{year}', [TermController::class, 'index'])->name('term.index_year');
+    Route::get('/term_year/{year}/edit', [TermController::class, 'edit'])->name('term.edit_year');
 
     // 委員会共有フォーラム（任期年度内メンバーのみ閲覧・書き込み可）
     Route::get('forum', [\App\Http\Controllers\ForumController::class, 'index'])->name('forum.index');

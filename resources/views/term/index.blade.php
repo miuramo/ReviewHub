@@ -45,5 +45,13 @@
         </table>
     </div>
 
+    @can('role_any', 'ec|cm|manager')
+        <div class="mx-6 my-4">
+            <a href="{{ route('term.edit_year', ['year' => $selectedYear]) }}"
+                class="rounded bg-green-500 px-3 py-1 text-sm text-white hover:bg-green-600">
+                編集※
+            </a>
+        </div>
+    @endcan
 
 </x-app-layout>
