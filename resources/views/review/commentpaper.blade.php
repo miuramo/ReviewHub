@@ -6,6 +6,8 @@
         $cats = App\Models\Category::select('name', 'id')->get()->pluck('name', 'id')->toArray();
 
         $nameofmeta = App\Models\Setting::getval('name_of_meta');
+        $name_of_managers = \App\Models\Setting::getValue('NAME_OF_MANAGERS');
+
 
         $count = 0;
 
@@ -65,22 +67,26 @@
             </a>
             <span class="text-sm text-gray-500">{{ substr($paper->img_file->created_at, 0, 16) }}</span>
         @endif
-        @isset($bb)
-            <span class="mx-2"></span>
-            @isset($bb->paper)
-                <x-element.linkbutton2 href="{{ route('bb.show', ['bb' => $bb->id, 'key' => $bb->key]) }}" color="green"
-                    target="_blank" size="sm">
-                    著者との掲示板
-                    ({{ $bb->nummessages() }} messages)
-                </x-element.linkbutton2>
-            @else
-                <div>Error: No Paper associated {{ $bb->id }}</div>
-            @endisset
-        @endisset
-        <span class="mx-2"></span>
+        <span class="mx-6"></span>
         <x-element.linkbutton2 href="{{ route('paper.review', ['sub' => $sub->id, 'token' => $paper->token()]) }}"
             color="purple" target="_blank" size="sm">
             著者がみる査読結果 </x-element.linkbutton2>
+        <span class="mx-2"></span>
+        @isset($bb)
+            @can('manage_paper', $bb->paper)
+                <span class="mx-2"></span>
+                @isset($bb->paper)
+                    <x-element.linkbutton2 href="{{ route('bb.show', ['bb' => $bb->id, 'key' => $bb->key]) }}" color="green"
+                        target="_blank" size="sm">
+                        著者との掲示板
+                        ({{ $bb->nummessages() }} messages)
+                        ※{{ $name_of_managers }}のみに表示しています
+                    </x-element.linkbutton2>
+                @else
+                    <div>Error: No Paper associated {{ $bb->id }}</div>
+                @endisset
+            @endcan
+        @endisset
 
     </div>
 
@@ -204,7 +210,10 @@
                     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target
                         .isContentEditable) return;
                     if (e.key === '0' || e.key === 'Escape') {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
                         return;
                     }
                     const index = parseInt(e.key, 10);
