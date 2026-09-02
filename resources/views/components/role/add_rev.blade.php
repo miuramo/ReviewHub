@@ -30,7 +30,7 @@
         <x-element.submitbutton color="lime">
             査読者の新規作成と候補者への追加
         </x-element.submitbutton>
-        を押してください。
+        を押してください。（ボタンを押してもメール送信はしません。）
     </form>
 </div>
 
