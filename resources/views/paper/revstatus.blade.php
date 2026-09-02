@@ -120,14 +120,14 @@
         @endforeach
     </div>
 
-    <div class="py-2 px-6">
+    {{-- <div class="py-2 px-6">
         <x-element.h1c color="yellow">{{ $name_of_managers }}：
             @foreach ($paper->managers as $user)
                 <x-element.login_as :user="$user"></x-element.login_as>
                 <span class="mx-2"></span>
             @endforeach
         </x-element.h1c>
-    </div>
+    </div> --}}
 
     @push('localjs')
         <script src="/js/jquery.min.js"></script>
