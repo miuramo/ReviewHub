@@ -20,7 +20,7 @@
     $after = nl2br($itm->contentafter);
 @endphp
 <tr
-    class="border-4 border-slate-300 {{ $loop->iteration % 2 === 0 ? 'bg-neutral-200' : 'bg-white-50 dark:bg-slate-400' }}">
+    class="border-4 border-slate-300 {{ $loop->iteration % 2 === 0 ? 'bg-neutral-200/50' : 'bg-white-50 dark:bg-slate-400' }}">
     <td nowrap class="p-2">
         {{ $itm->desc }} →</td>
     <td id="{{ $itm->name }}_answer" class="text-{{ $size }} p-2">
