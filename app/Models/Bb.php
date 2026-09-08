@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use App\Models\LogAccess;
+use Illuminate\Support\Facades\Log;
 
 class Bb extends MetaModel
 {
@@ -53,6 +55,18 @@ class Bb extends MetaModel
         return $this->belongsTo(Review::class, 'rev_id');
     }
 
+    /**掲示板のメッセージを受信すべき人を返す */
+    public function recipient_id(): int|null
+    {
+        if ($this->type === 1) {
+            return $this->paper->owner;
+        }
+        if ($this->type === 2) {
+            return $this->review->user_id;
+        }
+        return null;
+    }
+
     /**
      * TaskController.create または
      * TaskController.update から呼ばれる。
@@ -69,6 +83,7 @@ class Bb extends MetaModel
             'subject' => $subject,
             'mes' => $mes,
         ]);
+        $bbmes->createReadRecords();
         //メール通知
         (new BbNotify($bb, $bbmes))->process_send();
 
@@ -99,6 +114,7 @@ class Bb extends MetaModel
             'subject' => 'ごあんない',
             'mes' => $firstmes[$type],
         ]);
+        $mes->createReadRecords();
         return $bb;
     }
     public static function gen_make_url(int $sub_id, int $type, int $rev_id = 0): string
@@ -173,6 +189,81 @@ class Bb extends MetaModel
         } else if ($this->type == 4) {
         }
         return $retuobj;
+    }
+
+    /**
+     * Get the read statuses for all messages in this Bb.
+     *
+     * @return array
+     */
+    public function readStatuses(): array
+    {
+        if (in_array((int) $this->type, [1, 2], true)) {
+            $statuses = [];
+            foreach ($this->messages as $message) {
+                $reads = $message->reads->keyBy('user_id');
+                $targetRead = $reads->get((int) $message->recipient_id());
+                $statuses[$message->id] = [
+                    'read' => $targetRead !== null,
+                    'read_at' => $targetRead?->read_at,
+                    'read_by' => $reads->filter(fn ($read) => $read->read_at !== null)
+                        ->mapWithKeys(fn ($read) => [$read->user_id => $read->read_at])
+                        ->all(),
+                    'count' => null,
+                ];
+            }
+            // Log::channel('single')->info('Read statuses', ['statuses' => (object) $statuses]);
+            return $statuses;
+        }
+
+        $logs = LogAccess::where('url', '/bb/' . $this->id . '/' . $this->key)
+            ->where('method', 'GET')
+            ->where('uid', '>', 0)
+            ->orderBy('created_at')
+            ->get(['uid', 'created_at']);
+        $statuses = [];
+
+        foreach ($this->messages as $message) {
+            if ($this->type === 1) {
+                $authorIds = collect([$this->paper->paperowner?->id])
+                    ->merge($this->paper->contacts->pluck('id'))
+                    ->filter()
+                    ->unique();
+                $managerIds = $this->paper->managers->pluck('id');
+                $userIds = $authorIds->contains((int) $message->user_id) ? $managerIds : $authorIds;
+            } elseif ($this->type === 2) {
+                $reviewerId = Review::whereKey($this->rev_id)->value('user_id');
+                $userIds = (int) $message->user_id === (int) $reviewerId
+                    ? $this->paper->managers->pluck('id')
+                    : collect([$reviewerId]);
+            } else {
+                $userIds = collect($this->get_participants())->pluck('id');
+            }
+            $userIds = $userIds->filter()->reject(fn ($userId) => (int) $userId === (int) $message->user_id)->unique();
+            $messageLogs = $logs->filter(function ($log) use ($message, $userIds) {
+                return $userIds->contains((int) $log->uid)
+                    && $log->created_at->greaterThanOrEqualTo($message->created_at);
+            });
+
+            $statuses[$message->id] = [
+                'read' => null,
+                'first_read_at' => null,
+                'count' => $messageLogs->pluck('uid')->unique()->count(),
+            ];
+        }
+
+        return $statuses;
+    }
+
+    public function markMessagesAsRead(int $userId): void
+    {
+        if (!in_array((int) $this->type, [1, 2], true)) {
+            return;
+        }
+
+        foreach ($this->messages as $message) {
+            $message->markReadBy($userId);
+        }
     }
     public function get_mail_to_cc(): array
     {
@@ -389,6 +480,7 @@ class Bb extends MetaModel
             'subject' => $subject,
             'mes' => $mes,
         ]);
+        $mes->createReadRecords();
         (new BbNotify($bb, $mes))->process_send();
         return $mes;
     }
@@ -398,21 +490,6 @@ class Bb extends MetaModel
     //     $revuids = Review::where("paper_id", $this->paper_id)->where("category_id",$this->category_id)->where("target", 0)->pluck("user_id", "id")->toArray();
     //     return User::whereIn("id", $revuids)->get();
     // }
-    // public function revuid2rev()
-    // {
-    //     $revuid2rev = Review::where("paper_id", $this->paper_id)->where("category_id",$this->category_id)->where("target", 0)->pluck("id", "user_id")->toArray();
-    //     return $revuid2rev;
-    // }
-    // public function ismeta_myself()
-    // {
-    //     // 自分がメタ査読者かどうかを返す
-    //     $rev = Review::where("paper_id", $this->paper_id)->where("category_id", $this->category_id)->where("user_id", auth()->id())->where("target", 1)->first();
-    //     return $rev != null;
-    // }
-    // public function metauser()
-    // {
-    //     // メタ査読者を返す
-    //     $rev = Review::where("paper_id", $this->paper_id)->where("category_id", $this->category_id)->where("target", 1)->first();
     //     return $rev->user;
     // }
 

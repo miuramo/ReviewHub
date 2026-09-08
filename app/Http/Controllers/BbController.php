@@ -15,9 +15,6 @@ use Illuminate\Http\Request;
 
 class BbController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     // public function index()
     // {
     //     if (!auth()->user()->can('role_any', 'admin|manager|ec')) abort(403);
@@ -26,9 +23,8 @@ class BbController extends Controller
     //         $bbs[$i] = Bb::with("paper")->with("category")->where("type", $i)->get();
     //     }
     //     return view("bb.index")->with(compact("bbs"));
-    //     //
     // }
-
+ 
     public function index_for_pub()
     {
         if (!auth()->user()->can('role_any', 'admin|manager|ec|pub')) abort(403);
@@ -88,9 +84,23 @@ class BbController extends Controller
         } else {
             $revid = null;
         }
-        // $isEC = auth()->user()->can('role_any', 'ec');
+        $bb->markMessagesAsRead(auth()->id());
         $isEC = auth()->user()->can('manage_review', $bb->paper_id);
         return view("bb.show")->with(compact("bb", "revid", "isEC"));
+    }
+
+    public function readStatus(int $bbid, string $key)
+    {
+        $bb = Bb::with('paper')->where('id', $bbid)->where('key', $key)->firstOrFail();
+        if ($bb->type == 2) {
+            $rigais = RevConflict::arr_pu_rigai();
+            if (isset($rigais[$bb->paper->id][auth()->id()]) && $rigais[$bb->paper->id][auth()->id()] < 3) {
+                abort(403, 'authors conflict');
+            }
+        }
+        $bb->markMessagesAsRead(auth()->id());
+
+        return response()->json((object) $bb->readStatuses());
     }
 
     /**

@@ -48,6 +48,7 @@ class BbMesController extends Controller
             'subject' => $req->input("sub"),
             'mes' => $req->input("mes"),
         ]);
+        $bbmes->createReadRecords();
 
         if ($req->has('bbfile')) {
             $tmp = $req->file("bbfile");
@@ -94,6 +95,7 @@ class BbMesController extends Controller
                 'subject' => "未採用ファイルを措置済みにしました",
                 'mes' => $memo,
             ]);
+            $bbmes->createReadRecords();
             //メール通知
             (new BbNotify($bb, $bbmes))->process_send();
 
@@ -146,6 +148,7 @@ class BbMesController extends Controller
             'subject' => "{$ft[$ftype]}ファイルを差し替えました",
             'mes' => $memo,
         ]);
+        $bbmes->createReadRecords();
         //メール通知
         (new BbNotify($bb, $bbmes))->process_send();
 

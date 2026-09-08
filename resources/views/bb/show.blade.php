@@ -93,13 +93,18 @@
         {{-- 査読掲示板で、複数の兄弟掲示板があるとき、古い方から全部表示する --}}
         @if ($bb->type == 2 && isset($related_bbs) && count($related_bbs) > 1)
             @foreach ($related_bbs as $rbb)
+                @php
+                    $rbb->markMessagesAsRead(auth()->id());
+                    $readStatuses = $rbb->readStatuses();
+                    $readStatusUrl = route('bb.read_status', ['bb' => $rbb->id, 'key' => $rbb->key]);
+                @endphp
                 <hr class="mt-2">
                 <div
                     class="font-extrabold text-lg py-2 text-gray-500 text-center bg-gray-200 hover:bg-lime-100 hover:transition-colors transition-all">
                     {{ \App\Models\Bb::ordinal($loop->iteration) }} review </div>
                 <hr class="mb-2">
                 @foreach ($rbb->messages as $mes)
-                    <x-bb.mes :mes="$mes"></x-bb.mes>
+                    <x-bb.mes :mes="$mes" :read-status="$readStatuses[$mes->id]" :read-status-url="$readStatusUrl"></x-bb.mes>
                 @endforeach
 
                 {{-- そして、書き込みは最後の掲示板に対して行う。 --}}
@@ -108,10 +113,48 @@
                 @endphp
             @endforeach
         @else
+            @php
+                $readStatuses = $bb->readStatuses();
+                $readStatusUrl = route('bb.read_status', ['bb' => $bb->id, 'key' => $bb->key]);
+            @endphp
             @foreach ($bb->messages as $mes)
-                <x-bb.mes :mes="$mes"></x-bb.mes>
+                <x-bb.mes :mes="$mes" :read-status="$readStatuses[$mes->id]" :read-status-url="$readStatusUrl"></x-bb.mes>
             @endforeach
         @endif
+
+        <script>
+            const readStatusElements = document.querySelectorAll('.bb-read-status[data-status-url]');
+            const updateReadStatuses = async () => {
+                const elementsByUrl = new Map();
+                readStatusElements.forEach((element) => {
+                    const elements = elementsByUrl.get(element.dataset.statusUrl) ?? [];
+                    elements.push(element);
+                    elementsByUrl.set(element.dataset.statusUrl, elements);
+                });
+
+                for (const [url, elements] of elementsByUrl) {
+                    const response = await fetch(url, {
+                        headers: { 'Accept': 'application/json' },
+                    });
+                    if (!response.ok) continue;
+                    const statuses = await response.json();
+                    elements.forEach((element) => {
+                        const status = statuses[element.dataset.messageId];
+                        if (!status) return;
+                        if (status.count !== null) {
+                            element.textContent = `閲覧者 ${status.count}人`;
+                            return;
+                        }
+                        const recipient = status.read_at
+                            ? `既読（${new Date(status.read_at).toLocaleString()}）`
+                            : '未読';
+                        element.textContent = `${recipient}`;
+                    });
+                }
+            };
+
+            // window.setInterval(updateReadStatuses, 5000);
+        </script>
 
         <div class="text-right mt-1">
             <form action="{{ route('bbmes.store', ['bb' => $bb->id, 'key' => $bb->key]) }}" method="post"

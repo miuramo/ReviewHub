@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->integer('category_id')->nullable();
             $table->integer('paper_id')->nullable();
-            $table->integer('rev_id')->nullable(); // type=2のみ有効
+            $table->integer('rev_id')->nullable(); // type=2のみ有効、対象reviewのID
             $table->integer('type')->default(4)->comment('1なら投管と著者 2なら投管と単一査読者 3なら投管と全査読者 4なら投管のみ');
             $table->string('key')->nullable();
             $table->boolean('needreply')->default(false);

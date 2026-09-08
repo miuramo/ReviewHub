@@ -1,5 +1,7 @@
 @props([
     'mes' => [],
+    'readStatus' => null,
+    'readStatusUrl' => null,
 ])
 <!-- components.bb.mes  -->
 @php
@@ -17,6 +19,7 @@
                 <div class="text-right text-gray-500 text-sm mr-2">{{ $mes->created_at }}</div>
             </div>
             <div class="bg-green-100 px-2 py-1 mb-1 rounded-md text-left">{!! nl2br($mes->mes) !!}</div>
+            <x-bb.read-status :status="$readStatus" :url="$readStatusUrl" :message-id="$mes->id" />
 
             @if ($mes->files->count() > 0)
                 <div class="text-left">
@@ -45,6 +48,7 @@
             <div class="text-right text-gray-500 text-sm mr-2">{{ $mes->created_at }}</div>
         </div>
         <div class="bg-slate-100 px-2 py-1 mb-1 rounded-md">{!! nl2br($mes->mes) !!}</div>
+        <x-bb.read-status :status="$readStatus" :url="$readStatusUrl" :message-id="$mes->id" />
 
         @if ($mes->files->count() > 0)
             <div class="text-left">

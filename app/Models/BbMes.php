@@ -29,5 +29,66 @@ class BbMes extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function reads()
+    {
+        return $this->hasMany(BbMesRead::class, 'bb_mes_id');
+    }
 
+    public function recipient_id(): ?int
+    {
+        $bb = $this->bb()->with(['paper', 'review'])->first();
+        if (!$bb || !in_array((int) $bb->type, [1, 2], true)) {
+            return null;
+        }
+        // 基本の受信者を取得する
+        $recipientId = $bb->recipient_id();
+        if ($recipientId === auth()->id()) { //自分自身が書いたメッセージなら
+            $recipientId = $bb->paper?->aec_id || 1; // 受信者をaec_idに変更
+        }
+        if ($recipientId === null) {
+            $recipientId = 1;
+        }
+        return $recipientId;
+    }
+
+    // protected static function booted(): void
+    // {
+    //     static::created(function (BbMes $message) {
+    //         $message->createReadRecords();
+    //     });
+    // }
+
+    public function createReadRecords(): void
+    {
+        $bb = $this->bb()->with(['paper', 'review'])->first();
+        if (!$bb || !in_array((int) $bb->type, [1, 2], true)) {
+            return;
+        }
+
+        $userIds = collect([(int) $this->user_id])->filter(fn ($id) => $id > 0);
+        // $userIds = collect();
+        if ($bb->type === 1) {
+            $userIds = $userIds
+                ->merge([$bb->paper?->owner])
+                ->merge([$bb->paper?->aec_id]);
+        } else {
+            $userIds = $userIds->merge([$bb->review?->user_id])
+                ->merge([$bb->paper?->aec_id || 1]);
+        }
+
+        foreach ($userIds->filter()->unique() as $userId) {
+            BbMesRead::firstOrCreate([
+                'bb_mes_id' => $this->id,
+                'user_id' => $userId,
+            ]);
+        }
+    }
+
+    public function markReadBy(int $userId): void
+    {
+        $this->reads()->where('user_id', $userId)->whereNull('read_at')->update([
+            'read_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
 }

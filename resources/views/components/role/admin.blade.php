@@ -27,6 +27,8 @@
     // 開示済みのレビューは、ロックする
     App\Models\Review::lock_disclosed_reviews();
 
+    // BbMesReadの初期化
+    \App\Models\BbMesRead::init();
 @endphp
 <div class="px-4 py-4">
     <x-element.h1>あなたのRole</x-element.h1>
