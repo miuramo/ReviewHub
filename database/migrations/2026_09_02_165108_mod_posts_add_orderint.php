@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            $table->integer('rank')->change();
+            $table->integer('rank')->default(0)->change();
             $table->integer('orderint')->default(0)->comment("並び順。リストには昇順に並べる。")->after('name');
         });
     }
