@@ -58,6 +58,7 @@ class ForumIndex extends Component
             ->max('posts.rank');
 
         $accessiblePosts = Post::where('rank', '<=', $userMaxRank)
+            ->whereColumn('rank', 'posts.id')
             ->orderBy('rank')
             ->get();
 

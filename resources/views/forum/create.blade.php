@@ -33,6 +33,7 @@
                     required>
                     <option value="">選択してください</option>
                     @foreach ($posts as $post)
+                        @if($post->rank != $post->id) @continue @endif
                         <option value="{{ $post->id }}" {{ old('post_id') == $post->id ? 'selected' : '' }}>
                             {{ $post->name }}
                         </option>
