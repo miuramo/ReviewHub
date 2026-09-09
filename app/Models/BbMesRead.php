@@ -29,6 +29,9 @@ class BbMesRead extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * 既存のメッセージに対して、既読レコードを新規作成する。
+     */
     public static function init()
     {
         \App\Models\BbMes::with(['bb.paper', 'bb.review'])
@@ -38,5 +41,52 @@ class BbMesRead extends Model
                     $message->createReadRecords();
                 }
             });
+    }
+
+    /**
+     * ログアクセスに基づいて、既読レコードを修正（更新）する。read_at フィールドを更新する。
+     */
+    public static function markAsRead_byLogAccess(): void
+    {
+        $logs = LogAccess::query()
+            ->where('method', 'GET')
+            ->where('uid', '>', 0)
+            ->whereNotNull('created_at')
+            ->where('url', 'like', '/bb/%')
+            ->orderBy('created_at')
+            ->get(['uid', 'url', 'created_at']);
+
+        foreach ($logs as $log) {
+            if (!preg_match('/\/bb\/(\d+)(?:\/|$)/', $log->url, $matches)) {
+                continue;
+            }
+
+            $bbId = (int) $matches[1];
+            $bb = Bb::with('messages')->find($bbId);
+            if (!$bb || !in_array((int) $bb->type, [1, 2], true)) {
+                continue;
+            }
+
+            $userId = (int) $log->uid;
+            $messages = $bb->messages()
+                ->where('created_at', '<=', $log->created_at)
+                ->get();
+
+            foreach ($messages as $message) {
+                $readRecord = self::query()
+                    ->where('bb_mes_id', $message->id)
+                    ->where('user_id', $userId)
+                    ->first();
+
+                if (!$readRecord) {
+                    continue;
+                }
+
+                if ($readRecord->read_at === null || $readRecord->read_at->gt($log->created_at)) {
+                    $readRecord->read_at = $log->created_at;
+                    $readRecord->save();
+                }
+            }
+        }
     }
 }

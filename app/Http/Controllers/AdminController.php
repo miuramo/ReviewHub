@@ -791,6 +791,16 @@ class AdminController extends Controller
                 $user->save();
             }
         }
-        return redirect()->route('admin.dashboard')->with('feedback.success', 'ユーザ名にふくまれる全角スペースを半角にしました（氏・名の2要素に分割可能な場合のみ）');
+        return redirect()->route('role.top', ['role'=>'admin'])->with('feedback.success', 'ユーザ名にふくまれる全角スペースを半角にしました（氏・名の2要素に分割可能な場合のみ）');
+    }
+
+    /**
+     * BbMesReadの既読情報をログアクセスに基づいて更新する
+     */
+    public function markAsRead_byLogAccess()
+    {
+        if (!auth()->user()->can('role_any', 'admin|manager')) abort(403);
+        \App\Models\BbMesRead::markAsRead_byLogAccess();
+        return redirect()->route('role.top', ['role'=>'admin'])->with('feedback.success', 'BbMesReadの既読情報をログアクセスに基づいて更新しました');
     }
 }

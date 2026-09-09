@@ -256,6 +256,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin_catsetting', [AdminController::class, 'catsetting'])->name('admin.catsetting');
     Route::get('/admin_chkexefiles', [AdminController::class, 'check_exefiles'])->name('admin.chkexefiles');
     Route::get('/admin_fixusernamespace', [AdminController::class, 'fixusernamespace'])->name('admin.fixusernamespace');
+    Route::get('/admin_markasread_bylogaccess', [AdminController::class, 'markAsRead_byLogAccess'])->name('admin.markasread_bylogaccess');
 
     Route::get('/admin_failed_jobs/{all?}', [FailedJobController::class, 'index'])->name('admin.failed_jobs');
     Route::post('/admin_failed_jobs/{id}/mark_as_read', [FailedJobController::class, 'markAsRead'])->name('admin.failed_jobs.mark_as_read');

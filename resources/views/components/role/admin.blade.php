@@ -27,8 +27,8 @@
     // 開示済みのレビューは、ロックする
     App\Models\Review::lock_disclosed_reviews();
 
-    // BbMesReadの初期化
-    \App\Models\BbMesRead::init();
+    // // BbMesReadの初期化
+    // \App\Models\BbMesRead::init();
 @endphp
 <div class="px-4 py-4">
     <x-element.h1>あなたのRole</x-element.h1>
@@ -195,6 +195,10 @@
         <span class="px-5"></span>
         <x-element.linkbutton href="{{ route('admin.stats') }}" color="slate">
             stats 
+        </x-element.linkbutton>
+        <span class="px-5"></span>
+        <x-element.linkbutton href="{{ route('admin.markasread_bylogaccess') }}" color="slate">
+        ログアクセスからBbMesReadの既読情報を更新
         </x-element.linkbutton>
 
     </x-element.h1>
