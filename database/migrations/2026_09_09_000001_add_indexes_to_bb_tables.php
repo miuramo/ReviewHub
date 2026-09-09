@@ -23,7 +23,9 @@ return new class extends Migration
         });
 
         Schema::table('bb_mes_reads', function (Blueprint $table) {
-            // 既読判定と未読更新において、user_id での絞り込みが多いので補助インデックスを付与
+            // 既読レコードは主に bb_mes_id と user_id でアクセスされるため、個別の検索を高速化
+            $table->index('bb_mes_id', 'bb_mes_reads_bb_mes_id_index');
+            $table->index('user_id', 'bb_mes_reads_user_id_index');
             $table->index(['user_id', 'read_at'], 'bb_mes_reads_user_read_index');
         });
     }
@@ -35,6 +37,8 @@ return new class extends Migration
     {
         Schema::table('bb_mes_reads', function (Blueprint $table) {
             $table->dropIndex('bb_mes_reads_user_read_index');
+            $table->dropIndex('bb_mes_reads_user_id_index');
+            $table->dropIndex('bb_mes_reads_bb_mes_id_index');
         });
 
         Schema::table('bb_mes', function (Blueprint $table) {
