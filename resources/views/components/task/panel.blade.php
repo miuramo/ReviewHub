@@ -104,7 +104,8 @@
             ->where('user_id', $task->object->id)
             ->first();
     @endphp
-    <x-element.linkbutton href="{{ route('review.show', ['review' => $rev, 'token' => $rev->token()]) }}" color="green" target="_blank">
+    <x-element.linkbutton href="{{ route('review.show', ['review' => $rev, 'token' => $rev->token()]) }}"
+        color="green" target="_blank">
         View
     </x-element.linkbutton>
 
@@ -143,8 +144,8 @@
             @else
                 <div class="bg-yellow-50 px-3 py-2">
         @endif
-        <x-element.paperid size=1 :paper_id="$rev->paper->id">
-        </x-element.paperid>
+        {{-- <x-element.paperid size=1 :paper_id="$rev->paper->id">
+        </x-element.paperid> --}}
         @if ($task->submit->paper->pdf_file_id != 0)
             <x-element.linkbutton
                 href="{{ route('file.showhash', ['file' => $paper->pdf_file_id, 'hash' => substr($paper->pdf_file->key, 0, 10)]) }}"
@@ -188,8 +189,8 @@
                     size="2xl">査読完了を報告する</x-element.submitbutton>
             </form>
             <span class="mx-2"></span>
-            <x-element.linkbutton href="{{ route('review.show', ['review' => $rev, 'token' => $rev->token()]) }}" color="green" size="sm"
-                target="_blank">
+            <x-element.linkbutton href="{{ route('review.show', ['review' => $rev, 'token' => $rev->token()]) }}"
+                color="green" size="sm" target="_blank">
                 {{ $types[$rev->target] }}の参照
             </x-element.linkbutton>
         @endif

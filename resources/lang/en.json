@@ -28,6 +28,15 @@
     "すべてチェック解除": "Uncheck All",
     "NewSubmitTo": "Submit New Paper to \":catname\" ",
     "、": ", ",
+    "著者のかたへ：査読結果を確認後、": "To the author: After checking the review results, please press",
+    "査読結果を確認した": "Confirmed the review results",
+    "をおしてください。": " .",
+    "（投稿情報の編集や、ファイルアップロードするには、論文画像をクリックしてください）": " (To edit submission information or upload files, click on the paper image.)",
+    "あなたが作成した投稿情報はまだありません。": "You have not created any submission information yet.",
+    "【査読者のかたへ】依頼された査読をはじめるには、以下の「査読一覧」ボタン（または、トップメニューの「査読」）をクリックしてください。": "To the reviewer: To start the requested review, please click the 'Review List' button below (or the 'Review' button in the top menu).",
+    "査読一覧": "Review List",
+    "あなたが表示できる共著者投稿はありません。": "There are no co-author submissions that you can view.",
+    "ここに共著の投稿を表示するには、あなたの登録メールアドレスを投稿者に伝え、投稿連絡用メールアドレスへの追加を依頼してください。": "To display co-author submissions here, please inform the submitter of your registered email address and request them to add it to the submission contact email addresses.",
     "Log In": "Log In"
 
 }

@@ -3,7 +3,8 @@
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400">
             {{ __('投稿一覧') }}
-            <span class="mx-10 text-sm text-blue-500 dark:text-blue-700">（投稿情報の編集や、ファイルアップロードするには、論文画像をクリックしてください）</span>
+            <span class="mx-10 text-sm text-blue-500 dark:text-blue-300">
+                {{ __('（投稿情報の編集や、ファイルアップロードするには、論文画像をクリックしてください）') }}</span>
         </h2>
     </x-slot>
     @php
@@ -24,22 +25,22 @@
         <div id="mypaperlist" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             @if (count($all) == 0)
                 <div
-                    class="xs:text-sm sm:text-xl text-orange-400 bg-yellow-200 dark:bg-yellow-800 dark:text-orange-700 p-4 rounded-md text-center">
-                    あなたが作成した投稿情報はまだありません。
+                    class="xs:text-sm sm:text-xl text-orange-400 bg-yellow-200 dark:bg-yellow-800 dark:text-orange-300 p-4 rounded-md text-center">
+                    {{ __('あなたが作成した投稿情報はまだありません。') }}
                     <div class="mt-5 mb-2">
                         <x-element.linkbutton href="{{ route('paper.create') }}" color="yellow">
-                            新規投稿 </x-element.linkbutton>
+                            {{ __('新規投稿') }} </x-element.linkbutton>
                     </div>
                 </div>
                 <div></div>
 
                 @if (auth()->user()->can('role', 'rev'))
                     <div
-                        class="xs:text-sm sm:text-xl text-blue-700 bg-cyan-200 dark:bg-cyan-800 dark:text-blue-700 p-4 rounded-md text-center">
-                        【査読者のかたへ】依頼された査読をはじめるには、以下の「査読一覧」ボタン（または、トップメニューの「査読」）をクリックしてください。
+                        class="xs:text-sm sm:text-xl text-blue-700 bg-cyan-200 dark:bg-cyan-800 dark:text-blue-300 p-4 rounded-md text-center">
+                        {{ __('【査読者のかたへ】依頼された査読をはじめるには、以下の「査読一覧」ボタン（または、トップメニューの「査読」）をクリックしてください。') }}
                         <div class="mt-5 mb-2">
                             <x-element.linkbutton href="{{ route('role.top', ['role' => 'rev']) }}" color="cyan">
-                                査読一覧 </x-element.linkbutton>
+                                {{ __('査読一覧') }} </x-element.linkbutton>
                         </div>
                     </div>
                 @endif
@@ -105,9 +106,9 @@
     @if (count($coauthor_all) == 0)
         <div
             class="xs:text-sm sm:text-xl text-slate-400 bg-slate-200 p-4 rounded-md text-center mt-10  dark:bg-slate-700 dark:text-slate-400">
-            あなたが表示できる共著者投稿はありません。
+            {{ __('あなたが表示できる共著者投稿はありません。') }}
             <div class="text-sm mt-5">
-                ここに共著の投稿を表示するには、あなたの登録メールアドレスを投稿者に伝え、投稿連絡用メールアドレスへの追加を依頼してください。
+                {{ __('ここに共著の投稿を表示するには、あなたの登録メールアドレスを投稿者に伝え、投稿連絡用メールアドレスへの追加を依頼してください。') }}
             </div>
         </div>
     @else

@@ -16,9 +16,9 @@
 
     @if ($sub->notify_at == null)
         <div class="m-10 p-8 bg-orange-200 text-3xl">
-            著者のかたへ：査読結果を確認後、
-            <x-sub.confirm_review_link :sub="$sub">査読結果を確認した</x-sub.confirm_review_link>
-            をおしてください。
+            {{ __('著者のかたへ：査読結果を確認後、') }}
+            <x-sub.confirm_review_link :sub="$sub">{{ __('査読結果を確認した') }}</x-sub.confirm_review_link>
+            {{ __('をおしてください。') }}  
         </div>
     @else
         @if ($sub->ec_decision_at != null)

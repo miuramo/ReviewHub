@@ -79,12 +79,14 @@
                         査読候補者から外す
                     </x-element.deletebutton>
                 @endif
+                @can('role', 'ec')
                 <div class="p-2">
                     <x-element.linkbutton href="{{ route('logac.review', ['review' => $review]) }}" color="gray"
                         size="xs" target="_blank">
                         査読活動ログ（別タブ）
                     </x-element.linkbutton>
                 </div>
+                @endcan
                 @can('role', 'admin')
                     <form class="inline" action="{{ route('admin.crud') }}?table=reviews" method="post" target="_blank"
                         id="admincrudwhereid{{ $review->id }}">
