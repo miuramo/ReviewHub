@@ -164,15 +164,15 @@
                 <input type="hidden" name="key" value="{{ $bb->key }}">
 
                 <div
-                    class="inline-block w-3/4 bg-green-300 p-2 rounded-md mt-5 hover:bg-green-400 hover:transition-colors duration-500">
+                    class="inline-block w-3/4 bg-green-300 p-2 rounded-md mt-5 hover:bg-green-400 hover:transition-colors duration-500 dark:bg-green-700 dark:text-gray-200">
                     <div class="px-2 text-left text-sm">送信フォーム</div>
-                    <input class="w-full p-2 bg-green-200 rounded-md border-green-300 border-2" type="text"
+                    <input class="w-full p-2 bg-green-200 rounded-md border-green-300 border-2 dark:bg-green-800 dark:text-gray-200 dark:border-green-600" type="text"
                         size="70" name="sub" id="bbsub" placeholder="ここに Subject (Title) を入力"
                         onkeydown="return disableEnterKey(event);"
                         @isset($revid)
                             value="[RevID : {{ $revid }}]  "
                         @endisset>
-                    <textarea class="w-full mt-1 p-2 bg-green-100 rounded-md border-green-300  border-2" name="mes" id="bbmes"
+                    <textarea class="w-full mt-1 p-2 bg-green-100 rounded-md border-green-300  border-2 dark:bg-green-800 dark:text-gray-200 dark:border-green-600" name="mes" id="bbmes"
                         cols="70" rows="10" placeholder="ここにメッセージを入力"></textarea>
                     <label for="bbfile" class="text-sm">ファイル添付（オプション）</label>
                     <input class="text-sm" type="file" name="bbfile" id="bbfile">

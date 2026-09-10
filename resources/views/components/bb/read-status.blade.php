@@ -2,11 +2,12 @@
     'status' => null,
     'url' => null,
     'messageId' => null,
+    'paper_id' => null,
 ])
 
-<div class="bb-read-status text-left text-xs text-gray-500 dark:text-gray-300" data-status-url="{{ $url }}"
+<div class="bb-read-status text-left text-xs text-gray-500 dark:text-gray-300 pt-1" data-status-url="{{ $url }}"
     data-message-id="{{ $messageId }}">
-    @can('role', 'admin')
+    @can('manage_review', $paper_id)
         @if ($status !== null)
             @if ($status['count'] !== null)
                 閲覧者 {{ $status['count'] }}人
@@ -18,6 +19,5 @@
                 @endif
             @endif
         @endif
-        {{ $messageId }}
     @endcan
 </div>

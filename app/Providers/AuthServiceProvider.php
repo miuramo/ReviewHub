@@ -123,7 +123,7 @@ class AuthServiceProvider extends ServiceProvider
             if ($paper->managers()->count() > 0) {
                 return $paper->isManager($user->id);
             } else {
-                // もし、編集長なら、true
+                // （例外的に、まだManagerが設定されていないとき） もし、編集長なら、true
                 if ($user->can('role', 'ec')) return true;
             }
             return false;

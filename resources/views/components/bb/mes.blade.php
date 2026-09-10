@@ -13,13 +13,15 @@
 
 @if ($mes->user_id == auth()->id())
     <div class="text-right">
-        <div class="inline-block w-3/4 bg-green-300 p-2 rounded-lg px-2 py-1 my-1">
+        <div class="inline-block w-3/4 bg-green-300 p-2 rounded-lg px-2 py-1 my-1 dark:bg-green-700 dark:text-gray-200">
             <div class="flex justify-between">
                 <div class="mx-2">{{ $mes->subject }}</div>
                 <div class="text-right text-gray-500 text-sm mr-2">{{ $mes->created_at }}</div>
             </div>
-            <div class="bg-green-100 px-2 py-1 mb-1 rounded-md text-left">{!! nl2br($mes->mes) !!}</div>
-            <x-bb.read-status :status="$readStatus" :url="$readStatusUrl" :message-id="$mes->id" />
+            <div class="bg-green-100 px-2 py-1 mb-1 rounded-md text-left dark:bg-green-800 dark:text-gray-200">{!! nl2br($mes->mes) !!}</div>
+
+            <livewire:bb-mes-reaction-editor :bb-mes-id="$mes->id" :user-id="auth()->id()" :key="'bb-mes-reaction-' . $mes->id" />
+            <x-bb.read-status :status="$readStatus" :url="$readStatusUrl" :message-id="$mes->id" :paper_id="$mes->bb->paper_id" />
 
             @if ($mes->files->count() > 0)
                 <div class="text-left">
@@ -42,13 +44,14 @@
         </div>
     </div>
 @else
-    <div class="bg-slate-300 rounded-lg w-3/4 px-2 py-1 my-1">
+    <div class="bg-slate-300 rounded-lg w-3/4 px-2 py-1 my-1 dark:bg-slate-700 dark:text-gray-200">
         <div class="flex justify-between">
             <div class="mx-2">{{ $mes->subject }}</div>
             <div class="text-right text-gray-500 text-sm mr-2">{{ $mes->created_at }}</div>
         </div>
-        <div class="bg-slate-100 px-2 py-1 mb-1 rounded-md">{!! nl2br($mes->mes) !!}</div>
-        <x-bb.read-status :status="$readStatus" :url="$readStatusUrl" :message-id="$mes->id" />
+        <div class="bg-slate-100 px-2 py-1 mb-1 rounded-md dark:bg-slate-600">{!! nl2br($mes->mes) !!}</div>
+        <livewire:bb-mes-reaction-editor :bb-mes-id="$mes->id" :user-id="auth()->id()" :key="'bb-mes-reaction-' . $mes->id" />
+        <x-bb.read-status :status="$readStatus" :url="$readStatusUrl" :message-id="$mes->id" :paper_id="$mes->bb->paper_id" />
 
         @if ($mes->files->count() > 0)
             <div class="text-left">
