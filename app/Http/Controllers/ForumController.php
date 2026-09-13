@@ -31,7 +31,8 @@ class ForumController extends Controller
             abort(403, '有効な任期がないため、フォーラムを作成できません。');
         }
 
-        $userMaxRank = $this->user_max_rank($user);        $posts = Post::where('rank', '<=', $userMaxRank)->orderBy('rank')->get();
+        $userMaxRank = $this->user_max_rank($user);
+        $posts = Post::where('rank', '<=', $userMaxRank)->orderBy('rank')->get();
         return view('forum.create', compact('posts'));
     }
 
@@ -69,7 +70,7 @@ class ForumController extends Controller
             'forum_id' => $forum->id,
             'user_id'  => 0,
             'subject'  => 'ごあんない',
-            'mes'      => "こちらは「{$forum->post->name}」のフォーラムです。\n作成年度: {$forum->fiscal_year()}年度",
+            'mes'      => "こちらは「{$forum->post->name}」のフォーラムです。\n絵文字リアクション機能を用いると、リアクションをつけたユーザの氏名が表示されます。\n作成年度: {$forum->fiscal_year()}年度",
         ]);
 
         return redirect()->route('forum.show', ['forum' => $forum->id])
@@ -88,7 +89,7 @@ class ForumController extends Controller
         }
 
         $forum->load([
-            'messages' => fn ($q) => $q->whereNull('parent_id')->orderBy('created_at'),
+            'messages' => fn($q) => $q->whereNull('parent_id')->orderBy('created_at'),
             'messages.user',
             'messages.replies.user',
             'messages.replies.replies.user',
