@@ -28,9 +28,11 @@ class TaskController extends Controller
      */
     public function create(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'ec')) abort(403);
+        // if (!auth()->user()->can('role_any', 'ec')) abort(403);
         // info($req->all());
         $review = Review::find($req->review);
+        $paper_id = $review->paper_id;
+        if (!auth()->user()->can('manage_review', $paper_id)) abort(403);
         $review->do_assign(); // メールも送信する
 
         $paper = Paper::with('currentSubmit')->find($review->paper_id);
@@ -40,8 +42,10 @@ class TaskController extends Controller
 
     public function sendrequest(int $review, int $revuid)
     {
-        if (!auth()->user()->can('role_any', 'ec')) abort(403);
+        // if (!auth()->user()->can('role_any', 'ec')) abort(403);
         $review = Review::find($review);
+        $paper_id = $review->paper_id;
+        if (!auth()->user()->can('manage_review', $paper_id)) abort(403);
         // 依頼日時
         if ($review->request_at == null) {
             $review->request_at = now();
@@ -57,10 +61,12 @@ class TaskController extends Controller
 
     public function sendfirstmessage(int $review, int $revuid)
     {
-        if (!auth()->user()->can('role_any', 'ec')) abort(403);
-        MailTemplate::send_first_message($revuid);
         $review = Review::find($review);
-        $paper = Paper::with('currentSubmit')->find($review->paper_id);
+        $paper_id = $review->paper_id;
+        if (!auth()->user()->can('manage_review', $paper_id)) abort(403);
+        // if (!auth()->user()->can('role_any', 'ec')) abort(403);
+        MailTemplate::send_first_message($revuid);
+        $paper = Paper::with('currentSubmit')->find($paper_id);
         return redirect()->route('paper.manage', ['paper' => $paper])->with('feedback.success', 'パスワード設定方法（最初のログインの方法）を送信しました');
     }
 
