@@ -43,6 +43,12 @@ class ReviewRequest extends RetryMailable
         }
         $managers_without_meta = $this->paper->managers_without_meta()->get();
 
+        // 送信者の立場
+        $sender_position = \App\Models\Setting::getval('NAME_OF_MANAGER');
+        if (!auth()->user()->can('role','ec')){
+            $sender_position = str_replace('幹事', '委員', $sender_position); // 担当編集幹事→担当編集委員 にする
+        }
+
         $organization = env('MAIL_ORGANIZATION', '論文編集委員会'); // 環境変数から組織名を取得
         $conftitle = \App\Models\Setting::getval('CONFTITLE');
         // 1回目？2回目
@@ -66,7 +72,7 @@ class ReviewRequest extends RetryMailable
                     'round' => $round,
                     'review_duration' => $review_duration,
                     'operator' => auth()->user()->name,
-                    'name_of_manager' => \App\Models\Setting::getval('NAME_OF_MANAGER'),
+                    'name_of_manager' => $sender_position,
                     'name_of_managers' => \App\Models\Setting::getval('NAME_OF_MANAGERS'),
                     'managers' => $managers_without_meta,
                 ],
@@ -88,7 +94,7 @@ class ReviewRequest extends RetryMailable
                     'round' => $round,
                     'review_duration' => $review_duration,
                     'operator' => auth()->user()->name,
-                    'name_of_manager' => \App\Models\Setting::getval('NAME_OF_MANAGER'),
+                    'name_of_manager' => $sender_position,
                     'name_of_managers' => \App\Models\Setting::getval('NAME_OF_MANAGERS'),
                     'managers' => $managers_without_meta,
                 ],
