@@ -68,8 +68,8 @@
 
     @if (count($tasks) > 0)
         <div class="py-4">
-            <x-element.h1>以下の査読について、ご対応をお願いします。<br><span
-                    class="text-pink-500 font-extrabold">（「査読報告の編集」が完了したあとに表示される「査読完了を報告する」ボタンを押してください。）</span></x-element.h1>
+            <x-element.h1>以下の査読について、「論文PDFをひらく」「査読報告の編集」ボタンから、ご対応をお願いします。<br><span
+                    class="text-pink-500 font-extrabold">（お手数ですが、査読報告の入力をお済ませになりましたら、「査読完了を報告する」ボタンを押してお知らせください。）</span></x-element.h1>
             @foreach ($tasks as $task)
                 <x-task.panel :task="$task" />
             @endforeach

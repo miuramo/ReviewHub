@@ -292,7 +292,7 @@ class ReviewController extends Controller
         $review->start_at = now();
         $review->status = 1; // 査読の状況を「開始」にする
         $review->save();
-        return redirect($req->redirect_page)->with('feedback.success', '査読を開始しました');
+        return redirect($req->redirect_page)->with('feedback.success', 'ご確認ありがとうございます。査読をお願いします。');
         //
     }
 
