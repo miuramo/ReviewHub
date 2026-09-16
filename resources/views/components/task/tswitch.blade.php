@@ -58,7 +58,7 @@
 
 
     <x-element.linkbutton href="{{ route('task.create', ['review' => $review, 'revuid' => $review->user->id]) }}"
-        size="sm" color="blue" confirm="本当に{{ $review->user->name }}さんに査読開始の通知を送信してよいですか？">
+        size="sm" color="blue" confirm="ここでOKを押すと査読開始となりますが、{{ $review->user->name }}さんには査読開始の通知は送りません。別途、掲示板の定型文機能、または「パスワード設定方法を送信」ボタンを押して、通知してください。">
         査読開始（内諾が得られてから押す）
         {{-- {{$review->id}} {{$review->user->id}} --}}
     </x-element.linkbutton>
