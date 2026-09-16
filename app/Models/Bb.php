@@ -159,7 +159,7 @@ class Bb extends MetaModel
         $bb = Bb::find($bbid);
         if ($bb == null) return null;
         return $bb->url();
-    }   
+    }
     public static function url_from_rev(Review $rev, int $type = 1): ?string
     {
         $bb = Bb::where("paper_id", $rev->paper_id)->where("category_id", $rev->category_id)->where("type", $type)->first();
@@ -206,8 +206,8 @@ class Bb extends MetaModel
                 $statuses[$message->id] = [
                     'read' => $targetRead !== null,
                     'read_at' => $targetRead?->read_at,
-                    'read_by' => $reads->filter(fn ($read) => $read->read_at !== null)
-                        ->mapWithKeys(fn ($read) => [$read->user_id => $read->read_at])
+                    'read_by' => $reads->filter(fn($read) => $read->read_at !== null)
+                        ->mapWithKeys(fn($read) => [$read->user_id => $read->read_at])
                         ->all(),
                     'count' => null,
                 ];
@@ -239,7 +239,7 @@ class Bb extends MetaModel
             } else {
                 $userIds = collect($this->get_participants())->pluck('id');
             }
-            $userIds = $userIds->filter()->reject(fn ($userId) => (int) $userId === (int) $message->user_id)->unique();
+            $userIds = $userIds->filter()->reject(fn($userId) => (int) $userId === (int) $message->user_id)->unique();
             $messageLogs = $logs->filter(function ($log) use ($message, $userIds) {
                 return $userIds->contains((int) $log->uid)
                     && $log->created_at->greaterThanOrEqualTo($message->created_at);
@@ -343,8 +343,17 @@ class Bb extends MetaModel
             $revuser->name .
             "様\n\n" .
             "このたびは、{$conftitle}に投稿された下記の論文\n" .
-            "「{$this->paper->title}」\n" .
+            "「{$this->paper->title}」（PaperID: {$this->paper->id}）\n" .
             "の査読にご協力いただき、ありがとうございました。\n\n";
+        $start_review = $revuser->affil .
+            '  ' .
+            $revuser->name .
+            "様\n\n" .
+            "このたびは、{$conftitle}に投稿された下記の論文\n" .
+            "「{$this->paper->title}」（PaperID: {$this->paper->id}）\n" .
+            "の査読をお引き受けいただき、誠にありがとうございます。\n\n";
+        $forget_pass = route('password.request');
+        $app_url = config('app.url');
         /**
          * お礼メールの場合
          * 
@@ -384,20 +393,38 @@ class Bb extends MetaModel
             } else {
                 $lastmes = '査読にご協力いただき、誠にありがとうございました。';
             }
+            $templates['ログイン方法'] = [
+                'sub' => '査読システムのログイン方法 （PaperID: ' . $this->paper->id . '）',
+                'mes' => $start_review . "早速ではありますが、査読を開始させていただきます。\n\n" .
+                    "査読は {$conftitle} 査読システム にログインして、行っていただきます。\n\n" .
+                    "◆ 初めてのかたや、パスワードが不明なかたへ：
+以下の手順にしたがって、査読システムのパスワードを設定してください。
+(1) {$forget_pass} にて、 {$revuser->email} を入力してください。
+しばらくすると、パスワード再設定メールがとどきます。
+(2) パスワード再設定メールに書かれたURLから、パスワードを設定してください。
+
+◆ 論文PDFのダウンロードと、査読のすすめかたについて：
+査読システム {$app_url} にログインしてください。
+ログイン後、画面上部の「査読」をおしてください。その後、「査読を開始する」をおしてください。
+
+不明な点がありましたら、掲示板でお問い合わせください。
+
+引き続き、どうぞよろしくお願いいたします。",
+            ];
             $templates['査読のお礼(判定未確定)'] = [
-                'sub' => '査読にご協力いただき、ありがとうございました',
+                'sub' => '査読にご協力いただき、ありがとうございました （PaperID: ' . $this->paper->id . '）',
                 'mes' => $first_thank . "最終的な判定結果につきましては、後日こちらの掲示板で報告いたします。\n" .
                     "引き続き、{$conftitle}へのご協力をいただけると幸いです。\n" .
                     "どうぞよろしくお願いいたします。",
             ];
             $templates['査読のお礼(判定確定済)'] = [
-                'sub' => '査読にご協力いただき、ありがとうございました',
+                'sub' => '査読にご協力いただき、ありがとうございました （PaperID: ' . $this->paper->id . '）',
                 'mes' => $first_thank . $lastmes,
             ];
 
             // info($submit);
             $templates['査読結果の開示報告(継続)'] = [
-                'sub' => '査読結果を著者に通知しました',
+                'sub' => '査読結果を著者に通知しました （PaperID: ' . $this->paper->id . '）',
                 'mes' => $first_thank .
                     "編集委員会で審議した結果、本論文は「{$submit['accept']['name']}」となりました。\n\n" .
                     "著者に通知した査読結果は、投稿システムメニューの\n" .
@@ -409,7 +436,7 @@ class Bb extends MetaModel
                     $lastmes,
             ];
             $templates['査読結果の開示報告(終了)'] = [
-                'sub' => '査読結果を著者に通知しました',
+                'sub' => '査読結果を著者に通知しました （PaperID: ' . $this->paper->id . '）',
                 'mes' => $first_thank .
                     "編集委員会で審議した結果、本論文は「{$submit['accept']['name']}」となりました。\n\n" .
                     "著者に通知した査読結果は、投稿システムメニューの\n" .
@@ -419,11 +446,11 @@ class Bb extends MetaModel
                     "\n" .
                     "\n" .
                     "お忙しいところ査読にご協力いただき、誠にありがとうございました。\n" .
-                    "今後とも、{$conftitle}編集業務へのご協力、よろしくお願いいたします。",
+                    "今後とも、{$conftitle}編集へのご協力、よろしくお願いいたします。",
             ];
             if ($task) {
                 $templates['催促(1)'] = [
-                    'sub' => '査読の状況についてお知らせください',
+                    'sub' => '査読の状況についてお知らせください （PaperID: ' . $this->paper->id . '）',
                     'mes' => $first_thank .
                         "当初のお願いでは、査読期限を {$task->due_date} としてお願いしておりましたが、\n" .
                         "現在のところ、査読のご提出が確認できておりません。\n" .
@@ -431,7 +458,7 @@ class Bb extends MetaModel
                         "どうぞよろしくお願いいたします。\n",
                 ];
                 $templates['催促(2)'] = [
-                    'sub' => '至急ご対応をお願いいたします',
+                    'sub' => '至急ご対応をお願いいたします （PaperID: ' . $this->paper->id . '）',
                     'mes' => $first_thank .
                         "当初のお願いでは、査読期限を {$task->due_date} としてお願いしておりましたが、\n" .
                         "現在のところ、査読のご提出が確認できておりません。\n" .
@@ -454,7 +481,7 @@ class Bb extends MetaModel
             ->select('bb_id')->distinct()->pluck('bb_id')->toArray();
         $accept_papers = Submit::subs_accepted_notpublished([1])->pluck("booth", "paper_id")->toArray();
 
-        return Bb::where('type',1)->whereIn('id', $recent_bbids)->whereIn('paper_id', array_keys($accept_papers))->orderBy('paper_id')->get();
+        return Bb::where('type', 1)->whereIn('id', $recent_bbids)->whereIn('paper_id', array_keys($accept_papers))->orderBy('paper_id')->get();
     }
 
     /**
@@ -464,7 +491,7 @@ class Bb extends MetaModel
     {
         $accept_papers = Submit::subs_accepted_notpublished([1])->pluck("booth", "paper_id")->toArray();
 
-        return Bb::where('type',1)->whereIn('paper_id', array_keys($accept_papers))->orderBy('paper_id')->get();
+        return Bb::where('type', 1)->whereIn('paper_id', array_keys($accept_papers))->orderBy('paper_id')->get();
     }
     public static function submitplain(int $pid, int $type, string $subject, string $mes): ?BbMes
     {

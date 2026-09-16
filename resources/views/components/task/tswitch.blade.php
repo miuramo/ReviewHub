@@ -20,12 +20,19 @@
             <livewire:review-lock :review="$review" />
         </span>
         <span class="mx-1"></span>
-        <x-element.linkbutton2 href="{{ route('review.show', ['review' => $review, 'token' => $review->token()]) }}" color="purple" size="xs"
-            target="_blank">
+        <x-element.linkbutton2 href="{{ route('review.show', ['review' => $review, 'token' => $review->token()]) }}"
+            color="purple" size="xs" target="_blank">
             査読報告
         </x-element.linkbutton2>
     @else
         査読タスク依頼中
+        <br>
+        <x-element.linkbutton
+            href="{{ route('task.sendfirstmessage', ['review' => $review, 'revuid' => $review->user->id]) }}" color="pink"
+            size="xs" confirm="本当に{{ $review->user->name }}さんにパスワード設定方法（最初のログインの方法）メールを送信してよいですか？（内諾が得られてから押してください。）">
+            パスワード設定方法を送信
+            {{-- {{$review->id}} {{$review->user->id}} --}}
+        </x-element.linkbutton><br>
     @endif
 @else
     @if ($review->request_at)
@@ -49,15 +56,18 @@
     </x-element.req_confirm_link>
     <br>
 
+
+    <x-element.linkbutton href="{{ route('task.create', ['review' => $review, 'revuid' => $review->user->id]) }}"
+        size="sm" color="blue" confirm="本当に{{ $review->user->name }}さんに査読開始の通知を送信してよいですか？">
+        査読開始（内諾が得られてから押す）
+        {{-- {{$review->id}} {{$review->user->id}} --}}
+    </x-element.linkbutton>
+    <br>
     <x-element.linkbutton href="{{ route('task.sendfirstmessage', ['review' => $review, 'revuid' => $review->user->id]) }}"
-        color="pink" size="sm" confirm="本当に{{ $review->user->name }}さんにパスワード設定方法（最初のログインの方法）メールを送信してよいですか？">
+        color="pink" size="xs"
+        confirm="本当に{{ $review->user->name }}さんにパスワード設定方法（最初のログインの方法）メールを送信してよいですか？（内諾が得られてから押してください。）">
         パスワード設定方法を送信
         {{-- {{$review->id}} {{$review->user->id}} --}}
     </x-element.linkbutton><br>
 
-    <x-element.linkbutton href="{{ route('task.create', ['review' => $review, 'revuid' => $review->user->id]) }}"
-        size="sm" color="blue">
-        査読開始（内諾が得られてから押す）
-        {{-- {{$review->id}} {{$review->user->id}} --}}
-    </x-element.linkbutton>
 @endisset

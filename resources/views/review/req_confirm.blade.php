@@ -38,7 +38,7 @@
             @method('post')
 
             <textarea name="comment" id="comment" rows="4" class="w-full p-2 border border-gray-300 rounded-md"
-                placeholder="査読期間への要望や辞退の理由など、{{ $name_of_managers }}への連絡事項がありましたら、ここに入力してください。なお、標準的な査読期間は{{ $review_duration }}日間となっております。"></textarea>
+                placeholder="査読期間への要望や辞退の理由など、{{ $name_of_managers }}への連絡事項がありましたら、ここに入力してください。なお、標準的な査読期間は{{ $review_duration }}日間となっております。辞退される場合もし可能であれば適任の方をご推薦いただけると幸いです。"></textarea>
             <x-element.submitbutton value="accept" color="cyan" confirm="「承諾する」で送信して、よろしいですか？">承諾する (Accept)
             </x-element.submitbutton>
             <span class="mx-4"></span>
