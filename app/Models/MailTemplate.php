@@ -34,7 +34,11 @@ class MailTemplate extends Model
      */
     public static function send_first_message(int $uid): void
     {
-        $mt = MailTemplate::find(7); // TODO: 7を設定で変えられるようにする
+        $mt = MailTemplate::where('name', '【査読開始・パスワード設定方法】')->first(); // TODO: 7を設定で変えられるようにする
+        if (!isset($mt)) {
+            info("MailTemplate with name '【査読開始・パスワード設定方法】' not found.");
+            return;
+        }
         $target = User::find($uid);
         (new ForAuthor($target, $mt))->process_send();
     }
