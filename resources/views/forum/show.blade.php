@@ -1,12 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-200">
             {{ $forum->title }}
             @if ($forum->isclose)
-                <span class="ml-3 text-sm font-normal px-2 py-0.5 bg-red-200 text-red-700 rounded">締め切り済み</span>
+                <span class="ml-3 text-sm font-normal px-2 py-0.5 bg-red-200 text-red-700 dark:bg-red-900 dark:text-red-200 rounded">締め切り済み</span>
             @endif
         </h2>
-        <div class="text-sm text-gray-500 mt-1">
+        <div class="text-sm text-gray-500 dark:text-slate-400 mt-1">
             {{ $forum->post->name ?? '' }} ／
             作成: {{ $forum->created_at->format('Y-m-d') }}（{{ $forum->fiscal_year() }}年度）／
             作成者: {{ $forum->user->name ?? '(不明)' }}
@@ -48,12 +48,12 @@
             <div class="mt-6 text-right">
                 <form action="{{ route('forum.mes.store', ['forum' => $forum->id]) }}" method="POST" id="post_forummes">
                     @csrf
-                    <div class="inline-block w-3/4 bg-indigo-200 p-3 rounded-md hover:bg-indigo-300 transition-colors duration-300">
+                    <div class="inline-block w-3/4 bg-indigo-200 dark:bg-indigo-900 dark:text-indigo-100 p-3 rounded-md hover:bg-indigo-300 dark:hover:bg-indigo-800 transition-colors duration-300">
                         <div class="px-2 text-left text-sm mb-1">送信フォーム</div>
-                        <input class="w-full p-2 bg-indigo-100 rounded-md border-indigo-300 border mb-1" type="text"
+                        <input class="w-full p-2 bg-indigo-100 dark:bg-indigo-800 dark:text-indigo-100 rounded-md border-indigo-300 dark:border-indigo-600 border mb-1" type="text"
                             name="sub" placeholder="Subject（件名）を入力"
                             onkeydown="return disableEnterKey(event);">
-                        <textarea class="w-full p-2 bg-white rounded-md border-indigo-300 border" name="mes"
+                        <textarea class="w-full p-2 bg-white dark:bg-slate-800 dark:text-slate-100 rounded-md border-indigo-300 dark:border-indigo-600 border" name="mes"
                             rows="8" placeholder="メッセージを入力してください" required></textarea>
                         <div class="mt-2">
                             <x-element.submitbutton color="indigo">書き込む</x-element.submitbutton>

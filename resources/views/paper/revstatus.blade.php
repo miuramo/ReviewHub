@@ -1,7 +1,7 @@
 <x-app-layout>
     <!-- paper.index -->
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-400">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:bg-slate-800 dark:text-slate-200">
             {{ __('査読状況') }}
             <span class="mx-2"></span>
             <x-element.paperid size=2 :paper_id="$paper->id"></x-element.paperid>
@@ -30,7 +30,7 @@
         <x-alert.error>{{ session('feedback.error') }}</x-alert.error>
     @endif
     <div class="mx-6 my-2 dark:text-gray-300">
-        <x-paper.shoshi_list :paper="$paper">
+        <x-paper.shoshi_list :paper="$paper" :expand_items="['abst','eabst']">
         </x-paper.shoshi_list>
         投稿者：<x-element.login_as :user="$paper->paperowner"></x-element.login_as>
 
@@ -69,7 +69,7 @@
                 }
 
             @endphp
-            <div class="p-2 bg-lime-100 text-sm" id="div_enqans">
+            <div class="p-2 bg-lime-100 text-sm dark:bg-lime-900 dark:text-lime-100" id="div_enqans">
                 @foreach ($enqs['canedit'] as $enq)
                     @can('see_enquete', $enq)
                         <x-enquete.view :enq="$enq" :enqans="$enqans" :inline="true">

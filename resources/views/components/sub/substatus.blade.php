@@ -9,19 +9,19 @@
     $statuses = App\Models\Status::pluck('name', 'id')->toArray();
 @endphp
 <!-- components.sub.status  親は -->
-<div class="bg-pink-100 rounded-lg p-2 inline-block align-top dark:bg-pink-600">
+<div class="bg-pink-100 rounded-lg p-2 inline-block align-top dark:bg-pink-900 dark:text-pink-100">
     <p class="text-center">査読状況
         <x-element.component_name type="span">
             substatus
         </x-element.component_name>
     </p>
-    <table class="min-w divide-y divide-gray-200 inline-block">
+    <table class="min-w divide-y divide-gray-200 dark:divide-slate-600 inline-block">
         <thead>
             <tr>
-                <th class="p-1 bg-slate-300">ラウンド {{ $sub->round }}
+                <th class="p-1 bg-slate-300 dark:bg-slate-600">ラウンド {{ $sub->round }}
 
                 </th>
-                <th class="p-1 bg-slate-300">
+                <th class="p-1 bg-slate-300 dark:bg-slate-600">
                     @if ($sub->paper->submits->first == $sub)
                         {{ $sub->paper->currentstatus->name }}
                     @else
@@ -34,9 +34,9 @@
                 </th>
             </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white divide-y divide-gray-200 dark:bg-slate-800 dark:divide-slate-600">
             @foreach ($sub->heads() as $h => $hc)
-                <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200' : 'bg-white dark:bg-slate-400' }}">
+                <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-700' : 'bg-white dark:bg-slate-800' }}">
                     @if ($h == 'accept_id')
                         <td class="p-1 text-center">判定</td>
                         <td class="p-1 text-center">{{ $accepts[$sub->accept_id] }}</td>
@@ -46,7 +46,7 @@
                     @endif
                 </tr>
             @endforeach
-            <tr class="bg-slate-200">
+            <tr class="bg-slate-200 dark:bg-slate-700">
                 <td colspan=2 class="p-1 text-center">
                     @if (!$readonly)
                         {{-- 受領メールを送る --}}
@@ -134,7 +134,7 @@
             <x-review.rstatus :review="$review" :readonly="$readonly" :archived="$archived"></x-review.rstatus>
         @endforeach
     @else
-        <div class="m-6 p-4 bg-yellow-200 inline-block align-top">
+        <div class="m-6 p-4 bg-yellow-200 inline-block align-top dark:bg-yellow-900 dark:text-yellow-100">
             <p class="text-center">査読者はまだ登録されていません。</p>
             @if ($sub->round > 1)
                 <x-review.rassign_again :submit_id="$sub->id"></x-review.rassign_again>
@@ -146,7 +146,7 @@
 @if (!$readonly)
     {{-- 削除済み（辞退） --}}
     @if (count($sub->rejected_reviews()) > 0)
-        <div class="m-2 p-2 bg-gray-200 inline-block align-top dark:bg-gray-500">
+        <div class="m-2 p-2 bg-gray-200 inline-block align-top dark:bg-slate-700 dark:text-slate-100">
             <p class="text-center">担当外</p>
             @foreach ($sub->rejected_reviews() as $review)
                 @if ($review->user == null)

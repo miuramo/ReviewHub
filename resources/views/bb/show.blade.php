@@ -60,7 +60,7 @@
 
 
     <div class="py-2 px-6">
-        <x-paper.shoshi_list :paper="$bb->paper"></x-paper.shoshi_list>
+        <x-paper.shoshi_list :paper="$bb->paper" :expand_items="['abst', 'eabst']"></x-paper.shoshi_list>
 
         <div class="py-0.5"></div>
         @if ($isEC)

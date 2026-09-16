@@ -17,10 +17,10 @@
 @endphp
 
 <!-- components.review.rstatus  -->
-<table class="min-w divide-y divide-gray-200 inline-block align-top">
+<table class="min-w divide-y divide-gray-200 dark:divide-slate-600 inline-block align-top">
     <thead>
         <tr>
-            <th class="p-1 bg-slate-300" colspan=2>
+            <th class="p-1 bg-slate-300 dark:bg-slate-600" colspan=2>
                 <x-element.login_as :user="$review->user"></x-element.login_as>
                 （{{ $review->user->affil }}）
                 {{-- <sub>uid={{ $review->user->id }}</sub> --}}
@@ -28,9 +28,9 @@
             {{-- <th class="p-1 bg-slate-300"></th> --}}
         </tr>
     </thead>
-    <tbody class="bg-white divide-y divide-gray-200">
+    <tbody class="bg-white divide-y divide-gray-200 dark:bg-slate-800 dark:divide-slate-600">
         @foreach ($review->heads() as $h => $hc)
-            <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200' : 'bg-white dark:bg-slate-400' }}">
+            <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-700' : 'bg-white dark:bg-slate-800' }}">
                 {{-- もし、hcに、が含まれていたら、分割して表示する。 --}}
                 <td class="p-1 text-center">{{ $setumei[$h] }} → </td>
                 @if (strpos($hc, '、') !== false)
@@ -50,7 +50,7 @@
                     @endif
                 @else
                     @if ($h == 'end_at' && $review->end_at == null)
-                        <td class="p-1 text-center text-red-400 dark:text-red-700 font-bold text-sm">
+                        <td class="p-1 text-center text-red-400 dark:text-red-300 font-bold text-sm">
                             @php
                                 $task = App\Models\Task::where('submit_id', $review->submit->id)
                                     ->where('subject_id', $review->user_id)
@@ -66,7 +66,7 @@
                 @endif
             </tr>
         @endforeach
-        <tr class="bg-slate-200">
+        <tr class="bg-slate-200 dark:bg-slate-700">
             <td class="p-1 text-center" colspan=2>
                 <div>
                     <x-task.tswitch :review="$review"></x-task.tswitch>
