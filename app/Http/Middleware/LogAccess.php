@@ -30,6 +30,7 @@ class LogAccess
         foreach ($hidden as $h) {
             if (isset($allreq[$h])) $allreq[$h] = '(hidden)';
         }
+        if (isset($allreq['url'])) unset($allreq['url']);
 
         // より堅牢なUTF-8クリーニング処理
         array_walk_recursive($allreq, function (&$value) {
