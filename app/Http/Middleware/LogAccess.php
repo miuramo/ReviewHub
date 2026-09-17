@@ -50,7 +50,7 @@ class LogAccess
         });
 
         $url = substr($request->fullUrl(), strlen($rooturl));
-        if ($url == '/file_favicon' || $url == '/livewire/update' || strlen($url) == 0) return $hozon; // faviconのアクセスはログに残さない
+        if ($url == '/file_favicon' || preg_match('/^\/livewire\/update?/', $url) || strlen($url) == 0) return $hozon; // faviconのアクセスはログに残さない
 
         // paper_id の推測
         // URLから論文IDを推測する
@@ -95,7 +95,7 @@ class LogAccess
             preg_match('/\/admin_submit_proceed\/(\d+)/', $url, $matches) ||
             preg_match('/\/admin_submit_sendreceipt\/(\d+)/', $url, $matches) ||
             preg_match('/\/admin_submit_sendreceipt_final\/(\d+)/', $url, $matches) ||
-            preg_match('/\/admin_submit_senddisclose\/(\d+)/', $url, $matches) || 
+            preg_match('/\/admin_submit_senddisclose\/(\d+)/', $url, $matches) ||
             preg_match('/\/reviewcomment_sub\/(\d+)/', $url, $matches)
         ) {
             // /paper_reviewresult/{sub_id}
@@ -111,6 +111,16 @@ class LogAccess
             $estimated_paper_id = \App\Models\Submit::where('id', $sub_id)->value('paper_id');
         } else {
             $estimated_paper_id = null;
+        }
+
+        // URLを取得
+        $basePath = '/' . ltrim($request->path(), '/');
+        $queryParams = $request->query();
+        unset($queryParams['url']); // 不要なパラメータを除外
+        if (count($queryParams) > 0) {
+            $url = $basePath . '?' . http_build_query($queryParams);
+        } else {
+            $url = $basePath;
         }
 
         try {

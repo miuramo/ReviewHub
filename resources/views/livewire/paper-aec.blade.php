@@ -11,7 +11,7 @@
         @if ($is_editing)
             <div class="mt-2">
                 <select wire:model="aec_id" class="border-gray-300 rounded-md shadow-sm">
-                    <option value="">担当幹事なし</option>
+                    <option value="0">担当幹事なし</option>
                     @foreach ($paper->managers as $user)
                         <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->affil }})</option>
                     @endforeach

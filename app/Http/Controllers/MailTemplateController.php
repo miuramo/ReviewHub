@@ -93,7 +93,13 @@ class MailTemplateController extends Controller
             $mt->name = $req->input("name");
             $mt->user_id = auth()->user()->id;
             $mt->save();
+            if ($req->expectsJson()) {
+                return response()->json(['result' => '保存成功']);
+            }
             return redirect()->route('mt.edit',['mt'=>$id])->with('feedback.success', "メール雛形を保存しました。");
+        }
+        if ($req->expectsJson()) {
+            return response()->json(['result' => '保存失敗'], 404);
         }
         return redirect()->route('mt.index')->with('feedback.error', "保存できませんでした。");
         // info($req->all());
