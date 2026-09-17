@@ -50,7 +50,7 @@ class LogAccess
         });
 
         $url = substr($request->fullUrl(), strlen($rooturl));
-        if ($url == '/file_favicon' || preg_match('/^\/livewire\/update?/', $url) || strlen($url) == 0) return $hozon; // faviconのアクセスはログに残さない
+        if (preg_match('/^\/file_favicon/', $url) || preg_match('/^\/livewire\/update?/', $url) || strlen($url) == 0) return $hozon; // faviconのアクセスはログに残さない
 
         // paper_id の推測
         // URLから論文IDを推測する
