@@ -261,8 +261,13 @@ class Bb extends MetaModel
             return;
         }
 
+        $changed = 0;
         foreach ($this->messages as $message) {
-            $message->markReadBy($userId);
+            $changed += $message->markReadBy($userId);
+        }
+
+        if ($changed > 0) {
+            broadcast(new \App\Events\BbMesReadUpdated($this->id));
         }
     }
     public function get_mail_to_cc(): array

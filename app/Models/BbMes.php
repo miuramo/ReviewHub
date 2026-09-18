@@ -51,12 +51,12 @@ class BbMes extends Model
         return $recipientId;
     }
 
-    // protected static function booted(): void
-    // {
-    //     static::created(function (BbMes $message) {
-    //         $message->createReadRecords();
-    //     });
-    // }
+    protected static function booted(): void
+    {
+        static::created(function (BbMes $message) {
+            broadcast(new \App\Events\BbMesPosted($message->bb_id));
+        });
+    }
 
     public function createReadRecords(): void
     {
@@ -84,9 +84,9 @@ class BbMes extends Model
         }
     }
 
-    public function markReadBy(int $userId): void
+    public function markReadBy(int $userId): int
     {
-        $this->reads()->where('user_id', $userId)->whereNull('read_at')->update([
+        return $this->reads()->where('user_id', $userId)->whereNull('read_at')->update([
             'read_at' => now(),
             'updated_at' => now(),
         ]);

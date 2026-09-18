@@ -2,6 +2,8 @@
 
 namespace App\Livewire;
 
+use App\Events\BbMesReactionUpdated;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class BbMesReactionEditor extends Component
@@ -20,6 +22,12 @@ class BbMesReactionEditor extends Component
     {
         $this->bbMesId = $bbMesId;
         $this->userId = $userId;
+    }
+
+    #[On('echo:bb-mes.{bbMesId},.reaction.updated')]
+    public function refreshReactions()
+    {
+        // Echoからの通知を受けて再レンダリングするだけでよい
     }
 
     public function render()
@@ -60,5 +68,7 @@ class BbMesReactionEditor extends Component
                 'emoji' => $emoji,
             ]);
         }
+
+        broadcast(new BbMesReactionUpdated($this->bbMesId));
     }
 }

@@ -39,9 +39,7 @@
         </div>
 
         {{-- メッセージ一覧（スレッド表示） --}}
-        @foreach ($forum->messages as $mes)
-            <x-forum.mes :mes="$mes" :depth="0" :is-close="$forum->isclose"></x-forum.mes>
-        @endforeach
+        <livewire:forum-thread :forum-id="$forum->id" :is-close="$forum->isclose" />
 
         {{-- 書き込みフォーム --}}
         @unless ($forum->isclose)
