@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\PapersExport4Hiroba;
 use App\Exports\PapersExportFromView;
 use App\Jobs\ExportHintFileJob;
+use App\Jobs\PdfJob;
 use App\Jobs\Test9w;
 use App\Mail\DisableEmail;
 use App\Mail\ForAuthor;
@@ -802,5 +803,29 @@ class AdminController extends Controller
         if (!auth()->user()->can('role_any', 'admin|manager')) abort(403);
         \App\Models\BbMesRead::markAsRead_byLogAccess();
         return redirect()->route('role.top', ['role'=>'admin'])->with('feedback.success', 'BbMesReadの既読情報をログアクセスに基づいて更新しました');
+    }
+
+    public function redispatchPdfJob()
+    {
+        if (!auth()->user()->can('role_any', 'admin')) abort(403);
+
+        return view('admin.redispatch_pdf_job');
+    }
+
+    public function redispatchPdfJobPost(Request $request)
+    {
+        if (!auth()->user()->can('role_any', 'admin')) abort(403);
+
+        $validated = $request->validate([
+            'file_id' => ['required', 'integer', 'exists:files,id'],
+        ]);
+        $file = File::findOrFail($validated['file_id']);
+        if ($file->mime !== 'application/pdf') {
+            return back()->withInput()->with('feedback.error', '指定されたファイルは PDF ではありません。');
+        }
+
+        PdfJob::dispatch($file);
+
+        return redirect()->route('admin.redispatch_pdf_job')->with('feedback.success', "file_id={$file->id} の PdfJob を再実行キューへ投入しました。");
     }
 }

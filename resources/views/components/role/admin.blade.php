@@ -200,6 +200,10 @@
         <x-element.linkbutton href="{{ route('admin.markasread_bylogaccess') }}" color="slate">
         ログアクセスからBbMesReadの既読情報を更新
         </x-element.linkbutton>
+        <span class="px-5"></span>
+        <x-element.linkbutton href="{{ route('admin.redispatch_pdf_job') }}" color="slate">
+            PdfJob を再実行
+        </x-element.linkbutton>
 
     </x-element.h1>
 
