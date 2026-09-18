@@ -6,6 +6,7 @@ use App\Models\Forum;
 use App\Models\ForumMes;
 use App\Models\Post;
 use App\Models\Term;
+use App\Events\ForumMesPosted;
 use App\Mail\ForumMesNotify;
 use Illuminate\Http\Request;
 
@@ -89,11 +90,6 @@ class ForumController extends Controller
         }
 
         $forum->load([
-            'messages' => fn($q) => $q->whereNull('parent_id')->orderBy('created_at'),
-            'messages.user',
-            'messages.replies.user',
-            'messages.replies.replies.user',
-            'messages.replies.replies.replies.user',
             'user',
             'post',
         ]);
@@ -131,6 +127,8 @@ class ForumController extends Controller
 
         $forum->loadMissing('post');
         (new ForumMesNotify($forum, $forumMes, $user))->sendIfRecipients();
+
+        broadcast(new ForumMesPosted($forum->id));
 
         return redirect()->route('forum.show', ['forum' => $forum->id])
             ->with('feedback.success', '書き込みました。');

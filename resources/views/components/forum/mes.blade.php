@@ -46,7 +46,7 @@
             <div class="{{ $textBg }} rounded-md px-2 py-1 text-sm dark:text-gray-200">{!! nl2br($body) !!}</div>
 
             @unless ($isClose)
-                <livewire:forum-mes-reaction-editor :forum-mes-id="$mes->id" :user-id="auth()->id()" />
+                <livewire:forum-mes-reaction-editor :forum-mes-id="$mes->id" :user-id="auth()->id()" :key="'forum-mes-reaction-'.$mes->id" />
                 <div class="mt-1 text-right">
                     <button type="button" @click="replyOpen = !replyOpen"
                         class="text-xs text-indigo-600 dark:text-indigo-300 hover:text-indigo-800 dark:hover:text-indigo-200 underline">

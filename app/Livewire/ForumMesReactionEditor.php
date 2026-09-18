@@ -2,6 +2,8 @@
 
 namespace App\Livewire;
 
+use App\Events\ForumMesReactionUpdated;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class ForumMesReactionEditor extends Component
@@ -20,6 +22,12 @@ class ForumMesReactionEditor extends Component
     {
         $this->forumMesId = $forumMesId;
         $this->userId = $userId;
+    }
+
+    #[On('echo:forum-mes.{forumMesId},.reaction.updated')]
+    public function refreshReactions()
+    {
+        // Echoからの通知を受けて再レンダリングするだけでよい
     }
 
     public function render()
@@ -60,5 +68,7 @@ class ForumMesReactionEditor extends Component
                 'emoji' => $emoji,
             ]);
         }
+
+        broadcast(new ForumMesReactionUpdated($this->forumMesId));
     }
 }
