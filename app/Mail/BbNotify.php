@@ -30,7 +30,7 @@ class BbNotify extends RetryMailable
     public function __construct(Bb $_bb, BbMes $_bbmes)
     {
         $name_of_managers = Setting::getValue("NAME_OF_MANAGERS");
-        $names = [1=>"著者との", 2=>"査読者との", 3=>"全査読者との", 4=>"{$name_of_managers}同士の"];
+        $names = [1 => "著者との", 2 => "査読者との", 3 => "全査読者との", 4 => "{$name_of_managers}同士の"];
         $this->bb = $_bb;
         $this->bbmes = $_bbmes;
         $this->paper = $_bb->paper;
@@ -38,7 +38,8 @@ class BbNotify extends RetryMailable
         $this->name = $names[$_bb->type];
 
         $organization = env('MAIL_ORGANIZATION', '論文編集委員会'); // 環境変数から組織名を取得
-        $this->subject = "【{$organization}】" . $this->name . '掲示板に投稿がありました : ' . $this->paper->id_03d();
+        $abb = strtoupper(Setting::getValue("CONFTITLE_ABB"));
+        $this->subject = "〈" . $abb .'-'. $this->paper->id_03d() . "〉" . $this->name . "掲示板に投稿がありました 【{$organization}】";
 
         $this->content = new Content(
             markdown: 'emails.bbnotify',
@@ -50,6 +51,5 @@ class BbNotify extends RetryMailable
                 'pid03d' => $this->paper->id_03d(),
             ],
         );
-
     }
 }
