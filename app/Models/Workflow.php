@@ -167,6 +167,7 @@ class Workflow extends Model
             $review = Review::where("submit_id", $task->submit->id)->where("user_id", $task->subject_id)->first();
             if ($review) {
                 $review->end_at = now();
+                $review->status = 2; // 査読状況を完了
                 $review->save();
             }
 
