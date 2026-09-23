@@ -56,9 +56,11 @@ class ReviewRequest extends RetryMailable
         $submit = \App\Models\Submit::find($revobj->submit_id);
         $review_duration = \App\Models\Setting::getary('REVIEW_DURATION_DAYS')[$this->rev->target];
         $review_type_name = $this->rev->review_type_name();
-        if ($submit->round > 1) {
+        $abb = strtoupper(\App\Models\Setting::getValue("CONFTITLE_ABB"));
+
+        if ($submit->round > 1) { // 2回目以降の投稿の場合
             $round = "（{$submit->round}回目）";
-            $this->subject = "改訂稿が投稿されましたので、{$review_type_name}{$round}をお願いしたいです (ID : " . $this->paper->id_03d() . ')';
+            $this->subject = "〈{$abb}-{$this->paper->id_03d()}〉改訂稿が投稿されましたので、{$review_type_name}{$round}をお願いしたいです";
             $this->content = new Content(
                 markdown: 'emails.reviewrequest2nd',
                 with: [
@@ -77,9 +79,14 @@ class ReviewRequest extends RetryMailable
                     'managers' => $managers_without_meta,
                 ],
             );
-        } else {
+        } else { // 初回の投稿の場合
             $round = '';
-            $this->subject = "【{$organization}より】" . $this->reviewer->name . "さまに{$review_type_name}{$round}をお願いしたいです (ID : " . $this->paper->id_03d() . ')';
+            $this->subject = "【{$organization}より】" . $this->reviewer->name . "さまに{$review_type_name}{$round}をお願いしたいです〈{$abb}-{$this->paper->id_03d()}〉";
+
+            $mes_due_date = "査読期間は、承諾いただいた日から{$review_duration}日間です。\n\n（多少の延長は調整しますので、ご相談ください。）";
+            if ($this->rev->target == 1 ){// メタ査読の場合
+                $mes_due_date = "査読者の選定期間、および、査読結果をふまえたメタ査読期間は{$review_duration}日間です。";
+            }
 
             $this->content = new Content(
                 markdown: 'emails.reviewrequest',
@@ -92,7 +99,8 @@ class ReviewRequest extends RetryMailable
                     'replyurl' => route('review.req_confirm', ['review' => $this->rev, 'token' => $this->rev->token_for_request()]),
                     'review_type_name' => $review_type_name,
                     'round' => $round,
-                    'review_duration' => $review_duration,
+                    'mes_due_date' => $mes_due_date,
+                    // 'review_duration' => $review_duration,
                     'operator' => auth()->user()->name,
                     'name_of_manager' => $sender_position,
                     'name_of_managers' => \App\Models\Setting::getval('NAME_OF_MANAGERS'),
