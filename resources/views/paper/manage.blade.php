@@ -58,7 +58,7 @@
         <x-bb.bb_link :submit="$paper->currentsubmit" type="1"></x-bb.bb_link>
         <span class="mx-6"></span>
         <x-element.linkbutton href="{{ route('paper.sendsubmitted', ['paper' => $paper->id]) }}"
-            confirm="投稿状況メールを代理送信します。よろしいですか？" color="cyan" size="xs" target="_self">
+            confirm="投稿状況メールを投稿者および投稿連絡用メールアドレスに送信します。よろしいですか？" color="pink" size="xs" target="_self">
             投稿状況メールを代理送信
         </x-element.linkbutton>
         {{-- ロック --}}

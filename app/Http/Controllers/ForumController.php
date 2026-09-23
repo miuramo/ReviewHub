@@ -71,7 +71,7 @@ class ForumController extends Controller
             'forum_id' => $forum->id,
             'user_id'  => 0,
             'subject'  => 'ごあんない',
-            'mes'      => "こちらは「{$forum->post->name}」のフォーラムです。\n絵文字リアクション機能を用いると、リアクションをつけたユーザの氏名が表示されます。\n作成年度: {$forum->fiscal_year()}年度",
+            'mes'      => "こちらは「{$forum->post->name}」のフォーラムです。絵文字リアクション機能を用いると、リアクションをつけたユーザの氏名が表示されます。",
         ]);
 
         return redirect()->route('forum.show', ['forum' => $forum->id])

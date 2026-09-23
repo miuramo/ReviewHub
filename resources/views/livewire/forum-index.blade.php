@@ -61,7 +61,7 @@
                                     <div class="text-xs text-gray-500 mt-1">
                                         作成: {{ $forum->created_at->format('Y-m-d') }}（{{ $fy }}年度）／
                                         作成者: {{ $forum->user->name ?? '(不明)' }}
-                                        ／ メッセージ数: {{ $forum->messages->count() }}
+                                        ／ メッセージ数: {{ $forum->messages->count()-1 }}
                                         @if ($forum->isclose)
                                             <span class="ml-2 px-1 py-0.5 bg-red-200 text-red-700 rounded text-xs">締め切り済み</span>
                                         @endif

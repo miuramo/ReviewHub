@@ -29,7 +29,6 @@
         <div class="bg-yellow-50 border border-yellow-200 dark:bg-yellow-900 dark:border-yellow-700 rounded-md px-3 py-2 text-sm text-gray-600 dark:text-gray-200">
             <div class="font-semibold">{{ $mes->subject }}</div>
             <div>{!! nl2br($body) !!}</div>
-            <div class="text-right text-xs text-gray-400 dark:text-yellow-300 mt-1">{{ $mes->created_at }}</div>
         </div>
     @else
         {{-- 通常メッセージ --}}
