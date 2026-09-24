@@ -828,4 +828,18 @@ class AdminController extends Controller
 
         return redirect()->route('admin.redispatch_pdf_job')->with('feedback.success', "file_id={$file->id} の PdfJob を再実行キューへ投入しました。");
     }
+
+    public function data_status()
+    {
+        $data_status = [
+            'users_count' => \App\Models\User::count(),
+            'files_count' => \App\Models\File::count(),
+            'papers_count' => \App\Models\Paper::count(),
+            'bb_mes_count' => \App\Models\BbMes::count(),
+            'bb_mes_read_count' => \App\Models\BbMesRead::count(),
+            'reviews_count' => \App\Models\Review::count(),
+            'forum_mes_count' => \App\Models\ForumMes::count(),
+        ];
+        return response()->json($data_status);
+    }
 }
