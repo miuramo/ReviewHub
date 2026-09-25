@@ -3,7 +3,7 @@
     @section('title', '以下の査読をお願いします')
 
     @php
-        $name_of_managers = \App\Models\Setting::getValue("NAME_OF_MANAGERS");
+        $name_of_managers = \App\Models\Setting::getValue('NAME_OF_MANAGERS');
 
         $paper = $review->submit->paper;
         $conf = App\Models\Setting::where('name', 'CONFTITLE')->first();
@@ -27,7 +27,8 @@
 
     <div class="py-2 px-6">
         <div class="text-lg py-4">
-            {{ $conf->value }} に投稿された以下の論文につきまして、{{ $review->user->name }} さまにぜひ {{ $review_type_name }} をお願いしたいと考えております。<br>
+            {{ $conf->value }} に投稿された以下の論文につきまして、{{ $review->user->name }} さまにぜひ {{ $review_type_name }}
+            をお願いしたいと考えております。<br>
             お引き受けいただける場合は、「承諾する」を押してください。<br>
         </div>
         <div class="px-4 pb-6 text-md text-blue-600">※「承諾する」または「今回は辞退する」を押すと、確認画面がでます。<br>
@@ -49,7 +50,7 @@
     </div>
 
     <div class="py-2 px-6">
-        <x-paper.shoshi_list :paper="$paper">
+        <x-paper.shoshi_list :paper="$paper" :text_format="false">
         </x-paper.shoshi_list>
     </div>
 

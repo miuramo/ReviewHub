@@ -1,6 +1,7 @@
 @props([
     'paper' => null,
     'expand_items' => [],
+    'text_format' => true,
 ])
 <script>
     function copyToClipboard(elementId) {
@@ -46,6 +47,7 @@
         </tr>
     @endforeach
 </table>
+@if($text_format)
 <div>
 <x-element.button id="toggleButton" value="テキスト形式の書誌情報を表示／非表示" color="cyan" size="xs" onclick="openclose('div_textbibinfo')">
                         </x-element.button>
@@ -59,3 +61,4 @@ PaperID :  {{ $paper->id_03d() }}
 </pre>
 </div>
 </div>
+@endif

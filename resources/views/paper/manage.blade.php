@@ -35,7 +35,7 @@
         <x-alert.error>{{ session('feedback.error') }}</x-alert.error>
     @endif
     <div class="mx-6 my-2 dark:text-gray-300">
-        <x-paper.shoshi_list :paper="$paper" :expand_items="['abst','eabst']">
+        <x-paper.shoshi_list :paper="$paper" :expand_items="['abst', 'eabst']">
         </x-paper.shoshi_list>
         投稿者：<x-element.login_as :user="$paper->paperowner"></x-element.login_as> ({{ $paper->paperowner?->email }})
         <span class="mx-2"></span>
@@ -92,7 +92,8 @@
                 onclick="openclose('div_enqans')">
             </x-element.button>
 
-            <div class="hidden-content p-2 bg-lime-100 text-sm dark:bg-lime-900 dark:text-lime-100" style="display:none" id="div_enqans">
+            <div class="hidden-content p-2 bg-lime-100 text-sm dark:bg-lime-900 dark:text-lime-100" style="display:none"
+                id="div_enqans">
                 @foreach ($enqs['canedit'] as $enq)
                     @can('see_enquete', $enq)
                         <x-enquete.view :enq="$enq" :enqans="$enqans" :inline="true">
@@ -124,7 +125,8 @@
                 onclick="openclose('div_rassign')">
             </x-element.button>
 
-            <div class="hidden-content p-2 bg-cyan-100 dark:bg-cyan-900 dark:text-cyan-100" style="display:none" id="div_rassign">
+            <div class="hidden-content p-2 bg-cyan-100 dark:bg-cyan-900 dark:text-cyan-100" style="display:none"
+                id="div_rassign">
                 <div class="py-2 px-6">
                     <x-review.rassign :submit_id="$paper->currentsubmit->id"></x-review.rassign>
                 </div>
@@ -201,10 +203,10 @@
                 @endif
             @endforeach
         </div>
+    </div>
 
-
-        @push('localjs')
-            <script src="/js/jquery.min.js"></script>
-            <script src="/js/openclose.js"></script>
-        @endpush
+    @push('localjs')
+        <script src="/js/jquery.min.js"></script>
+        <script src="/js/openclose.js"></script>
+    @endpush
 </x-app-layout>
