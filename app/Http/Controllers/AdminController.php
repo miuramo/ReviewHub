@@ -835,7 +835,6 @@ class AdminController extends Controller
             'users_count' => \App\Models\User::count(),
             'files_count' => \App\Models\File::count(),
             'papers_count' => \App\Models\Paper::count(),
-            'bb_mes_count' => \App\Models\BbMes::count(),
             'bb_mes_read_count' => \App\Models\BbMesRead::count(),
             'reviews_count' => \App\Models\Review::count(),
             'forum_mes_count' => \App\Models\ForumMes::count(),
