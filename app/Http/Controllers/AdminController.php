@@ -836,7 +836,6 @@ class AdminController extends Controller
             'files_count' => \App\Models\File::count(),
             'papers_count' => \App\Models\Paper::count(),
             'bb_mes_read_count' => \App\Models\BbMesRead::count(),
-            'reviews_count' => \App\Models\Review::count(),
             'forum_mes_count' => \App\Models\ForumMes::count(),
         ];
         return response()->json($data_status);
