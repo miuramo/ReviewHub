@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Auth\MagicLoginController;
 use App\Http\Controllers\AffilController;
 use App\Http\Controllers\BbController;
 use App\Http\Controllers\BbMesController;
@@ -160,6 +161,8 @@ Route::middleware('auth')->group(function () {
 
     // admin
     Route::get('/admin_dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/admin/magic-links', [MagicLoginController::class, 'index'])->name('admin.magic-links');
+    Route::post('/admin/magic-links', [MagicLoginController::class, 'store'])->name('admin.magic-links.store');
     Route::post('/admin_disable_email', [AdminController::class, 'disable_email'])->name('admin.disable_email');
     Route::get('/admin_paperlist', [AdminController::class, 'paperlist'])->name('admin.paperlist');
     Route::post('/admin_paperlist', [AdminController::class, 'paperlist'])->name('admin.paperlist');

@@ -40,6 +40,11 @@
                 </x-element.linkbutton>
             </span>
         @endforeach
+        <span>
+            <x-element.linkbutton href="{{ route('admin.magic-links') }}" color="cyan">
+                Magic Link発行
+            </x-element.linkbutton>
+        </span>
     </div>
 </div>
 @if (session('feedback.success'))
