@@ -4,6 +4,7 @@
     'confirm' => '削除してよいですか？',
     'align' => 'left',
     'size' => 'md',
+    'disabled' => false,
 ])
 <!-- components.element.deletebutton -->
 @if (strlen($action) < 2)
@@ -13,8 +14,8 @@
 <form action="{{ $action }}" method="post" class="inline-block float-{{ $align }}">
     @method('DELETE')
     @csrf
-    <button type="submit" onclick="return confirm('{{ $confirm }}')"
-        class="inline-flex justify-center py-1 px-2 border border-transparent shadow-md text-{{ $size }} font-medium rounded-md text-white bg-{{ $color }}-500 hover:bg-{{ $color }}-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $color }}-500">
+    <button type="submit" onclick="return confirm('{{ $confirm }}')" @disabled($disabled)
+        class="inline-flex justify-center py-1 px-2 border border-transparent shadow-md text-{{ $size }} font-medium rounded-md text-white bg-{{ $color }}-500 hover:bg-{{ $color }}-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{ $color }}-500 {{ $disabled ? 'cursor-not-allowed opacity-50' : '' }}">
         {{ $slot }}
     </button>
 </form>

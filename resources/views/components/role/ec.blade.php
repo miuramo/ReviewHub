@@ -7,6 +7,7 @@
         ->toArray();
 
     $tasks = App\Models\Task::with('submit')
+        ->whereHas('submit.paper')
         ->where('subject_id', auth()->id())
         ->where('completed', 0)
         ->get();
@@ -18,6 +19,7 @@
         ->get();
 
     $approvetasks = App\Models\Task::with('submit')
+        ->whereHas('submit.paper')
         ->where('object_id', auth()->id())
         ->where('completed', 1)
         ->where('require_approve', 1)

@@ -47,7 +47,19 @@ class Review extends MetaModel
 
     public function task()
     {
-        return $this->hasOne(Task::class, 'submit_id', 'submit_id')->where('subject_id', $this->user_id);
+        return $this->hasOne(Task::class, 'submit_id', 'submit_id')
+            ->where('subject_id', $this->user_id)
+            ->where('workflow_id', 4);
+    }
+    public function reviewTasks()
+    {
+        return Task::where('submit_id', $this->submit_id)
+            ->where('subject_id', $this->user_id)
+            ->where('workflow_id', 4);
+    }
+    public function hasInProgressTask(): bool
+    {
+        return $this->reviewTasks()->where('completed', 0)->exists();
     }
     /**
      * 査読の種類を返す
@@ -107,9 +119,13 @@ class Review extends MetaModel
         // タスクがないか確認
         $task = Task::where('submit_id', $paper->currentSubmit->id)
             ->where('subject_id', $revuid)
+            ->where('workflow_id', 4)
             ->first();
         if ($task) {
-            // 既にタスクがある場合は、何もしない
+            if (!$task->completed && !$task->started) {
+                $task->started = true;
+                $task->save();
+            }
             return false;
         }
         $task = Task::createReviewTask($paper->currentSubmit, $revuid);
@@ -117,6 +133,7 @@ class Review extends MetaModel
         $review_duration_days = $review_duration_days ?? [24, 10, 5]; // デフォルトは24日
         //TODO: ここを設定で指定する。[24, 10, 5] のように、通常、メタ、最終判定の順で日数を指定する。
         $task->due_date = $task->addDaysToDate($review_duration_days[$this->target]);
+        $task->started = true; // タスクを開始状態にする
         $task->save();
 
         $conftitle = Setting::getval('CONFTITLE');
@@ -531,10 +548,8 @@ class Review extends MetaModel
     }
     public function deleteTask(): void
     {
-        // この査読に関連するタスクを削除する
-        $task = Task::where('submit_id', $this->submit_id)->where('subject_id', $this->user_id)->first();
-        if ($task) {
-            Task::destroy($task->id);
+        foreach ($this->reviewTasks()->get() as $task) {
+            $task->delete();
         }
     }
 

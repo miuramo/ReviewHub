@@ -27,6 +27,7 @@ use App\Models\Role;
 use App\Models\Score;
 use App\Models\Setting;
 use App\Models\Submit;
+use App\Models\Task;
 use App\Models\User;
 use App\Models\Viewpoint;
 use App\Models\Vote;
@@ -638,6 +639,7 @@ class AdminController extends Controller
             $f->remove_the_file();
             $f->delete_me();
         }
+        Task::truncate();
         Paper::truncate();
         Contact::truncate();
         EnqueteAnswer::truncate();

@@ -3,12 +3,18 @@
 ])
 <!-- components.task.app_panel -->
 @php
-
+    $submit = $task->submit;
+    $paper = $submit?->paper;
 @endphp
+@if (!$submit || !$paper)
+    <div class="my-2 border border-red-300 bg-red-50 p-3 text-sm text-red-800">
+        関連する投稿または論文が見つからないため、このタスク（ID: {{ $task->id }}）は表示できません。
+    </div>
+@else
 
 <x-element.h1c color="cyan" dark=200 :options="['font-bold mb-0']">
     {{-- 論文 --}}
-    <x-element.paperid :paper_id="$task->submit->paper->id" />
+    <x-element.paperid :paper_id="$paper->id" />
     <span class="mx-1"></span>
     {{-- 誰が --}}
     {{-- @php
@@ -31,23 +37,23 @@
 
         @if (strpos($task->workflow->object, 'rev') === 0 || strpos($task->workflow->object, 'meta') === 0)
             <div class="mt-2 w-1/2 text-gray-400 text-sm text-center"> 下の画像をクリックすると、論文の先頭ページのみ閲覧できます。
-                @if ($task->submit->paper->pdf_file_id != null)
-                    <a href="{{ route('file.altimgshow', ['file' => $task->submit->paper->pdf_file_id, 'hash' => substr($task->submit->paper->pdf_file->key, 0, 8)]) }}"
+                @if ($paper->pdf_file_id != null)
+                    <a href="{{ route('file.altimgshow', ['file' => $paper->pdf_file_id, 'hash' => substr($paper->pdf_file->key, 0, 8)]) }}"
                         target="_blank">
                 @endif
-                <x-file.paperheadimg :paper="$task->submit->paper">
+                <x-file.paperheadimg :paper="$paper">
                 </x-file.paperheadimg>
-                @if ($task->submit->paper->pdf_file_id != null)
+                @if ($paper->pdf_file_id != null)
                     </a>
                 @endif
             </div>
         @else
             ファイル：
-            @if ($task->submit->paper->pdf_file_id != 0)
+            @if ($paper->pdf_file_id != 0)
                 <a class="underline text-blue-600 hover:bg-lime-200"
-                    href="{{ route('file.showhash', ['file' => $task->submit->paper->pdf_file_id, 'hash' => substr($task->submit->paper->pdf_file->key, 0, 8)]) }}"
+                    href="{{ route('file.showhash', ['file' => $paper->pdf_file_id, 'hash' => substr($paper->pdf_file->key, 0, 8)]) }}"
                     target="_blank">
-                    {{ $task->submit->paper->pdf_file->origname }}
+                    {{ $paper->pdf_file->origname }}
                 </a>
             @else
                 No File
@@ -87,3 +93,4 @@
         @endif
 
     </div>
+@endif

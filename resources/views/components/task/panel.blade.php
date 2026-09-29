@@ -5,16 +5,21 @@
 @php
     $name_of_managers = \App\Models\Setting::getValue('NAME_OF_MANAGERS');
 
-    $sub = App\Models\Submit::find($task->submit_id);
-    $paper = App\Models\Paper::find($sub->paper_id);
+    $sub = $task->submit;
+    $paper = $sub?->paper;
 
-    if ($task->submit->round >= 2) {
+    if ($sub && $paper && $sub->round >= 2) {
         $answerfile = $paper->answer_file();
         $previous_review_sub = App\Models\Submit::where('paper_id', $paper->id)
-            ->where('round', $task->submit->round - 1)
+            ->where('round', $sub->round - 1)
             ->first();
     }
 @endphp
+@if (!$sub || !$paper)
+    <div class="my-2 border border-red-300 bg-red-50 p-3 text-sm text-red-800">
+        関連する投稿または論文が見つからないため、このタスク（ID: {{ $task->id }}）は表示できません。
+    </div>
+@else
 <x-element.component_name>panel</x-element.component_name>
 
 <x-element.h1c color="yellow" dark=300 :options="['font-bold', 'mb-0']">
@@ -267,3 +272,4 @@
 @endif
 
 </div>
+@endif

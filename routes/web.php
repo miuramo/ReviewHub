@@ -7,6 +7,7 @@ use App\Http\Controllers\BbController;
 use App\Http\Controllers\BbMesController;
 use App\Http\Controllers\ConfirmController;
 use App\Http\Controllers\EnqueteAnswerController;
+use App\Http\Controllers\EnqueteConfigController;
 use App\Http\Controllers\EnqueteController;
 use App\Http\Controllers\FailedJobController;
 use App\Http\Controllers\FileController;

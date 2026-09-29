@@ -2,11 +2,13 @@
     $reviews = App\Models\Review::where('user_id', auth()->id())->get();
 
     $tasks = App\Models\Task::with('submit')
+        ->whereHas('submit.paper')
         ->where('subject_id', auth()->id())
         ->where('completed', 0)
         ->get();
 
     $approvetasks = App\Models\Task::with('submit')
+        ->whereHas('submit.paper')
         ->where('object_id', auth()->id())
         ->where('completed', 1)
         ->where('require_approve', 1)

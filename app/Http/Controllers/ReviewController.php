@@ -16,6 +16,7 @@ use App\Models\RevConflict;
 use App\Models\Review;
 use App\Models\Score;
 use App\Models\Submit;
+use App\Models\Task;
 use App\Models\User;
 use App\Models\Viewpoint;
 use Illuminate\Http\Request;
@@ -255,11 +256,11 @@ class ReviewController extends Controller
         if (!auth()->user()->can('role', 'ec')) return abort(403);
         $rev = new Review();
         $rev->category_id = $cat_id;
-        $rev->submit_id = 9999;
+        $rev->submit_id = 0;
         $rev->user_id = auth()->id();
         $rev->target = $target;
         $rev->paper = new Paper();
-        $rev->paper->id = 9999;
+        $rev->paper->id = 0;
         $rev->paper->category_id = $cat_id;
         $rev->id = 0; // ダミーはかならずReviewID = 0 にする。
         return $this->edit($rev);
@@ -288,10 +289,21 @@ class ReviewController extends Controller
     public function start(Request $req, Review $review)
     {
         if ($review->user_id != auth()->id()) return abort(403, "THIS IS NOT YOUR REVIEW");
-        // info($req->all());
-        $review->start_at = now();
-        $review->status = 1; // 査読の状況を「開始」にする
-        $review->save();
+        $task = Task::whereKey($req->input('task'))
+            ->where('submit_id', $review->submit_id)
+            ->where('subject_id', $review->user_id)
+            ->where('workflow_id', 4)
+            ->where('completed', 0)
+            ->firstOrFail();
+
+        DB::transaction(function () use ($review, $task) {
+            $task->started = true;
+            $task->save();
+
+            $review->start_at = now();
+            $review->status = 1; // 査読の状況を「開始」にする
+            $review->save();
+        });
         return redirect($req->redirect_page)->with('feedback.success', 'ご確認ありがとうございます。査読をお願いします。');
         //
     }
@@ -323,10 +335,21 @@ class ReviewController extends Controller
     {
         if (!auth()->user()->can('manage_review', $review->paper->id)) abort(403, "you are not a manager");
         if ($review->locked) return abort(403, "THIS REVIEW IS LOCKED");
-        // $review->status = -1; // 辞退
-        // $review->save();
-        $review->deleteTask();
-        Review::destroy($review->id);
+
+        $deleted = DB::transaction(function () use ($review) {
+            $tasks = $review->reviewTasks()->lockForUpdate()->get();
+            if ($tasks->contains(fn (Task $task) => !$task->completed)) {
+                return false;
+            }
+
+            $review->deleteTask(); // レビューに紐づくタスクを削除する
+            $review->delete(); // レビュー自体を削除する(soft-delete)
+            return true;
+        });
+
+        if (!$deleted) {
+            return back()->with('feedback.error', '査読タスク進行中のため、候補者から外せません。');
+        }
         return redirect()->route('paper.manage', ['paper' => $review->paper->id])->with('feedback.success', '査読割り当てから外しました');
         //
     }

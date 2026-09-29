@@ -273,12 +273,14 @@ class Workflow extends Model
     }
     public function assign_backward(Task $task): void
     {
-        $task->started = false;
+        $task->started = false; // タスクを未開始に戻す
+        $task->save(); // 変更を保存
+        
         if ($this->object == "aec") {
             $task->submit->aec_id = null;
             $task->submit->save();
         } else if ($this->object == "meta") {
-            $task->submit->meta()?->save_user_id(null);
+            $task->submit->meta()?->save_user_id(null); // メタレビュアーを解除
         } else if ($this->object == "rev1") {
             $task->submit->rev1()?->save_user_id(null);
         } else if ($this->object == "rev2") {

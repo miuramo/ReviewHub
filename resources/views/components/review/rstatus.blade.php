@@ -14,6 +14,7 @@
         'will_end_at' => '予定終了日時',
     ];
     $task = $review->task;
+    $taskInProgress = $review->hasInProgressTask();
 @endphp
 
 <!-- components.review.rstatus  -->
@@ -75,9 +76,13 @@
                 @if (!$archived)
                     <span class="mx-1"></span>
                     <x-element.deletebutton action="{{ route('review.destroy', ['review' => $review]) }}" color="orange"
+                        :disabled="$taskInProgress"
                         size="sm" confirm="本当に{{ $review->user->name }}さんを査読候補者から外してよいですか？（復元はできます）">
                         査読候補者から外す
                     </x-element.deletebutton>
+                    @if ($taskInProgress)
+                        <span class="ml-1 text-xs text-red-600">査読タスク進行中</span>
+                    @endif
                 @endif
                 @can('role', 'ec')
                 <div class="p-2">
