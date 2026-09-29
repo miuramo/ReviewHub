@@ -9,6 +9,9 @@
     taskstatus {{ $task->id }}
 </x-element.component_name>
 <div class="bg-{{ $bgcolor }}-100 p-2 text-sm dark:bg-{{ $bgcolor }}-600">
+    @if($task->started)
+    <span class="text-xs bg-green-500 text-white rounded-md p-1 mr-2">開始済</span>
+    @endif
     {{-- 誰が --}}
     @php
         $role = App\Models\Role::findByIdOrName($task->workflow->subject);

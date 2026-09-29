@@ -337,19 +337,20 @@ class ReviewController extends Controller
         if ($review->locked) return abort(403, "THIS REVIEW IS LOCKED");
 
         $deleted = DB::transaction(function () use ($review) {
-            $tasks = $review->reviewTasks()->lockForUpdate()->get();
-            if ($tasks->contains(fn (Task $task) => !$task->completed)) {
-                return false;
-            }
+            // 査読タスク進行中でも、候補者から外せるようにする。その際、以下で紐づくタスクも削除(soft-delete)される。復活をおすとtaskも復活することに注意。
+            // $tasks = $review->reviewTasks()->lockForUpdate()->get();
+            // if ($tasks->contains(fn (Task $task) => !$task->completed)) {
+            //     return false;
+            // }
 
             $review->deleteTask(); // レビューに紐づくタスクを削除する
             $review->delete(); // レビュー自体を削除する(soft-delete)
             return true;
         });
 
-        if (!$deleted) {
-            return back()->with('feedback.error', '査読タスク進行中のため、候補者から外せません。');
-        }
+        // if (!$deleted) {
+        //     return back()->with('feedback.error', '査読タスク進行中のため、候補者から外せません。');
+        // }
         return redirect()->route('paper.manage', ['paper' => $review->paper->id])->with('feedback.success', '査読割り当てから外しました');
         //
     }
@@ -391,13 +392,13 @@ class ReviewController extends Controller
      */
     public function restore(int $revid)
     {
-        if (!auth()->user()->can('role_any', 'rev|meta')) return abort(403);
-        // info($revid);
         $review = Review::onlyTrashed()->findOrFail($revid);
-        $review->restore();
+        if (!auth()->user()->can('manage_review', $review->paper->id)) abort(403, "you are not a manager");
+        DB::transaction(function () use ($review) {
+            $review->reviewTasks()->onlyTrashed()->restore();
+            $review->restore();
+        });
         return back()->with('feedback.success', '復活させました。');
-        // redirect()->route('paper.manage',['paper'=>$review->paper_id])->with('feedback.success', '復活させました。');
-        // redirect()->back()->with('feedback.success', '復活させました。');
     }
 
 

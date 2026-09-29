@@ -59,7 +59,7 @@ class Review extends MetaModel
     }
     public function hasInProgressTask(): bool
     {
-        return $this->reviewTasks()->where('completed', 0)->exists();
+        return $this->reviewTasks()->where('started', 1)->where('completed', 0)->exists();
     }
     /**
      * 査読の種類を返す
