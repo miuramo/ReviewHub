@@ -40,6 +40,72 @@ class TaskController extends Controller
         //
     }
 
+    /**
+     * 依頼メール送信前の本文確認・編集画面
+     */
+    public function sendrequest_confirm(int $review, int $revuid)
+    {
+        $reviewModel = Review::find($review);
+        $paper_id = $reviewModel->paper_id;
+        if (!auth()->user()->can('manage_review', $paper_id)) abort(403);
+
+        $reviewer = $reviewModel->user;
+        $paper = Paper::with('currentSubmit')->find($reviewModel->paper_id);
+        $mail = new ReviewRequest($paper, $reviewer, $reviewModel);
+
+        return view('task.sendrequest_confirm')->with([
+            'review' => $reviewModel,
+            'revuid' => $revuid,
+            'subject' => $mail->subject,
+            'body' => $mail->body,
+            'reviewer' => $reviewer,
+        ]);
+    }
+
+    /**
+     * 確認画面で編集された本文をセッションに保存し、実際の送信処理（GET /task_sendrequest/...）へリダイレクトする。
+     * 送信処理のURLをアクセスログの集計（LogAccess::dates_sendrequest）と合わせるため、本処理では送信自体は行わない。
+     */
+    public function sendrequest_prepare(Request $req, int $review, int $revuid)
+    {
+        $reviewModel = Review::find($review);
+        $paper_id = $reviewModel->paper_id;
+        if (!auth()->user()->can('manage_review', $paper_id)) abort(403);
+
+        $req->session()->put("sendrequest_body_{$review}_{$revuid}", (string) $req->input('body'));
+        $req->session()->put("sendrequest_subject_{$review}_{$revuid}", (string) $req->input('subject'));
+
+        return redirect()->route('task.sendrequest', ['review' => $review, 'revuid' => $revuid]);
+    }
+
+    /**
+     * 確認画面で編集中の件名・本文をもとに、Markdownメールを画面プレビューする（送信は行わない）
+     */
+    public function sendrequest_preview(Request $req, int $review, int $revuid)
+    {
+        $reviewModel = Review::find($review);
+        $paper_id = $reviewModel->paper_id;
+        if (!auth()->user()->can('manage_review', $paper_id)) abort(403);
+
+        $reviewer = $reviewModel->user;
+        $paper = Paper::with('currentSubmit')->find($reviewModel->paper_id);
+        $mail = new ReviewRequest($paper, $reviewer, $reviewModel, (string) $req->input('body'), (string) $req->input('subject'), preview: true);
+
+        $to = implode(', ', (array) ($mail->mail_to_cc['to'] ?? []));
+        $cc = implode(', ', (array) ($mail->mail_to_cc['cc'] ?? []));
+        $bcc = implode(', ', (array) ($mail->mail_to_cc['bcc'] ?? []));
+        $header = view('task.sendrequest_preview_header')->with(compact('to', 'cc', 'bcc') + ['subject' => $mail->subject])->render();
+
+        $html = $mail->render();
+        // <body> 直後にTo/Cc/Bccの表示を差し込む
+        if (preg_match('/<body[^>]*>/i', $html)) {
+            $html = preg_replace('/(<body[^>]*>)/i', '$1' . $header, $html, 1);
+        } else {
+            $html = $header . $html;
+        }
+        return $html;
+    }
+
     public function sendrequest(int $review, int $revuid)
     {
         // if (!auth()->user()->can('role_any', 'ec')) abort(403);
@@ -52,9 +118,12 @@ class TaskController extends Controller
             $review->save();
         }
 
+        $bodyOverride = session()->pull("sendrequest_body_{$review->id}_{$revuid}");
+        $subjectOverride = session()->pull("sendrequest_subject_{$review->id}_{$revuid}");
+
         $reviewer = $review->user;
         $paper = Paper::with('currentSubmit')->find($review->paper_id);
-        (new ReviewRequest($paper, $reviewer, $review))->process_send();
+        (new ReviewRequest($paper, $reviewer, $review, $bodyOverride, $subjectOverride))->process_send();
 
         return redirect()->route('paper.manage', ['paper' => $paper])->with('feedback.success', '査読依頼メールを送信しました');
     }

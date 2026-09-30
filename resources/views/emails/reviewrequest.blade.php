@@ -8,18 +8,7 @@
     }
 </style>
 
-{{ $reviewer->affil }} {{ $reviewer->name }} さま
-
-{{ $name_of_manager }} の {{ $operator }} と申します。
-
-{{$organization}} における検討の結果、{{ $reviewer->name }} さまに
-
-{{$conftitle}} に投稿された
-以下の論文の{{ $review_type_name }}{{$round}}をお願いできればと考えております。
-
-{{ $mes_due_date }}
-
-お忙しいところすみませんが、ご協力いただけると幸いです。
+{{ $body }}
 
 <div style="border-bottom: 2px dotted #aaa; padding: 2px; margin: 20px 0;"></div>
 
@@ -38,7 +27,7 @@
 
 # タイトル：{{ $title }}
 
-![Embedded Image](cid:firstpage.png)
+![Embedded Image]({{ $preview_image_url ?? 'cid:firstpage.png' }})
 
 
 <div style="border-bottom: 2px dotted #aaa; padding: 2px; margin: 20px 0;"></div>
