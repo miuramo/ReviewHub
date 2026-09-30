@@ -45,9 +45,9 @@
     @else
         <span class="text-red-500 font-extrabold">依頼メール未送信です</span>
     @endif
-    <x-element.linkbutton href="{{ route('task.sendrequest', ['review' => $review, 'revuid' => $review->user->id]) }}"
-        color="pink" size="sm" confirm="本当に{{ $review->user->name }}さんに査読依頼メールを送信してよいですか？">
-        依頼メール送信
+    <x-element.linkbutton href="{{ route('task.sendrequest.confirm', ['review' => $review, 'revuid' => $review->user->id]) }}"
+        color="pink" size="sm">
+        依頼メール送信準備
         {{-- {{$review->id}} {{$review->user->id}} --}}
     </x-element.linkbutton>
 

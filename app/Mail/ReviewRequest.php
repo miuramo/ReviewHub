@@ -21,11 +21,14 @@ class ReviewRequest extends RetryMailable
     public Paper $paper;
     public User $reviewer;
     public Review $rev;
+    public string $body;
 
     /**
      * Create a new message instance.
+     * $bodyOverride / $subjectOverride を指定すると、本文・件名をその内容で置き換える（メール本文の事前確認・編集機能用）。
+     * $preview がtrueの場合、本文中の埋め込み画像（cid）をブラウザで表示可能なURLに置き換える（画面プレビュー用）。
      */
-    public function __construct(Paper $_paper, User $_reviewer, Review $_rev)
+    public function __construct(Paper $_paper, User $_reviewer, Review $_rev, ?string $bodyOverride = null, ?string $subjectOverride = null, bool $preview = false)
     {
         $this->paper = $_paper;
         $this->reviewer = $_reviewer;
@@ -58,9 +61,35 @@ class ReviewRequest extends RetryMailable
         $review_type_name = $this->rev->review_type_name();
         $abb = strtoupper(\App\Models\Setting::getValue("CONFTITLE_ABB"));
 
+        // 画面プレビュー時は、cid埋め込み画像の代わりにブラウザ表示可能なURLを使う
+        $preview_image_url = null;
+        if ($preview) {
+            $pdffile = File::find($this->paper->pdf_file_id);
+            if ($pdffile) {
+                $preview_image_url = route('file.pdfimages', ['file' => $pdffile->id, 'page' => 1, 'hash' => substr($pdffile->key, 0, 12)]);
+            }
+        }
+
         if ($submit->round > 1) { // 2回目以降の投稿の場合
             $round = "（{$submit->round}回目）";
-            $this->subject = "〈{$abb}-{$this->paper->id_03d()}〉改訂稿が投稿されましたので、{$review_type_name}{$round}をお願いしたいです";
+            $this->subject = $subjectOverride ?? "〈{$abb}-{$this->paper->id_03d()}〉改訂稿が投稿されましたので、{$review_type_name}{$round}をお願いしたいです";
+
+            $this->body = $bodyOverride ?? <<<EOT
+{$this->reviewer->affil} {$this->reviewer->name} さま
+
+{$sender_position} の {$this->_operator()} です。いつもお世話になっております。
+
+以前査読をご担当いただいた以下の論文の改訂稿が投稿されましたので、{$review_type_name}{$round}をお願いできればと考えております。
+
+査読期間は、承諾いただいた日から{$review_duration}日間です。（多少の延長は調整しますので、ご相談ください。）
+
+
+お忙しいところすみませんが、引き続きご協力いただけると幸いです。
+
+
+査読の可否につきましては、以下のボタンで開く投稿管理システムにて、ご回答ください。
+EOT;
+
             $this->content = new Content(
                 markdown: 'emails.reviewrequest2nd',
                 with: [
@@ -77,16 +106,33 @@ class ReviewRequest extends RetryMailable
                     'name_of_manager' => $sender_position,
                     'name_of_managers' => \App\Models\Setting::getval('NAME_OF_MANAGERS'),
                     'managers' => $managers_without_meta,
+                    'body' => $this->body,
+                    'preview_image_url' => $preview_image_url,
                 ],
             );
         } else { // 初回の投稿の場合
             $round = '';
-            $this->subject = "【{$organization}より】" . $this->reviewer->name . "さまに{$review_type_name}{$round}をお願いしたいです〈{$abb}-{$this->paper->id_03d()}〉";
+            $this->subject = $subjectOverride ?? "【{$organization}より】" . $this->reviewer->name . "さまに{$review_type_name}{$round}をお願いしたいです〈{$abb}-{$this->paper->id_03d()}〉";
 
             $mes_due_date = "査読期間は、承諾いただいた日から{$review_duration}日間です。\n\n（多少の延長は調整しますので、ご相談ください。）";
             if ($this->rev->target == 1 ){// メタ査読の場合
                 $mes_due_date = "査読者の選定期間、および、査読結果をふまえたメタ査読期間は{$review_duration}日間です。";
             }
+
+            $this->body = $bodyOverride ?? <<<EOT
+{$this->reviewer->affil} {$this->reviewer->name} さま
+
+{$sender_position} の {$this->_operator()} と申します。
+
+{$organization} における検討の結果、{$this->reviewer->name} さまに
+
+{$conftitle} に投稿された
+以下の論文の{$review_type_name}{$round}をお願いできればと考えております。
+
+{$mes_due_date}
+
+お忙しいところすみませんが、ご協力いただけると幸いです。
+EOT;
 
             $this->content = new Content(
                 markdown: 'emails.reviewrequest',
@@ -105,9 +151,16 @@ class ReviewRequest extends RetryMailable
                     'name_of_manager' => $sender_position,
                     'name_of_managers' => \App\Models\Setting::getval('NAME_OF_MANAGERS'),
                     'managers' => $managers_without_meta,
+                    'body' => $this->body,
+                    'preview_image_url' => $preview_image_url,
                 ],
             );
         }
+    }
+
+    private function _operator(): string
+    {
+        return auth()->user()->name;
     }
 
     /**

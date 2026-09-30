@@ -195,6 +195,9 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('task', TaskController::class);
     Route::get('/task_sendrequest/{review}/{revuid}', [TaskController::class, 'sendrequest'])->name('task.sendrequest');
+    Route::get('/task_sendrequest_confirm/{review}/{revuid}', [TaskController::class, 'sendrequest_confirm'])->name('task.sendrequest.confirm');
+    Route::post('/task_sendrequest_confirm/{review}/{revuid}', [TaskController::class, 'sendrequest_prepare'])->name('task.sendrequest.prepare');
+    Route::post('/task_sendrequest_preview/{review}/{revuid}', [TaskController::class, 'sendrequest_preview'])->name('task.sendrequest.preview');
     Route::get('/task_sendfirstmessage/{review}/{revuid}', [TaskController::class, 'sendfirstmessage'])->name('task.sendfirstmessage');
     Route::put('/task/{task}/approve', [TaskController::class, 'approve'])->name('task.approve');
 
