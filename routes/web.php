@@ -321,6 +321,7 @@ Route::middleware('auth')->group(function () {
     Route::get('bb/{bb}/{key}', [BbController::class, 'show'])->name('bb.show')->where('key', '([0-9A-Za-z]+)');
     Route::get('bb/{bb}/{key}/read-status', [BbController::class, 'readStatus'])->name('bb.read_status')->where('key', '([0-9A-Za-z]+)');
     Route::post('bb/{bb}/{key}', [BbMesController::class, 'store'])->name('bbmes.store')->where('key', '([0-9A-Za-z]+)');
+    Route::post('bbmes/{bbMes}/hide', [BbMesController::class, 'hide'])->name('bbmes.hide');
     Route::post('bb/{bb}/{key}/adopt', [BbMesController::class, 'adopt'])->name('bb.adopt')->where('key', '([0-9A-Za-z]+)');
     Route::get('bb_multisubmit', [BbController::class, 'multisubmit'])->name('bb.multisubmit');
     Route::post('bb_multisubmit', [BbController::class, 'multisubmit'])->name('bb.multisubmitpost');

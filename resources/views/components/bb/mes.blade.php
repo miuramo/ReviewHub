@@ -12,7 +12,12 @@
 @endphp
 
 @if ($mes->user_id == auth()->id())
-    <div class="text-right">
+    <div class="text-right message-div"
+        @if (auth()->user()?->can('role', 'admin'))
+            x-data="{ menuOpen: false, menuX: 0, menuY: 0 }"
+            @contextmenu.prevent.stop="menuOpen = true; menuX = Math.min($event.clientX, window.innerWidth - 180); menuY = Math.min($event.clientY, window.innerHeight - 48)"
+            @click.outside="menuOpen = false" @keydown.escape.window="menuOpen = false"
+        @endif>
         <div class="inline-block w-3/4 bg-green-300 p-2 rounded-lg px-2 py-1 my-1 dark:bg-green-700 dark:text-gray-200">
             <div class="flex justify-between">
                 <div class="mx-2">{{ $mes->subject }}</div>
@@ -42,9 +47,27 @@
                 </div>
             @endif
         </div>
+        @if (auth()->user()?->can('role', 'admin'))
+            <div x-show="menuOpen" x-cloak @click.stop @mouseleave="menuOpen = false"
+                class="z-50 min-w-40 rounded-md border border-gray-300 bg-white py-1 shadow-lg dark:border-gray-600 dark:bg-gray-800"
+                :style="'position: fixed; left: ' + menuX + 'px; top: ' + menuY + 'px'">
+                <form action="{{ route('bbmes.hide', ['bbMes' => $mes->id]) }}" method="post">
+                    @csrf
+                    <button type="submit" onclick="return confirm('本当に「{{ $mes->subject }}」（{{ $mes->created_at }}）を非表示にしてよいですか？')"
+                        class="w-full px-4 py-2 text-left text-sm text-gray-800 hover:bg-yellow-100 dark:text-gray-200 dark:hover:bg-yellow-800">
+                        このメッセージを非表示にする（管理者のみ）
+                    </button>
+                </form>
+            </div>
+        @endif
     </div>
 @else
-    <div class="bg-slate-300 rounded-lg w-3/4 px-2 py-1 my-1 dark:bg-slate-700 dark:text-gray-200">
+    <div class="bg-slate-300 rounded-lg w-3/4 px-2 py-1 my-1 dark:bg-slate-700 dark:text-gray-200 message-div"
+        @if (auth()->user()?->can('role', 'admin'))
+            x-data="{ menuOpen: false, menuX: 0, menuY: 0 }"
+            @contextmenu.prevent.stop="menuOpen = true; menuX = Math.min($event.clientX, window.innerWidth - 180); menuY = Math.min($event.clientY, window.innerHeight - 48)"
+            @click.outside="menuOpen = false" @keydown.escape.window="menuOpen = false"
+        @endif>
         <div class="flex justify-between">
             <div class="mx-2">{{ $mes->subject }}</div>
             <div class="text-right text-gray-500 text-sm mr-2">{{ $mes->created_at }}</div>
@@ -115,6 +138,20 @@
                         @endif
                     @endif
                 @endforeach
+            </div>
+        @endif
+
+        @if (auth()->user()?->can('role', 'admin'))
+            <div x-show="menuOpen" x-cloak @click.stop @mouseleave="menuOpen = false"
+                class="z-50 min-w-40 rounded-md border border-gray-300 bg-white py-1 shadow-lg dark:border-gray-600 dark:bg-gray-800"
+                :style="'position: fixed; left: ' + menuX + 'px; top: ' + menuY + 'px'">
+                <form action="{{ route('bbmes.hide', ['bbMes' => $mes->id]) }}" method="post">
+                    @csrf
+                    <button type="submit" onclick="return confirm('本当に「{{ $mes->subject }}」（{{$mes->created_at}}）を非表示にしてよいですか？')"
+                        class="w-full px-4 py-2 text-left text-sm text-gray-800 hover:bg-yellow-100 dark:text-gray-200 dark:hover:bg-yellow-800">
+                        このメッセージを非表示にする（管理者のみ）
+                    </button>
+                </form>
             </div>
         @endif
 

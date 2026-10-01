@@ -187,4 +187,17 @@ class BbMesController extends Controller
     {
         //
     }
+
+    public function hide(BbMes $bbMes)
+    {
+        if (!auth()->user()->can('role', 'admin')) abort(403);
+
+        $bb = $bbMes->bb;
+        if ($bb === null) abort(404, 'bb not found');
+
+        $bbMes->delete();
+
+        return redirect()->route('bb.show', ['bb' => $bb->id, 'key' => $bb->key])
+            ->with('feedback.success', '非表示にしました');
+    }
 }
