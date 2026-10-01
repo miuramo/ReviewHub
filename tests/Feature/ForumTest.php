@@ -189,6 +189,25 @@ class ForumTest extends TestCase
         $response->assertSee($forum->title);
     }
 
+    public function test_forum_message_links_do_not_double_escape_ampersands(): void
+    {
+        $forum = $this->forumCreatedAt('2026-06-20');
+        $user  = $this->userWithTerm(2026);
+        $url   = 'https://example.com/?first=1&amp;second=2';
+
+        ForumMes::factory()->create([
+            'forum_id' => $forum->id,
+            'user_id'  => $user->id,
+            'mes'      => $url,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('forum.show', $forum));
+
+        $response->assertStatus(200);
+        $response->assertSee('href="https://example.com/?first=1&amp;second=2"', false);
+        $response->assertDontSee('&amp;amp;', false);
+    }
+
     /**
      * 任期を持たないユーザはフォーラム閲覧で 403 になる。
      */

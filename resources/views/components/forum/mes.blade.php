@@ -5,7 +5,8 @@
 ])
 {{-- components/forum/mes.blade.php --}}
 @php
-    $body     = htmlspecialchars($mes->mes ?? '', ENT_QUOTES, 'UTF-8');
+    $body     = html_entity_decode($mes->mes ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $body     = htmlspecialchars($body, ENT_QUOTES, 'UTF-8');
     $body     = preg_replace(
         '/(https?:\/\/[^\s<>"\']+)/u',
         '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-300 underline hover:text-blue-800 dark:hover:text-blue-200 break-all">$1</a>',
