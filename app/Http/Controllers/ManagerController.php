@@ -61,6 +61,9 @@ class ManagerController extends Controller
 
         return view('admin.paperlist_headimg')->with(compact("all"));
     }
+    /**
+     * すべての画像の再クロップを実行する
+     */
     public function paperlist_headimg_recrop()
     {
         if (!auth()->user()->can('role_any', 'ec')) abort(403);
@@ -70,9 +73,6 @@ class ManagerController extends Controller
         }
         return redirect()->route('admin.paperlist_headimg')->with('feedback.success', 'タイトル画像の再クロップを開始しました。');
     }
-
-
-
 
     public function mailtest()
     {

@@ -820,6 +820,7 @@ class AdminController extends Controller
 
         $validated = $request->validate([
             'file_id' => ['required', 'integer', 'exists:files,id'],
+            'return_to' => ['sometimes', 'in:paperlist_headimg'],
         ]);
         $file = File::findOrFail($validated['file_id']);
         if ($file->mime !== 'application/pdf') {
@@ -828,7 +829,11 @@ class AdminController extends Controller
 
         PdfJob::dispatch($file);
 
-        return redirect()->route('admin.redispatch_pdf_job')->with('feedback.success', "file_id={$file->id} の PdfJob を再実行キューへ投入しました。");
+        $redirect = isset($validated['return_to'])
+            ? redirect()->route('admin.paperlist_headimg')
+            : redirect()->route('admin.redispatch_pdf_job');
+
+        return $redirect->with('feedback.success', "file_id={$file->id} の PdfJob を再実行キューへ投入しました。");
     }
 
     public function data_status()
