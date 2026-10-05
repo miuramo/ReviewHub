@@ -9,8 +9,8 @@
     taskstatus {{ $task->id }}
 </x-element.component_name>
 <div class="bg-{{ $bgcolor }}-100 p-2 text-sm dark:bg-{{ $bgcolor }}-600">
-    @if($task->started)
-    <span class="text-xs bg-green-500 text-white rounded-md p-1 mr-2">開始済</span>
+    @if ($task->started)
+        <span class="text-xs bg-green-500 text-white rounded-md p-1 mr-2">開始済</span>
     @endif
     {{-- 誰が --}}
     @php
@@ -35,27 +35,34 @@
     @endif
     {{-- 締切 --}}
 
-    <span class="mx-2"></span>
-    （報告完了日時: {{ $task->completed_at }}）
-    <span class="mx-2"></span>
+    @if ($task->completed_at)
+        <span class="mx-2"></span>
+        （報告完了日時: {{ $task->completed_at }}）
+        <span class="mx-2"></span>
 
-    {{-- （承認日時：{{ $task->approved_at }}）
+        {{-- （承認日時：{{ $task->approved_at }}）
     <span class="mx-2"></span>
     @foreach ($task->log as $log)
         <span class="bg-slate-200 p-2 text-xs">
             コメント:{{ $log['comment'] ?? '未設定' }} 日時:{{ $log['datetime'] }}
         </span>
     @endforeach --}}
-    @if ($task->completed && auth()->user()->can('role_any', 'ec'))
-        <span class="mx-2"></span>
-        <form action="{{ route('task.revert', $task) }}" method="POST" class="inline">
-            @csrf
-            @method('PUT')
-            <x-element.submitbutton2 size="xs" type="submit" color="pink" confirm="本当に未完了に戻しますか？">
-                未完了に戻す
-            </x-element.submitbutton2>
-        </form>
+        @if ($task->completed && auth()->user()->can('role_any', 'ec'))
+            <span class="mx-2"></span>
+            <form action="{{ route('task.revert', $task) }}" method="POST" class="inline">
+                @csrf
+                @method('PUT')
+                <x-element.submitbutton2 size="xs" type="submit" color="pink" confirm="本当に未完了に戻しますか？">
+                    未完了に戻す
+                </x-element.submitbutton2>
+            </form>
+        @endif
+    @else
+    <span class="mx-2"></span>
+    予定締切日: {{ $task->due_date }}
+    {{-- // 1W前までにダウンロードしていない
+    // 当日になってもまったく書き込みがない
+    // 締切を過ぎても未完了 --}}
     @endif
 
-    <span class="mx-2"></span>
 </div>
