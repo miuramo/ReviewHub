@@ -564,4 +564,22 @@ class Review extends MetaModel
             }
         }
     }
+
+    public function updateReviewDownloadedAt(): ?string
+    {
+        if ($this->downloaded_at) return $this->downloaded_at;
+
+        $this->downloaded_at = LogAccess::date_user_access_file($this->user_id, $this->paper->pdf_file_id);
+        $this->save();
+        return $this->downloaded_at;
+    }
+
+    public function updateReviewEditStartedAt(): ?string
+    {
+        if ($this->review_edit_started_at) return $this->review_edit_started_at;
+
+        $this->review_edit_started_at = LogAccess::date_user_access_file($this->user_id, $this->paper->pdf_file_id);
+        $this->save();
+        return $this->review_edit_started_at;
+    }
 }

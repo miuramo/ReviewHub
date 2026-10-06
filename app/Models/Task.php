@@ -85,6 +85,20 @@ class Task extends Model
     {
         return $this->belongsTo(Submit::class);
     }
+    public function review()
+    {
+        if ($this->workflow_id == 4 && $this->review_id === null) {
+            // 探す
+            $review = Review::where('submit_id', $this->submit_id)->where('user_id', $this->subject_id)->first();
+            if ($review) {
+                $this->review_id = $review->id;
+                $this->save();
+                // 自分自身を再読み込み
+                $this->refresh();
+            }
+        }
+        return $this->belongsTo(Review::class, 'review_id');
+    }
 
     public function dueForHumans(string $prefix = 'あと', string $postfix = '超過'): string
     {
@@ -276,6 +290,29 @@ class Task extends Model
             $review->end_at = null;
             $review->save();
         }
+    }
+
+    /**
+     * 
+     */
+    public function updateReviewDownloadedAt(): ?string
+    {
+        if ($this->review) {
+            $this->review->updateReviewDownloadedAt();
+            // $this->review を再読み込み
+            $this->review->refresh();
+        }
+        return $this->review ? $this->review->downloaded_at : null;
+    }
+
+    public function updateReviewEditStartedAt(): ?string
+    {
+        if ($this->review) {
+            $this->review->updateReviewEditStartedAt();
+            // $this->review を再読み込み
+            $this->review->refresh();
+        }
+        return $this->review ? $this->review->review_edit_started_at : null;
     }
 
 }

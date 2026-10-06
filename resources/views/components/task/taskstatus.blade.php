@@ -24,7 +24,7 @@
     {{ $task->workflow->description }}
 
     {{-- もし、割り当てタスクなら --}}
-    @if ($task->workflow->task == 'assign')
+    {{-- @if ($task->workflow->task == 'assign')
         → <x-element.login_as :user="$task->object" />
     @elseif($task->workflow->task == 'confirm')
         → <x-element.login_as :user="$task->object" />
@@ -32,8 +32,18 @@
 
     @elseif($task->workflow->task == 'submit')
         → <x-element.login_as :user="$task->object" />
-    @endif
+    @endif --}}
     {{-- 締切 --}}
+    @if($task->review)
+        @php
+            $task->updateReviewDownloadedAt();
+            $task->updateReviewEditStartedAt();
+        @endphp
+        <span class="mx-2"></span>
+        ReviewID: {{ $task->review->id ?? '未設定' }}
+        <span class="mx-2"></span> DL日時: {{ $task->review->downloaded_at ?? '未DL' }} 
+        <span class="mx-2"></span>編集開始日時: {{ $task->review->review_edit_started_at ?? '未開始' }}
+    @endif
 
     @if ($task->completed_at)
         <span class="mx-2"></span>

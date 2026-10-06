@@ -171,4 +171,27 @@ class LogAccess extends Model
             ->get();
         return $ret;
     }
+
+    /**
+     * ユーザ（査読者）が、file_id にアクセスしていたら、その最初の（最も古い）アクセス日付を返す
+     */
+    public static function date_user_access_file(int $user_id, int $file_id): ?string
+    {
+        $log = LogAccess::where('uid', $user_id)
+            ->where('url', 'like', "/file/{$file_id}/show/%")
+            ->orderBy('created_at', 'asc')
+            ->first();
+        return $log ? $log->created_at->format('Y-m-d H:i:s') : null;
+    }
+    /**
+     * ユーザ（査読者）が、査読報告を編集していたら、その最初の（最も古い）アクセス日付を返す
+     */
+    public static function date_user_edit_review(int $user_id, int $review_id): ?string
+    {
+        $log = LogAccess::where('uid', $user_id)
+            ->where('url', "/review/{$review_id}/edit")
+            ->orderBy('created_at', 'asc')
+            ->first();
+        return $log ? $log->created_at->format('Y-m-d H:i:s') : null;
+    }
 }
