@@ -568,8 +568,20 @@ class Review extends MetaModel
     public function updateReviewDownloadedAt(): ?string
     {
         if ($this->downloaded_at) return $this->downloaded_at;
-
+        // 最初は、現在のPaper->pdf_file_id をみる。
         $this->downloaded_at = LogAccess::date_user_access_file($this->user_id, $this->paper->pdf_file_id);
+        // もし、null だったら、submit(round)の投稿受理receiptsent_at から過去のファイルを遡って検索し、最初にみつかったPDFファイルのアクセス日時を取得する。
+        if (!$this->downloaded_at) {
+            $receiptsent_at = $this->submit->receiptsent_at ?? $this->submit->submitted_at ?? null;
+            if ($receiptsent_at) {
+                // $receiptsent_at から過去に遡って、著者がアップロードしたファイルを検索し、最初のものに着目する。
+                $files = $this->paper->files()->where('created_at', '<', $receiptsent_at)->where('filetype_id', 1)->orderBy('created_at', 'desc')->get();
+                foreach ($files as $file) {
+                    $this->downloaded_at = LogAccess::date_user_access_file($this->user_id, $file->id);
+                    if ($this->downloaded_at) break;
+                }
+            }
+        }
         $this->save();
         return $this->downloaded_at;
     }
@@ -578,8 +590,22 @@ class Review extends MetaModel
     {
         if ($this->review_edit_started_at) return $this->review_edit_started_at;
 
-        $this->review_edit_started_at = LogAccess::date_user_access_file($this->user_id, $this->paper->pdf_file_id);
+        $this->review_edit_started_at = LogAccess::date_user_edit_review($this->user_id, $this->id);
         $this->save();
         return $this->review_edit_started_at;
+    }
+
+    public function updateReviewEnteredAt(): ?string
+    {
+        // if ($this->review_entered_at) return $this->review_entered_at;
+        $scores = Score::where('review_id', $this->id)->orderBy('created_at')->first();
+        return $scores ? $scores->created_at : null;
+        // $this->review_entered_at = LogAccess::date_user_enter_review($this->user_id, $this->id);
+        // $this->save();
+        // return $this->review_entered_at;
+    }
+    public function countReviewItems(): int
+    {
+        return Score::where('review_id', $this->id)->count();
     }
 }

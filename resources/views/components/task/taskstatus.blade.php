@@ -35,19 +35,21 @@
     @endif --}}
     {{-- 締切 --}}
     @if($task->review)
-        @php
+        {{-- @php
             $task->updateReviewDownloadedAt();
             $task->updateReviewEditStartedAt();
-        @endphp
-        <span class="mx-2"></span>
-        ReviewID: {{ $task->review->id ?? '未設定' }}
-        <span class="mx-2"></span> DL日時: {{ $task->review->downloaded_at ?? '未DL' }} 
-        <span class="mx-2"></span>編集開始日時: {{ $task->review->review_edit_started_at ?? '未開始' }}
+        @endphp --}}
+        {{-- <span class="mx-2"></span> --}}
+        {{-- ReviewID: {{ $task->review->id ?? '未設定' }} --}}
+        <span class="mx-2"></span> DL日時: {!! $task->review->updateReviewDownloadedAt() ?? '<span class="text-red-500 font-bold">未DL</span>' !!} 
+        <span class="mx-2"></span>編集開始: {!! $task->review->updateReviewEditStartedAt() ?? '<span class="text-red-500 font-bold">未開始</span>' !!}
+        <span class="mx-2"></span>入力開始: {!! $task->review->updateReviewEnteredAt() ?? '<span class="text-red-500 font-bold">未開始</span>' !!}
+        <span class="mx-2"></span>入力項目数: {{ $task->review->countReviewItems() }}
     @endif
 
     @if ($task->completed_at)
         <span class="mx-2"></span>
-        （報告完了日時: {{ $task->completed_at }}）
+        報告完了日時: {{ $task->completed_at }}
         <span class="mx-2"></span>
 
         {{-- （承認日時：{{ $task->approved_at }}）

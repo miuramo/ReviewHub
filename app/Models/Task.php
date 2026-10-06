@@ -297,6 +297,12 @@ class Task extends Model
      */
     public function updateReviewDownloadedAt(): ?string
     {
+        if (!$this->started){
+            if ($this->review->start_at){
+                $this->started = true;
+                $this->save();
+            }
+        }
         if ($this->review) {
             $this->review->updateReviewDownloadedAt();
             // $this->review を再読み込み
