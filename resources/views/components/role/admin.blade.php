@@ -29,6 +29,9 @@
 
     // // BbMesReadの初期化
     // \App\Models\BbMesRead::init();
+    // LogModifyのdiffが空のレコードを削除
+    App\Models\LogModify::cleanup_nodiff();
+
 @endphp
 <div class="px-4 py-4">
     <x-element.h1>あなたのRole</x-element.h1>
@@ -199,11 +202,11 @@
         </x-element.linkbutton>
         <span class="px-5"></span>
         <x-element.linkbutton href="{{ route('admin.stats') }}" color="slate">
-            stats 
+            stats
         </x-element.linkbutton>
         <span class="px-5"></span>
         <x-element.linkbutton href="{{ route('admin.markasread_bylogaccess') }}" color="slate">
-        ログアクセスからBbMesReadの既読情報を更新
+            ログアクセスからBbMesReadの既読情報を更新
         </x-element.linkbutton>
         <span class="px-5"></span>
         <x-element.linkbutton href="{{ route('admin.redispatch_pdf_job') }}" color="slate">
