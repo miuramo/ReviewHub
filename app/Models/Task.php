@@ -285,10 +285,10 @@ class Task extends Model
         $this->save();
 
         // reviewの終了日時も nullにする
-        $review = Review::where('submit_id', $this->submit_id)->where('user_id', $this->subject_id)->first();
-        if ($review) {
-            $review->end_at = null;
-            $review->save();
+        if ($this->review) {
+            $this->review->end_at = null;
+            $this->review->locked = false;
+            $this->review->save();
         }
     }
 

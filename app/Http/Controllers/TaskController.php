@@ -256,7 +256,7 @@ class TaskController extends Controller
     public function revert(Task $task)
     {
         if (!auth()->user()->can('role_any', 'ec')) abort(403);
-        $task->revert();
+        $task->revert(); // review のアンロックも、終了日時のリセットもTaskモデル側で行われます。
         return redirect()->back()->with('feedback.success', 'タスクを未完了に戻しました');
     }
 }

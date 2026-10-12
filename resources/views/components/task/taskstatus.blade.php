@@ -52,14 +52,8 @@
         報告完了日時: {{ $task->completed_at }}
         <span class="mx-2"></span>
 
-        {{-- （承認日時：{{ $task->approved_at }}）
-    <span class="mx-2"></span>
-    @foreach ($task->log as $log)
-        <span class="bg-slate-200 p-2 text-xs">
-            コメント:{{ $log['comment'] ?? '未設定' }} 日時:{{ $log['datetime'] }}
-        </span>
-    @endforeach --}}
-        @if ($task->completed && auth()->user()->can('role_any', 'ec'))
+    {{-- 査読ロックされていても、まだ著者に開示する前であれば、未完了に戻すことができます。 --}}
+        @if ($task->completed && !$task->submit->ec_decision_at && auth()->user()->can('role_any', 'ec'))
             <span class="mx-2"></span>
             <form action="{{ route('task.revert', $task) }}" method="POST" class="inline">
                 @csrf
