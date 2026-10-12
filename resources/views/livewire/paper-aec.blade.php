@@ -21,7 +21,7 @@
                     class="ml-2 px-3 py-1 bg-gray-500 text-white rounded">キャンセル</button>
             </div>
         @elseif (auth()->user()->can('manage_papermanager', $paper->id))
-                <button wire:click="$set('is_editing', true)" class="ml-2 px-3 py-1 bg-cyan-500 text-white rounded text-sm">
+                <button wire:click="$set('is_editing', true)" class="ml-2 px-3 py-1 bg-cyan-500 text-white rounded text-sm cursor-pointer">
                     担当幹事を変更する
                 </button>
         @endif

@@ -52,7 +52,7 @@
 <x-element.button id="toggleButton" value="テキスト形式の書誌情報を表示／非表示" color="cyan" size="xs" onclick="openclose('div_textbibinfo')">
                         </x-element.button>
 <div id="div_textbibinfo" style="display:none; padding-top: 0.5rem; padding-bottom: 0.5rem;">
-    <button onclick="copyToClipboard('pre_textbibinfo')" class="px-2 py-1 bg-blue-500 text-white rounded text-sm">クリップボードにコピー</button>
+    <button onclick="copyToClipboard('pre_textbibinfo')" class="px-2 py-1 bg-blue-500 text-white rounded text-sm cursor-pointer">クリップボードにコピー</button>
 <pre id="pre_textbibinfo" class="text-xs p-2 bg-white dark:bg-slate-800 text-wrap" >
 PaperID :  {{ $paper->id_03d() }}
 @foreach($koumoku as $k => $v)

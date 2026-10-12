@@ -50,11 +50,11 @@
                 </td>
                 <td class="p-1">{{ $paper->title }}
                 </td>
-                <td class="p-1">{{ $paper->paperowner->name }}
+                <td class="p-1">{{ $paper->paperowner->name ?? '' }}
                 </td>
-                <td class="p-1">{{ $paper->paperowner->affil }}
+                <td class="p-1">{{ $paper->paperowner->affil ?? '' }}
                 </td>
-                <td class="p-1">{{ $paper->paperowner->email }}
+                <td class="p-1">{{ $paper->paperowner->email ?? '' }}
                 </td>
                 <td class="p-1">{!! nl2br($paper->contactemails) !!}
                 </td>

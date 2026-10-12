@@ -7,7 +7,7 @@
 ])
 <!-- components.element.button -->
 @isset($confirm)
-<button onclick="if(confirm('{{ $confirm }}')) {{ $onclick }}; return false;" class="inline-flex justify-center
+<button onclick="if(confirm('{{ $confirm }}')) {{ $onclick }}; return false;" class="inline-flex justify-center cursor-pointer
  py-1 px-2 border border-transparent shadow-sm
  text-{{$size}} font-medium rounded-md text-white bg-{{$color}}-500 hover:bg-{{$color}}-600
  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{$color}}-500
@@ -15,7 +15,7 @@
     {{$value}}
     </button>
 @else
-<button onclick="{{ $onclick }};return false;" class="inline-flex justify-center
+<button onclick="{{ $onclick }};return false;" class="inline-flex justify-center cursor-pointer
  py-1 px-2 border border-transparent shadow-sm
   text-{{$size}} font-medium rounded-md text-white bg-{{$color}}-500 hover:bg-{{$color}}-600
    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-{{$color}}-500

@@ -57,7 +57,7 @@
                                     </p>
                                 </div>
                                 <button type="button" onclick="deletePasskey({{ $passkey->id }})"
-                                    class="ml-4 text-sm text-red-600 hover:text-red-800">
+                                    class="ml-4 text-sm text-red-600 hover:text-red-800 cursor-pointer">
                                     {{ __('Delete') }}
                                 </button>
                             </div>

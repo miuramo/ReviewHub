@@ -109,7 +109,7 @@
     <div class="px-6 py-4">
         <x-element.h1>最近担当した査読</x-element.h1>
         @foreach ($myreviews as $rev)
-            <div class="mx-6 border-2 px-3 py-4 pb-3 bg-white">
+            <div class="mx-6 border-1 px-3 py-4 pb-3 bg-white border-gray-300 dark:text-gray-100 dark:bg-gray-800">
                 <x-element.paperid size=1 :paper_id="$rev->paper->id" />
                 <x-element.category :category="$rev->paper->category" size="xs" />
                 第{{ $rev->submit->round }}回査読<br>
