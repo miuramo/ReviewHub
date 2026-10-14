@@ -45,7 +45,7 @@
                 </x-element.submitbutton>
             </form>
             <div class="py-1"></div>
-            <x-element.linkbutton2 href="{{ route('admin.deletepaper', ['cat' => $targetcat]) }}" color="yellow">
+            <x-element.linkbutton2 href="{{ route('admin.deletepaper') }}" color="yellow">
                 投稿とファイルの状況（削除済みを含む）
             </x-element.linkbutton2>
             <div class="py-1"></div>

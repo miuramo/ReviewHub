@@ -203,6 +203,10 @@
                 @endif
             @endforeach
         </div>
+
+        @can('role_any', 'ec|aec')
+            <x-admin.change_paper_id :paper="$paper" />
+        @endcan
     </div>
 
     @push('localjs')

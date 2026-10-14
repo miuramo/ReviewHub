@@ -153,29 +153,159 @@ class AdminController extends Controller
     /**
      * 指定したPaper、および関連付けされたファイルを、論理削除する。また、ファイル状況を確認する。
      */
-    public function deletepaper(int $cat_id, Request $req)
+    public function deletepaper(Request $req)
     {
-        if (!auth()->user()->can('role_any', 'ec')) {
-            if (!auth()->user()->can('manage_cat', $cat_id)) abort(403);
+        $user = auth()->user();
+        $isEc = $user->can('role_any', 'ec');
+        if (!$isEc && !$user->can('manage_cat_any')) {
+            abort(403);
         }
-        $all = Paper::withTrashed()->where("category_id", $cat_id)->orderBy('deleted_at', 'asc')->orderBy('id')->get();
+
+        $all = Paper::withTrashed()->orderBy('deleted_at', 'asc')->orderBy('id')->get();
         if ($req->has("action")) {
-            foreach ($req->input("pid") as $n => $pid) {
-                $paper = Paper::withTrashed()->find($pid);
-                if ($paper != null) {
-                    if ($req->input("action") == "revoke") {
-                        $paper->deleted_at = null;
-                        $paper->save();
-                        $mes = "復活";
-                    } else if ($req->input("action") == "delete") {
-                        $paper->softdelete_me();
-                        $mes = "論理削除";
+            $validated = $req->validate([
+                'action' => 'required|in:revoke,delete,force_delete',
+                'pid' => 'required|array|min:1',
+                'pid.*' => 'required|integer|exists:papers,id',
+            ]);
+            $paperIds = array_values(array_unique($validated['pid']));
+            $papers = Paper::withTrashed()->whereIn('id', $paperIds)->get();
+
+            if (!$isEc) {
+                foreach ($papers as $paper) {
+                    if (!$user->can('manage_cat', $paper->category_id)) {
+                        abort(403);
                     }
                 }
             }
-            return redirect()->route('admin.deletepaper', ['cat' => $cat_id])->with('feedback.success', '投稿を' . $mes . 'しました');
+
+            if ($validated['action'] === 'force_delete') {
+                if (!$isEc) {
+                    abort(403);
+                }
+
+                $filesToRemove = collect();
+                try {
+                    DB::transaction(function () use ($paperIds, &$filesToRemove) {
+                        $papers = Paper::withTrashed()
+                            ->whereIn('id', $paperIds)
+                            ->lockForUpdate()
+                            ->get();
+
+                        if ($papers->count() !== count($paperIds)) {
+                            throw \Illuminate\Validation\ValidationException::withMessages([
+                                'pid' => '完全削除する投稿が見つかりません。画面を再読み込みしてください。',
+                            ]);
+                        }
+                        foreach ($papers as $paper) {
+                            if (!$paper->trashed()) {
+                                throw \Illuminate\Validation\ValidationException::withMessages([
+                                    'pid' => "Paper ID {$paper->id} は論理削除済みではないため、完全削除できません。",
+                                ]);
+                            }
+                        }
+
+                        $paperIds = $papers->modelKeys();
+                        $submitIds = DB::table('submits')
+                            ->whereIn('paper_id', $paperIds)
+                            ->pluck('id');
+                        $reviewIds = DB::table('reviews')
+                            ->whereIn('paper_id', $paperIds)
+                            ->orWhereIn('submit_id', $submitIds)
+                            ->pluck('id');
+                        $bbIds = DB::table('bbs')
+                            ->whereIn('paper_id', $paperIds)
+                            ->orWhereIn('submit_id', $submitIds)
+                            ->orWhereIn('rev_id', $reviewIds)
+                            ->pluck('id');
+                        $bbMesIds = DB::table('bb_mes')
+                            ->whereIn('bb_id', $bbIds)
+                            ->pluck('id');
+                        $primaryFileIds = $papers
+                            ->flatMap(fn (Paper $paper) => [
+                                $paper->pdf_file_id,
+                                $paper->img_file_id,
+                                $paper->video_file_id,
+                                $paper->altpdf_file_id,
+                            ])
+                            ->filter()
+                            ->unique();
+                        $files = File::query()
+                            ->whereIn('paper_id', $paperIds)
+                            ->orWhereIn('id', $primaryFileIds)
+                            ->orWhereIn('bb_mes_id', $bbMesIds)
+                            ->get();
+                        $fileIds = $files->modelKeys();
+                        $filesToRemove = $files;
+
+                        DB::table('scores')->whereIn('review_id', $reviewIds)->delete();
+                        DB::table('tasks')
+                            ->whereIn('submit_id', $submitIds)
+                            ->orWhereIn('review_id', $reviewIds)
+                            ->delete();
+                        DB::table('vote_answers')->whereIn('submit_id', $submitIds)->delete();
+                        DB::table('bb_mes')->whereIn('id', $bbMesIds)->delete();
+                        DB::table('bbs')->whereIn('id', $bbIds)->delete();
+                        DB::table('files')->whereIn('id', $fileIds)->delete();
+                        DB::table('reviews')->whereIn('id', $reviewIds)->delete();
+                        DB::table('rev_conflicts')->whereIn('paper_id', $paperIds)->delete();
+                        DB::table('paper_contact')->whereIn('paper_id', $paperIds)->delete();
+                        DB::table('enquete_answers')->whereIn('paper_id', $paperIds)->delete();
+                        DB::table('paper_manager')->whereIn('paper_id', $paperIds)->delete();
+                        DB::table('submits')
+                            ->whereIn('previous_submit_id', $submitIds)
+                            ->update(['previous_submit_id' => null]);
+                        DB::table('submits')->whereIn('id', $submitIds)->delete();
+
+                        foreach ($papers as $paper) {
+                            $paper->forceDelete();
+                        }
+                    });
+                } catch (\Illuminate\Validation\ValidationException $e) {
+                    throw $e;
+                } catch (\Throwable $e) {
+                    Log::error('Permanent paper deletion failed', [
+                        'paper_ids' => $paperIds,
+                        'exception' => $e,
+                    ]);
+                    return redirect()->route('admin.deletepaper')
+                        ->with('feedback.error', '完全削除に失敗しました。データベースとファイルの状態を確認してください。');
+                }
+
+                try {
+                    foreach ($filesToRemove as $file) {
+                        $fullpath = $file->fullpath();
+                        $file->remove_the_file();
+                        if (file_exists($fullpath)) {
+                            throw new \RuntimeException("Failed to remove uploaded file: {$fullpath}");
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    Log::error('Permanent paper file cleanup failed after database deletion', [
+                        'paper_ids' => $paperIds,
+                        'exception' => $e,
+                    ]);
+                    return redirect()->route('admin.deletepaper')
+                        ->with('feedback.error', '投稿と関連データは削除されましたが、ファイルの一部を削除できませんでした。管理者に確認してください。');
+                }
+
+                return redirect()->route('admin.deletepaper')
+                    ->with('feedback.success', '論理削除済みの投稿と関連データ・ファイルを完全削除しました。アクセスログは保持しています。');
+            }
+
+            foreach ($papers as $paper) {
+                if ($validated['action'] === 'revoke') {
+                    $paper->deleted_at = null;
+                    $paper->save();
+                    $mes = "復活";
+                } else {
+                    $paper->softdelete_me();
+                    $mes = "論理削除";
+                }
+            }
+            return redirect()->route('admin.deletepaper')->with('feedback.success', '投稿を' . $mes . 'しました');
         }
-        return view('admin.deletepaper')->with(compact("all", "cat_id"));
+        return view('admin.deletepaper')->with(compact("all"));
     }
     public function timestamp(int $cat_id)
     {

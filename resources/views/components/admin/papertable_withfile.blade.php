@@ -1,6 +1,6 @@
 @props([
     'all' => [],
-    'heads' => ['chk', 'id', '削除日時', 'title', 'owner', 'owneraffil', 'pdf', 'img', 'video', 'altpdf'],
+    'heads' => ['chk', 'id', '削除日時', 'カテゴリ', 'title', 'owner', 'owneraffil', 'pdf', 'img', 'video', 'altpdf'],
     'enqans' => [],
 ])
 
@@ -32,6 +32,8 @@
                 <td class="p-1 text-sm">{{ $paper->id_03d() }}
                 </td>
                 <td class="p-1 text-sm text-red-500">{{ $paper->deleted_at }}
+                </td>
+                <td class="p-1 text-sm">{{ $paper->category->name ?? '--' }}
                 </td>
                 <td class="p-1 text-sm">{{ $paper->title }}
                 </td>

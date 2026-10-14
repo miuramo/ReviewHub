@@ -167,8 +167,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin_disable_email', [AdminController::class, 'disable_email'])->name('admin.disable_email');
     Route::get('/admin_paperlist', [AdminController::class, 'paperlist'])->name('admin.paperlist');
     Route::post('/admin_paperlist', [AdminController::class, 'paperlist'])->name('admin.paperlist');
-    Route::get('/admin_deletepaper/{cat}', [AdminController::class, 'deletepaper'])->name('admin.deletepaper');          // PC Top
-    Route::post('/admin_deletepaper/{cat}', [AdminController::class, 'deletepaper'])->name('admin.deletepaper');          // PC Top
+    Route::get('/admin_deletepaper', [AdminController::class, 'deletepaper'])->name('admin.deletepaper');          // PC Top
+    Route::post('/admin_deletepaper', [AdminController::class, 'deletepaper'])->name('admin.deletepaper');          // PC Top
     Route::get('/admin_timestamp/{cat}', [AdminController::class, 'timestamp'])->name('admin.timestamp');          // PC Top
     Route::post('/admin_zipf', [AdminController::class, 'zipdownload'])->name('admin.zipdownload');
     Route::post('/admin_zipds', [AdminController::class, 'zipdownloadstream'])->name('admin.zipstream');

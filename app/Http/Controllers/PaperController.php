@@ -700,14 +700,14 @@ class PaperController extends Controller
                     ->with('feedback.error', '新しいIDは1以上の整数を入力してください。');
             }
             if ($new_id === $paper_id) {
-                return redirect()->route('paper.edit', ['paper' => $paper_id])
+                return redirect()->route('paper.manage', ['paper' => $paper_id])
                     ->with('feedback.error', '変更前と同じIDが入力されました。');
             }
 
             // 新IDが既に存在するか（ソフトデリート済みも含む）
             $exists = Paper::withTrashed()->where('id', $new_id)->exists();
             if ($exists) {
-                return redirect()->route('paper.edit', ['paper' => $paper_id])
+                return redirect()->route('paper.manage', ['paper' => $paper_id])
                     ->with('feedback.error', "投稿ID {$new_id} は既に存在するため変更できません。");
             }
 
@@ -727,16 +727,16 @@ class PaperController extends Controller
             } catch (\Throwable $e) {
                 DB::statement('SET FOREIGN_KEY_CHECKS=1');
                 Log::error("change_paper_id failed: {$e->getMessage()}");
-                return redirect()->route('paper.edit', ['paper' => $paper_id])
+                return redirect()->route('paper.manage', ['paper' => $paper_id])
                     ->with('feedback.error', 'ID変更中にエラーが発生しました: ' . $e->getMessage());
             }
 
-            return redirect()->route('paper.edit', ['paper' => $new_id])
+            return redirect()->route('paper.manage', ['paper' => $new_id])
                 ->with('feedback.success', "投稿IDを {$paper_id} から {$new_id} に変更しました。");
         }
 
         // GETの場合: 変更可能かどうかのチェック情報を返す
-        return redirect()->route('paper.edit', ['paper' => $paper_id]);
+        return redirect()->route('paper.manage', ['paper' => $paper_id]);
     }
 
     /**

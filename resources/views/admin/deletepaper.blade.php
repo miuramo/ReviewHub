@@ -1,7 +1,3 @@
-@php
-    $cats = App\Models\Category::manage_cats();
-    $catcolors = App\Models\Category::select('id', 'name')->get()->pluck('bgcolor', 'id')->toArray();
-@endphp
 <x-app-layout>
 
     <x-slot name="header">
@@ -12,23 +8,10 @@
         </div>
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {{ __('投稿の削除と復活') }}
-            <span class="mx-2"></span>
-            <x-element.category :cat="$cat_id">
-            </x-element.category>
         </h2>
     </x-slot>
 
     <div class="py-1">
-    </div>
-    <div class="px-6 py-2">
-        カテゴリの切り替え：
-        @foreach ($cats as $catid => $catname)
-            <a href="{{ route('admin.deletepaper', ['cat' => $catid]) }}">
-                <x-element.category :cat="$catid">
-                </x-element.category>
-            </a>
-            <span class="mx-1"></span>
-        @endforeach
     </div>
     @if (session('feedback.success'))
         <x-alert.success>{{ session('feedback.success') }}</x-alert.success>
@@ -36,8 +19,15 @@
     @if (session('feedback.error'))
         <x-alert.error>{{ session('feedback.error') }}</x-alert.error>
     @endif
+    @if ($errors->any())
+        <x-alert.error>
+            @foreach ($errors->all() as $error)
+                {{ $error }}<br>
+            @endforeach
+        </x-alert.error>
+    @endif
 
-    <form action="{{ route('admin.deletepaper', ['cat' => $cat_id]) }}" method="post" id="admin_deletepaper">
+    <form action="{{ route('admin.deletepaper') }}" method="post" id="admin_deletepaper">
         @csrf
         @method('post')
         <div class="mx-10 py-4">
@@ -50,12 +40,19 @@
             <x-element.submitbutton value="revoke" color="cyan">復活する
             </x-element.submitbutton>
             <span class="mx-2"></span>
-            <x-element.submitbutton value="delete" color="red">論理削除する
+            <x-element.submitbutton value="delete" color="orange">論理削除する
             </x-element.submitbutton>
+            @can('role_any', 'ec')
+                <span class="mx-2"></span>
+                <x-element.submitbutton value="force_delete" color="red"
+                    confirm="論理削除済みの投稿と関連レコード・アップロードファイルを完全削除します。この操作は取り消せません。アクセスログは残ります。よろしいですか？">
+                    選択した論理削除済み投稿を完全削除する
+                </x-element.submitbutton>
+            @endcan
 
         </div>
     </form>
     <div class="mx-10 py-4 bg-yellow-100 text-sm">
-        【注】復活・論理削除のどちらを行っても、メールの送信はしません。
+        【注】復活・論理削除のどちらを行っても、メールの送信はしません。完全削除は論理削除済みの投稿のみ対象で、関連レコードとアップロードファイルも削除されます。アクセスログは保持されます。
     </div>
     </x-app-layout>

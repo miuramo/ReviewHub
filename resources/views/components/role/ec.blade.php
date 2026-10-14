@@ -93,7 +93,7 @@
                 投稿情報の確認
             </x-element.linkbutton>
             <span class="px-2"></span>
-            <x-element.linkbutton href="{{ route('admin.deletepaper', ['cat' => 1]) }}" color="red">
+            <x-element.linkbutton href="{{ route('admin.deletepaper') }}" color="red">
                 投稿の削除と復活
             </x-element.linkbutton>
             <span class="px-2"></span>
