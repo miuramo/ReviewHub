@@ -57,10 +57,14 @@
     <br>
 
 
+    @php
+        $startConfirm = $review->target < 2
+            ? "ここでOKを押すと査読開始となりますが、【通常査読・メタ査読の場合】{$review->user->name}さんには査読開始の通知は送りません。別途、掲示板の定型文機能、または「パスワード設定方法を送信」ボタンを押して、通知してください。"
+            : "ここでOKを押すと査読開始となります。【最終判定の場合】査読者掲示板に「最終判定のお願い」が自動で投稿されます。";
+    @endphp
     <x-element.linkbutton href="{{ route('task.create', ['review' => $review, 'revuid' => $review->user->id]) }}"
-        size="sm" color="blue" confirm="ここでOKを押すと査読開始となりますが、{{ $review->user->name }}さんには査読開始の通知は送りません。別途、掲示板の定型文機能、または「パスワード設定方法を送信」ボタンを押して、通知してください。">
+        size="sm" color="blue" confirm="{{ $startConfirm }}">
         査読開始（内諾が得られてから押す）
-        {{-- {{$review->id}} {{$review->user->id}} --}}
     </x-element.linkbutton>
     <br>
     <x-element.linkbutton href="{{ route('task.sendfirstmessage', ['review' => $review, 'revuid' => $review->user->id]) }}"
