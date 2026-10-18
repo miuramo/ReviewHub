@@ -14,6 +14,16 @@
                 size="sm" target="_blank">
                 編集管理マニュアル (Cosense/Scrapbox)</x-element.linkbutton>
 
+            @php
+                $extralinks = \App\Models\ExtraLink::where('role_name', 'ec')->where('is_header', true)->get();
+            @endphp
+            @foreach ($extralinks as $extralink)
+                <span class="mx-2"></span>
+                <x-element.linkbutton2 href="{{ $extralink->url ?? '#' }}" color="{{ $extralink->color ?? 'indigo' }}"
+                    size="sm" target="_blank">
+                    {{ $extralink->label }}</x-element.linkbutton2>
+            @endforeach
+
         </h2>
     </x-slot>
     <style>
