@@ -117,7 +117,7 @@ class MagicLoginController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->intended(RouteServiceProvider::home());
+        return redirect()->intended(RouteServiceProvider::homeFor($user));
     }
 
     private function findValidLink(string $token): ?MagicLoginLink

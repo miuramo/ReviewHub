@@ -3,6 +3,7 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\MagicLoginLink;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
@@ -66,6 +67,25 @@ class MagicLoginTest extends TestCase
 
         $this->post(route('magic-login.consume', ['token' => $token]))
             ->assertNotFound();
+    }
+
+    public function test_ec_user_is_redirected_to_ec_top_after_magic_login(): void
+    {
+        $user = User::factory()->create();
+        $ecRole = Role::firstOrCreate(['name' => 'ec']);
+        $user->roles()->attach($ecRole);
+        $link = MagicLoginLink::create([
+            'user_id' => $user->id,
+            'created_by' => $user->id,
+            'token_hash' => hash('sha256', 'valid-token'),
+            'expires_at' => now()->addHour(),
+        ]);
+
+        $this->post(route('magic-login.consume', ['token' => 'valid-token']))
+            ->assertRedirect(route('role.top', ['role' => 'ec']));
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertNotNull($link->fresh()->used_at);
     }
 
     public function test_non_admin_cannot_issue_a_magic_link(): void

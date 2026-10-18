@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Role;
 use App\Models\Setting;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -30,6 +31,15 @@ class RouteServiceProvider extends ServiceProvider
         $redirect = Setting::getval("REDIRECT");
         if ($redirect == null) return "/paper";
         return $redirect;
+    }
+
+    public static function homeFor(User $user): string
+    {
+        if (Role::checkRoleUser('ec', $user->id)) {
+            return route('role.top', ['role' => 'ec']);
+        }
+
+        return self::home();
     }
 
     /**

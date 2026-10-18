@@ -40,6 +40,15 @@
                 <x-element.linkbutton2 href="{{ route('forum.index') }}" color="indigo" size="sm" target="_blank">
                     フォーラム</x-element.linkbutton2>
             @endif
+            @php
+                $extralinks = \App\Models\ExtraLink::where('role_name', $role->name)->get();
+            @endphp
+            @foreach ($extralinks->where('is_header', true) as $extralink)
+                <span class="mx-2"></span>
+                <x-element.linkbutton2 href="{{ $extralink->url ?? '#' }}" color="{{ $extralink->color ?? 'indigo' }}"
+                    size="sm" target="_blank">
+                    {{ $extralink->label }}</x-element.linkbutton2>
+            @endforeach
         </h2>
     </x-slot>
 
@@ -93,5 +102,13 @@
         @endif
     @endcan
 
+    <div class="footer-links px-2 py-2">
+        @foreach ($extralinks->where('is_footer', true) as $extralink)
+            <span class="mx-2"></span>
+            <x-element.linkbutton2 href="{{ $extralink->url ?? '#' }}" color="{{ $extralink->color ?? 'indigo' }}"
+                size="sm" target="_blank">
+                {{ $extralink->label }}</x-element.linkbutton2>
+        @endforeach
+    </div>
 
 </x-app-layout>

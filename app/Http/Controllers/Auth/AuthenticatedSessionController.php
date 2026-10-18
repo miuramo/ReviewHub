@@ -31,7 +31,7 @@ class AuthenticatedSessionController extends Controller
 
         // ログインしたときのデフォルト
         // ここはデータベースにするほうがよさそう
-        return redirect()->intended(RouteServiceProvider::home());
+        return redirect()->intended(RouteServiceProvider::homeFor($request->user()));
     }
 
     /**

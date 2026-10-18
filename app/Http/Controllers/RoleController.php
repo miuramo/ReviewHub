@@ -33,7 +33,7 @@ class RoleController extends Controller
             // 以前、投稿管理者だった方で、現在はRoleがない場合はecがみれる
             if ($name == "ec" && auth()->user()->can('has_managed_papers')) {
                 $role = Role::findByIdOrName($name);
-                return view('role/top', ["role" => 1])->with(["name" => $name, "role" => $role]);
+                return view('role.top', ["role" => 1])->with(["name" => $name, "role" => $role]);
                 // return redirect()->route('role.top', ["role" => "ec"]);
             } else if ($name == "rev" && auth()->user()->can('role', 'meta')) {
                 return redirect()->route('role.top', ["role" => "meta"]);

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\Role;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -29,6 +30,21 @@ class AuthenticationTest extends TestCase
 
         $this->assertAuthenticated();
         $response->assertRedirect(RouteServiceProvider::home());
+    }
+
+    public function test_ec_users_are_redirected_to_the_ec_top_after_login(): void
+    {
+        $user = User::factory()->create();
+        $ecRole = Role::firstOrCreate(['name' => 'ec']);
+        $user->roles()->attach($ecRole);
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticatedAs($user);
+        $response->assertRedirect(route('role.top', ['role' => 'ec']));
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void

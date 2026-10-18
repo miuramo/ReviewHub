@@ -37,9 +37,9 @@ class BbNotify extends RetryMailable
         $this->mail_to_cc = $_bb->get_mail_to_cc();
         $this->name = $names[$_bb->type];
 
-        $organization = env('MAIL_ORGANIZATION', '論文編集委員会'); // 環境変数から組織名を取得
+        // $organization = env('MAIL_ORGANIZATION', '論文編集委員会'); // 環境変数から組織名を取得
         $abb = strtoupper(Setting::getValue("CONFTITLE_ABB"));
-        $this->subject = "〈" . $abb .'-'. $this->paper->id_03d() . "〉" . $this->name . "掲示板に投稿がありました 【{$organization}】";
+        $this->subject = "〈" . $abb .'-'. $this->paper->id_03d() . "〉" . $this->name . "掲示板に投稿がありました 【{$this->bbmes->subject}】";
 
         $this->content = new Content(
             markdown: 'emails.bbnotify',
