@@ -7,7 +7,7 @@
 @endphp
 <!-- components.element.bblink -->
 @isset($url)
-    <x-element.linkbutton2 href="{{ $url }}" color="cyan" size="sm">
+    <x-element.linkbutton2 href="{{ $url }}" color="cyan" size="xs">
         {{$label}}
     </x-element.linkbutton2>
 @else

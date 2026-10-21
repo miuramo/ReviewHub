@@ -30,6 +30,9 @@ class TermController extends Controller
             abort(403, "この機能を利用する権限(ec|cm|manager)がありません。");
         }
         $terms = \App\Models\Term::with("user", "post")->where("year", $year)->get();
+        $terms = $terms->sort(function ($a, $b) {
+            return [$a->year, ((int) $a->post->orderint), $a->user->yomi] <=> [$b->year, ((int) $b->post->orderint), $b->user->yomi];
+        })->values();
         return view('term.edit', ["terms" => $terms, "year" => $year]);
     }
 }

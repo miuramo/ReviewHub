@@ -77,7 +77,7 @@
                     <span class="mx-1"></span>
                     <x-element.deletebutton action="{{ route('review.destroy', ['review' => $review]) }}" color="orange"
                         {{-- :disabled="$taskInProgress" --}}
-                        size="sm" confirm="本当に{{ $review->user->name }}さんを査読候補者から外してよいですか？（復元はできます）">
+                        size="xs" confirm="本当に{{ $review->user->name }}さんを査読候補者から外してよいですか？（復元はできます）">
                         査読候補者から外す
                     </x-element.deletebutton>
                     {{-- @if ($taskInProgress)

@@ -63,7 +63,7 @@
             : "ここでOKを押すと査読開始となります。【最終判定の場合】査読者掲示板に「最終判定のお願い」が自動で投稿されます。";
     @endphp
     <x-element.linkbutton href="{{ route('task.create', ['review' => $review, 'revuid' => $review->user->id]) }}"
-        size="sm" color="blue" confirm="{{ $startConfirm }}">
+        size="xs" color="blue" confirm="{{ $startConfirm }}">
         査読開始（内諾が得られてから押す）
     </x-element.linkbutton>
     <br>

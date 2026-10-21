@@ -19,11 +19,21 @@
                 {{ $year }}
             </a>
         @endforeach
+
+        @can('role_any', 'ec|cm|manager')
+            <span class="mx-4"></span>
+            <a href="{{ route('term.edit_year', ['year' => $selectedYear]) }}"
+                class="rounded bg-green-500 px-3 py-1 text-sm text-white hover:bg-green-600">
+                {{ $selectedYear }}を編集
+            </a>
+        @endcan
+
     </div>
 
     <div class="mx-6">
         <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
-            <thead class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+            <thead
+                class="border-t border-b bg-gray-100 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th scope="col" class="px-6 py-3">年度</th>
                     <th scope="col" class="px-6 py-3">役職</th>
@@ -33,7 +43,8 @@
             </thead>
             <tbody>
                 @foreach ($terms as $term)
-                    <tr class="border-b bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <tr
+                        class="border-b bg-white hover:bg-lime-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-lime-700">
                         <td class="px-6 py-2">{{ $term->year }}</td>
                         <td class="px-6 py-2">{{ $term->post->name }}</td>
                         <td class="px-6 py-2">{{ $term->user->name }} ({{ $term->user->affil }})</td>
@@ -45,13 +56,9 @@
         </table>
     </div>
 
-    @can('role_any', 'ec|cm|manager')
-        <div class="mx-6 my-4">
-            <a href="{{ route('term.edit_year', ['year' => $selectedYear]) }}"
-                class="rounded bg-green-500 px-3 py-1 text-sm text-white hover:bg-green-600">
-                編集※
-            </a>
-        </div>
-    @endcan
+    <div class="my-10 bg-gray-100 dark:bg-gray-800">
+        &nbsp;
+    </div>
+
 
 </x-app-layout>
