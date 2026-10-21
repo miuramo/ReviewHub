@@ -212,7 +212,20 @@ class Paper extends Model
         // 査読者を集める
         $reviewer_uids = Review::where('paper_id', $this->id)->where('target', '<', 2)
             ->where('status', '>', -1)->get()->pluck('user_id')->toArray();
-        return $this->belongsToMany(User::class, 'paper_manager')->whereNotIn('user_id', $reviewer_uids);
+        // TermController@index と同じ並び: post.orderint(昇順) -> user.yomi(昇順)。当年の term が無い人は最後。
+        $termOrder = \Illuminate\Support\Facades\DB::table('terms')
+            ->join('posts', 'posts.id', '=', 'terms.post_id')
+            ->where('terms.year', date('Y'))
+            ->groupBy('terms.user_id')
+            ->select('terms.user_id', \Illuminate\Support\Facades\DB::raw('MIN(posts.orderint) as orderint'));
+
+        return $this->belongsToMany(User::class, 'paper_manager')
+            ->leftJoinSub($termOrder, 'term_order', 'term_order.user_id', '=', 'users.id')
+            ->select('users.*', 'paper_manager.paper_id as pivot_paper_id', 'paper_manager.user_id as pivot_user_id')
+            ->whereNotIn('paper_manager.user_id', $reviewer_uids)
+            ->orderByRaw('term_order.orderint IS NULL')
+            ->orderBy('term_order.orderint')
+            ->orderBy('users.yomi');
     }
 
     public function currentstatus(): \Illuminate\Database\Eloquent\Relations\BelongsTo
