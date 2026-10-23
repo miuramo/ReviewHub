@@ -11,7 +11,6 @@ use App\Http\Controllers\EnqueteConfigController;
 use App\Http\Controllers\EnqueteController;
 use App\Http\Controllers\FailedJobController;
 use App\Http\Controllers\FileController;
-use App\Http\Controllers\LogTestController;
 use App\Http\Controllers\LogAccessController;
 use App\Http\Controllers\MailTemplateController;
 use App\Http\Controllers\ManagerController;
@@ -29,12 +28,9 @@ use App\Http\Controllers\TermController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ViewpointController;
 use App\Http\Controllers\VoteController;
-use App\Models\RevConflict;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\WebAuthn\WebAuthnLoginController;
-use App\Http\Controllers\WebAuthn\WebAuthnRegisterController;
 
 
 /*
@@ -228,6 +224,9 @@ Route::middleware('auth')->group(function () {
     // Route::get('/reviewcomment_scoreonly/{cat}', [ReviewController::class, 'comment_scoreonly'])->name('review.comment_scoreonly'); // ?excel=dl でExcel
     Route::get('/reviewcomment/cat/{cat}/paper/{paper}/{token}', [ReviewController::class, 'comment_paper'])->name('review.commentpaper'); //判定会議で見る用
     Route::get('/reviewcomment_sub/{sub}/{token}', [ReviewController::class, 'comment_submit'])->name('review.commentsubmit'); //編集委員用の査読結果
+    // スコアサマリー
+    Route::get('/score_summary', [ReviewController::class, 'score_summary'])->name('review.score_summary');
+    Route::post('/score_summary', [ReviewController::class, 'score_summary'])->name('review.score_summary');
 
     // 別カテゴリでの採否を追加
     Route::get('addsubmit', [SubmitController::class, 'addsubmit'])->name('pub.addsubmit');

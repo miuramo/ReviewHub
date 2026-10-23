@@ -115,7 +115,7 @@
             </x-element.linkbutton2>
         </x-element.h1>
 
-        <x-element.h1>メール送信
+        <x-element.h1>
             <span class="px-3"></span>
             <x-element.linkbutton href="{{ route('mt.index') }}" color="pink">
                 メール雛形
@@ -125,9 +125,12 @@
         <x-element.linkbutton href="{{ route('bb.index') }}" color="pink">
             掲示板一覧
         </x-element.linkbutton> --}}
-            <span class="px-3">アンケート</span>
             <x-element.linkbutton href="{{ route('enq.index') }}" color="green">
                 アンケート一覧
+            </x-element.linkbutton>
+            <span class="mx-3"></span>
+            <x-element.linkbutton href="{{ route('review.score_summary') }}" color="lime">
+                スコアサマリー
             </x-element.linkbutton>
         </x-element.h1>
 

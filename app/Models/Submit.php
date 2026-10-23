@@ -134,6 +134,17 @@ class Submit extends MetaModel
         return sha1($this->id . $this->paper_id . $this->category_id . $this->created_at);
     }
 
+    /**
+     * ReviewController.score_summary で使う。
+     */
+    public static function subs_by_judge(array $judge_ids, string $ord = "round")
+    {
+        $subs = Submit::with('paper')->whereHas("accept", function ($query) use ($judge_ids) {
+            $query->whereIn("judge", $judge_ids);
+        })->orderBy($ord)->get();
+        return $subs;
+    }
+
     public static function subs_accepted(int $cat_id, string $ord = "orderint")
     {
         $subs = Submit::with('paper')->where("category_id", $cat_id)->whereHas("accept", function ($query) {
