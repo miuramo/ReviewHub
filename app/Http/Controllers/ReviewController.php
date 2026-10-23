@@ -457,19 +457,13 @@ class ReviewController extends Controller
         $judge_ids = request()->input('judge_ids', [10,0]);
         $vp_names = request()->input('vp_names', ['論文賞の可能性','総合評価']); // 特定の評価観点の名前のリスト
         $all_vp_names = Viewpoint::select('desc')->orderBy('orderint')->get()->pluck('desc')->unique();
-        Log::channel('single')->info($all_vp_names);
-
-        // 
 
         // 対象Paperを取得する
         $subs = Submit::subs_by_judge($judge_ids);
-        // Log::channel('single')->info($subs);
         $paper_ids = $subs->pluck('paper_id')->unique();
         $papers = Paper::whereIn('id', $paper_ids)->get();
 
         return view("review.score_summary")->with(compact("subs", "papers", "vp_names", "all_vp_names"));
-        // 最初に、submits テーブルから必要な情報を取得する
-
 
         // 最終的には、Paperごとに、特定の評価観点のリストを作成する。
         // $paper->submits as $sub
@@ -478,7 +472,6 @@ class ReviewController extends Controller
         // $rev->scores_and_comments(0, 0, $sub->accept_id > 0) as $vpdesc => $valstr
         // $vpdesc が $vp_names に含まれている場合のみ表示する
         // この順番だと、幹事→メタ→一般査読者の順になる
-
 
     }
 }
