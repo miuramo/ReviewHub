@@ -966,6 +966,24 @@ class AdminController extends Controller
         return $redirect->with('feedback.success', "file_id={$file->id} の PdfJob を再実行キューへ投入しました。");
     }
 
+    public function purgePdfThumbs()
+    {
+        if (!auth()->user()->can('role_any', 'admin')) abort(403);
+
+        $stats = File::pdfThumbCacheStats();
+        return view('admin.purge_pdf_thumbs')->with(compact('stats'));
+    }
+
+    public function purgePdfThumbsPost()
+    {
+        if (!auth()->user()->can('role_any', 'admin')) abort(403);
+
+        $stats = File::purgePdfThumbCache();
+        $mb = number_format($stats['bytes'] / 1024 / 1024, 1);
+        return redirect()->route('admin.purge_pdf_thumbs')
+            ->with('feedback.success', "{$stats['count']}個のサムネイルキャッシュ（{$mb} MB）を削除しました。");
+    }
+
     public function data_status()
     {
         $data_status = [

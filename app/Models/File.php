@@ -192,7 +192,8 @@ class File extends Model
     }
     
     /**
-     * PDFのサムネイルをつくる
+     * PDFのサムネイルを全ページ分つくる。
+     * 通常はオンデマンド生成を使い、これは一括再生成用に残す。
      */
     public function makePdfThumbs(): void
     {
@@ -227,6 +228,43 @@ class File extends Model
         $page05f = sprintf("t-%05d.png", $pagenum);
         $dir = substr($this->fname, 0, -4);
         return storage_path(File::apf() . '/' . $dir . "/" . $page05f);
+    }
+    /**
+     * 指定ページのPDFサムネイルを、存在しない場合だけ生成する。
+     */
+    public function getPdfThumbPathOnDemand(int $pagenum): string
+    {
+        $path = $this->getPdfThumbPath($pagenum);
+        if (file_exists($path)) return $path;
+        if ($this->mime !== 'application/pdf') return $path;
+        if ($pagenum < 1 || ($this->pagenum > 0 && $pagenum > $this->pagenum)) return $path;
+
+        $fullpath = storage_path(File::apf() . '/' . $this->fname);
+        if (!file_exists($fullpath)) return $path;
+
+        $dir = substr($this->fname, 0, -4);
+        $dirpath = storage_path(File::apf() . '/' . $dir);
+        File::mkdir_ifnot($dirpath);
+
+        $lock = fopen($dirpath . '/.thumbgen.lock', 'c');
+        if ($lock) flock($lock, LOCK_EX);
+        try {
+            if (!file_exists($path)) {
+                $tmpprefix = $dirpath . '/.gen' . getmypid() . '-' . $pagenum;
+                shell_exec("pdftoppm -png -f {$pagenum} -l {$pagenum} -singlefile {$fullpath} {$tmpprefix}");
+                if (file_exists($tmpprefix . '.png')) {
+                    rename($tmpprefix . '.png', $path);
+                } else {
+                    Log::error("File@getPdfThumbPathOnDemand: pdftoppm failed for {$fullpath} page {$pagenum}");
+                }
+            }
+        } finally {
+            if ($lock) {
+                flock($lock, LOCK_UN);
+                fclose($lock);
+            }
+        }
+        return $path;
     }
     public function getPdfTextPath(): string
     {
@@ -321,6 +359,51 @@ class File extends Model
             }
         }
         @rmdir($path);
+    }
+
+    /**
+     * PDF各ページサムネイルキャッシュの統計情報を返す。
+     */
+    public static function pdfThumbCacheStats(): array
+    {
+        $base = storage_path(File::apf());
+        $count = 0;
+        $bytes = 0;
+        foreach (glob($base . '/*', GLOB_ONLYDIR) ?: [] as $dir) {
+            foreach (glob($dir . '/t-*.png') ?: [] as $png) {
+                if (is_file($png)) {
+                    $count++;
+                    $bytes += filesize($png);
+                }
+            }
+        }
+        return ['count' => $count, 'bytes' => $bytes];
+    }
+
+    /**
+     * PDF各ページサムネイルキャッシュを削除する。
+     */
+    public static function purgePdfThumbCache(): array
+    {
+        $base = storage_path(File::apf());
+        $count = 0;
+        $bytes = 0;
+        foreach (glob($base . '/*', GLOB_ONLYDIR) ?: [] as $dir) {
+            $paths = array_merge(
+                glob($dir . '/t-*.png') ?: [],
+                glob($dir . '/.gen*.png') ?: []
+            );
+            foreach ($paths as $png) {
+                if (!is_file($png)) {
+                    continue;
+                }
+                $bytes += filesize($png);
+                if (@unlink($png)) {
+                    $count++;
+                }
+            }
+        }
+        return ['count' => $count, 'bytes' => $bytes];
     }
 
     public static function kanjifn(string $str, int $substr = 0, string $type = "guess"): string

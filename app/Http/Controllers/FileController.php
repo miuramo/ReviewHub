@@ -90,7 +90,16 @@ class FileController extends Controller
         }
         // $aT = $file->paper->getAuthorType();
         // if ($aT < 0) abort(403);
-        return response()->file(storage_path(File::apf() . '/' . substr($file->fname, 0, -4) . ".png"));
+        $filepath = storage_path(File::apf() . '/' . substr($file->fname, 0, -4) . ".png");
+        if (file_exists($filepath)) {
+            return response()->file($filepath);
+        }
+        $filepath = $file->getPdfThumbPathOnDemand(1);
+        if (file_exists($filepath)) {
+            return response()->file($filepath);
+        }
+        $this->noimage();
+        return;
         // ->header("Content-Disposition", $file->origname);
     }
     /**
@@ -109,7 +118,12 @@ class FileController extends Controller
             if (!is_numeric($pagenum)) {
                 return view("file/pdfimages")->with(compact("file"));
             } else {
-                return response()->file($file->getPdfThumbPath($pagenum));
+                $thumbpath = $file->getPdfThumbPathOnDemand($pagenum);
+                if (!file_exists($thumbpath)) {
+                    $this->noimage();
+                    return;
+                }
+                return response()->file($thumbpath);
             }
             // ->header("Content-Disposition", $file->origname);
         } catch (ModelNotFoundException $e) {

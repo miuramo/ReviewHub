@@ -32,7 +32,7 @@ class PdfJob implements ShouldQueue
     {
         // fnameのフォルダを作成
         $this->file->makeThumbFolder();
-        $this->file->makePdfThumbs();
+        // 全ページのサムネイルはストレージ節約のため、要求されたページだけ生成する。
         $text = $this->file->makePdfText();
         $this->file->makePdfHeadThumb();
         $this->file->extractTitleAndAuthors($text); //ページ数が2ページ以上のときなど、論文PDFのときに使用
