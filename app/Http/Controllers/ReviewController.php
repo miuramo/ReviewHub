@@ -454,7 +454,7 @@ class ReviewController extends Controller
         if (!auth()->user()->can('role_any', 'ec|admin')) return abort(403);
 
         // $cat_ids = request()->input('cat_ids', []);
-        $judge_ids = request()->input('judge_ids', [10,0]);
+        $judge_ids = request()->input('judge_ids', [10]); // 採択のみを対象にする。条件付きや未確定も含めるなら、[10,0]にする。
         $vp_names = request()->input('vp_names', ['論文賞の可能性','総合評価']); // 特定の評価観点の名前のリスト
         $all_vp_names = Viewpoint::select('desc')->orderBy('orderint')->get()->pluck('desc')->unique();
 
