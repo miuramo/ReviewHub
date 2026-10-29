@@ -11,7 +11,7 @@ class InfListCm extends Component
     public int $increment = 5;
     public bool $isLoading = false;
     public int $total = 0;
-    public $heads = ['id', '種別', 'status', 'title', '査-状況'];
+    public $heads = ['id', '種別', 'status', 'title / author', '査-状況'];
 
 
     protected $listeners = [
@@ -48,7 +48,7 @@ class InfListCm extends Component
     public function render()
     {
         return view('livewire.inf-list-cm', [
-            'papers' => Paper::latest()->take($this->perPage)->get()->sortByDesc('aec_id'),
+            'papers' => Paper::latest()->take($this->perPage)->get(),//->sortByDesc('aec_id'),
         ]);
     }
 }

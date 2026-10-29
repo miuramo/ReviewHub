@@ -37,7 +37,7 @@
 
 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-400 sortable" id="psummarytable">
     <thead>
-        <tr>
+        <tr class="border border-slate-400">
             @foreach ($heads as $h)
                 <th class="p-1 bg-slate-300 dark:bg-slate-500 text-{{ $size }}">{{ $h }}</th>
             @endforeach
@@ -47,7 +47,7 @@
         @foreach ($all as $paper)
             @if($paper->pdf_file_id == 0) @continue @endif
             <tr
-                class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-400' : 'bg-white dark:bg-slate-300' }}">
+                class="{{ $paper->id % 2 === 0 ? 'bg-slate-200 dark:bg-slate-400 border-slate-400' : 'bg-white dark:bg-slate-300 border-slate-400' }} border hover:bg-cyan-100 hover:dark:bg-cyan-500">
                 @if ($show_aec_name)
                     <td class="p-1 text-center text-{{ $size }}">
                         {{ $paper->aec ? $paper->aec->name : '未設定' }}
