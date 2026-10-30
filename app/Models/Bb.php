@@ -349,7 +349,15 @@ class Bb extends MetaModel
             "様\n\n" .
             "このたびは、{$conftitle}に投稿された下記の論文\n" .
             "「{$this->paper->title}」（PaperID: {$this->paper->id}）\n" .
-            "の査読にご協力いただき、ありがとうございました。\n\n";
+            "の査読にご協力いただき、ありがとうございます。\n\n";
+        $first_thank_meta = $revuser->affil .
+            '  ' .
+            $revuser->name .
+            "様\n\n" .
+            "担当編集幹事の " . auth()->user()->name . " です。" .
+            "このたびは、{$conftitle}に投稿された下記の論文\n" .
+            "「{$this->paper->title}」（PaperID: {$this->paper->id}）\n" .
+            "のメタ査読にご協力いただき、ありがとうございます。\n\n";
         $start_review = $revuser->affil .
             '  ' .
             $revuser->name .
@@ -416,7 +424,21 @@ class Bb extends MetaModel
 
 引き続き、どうぞよろしくお願いいたします。",
             ];
-            $templates['査読者選定のお礼'] = [
+            $templates['査読者選定依頼'] = [
+                'sub' => '査読者選定のすすめかたについて（PaperID: ' . $this->paper->id . '）',
+                'mes' => $first_thank_meta .
+                    "メタ査読は、情報処理学会論文誌「教育とコンピュータ」（TCE） 査読システム {$app_url} にログインして、行っていただきます。\n\n" .
+                    "◆ 査読者選定のすすめかたについて：\n" .
+                    "ログイン後の画面上部にある「投稿からの流れ(ReviewHub)」ボタンを押し、\n" .
+                    "Part 1. の 5. [メタ査読者] 査読者の選定 をご参照ください。\n\n" .
+                    "◆ 初めてのかたや、パスワードが不明なかたへ：
+以下の手順にしたがって、査読システムのパスワードを設定してください。
+(1) {$forget_pass} にて、 {$revuser->email} を入力してください。
+しばらくすると、パスワード再設定メールがとどきます。
+(2) パスワード再設定メールに書かれたURLから、パスワードを設定してください。\n\n" .
+                    "引き続き、どうぞよろしくお願いいたします。",
+            ];
+            $templates['査読者選定お礼'] = [
                 'sub' => '査読者のご選定、ありがとうございました （PaperID: ' . $this->paper->id . '）',
                 'mes' => $revuser->affil . '  ' . $revuser->name . "様\n\n" .
                     "担当編集幹事の " . auth()->user()->name . " です。\n" .
@@ -426,7 +448,7 @@ class Bb extends MetaModel
             ];
             // 2週間後の日付を取得（曜日も日本語で表示）
             $two_weeks_later = now()->addWeeks(2)->locale('ja')->isoFormat('Y年M月D日（dddd）');
-            $templates['メタ査読開始'] = [
+            $templates['メタ判定依頼'] = [
                 'sub' => 'メタ査読をお願いします （PaperID: ' . $this->paper->id . '）',
                 'mes' => $revuser->affil . '  ' . $revuser->name . "様\n\n" .
                     "担当編集幹事の " . auth()->user()->name . " です。\n" .

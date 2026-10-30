@@ -88,6 +88,9 @@
             <x-element.linkbutton :href="route('paper.manage', ['paper' => $bb->paper_id])" color="gray" size="sm">
                 論文管理画面（{{ $name_of_managers }}のみ）
             </x-element.linkbutton>
+            <span class="mx-4"></span>
+            <x-element.button onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });" color="teal" size="sm" value="一番下に移動">
+            </x-element.button>
         @endif
 
         {{-- 査読掲示板で、複数の兄弟掲示板があるとき、古い方から全部表示する --}}
@@ -218,6 +221,8 @@
 
         </div>
         <div class="my-10"></div>
+            <x-element.button onclick="window.scrollTo({ top: 0, behavior: 'smooth' });" color="teal" size="sm" value="一番上に移動">
+            </x-element.button>
 
     </div>
     <script>
