@@ -179,7 +179,7 @@ class File extends Model
         // convertコマンドがあるか調べる
         $convert_command = "convert";
         $convert_exists = shell_exec("which convert");
-        if (empty($convert_exists)){
+        if (empty($convert_exists)) {
             $magick_exists = shell_exec("which magick");
             if (!empty($magick_exists)) {
                 $convert_command = "magick";
@@ -190,7 +190,7 @@ class File extends Model
         }
         return shell_exec("{$convert_command} {$command} 2>&1");
     }
-    
+
     /**
      * PDFのサムネイルを全ページ分つくる。
      * 通常はオンデマンド生成を使い、これは一括再生成用に残す。
@@ -223,10 +223,15 @@ class File extends Model
         $dir = substr($this->fname, 0, -4);
         return storage_path(File::apf() . '/' . $dir . "/" . $h_00001);
     }
+    // PDF→PNGに変換した画像。基本的に、2ページ目以降は要求されない
     public function getPdfThumbPath(int $pagenum): string
     {
-        $page05f = sprintf("t-%05d.png", $pagenum);
         $dir = substr($this->fname, 0, -4);
+        if ($pagenum == 1) {
+            return storage_path(File::apf() . '/' . $dir . ".png"); // PNGファイル名
+        }
+        // 基本的に、2ページ目以降は要求されない
+        $page05f = sprintf("t-%05d.png", $pagenum);
         return storage_path(File::apf() . '/' . $dir . "/" . $page05f);
     }
     /**
@@ -478,10 +483,7 @@ class File extends Model
         if (!file_exists(storage_path(File::apf() . '/' . $dir))) return true;
 
         if (!file_exists($this->getPdfHeadPath())) return true;
-        $pages = $this->pagenum;
-        for ($i = 1; $i <= $pages; $i++) {
-            if (!file_exists($this->getPdfThumbPath($i))) return true;
-        }
+        if (!file_exists($this->getPdfThumbPath(1))) return true;
         if (!file_exists($this->getPdfTextPath())) return true;
         return false;
     }
