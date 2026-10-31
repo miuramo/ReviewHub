@@ -36,10 +36,22 @@
         </thead>
         <tbody class="bg-white divide-y divide-gray-200 dark:bg-slate-800 dark:divide-slate-600">
             @foreach ($sub->heads() as $h => $hc)
-                <tr class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-700' : 'bg-white dark:bg-slate-800' }}">
+                <tr
+                    class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-700' : 'bg-white dark:bg-slate-800' }}">
                     @if ($h == 'accept_id')
                         <td class="p-1 text-center">判定</td>
                         <td class="p-1 text-center">{{ $accepts[$sub->accept_id] }}</td>
+                    @elseif ($h == 'resubmit_until')
+                        @if ($sub->resubmit_until)
+                            <td class="p-1 text-center">再提出期限</td>
+                            <td class="p-1 text-center font-bold">
+                                @if ($readonly)
+                                    {{ $sub->resubmit_until ?? '--' }}
+                                @else
+                                    <livewire:submit-resubmit-until :submit="$sub" />
+                                @endif
+                            </td>
+                        @endif
                     @else
                         <td class="p-1 text-center">{{ $hc }}</td>
                         <td class="p-1 text-center">{{ $sub->{$h} ?? '--' }}</td>
