@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Viewpoint;
+use Illuminate\Support\Enumerable;
 use Illuminate\Support\Facades\Schema;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -13,7 +14,7 @@ class ViewpointsExport implements FromCollection, WithHeadings, ShouldAutoSize
     /**
     * @return \Illuminate\Support\Collection
     */
-    public function collection()
+    public function collection(): Enumerable
     {
         return Viewpoint::all();
     }

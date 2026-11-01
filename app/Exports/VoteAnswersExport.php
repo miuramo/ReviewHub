@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\VoteAnswer;
+use Illuminate\Support\Enumerable;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -13,7 +14,7 @@ class VoteAnswersExport implements FromCollection, WithMapping, ShouldAutoSize, 
     /**
      * @return \Illuminate\Support\Collection
      */
-    public function collection()
+    public function collection(): Enumerable
     {
         return VoteAnswer::all();
     }

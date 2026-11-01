@@ -89,7 +89,7 @@
                 論文管理画面（{{ $name_of_managers }}のみ）
             </x-element.linkbutton>
             <span class="mx-4"></span>
-            <x-element.button onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });" color="teal" size="sm" value="一番下に移動">
+            <x-element.button onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });" color="teal" size="sm" value="一番下に移動 [b]">
             </x-element.button>
         @endif
 
@@ -221,7 +221,7 @@
 
         </div>
         <div class="my-10"></div>
-            <x-element.button onclick="window.scrollTo({ top: 0, behavior: 'smooth' });" color="teal" size="sm" value="一番上に移動">
+            <x-element.button onclick="window.scrollTo({ top: 0, behavior: 'smooth' });" color="teal" size="sm" value="一番上に移動 [t]">
             </x-element.button>
 
     </div>
@@ -233,6 +233,36 @@
         });
         document.getElementById("bbsub").addEventListener("compositionend", () => {
             isComposing = false;
+        });
+
+        // [b]キーで一番下へ、[t]キーで一番上へ、[j]/[k]キーで記事1つずつ前進/後退スクロール
+        // （入力欄にフォーカス中は無効）
+        const scrollToMessage = (direction) => {
+            const messages = [...document.querySelectorAll('.message-div')];
+            if (messages.length === 0) return;
+            const threshold = window.scrollY + 8; // 現在位置のわずかな誤差を許容
+            const target = direction > 0
+                ? messages.find((el) => el.offsetTop > threshold)
+                : messages.findLast((el) => el.offsetTop < window.scrollY - 8);
+            if (target) {
+                window.scrollTo({ top: target.offsetTop - 8, behavior: 'smooth' });
+            }
+        };
+
+        document.addEventListener('keydown', (event) => {
+            if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return;
+            const target = event.target;
+            if (target instanceof HTMLElement &&
+                (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))) return;
+            if (event.key === 'b') {
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            } else if (event.key === 't') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (event.key === 'j') {
+                scrollToMessage(1);
+            } else if (event.key === 'k') {
+                scrollToMessage(-1);
+            }
         });
 
         function disableEnterKey(event) {

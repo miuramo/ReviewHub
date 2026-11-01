@@ -21,7 +21,10 @@
         <div class="inline-block w-3/4 bg-green-300 p-2 rounded-lg px-2 py-1 my-1 dark:bg-green-700 dark:text-gray-200">
             <div class="flex justify-between">
                 <div class="mx-2">{{ $mes->subject }}</div>
-                <div class="text-right text-gray-500 text-sm mr-2">{{ $mes->created_at }}</div>
+                <div class="text-right text-gray-500 text-sm mr-2">
+                    {{ $mes->user->name }}
+                    <span class="mx-2"></span>
+                    {{ $mes->created_at }}</div>
             </div>
             <div class="bg-green-100 px-2 py-1 mb-1 rounded-md text-left dark:bg-green-800 dark:text-gray-200">{!! nl2br($mes->mes) !!}</div>
 
@@ -70,7 +73,10 @@
         @endif>
         <div class="flex justify-between">
             <div class="mx-2">{{ $mes->subject }}</div>
-            <div class="text-right text-gray-500 text-sm mr-2">{{ $mes->created_at }}</div>
+            <div class="text-right text-gray-500 text-sm mr-2">
+                    {{ $mes->user->name }} 
+                    <span class="mx-2"></span>
+                    {{ $mes->created_at }}</div>
         </div>
         <div class="bg-slate-100 px-2 py-1 mb-1 rounded-md dark:bg-slate-600">{!! nl2br($mes->mes) !!}</div>
         <livewire:bb-mes-reaction-editor :bb-mes-id="$mes->id" :user-id="auth()->id()" :key="'bb-mes-reaction-' . $mes->id" />

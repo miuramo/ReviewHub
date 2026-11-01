@@ -204,6 +204,9 @@ class TaskController extends Controller
         $jumprole = str_replace('3', '', $jumprole);
 
         $name_of_manager = \App\Models\Setting::getValue("NAME_OF_MANAGER");
+        // 報告ユーザを取得
+        $reporting_user_name = $task->subject->name;
+        $reporting_user_affil = $task->subject->affil;
 
         if ($ret) {
             if ($task->workflow->task == "submit") {
@@ -211,7 +214,7 @@ class TaskController extends Controller
                     $task->submit,
                     2,
                     '査読完了の報告',
-                    "{$name_of_manager}のかたへ\n査読報告の編集が完了しましたことを、報告します。",
+                    "{$name_of_manager}のかたへ\n\n{$reporting_user_affil} の {$reporting_user_name} です。\n査読報告の編集が完了しましたことを、報告します。",
                     $req->rev_id,
                 );
                 return redirect()->route('role.top', ['role' => $jumprole])->with('feedback.success', '査読へのご協力ありがとうございました。');

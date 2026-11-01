@@ -28,7 +28,9 @@ class BbMes extends Model
     }
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        // user_id=0 はシステムメッセージ（掲示板のごあんない）のため、デフォルトモデルを返す
+        return $this->belongsTo(User::class, 'user_id')
+            ->withDefault(['name' => 'システム', 'affil' => '']);
     }
 
     public function reads()
