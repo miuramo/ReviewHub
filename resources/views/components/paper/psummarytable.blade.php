@@ -32,8 +32,8 @@
 <div class="my-8"></div>
 
 <x-element.h1>
-    <x-element.linkbutton href="{{ route('paper.finishedlist') }}" color="cyan"
-    >完了分をふくむ、すべての投稿を表示する</x-element.linkbutton>
+    <x-element.linkbutton href="{{ route('paper.finishedlist') }}"
+        color="cyan">完了分をふくむ、すべての投稿を表示する</x-element.linkbutton>
 </x-element.h1>
 
 {{-- <x-paper.psummarytable2 :all="$finished" :heads="$heads" size="sm" /> --}}

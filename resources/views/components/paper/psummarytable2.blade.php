@@ -54,7 +54,10 @@
             <tr
                 class="{{ $loop->iteration % 2 === 0 ? 'bg-slate-200 dark:bg-slate-400' : 'bg-white dark:bg-slate-300' }}">
                 @if ($show_aec_name)
-                    <td class="p-1 text-center text-{{ $size }}">
+                    <td
+                        class="p-1 text-center text-{{ $size }}
+                        @if ($paper->aec?->id == auth()->user()->id) font-bold @endif
+                    ">
                         {{ $paper->aec ? $paper->aec->name : '未設定' }}
                     </td>
                 @endif
