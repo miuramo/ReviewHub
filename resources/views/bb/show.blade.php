@@ -1,8 +1,13 @@
 <x-app-layout>
     @php
-        $name_of_managers = \App\Models\Setting::getValue("NAME_OF_MANAGERS");
+        $name_of_managers = \App\Models\Setting::getValue('NAME_OF_MANAGERS');
 
-        $names = [1 => '著者と' . $name_of_managers . 'の連絡', 2 => '査読者との', 3 => '全査読者との', 4 => $name_of_managers . '同士の'];
+        $names = [
+            1 => '著者と' . $name_of_managers . 'の連絡',
+            2 => '査読者との',
+            3 => '全査読者との',
+            4 => $name_of_managers . '同士の',
+        ];
 
         // もし、type=2(査読掲示板) で、bbs->rev_id でとってきたReview.user_id （査読者）が同じ、かつpaper_idが同じなら、
         // 兄弟Bbを探してくる。
@@ -89,8 +94,10 @@
                 論文管理画面（{{ $name_of_managers }}のみ）
             </x-element.linkbutton>
             <span class="mx-4"></span>
-            <x-element.button onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });" color="teal" size="sm" value="一番下に移動 [b]">
+            <x-element.button onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });"
+                color="teal" size="sm" value="一番下に移動 [b]">
             </x-element.button>
+            <span class="mx-2 text-teal-500 text-sm">[j],[k] キーでメッセージ単位での移動</span>
         @endif
 
         {{-- 査読掲示板で、複数の兄弟掲示板があるとき、古い方から全部表示する --}}
@@ -124,7 +131,9 @@
 
                 for (const [url, elements] of elementsByUrl) {
                     const response = await fetch(url, {
-                        headers: { 'Accept': 'application/json' },
+                        headers: {
+                            'Accept': 'application/json'
+                        },
                     });
                     if (!response.ok) continue;
                     const statuses = await response.json();
@@ -135,9 +144,9 @@
                             element.textContent = `閲覧者 ${status.count}人`;
                             return;
                         }
-                        const recipient = status.read_at
-                            ? `既読（${new Date(status.read_at).toLocaleString()}）`
-                            : '未読';
+                        const recipient = status.read_at ?
+                            `既読（${new Date(status.read_at).toLocaleString()}）` :
+                            '未読';
                         element.textContent = `${recipient}`;
                     });
                 }
@@ -156,14 +165,16 @@
                 <div
                     class="inline-block w-3/4 bg-green-300 p-2 rounded-md mt-5 hover:bg-green-400 hover:transition-colors duration-500 dark:bg-green-700 dark:text-gray-200">
                     <div class="px-2 text-left text-sm">送信フォーム</div>
-                    <input class="w-full p-2 bg-green-200 rounded-md border-green-300 border-2 dark:bg-green-800 dark:text-gray-200 dark:border-green-600" type="text"
-                        size="70" name="sub" id="bbsub" placeholder="ここに Subject (Title) を入力"
-                        onkeydown="return disableEnterKey(event);"
+                    <input
+                        class="w-full p-2 bg-green-200 rounded-md border-green-300 border-2 dark:bg-green-800 dark:text-gray-200 dark:border-green-600"
+                        type="text" size="70" name="sub" id="bbsub"
+                        placeholder="ここに Subject (Title) を入力" onkeydown="return disableEnterKey(event);"
                         @isset($revid)
                             value="[RevID : {{ $revid }}]  "
                         @endisset>
-                    <textarea class="w-full mt-1 p-2 bg-green-100 rounded-md border-green-300  border-2 dark:bg-green-800 dark:text-gray-200 dark:border-green-600" name="mes" id="bbmes"
-                        cols="70" rows="10" placeholder="ここにメッセージを入力"></textarea>
+                    <textarea
+                        class="w-full mt-1 p-2 bg-green-100 rounded-md border-green-300  border-2 dark:bg-green-800 dark:text-gray-200 dark:border-green-600"
+                        name="mes" id="bbmes" cols="70" rows="10" placeholder="ここにメッセージを入力"></textarea>
                     <label for="bbfile" class="text-sm">ファイル添付（オプション）</label>
                     <input class="text-sm" type="file" name="bbfile" id="bbfile">
                     送信すると、関係者にメールで通知されます。<x-element.submitbutton value="submit" color="green" id="bb_submit">了解して送信する
@@ -177,8 +188,8 @@
                 </div>
             </form>
             @if ($isEC)
-                <x-element.button id="toggleButton" size="sm" value="定型文の選択画面をひらく（{{ $name_of_managers }}のみ）" color="teal"
-                    onclick="openclose('div_bbtemplate')">
+                <x-element.button id="toggleButton" size="sm" value="定型文の選択画面をひらく（{{ $name_of_managers }}のみ）"
+                    color="teal" onclick="openclose('div_bbtemplate')">
                 </x-element.button>
                 <div class="hidden-content p-2 bg-teal-100" style="display:none" id="div_bbtemplate">
                     ボタンを押すと、Subject と Message に定型文が入力されます。<br>
@@ -190,8 +201,9 @@
                         $json_templates = json_encode($templates);
                     @endphp
                     @foreach ($templates as $tempname => $tempvalue)
-                        <x-element.button id="bbtemplate{{ $loop->index }}" size="sm" value="{{ $tempname }}"
-                            color="teal" onclick="insertTemplate('{{ $tempname }}')">
+                        <x-element.button id="bbtemplate{{ $loop->index }}" size="sm"
+                            value="{{ $tempname }}" color="teal"
+                            onclick="insertTemplate('{{ $tempname }}')">
                         </x-element.button>
                     @endforeach
                 </div>
@@ -221,8 +233,9 @@
 
         </div>
         <div class="my-10"></div>
-            <x-element.button onclick="window.scrollTo({ top: 0, behavior: 'smooth' });" color="teal" size="sm" value="一番上に移動 [t]">
-            </x-element.button>
+        <x-element.button onclick="window.scrollTo({ top: 0, behavior: 'smooth' });" color="teal" size="sm"
+            value="一番上に移動 [t]">
+        </x-element.button>
 
     </div>
     <script>
@@ -241,11 +254,14 @@
             const messages = [...document.querySelectorAll('.message-div')];
             if (messages.length === 0) return;
             const threshold = window.scrollY + 8; // 現在位置のわずかな誤差を許容
-            const target = direction > 0
-                ? messages.find((el) => el.offsetTop > threshold)
-                : messages.findLast((el) => el.offsetTop < window.scrollY - 8);
+            const target = direction > 0 ?
+                messages.find((el) => el.offsetTop > threshold) :
+                messages.findLast((el) => el.offsetTop < window.scrollY - 8);
             if (target) {
-                window.scrollTo({ top: target.offsetTop - 8, behavior: 'smooth' });
+                window.scrollTo({
+                    top: target.offsetTop - 8,
+                    behavior: 'smooth'
+                });
             }
         };
 
@@ -255,9 +271,15 @@
             if (target instanceof HTMLElement &&
                 (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))) return;
             if (event.key === 'b') {
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth'
+                });
             } else if (event.key === 't') {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
             } else if (event.key === 'j') {
                 scrollToMessage(1);
             } else if (event.key === 'k') {
