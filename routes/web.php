@@ -254,6 +254,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('mt', MailTemplateController::class);
     Route::post('mt/bundle', [MailTemplateController::class, 'bundle'])->name('mt.bundle');
 
+    // begin CRUD
     Route::get('/admin_crud', [AdminController::class, 'crud'])->name('admin.crud');
     Route::get('/admin_crudcopy', [AdminController::class, 'crudcopy'])->name('admin.crudcopy');
     Route::get('/admin_cruddelete', [AdminController::class, 'cruddelete'])->name('admin.cruddelete');
@@ -262,6 +263,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin_crudnew', [AdminController::class, 'crudnew'])->name('admin.crudnew');
     Route::get('/admin_crudtruncate', [AdminController::class, 'crudtruncate'])->name('admin.crudtruncate');
     Route::post('/admin_crud', [AdminController::class, 'crudpost'])->name('admin.crudpost');
+    // end CRUD
+
     Route::get('/admin_catsetting', [AdminController::class, 'catsetting'])->name('admin.catsetting');
     Route::get('/admin_chkexefiles', [AdminController::class, 'check_exefiles'])->name('admin.chkexefiles');
     Route::get('/admin_fixusernamespace', [AdminController::class, 'fixusernamespace'])->name('admin.fixusernamespace');
