@@ -73,6 +73,24 @@ class Role extends Model
     }
 
     /**
+     * 論文の著者・共著者と、ロールの重複を配列で返す
+     */
+    public static function check_role_and_paper(string $role_name, Paper $paper): array
+    {
+        $role = Role::where("name", $role_name)->first();
+        if (!$role) return [];
+        $uids = $role->uids();
+        $members = User::whereIn("id", $uids)->get();
+        $overlap = [];
+        foreach ($members as $member) {
+            if ($paper->isAuthorOrCoAuthor($member)){
+                $overlap[] = $member->name;
+            }
+        }
+        return $overlap;
+    }
+
+    /**
      * このRoleよりも、idが小さいRoleのnameを | でつないだもの
      * ただし、長さが0だったら、admin を追加する。
      */

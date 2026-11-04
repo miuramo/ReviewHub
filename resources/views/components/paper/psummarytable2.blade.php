@@ -103,6 +103,9 @@
                     @endif
                     {{-- 著者名リスト --}}
                     <div class="w-full text-xs">
+                        @php
+                            $has_committee_member = false;
+                        @endphp
 
                         @if (strlen($paper->authorlist) > 10)
                             @foreach (explode("\n", $paper->authorlist) as $author)
@@ -113,6 +116,9 @@
                                     <span
                                         class="text-left mr-2 font-bold text-red-600 bg-yellow-200 rounded px-1 py-0.5">{{ $author }}
                                     </span>
+                                    @php
+                                        $has_committee_member = true;
+                                    @endphp
                                 @else
                                     <span class="text-left mr-2 text-gray-500">{{ $author }}</span>
                                 @endif
@@ -120,6 +126,18 @@
                         @else
                             <span class="text-gray-400">{{ $paper->paperowner->name }}
                                 （{{ $paper->paperowner->affil }}）が投稿申請中</span>
+                        @endif
+
+                        @if (!$has_committee_member)
+                            {{-- 追加の委員チェック --}}
+                            @php
+                                $resultary = App\Models\Role::check_role_and_paper('cm', $paper);
+                            @endphp
+                            @if (count($resultary))
+                                <span
+                                    class="text-left mr-2 font-bold text-red-600 bg-yellow-200 rounded px-1 py-0.5">{{ implode(', ', $resultary) }}
+                                </span>
+                            @endif
                         @endif
                     </div>
                 </td>

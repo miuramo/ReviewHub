@@ -45,12 +45,15 @@
     </thead>
     <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-300">
         @foreach ($all as $paper)
-            @if($paper->pdf_file_id == 0) @continue @endif
+            @if ($paper->pdf_file_id == 0)
+                @continue
+            @endif
             <tr
                 class="{{ $paper->id % 2 === 0 ? 'bg-slate-200 dark:bg-slate-400 border-slate-400' : 'bg-white dark:bg-slate-300 border-slate-400' }} border hover:bg-cyan-100 hover:dark:bg-cyan-500">
                 @if ($show_aec_name)
-                    <td class="p-1 text-center text-{{ $size }}
-                        @if($paper->aec && $paper->aec->id == auth()->user()->id) font-bold @endif
+                    <td
+                        class="p-1 text-center text-{{ $size }}
+                        @if ($paper->aec && $paper->aec->id == auth()->user()->id) font-bold @endif
                     ">
                         {{ $paper->aec ? $paper->aec->name : '未設定' }}
                     </td>
@@ -85,32 +88,53 @@
                 <td class="p-1 text-center block break-all text-{{ $size }}">
                     {{ $paper->title }}
                     {{-- @if (auth()->user()->can('manage_review', $paper->id)) --}}
-                        @if ($paper->pdf_file_id != 0)
-                            <a class="underline text-blue-600 hover:bg-lime-200"
-                                href="{{ route('file.showhash', ['file' => $paper->pdf_file_id, 'hash' => substr($paper->pdf_file->key, 0, 8)]) }}"
-                                target="_blank">
-                                {{ $paper->pdf_file->pagenum }}page
-                            </a>
-                        @else
-                            No PDF
-                        @endif
+                    @if ($paper->pdf_file_id != 0)
+                        <a class="underline text-blue-600 hover:bg-lime-200"
+                            href="{{ route('file.showhash', ['file' => $paper->pdf_file_id, 'hash' => substr($paper->pdf_file->key, 0, 8)]) }}"
+                            target="_blank">
+                            {{ $paper->pdf_file->pagenum }}page
+                        </a>
+                    @else
+                        No PDF
+                    @endif
                     {{-- 著者名リスト --}}
                     <div class="w-full text-xs">
-                        @if(strlen($paper->authorlist) > 10)
-                        @foreach (explode("\n", $paper->authorlist) as $author)
-                            @php
-                                $aname = trim(explode('(', $author)[0]);
-                            @endphp
-                            @if (isset($editor_hash) && isset($editor_hash[$aname]))
-                                <span
-                                    class="text-left mr-2 font-bold text-red-600 bg-yellow-200 rounded px-1 py-0.5">{{ $author }} </span>
-                            @else
-                                <span class="text-left mr-2 text-gray-500">{{ $author }}</span>
-                            @endif
-                        @endforeach
+                        @php
+                            $has_committee_member = false;
+                        @endphp
+                        @if (strlen($paper->authorlist) > 10)
+                            @foreach (explode("\n", $paper->authorlist) as $author)
+                                @php
+                                    $aname = trim(explode('(', $author)[0]);
+                                @endphp
+                                @if (isset($editor_hash) && isset($editor_hash[$aname]))
+                                    <span
+                                        class="text-left mr-2 font-bold text-red-600 bg-yellow-200 rounded px-1 py-0.5">{{ $author }}
+                                    </span>
+                                    @php
+                                        $has_committee_member = true;
+                                    @endphp
+                                @else
+                                    <span class="text-left mr-2 text-gray-500">{{ $author }}</span>
+                                @endif
+                            @endforeach
                         @else
-                            <span class="text-gray-400">{{ $paper->paperowner->name }} （{{ $paper->paperowner->affil }}）が投稿申請中</span>
+                            <span class="text-gray-400">{{ $paper->paperowner->name }}
+                                （{{ $paper->paperowner->affil }}）が投稿申請中</span>
                         @endif
+
+                        @if (!$has_committee_member)
+                            {{-- 追加の委員チェック --}}
+                            @php
+                                $resultary = App\Models\Role::check_role_and_paper('cm', $paper);
+                            @endphp
+                            @if (count($resultary))
+                                <span
+                                    class="text-left mr-2 font-bold text-red-600 bg-yellow-200 rounded px-1 py-0.5">{{ implode(', ', $resultary) }}
+                                </span>
+                            @endif
+                        @endif
+
                     </div>
                 </td>
 

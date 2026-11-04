@@ -384,6 +384,11 @@ class Paper extends Model
         return -1;
     }
 
+    public function coauthors()
+    {
+        return $this->belongsToMany(User::class, 'coauthor_paper');
+    }
+
     /**
      * contactemails から、Contactを作成する
      * ここは、contactemailsが変更されたら、かならず実行する。
