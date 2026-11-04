@@ -41,11 +41,15 @@ class Status extends Model
                 $paper->save();
             }
         } elseif ($paper->status_id === 4) {
-            if ($sub->tasks->count() > 0) {
+            if ($sub->tasks->count() > 2) { // 査読者が査読を開始している人数がメタを含め3になったら、査読中(5)になる。それまでは査読者割り当て中(4)のまま
                 $paper->status_id = 5;
                 $paper->save();
             }
         } elseif ($paper->status_id === 5) {
+            if ($sub->tasks->count() < 3) { // 【暫定】査読者が査読を開始している人数がメタを含め2以下であれば、査読者割り当て中(4)に戻す。
+                $paper->status_id = 4;
+                $paper->save();
+            }
             $count = 0;
             foreach ($sub->reviews as $review) {
                 if ($review->status === 2) {
