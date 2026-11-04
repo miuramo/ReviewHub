@@ -20,7 +20,7 @@
     <x-element.login_as :user="$task->subject" />
     が
     {{-- 何を --}}
-    {{ $task->submit->paper->id_03d() }} の
+    {{-- {{ $task->submit->paper->id_03d() }} の --}}
     {{ $task->workflow->description }}
 
     {{-- もし、割り当てタスクなら --}}
@@ -41,15 +41,15 @@
         @endphp --}}
         {{-- <span class="mx-2"></span> --}}
         {{-- ReviewID: {{ $task->review->id ?? '未設定' }} --}}
-        <span class="mx-2"></span> DL日時: {!! substr($task->review->updateReviewDownloadedAt(),0,16) ?? '<span class="text-red-500 font-bold">未DL</span>' !!} 
-        <span class="mx-2"></span>編集開始: {!! substr($task->review->updateReviewEditStartedAt(),0,16) ?? '<span class="text-red-500 font-bold">未開始</span>' !!}
-        <span class="mx-2"></span>入力開始: {!! substr($task->review->updateReviewEnteredAt(),0,16) ?? '<span class="text-red-500 font-bold">未開始</span>' !!}
+        <span class="mx-2"></span> DL日時: {!! $task->review->updateReviewDownloadedAt() ?? '<span class="text-red-500 font-bold">未DL</span>' !!} 
+        <span class="mx-2"></span>編集開始: {!! $task->review->updateReviewEditStartedAt() ?? '<span class="text-red-500 font-bold">未開始</span>' !!}
+        <span class="mx-2"></span>入力開始: {!! $task->review->updateReviewEnteredAt() ?? '<span class="text-red-500 font-bold">未開始</span>' !!}
         <span class="mx-2"></span>入力項目数: {{ $task->review->countReviewItems() }}
     @endif
 
     @if ($task->completed_at)
         <span class="mx-2"></span>
-        報告完了日時: {{ substr($task->completed_at,0,16) }}
+        報告完了: {{ substr($task->completed_at,0,16) }}
         <span class="mx-2"></span>
 
     {{-- 査読ロックされていても、まだ著者に開示する前であれば、未完了に戻すことができます。 --}}

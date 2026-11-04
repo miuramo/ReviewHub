@@ -567,7 +567,7 @@ class Review extends MetaModel
 
     public function updateReviewDownloadedAt(): ?string
     {
-        if ($this->downloaded_at) return $this->downloaded_at;
+        if ($this->downloaded_at) return substr($this->downloaded_at, 0, 16);
         // 最初は、現在のPaper->pdf_file_id をみる。
         $this->downloaded_at = LogAccess::date_user_access_file($this->user_id, $this->paper->pdf_file_id);
         // もし、null だったら、submit(round)の投稿受理receiptsent_at から過去のファイルを遡って検索し、最初にみつかったPDFファイルのアクセス日時を取得する。
@@ -583,26 +583,24 @@ class Review extends MetaModel
             }
         }
         $this->save();
-        return $this->downloaded_at;
+        if (!$this->downloaded_at) return null;
+        return substr($this->downloaded_at, 0, 16);
     }
 
     public function updateReviewEditStartedAt(): ?string
     {
-        if ($this->review_edit_started_at) return $this->review_edit_started_at;
+        if ($this->review_edit_started_at) return substr($this->review_edit_started_at, 0, 16);
 
         $this->review_edit_started_at = LogAccess::date_user_edit_review($this->user_id, $this->id);
         $this->save();
-        return $this->review_edit_started_at;
+        if (!$this->review_edit_started_at) return null;
+        return substr($this->review_edit_started_at, 0, 16);
     }
 
     public function updateReviewEnteredAt(): ?string
     {
-        // if ($this->review_entered_at) return $this->review_entered_at;
         $scores = Score::where('review_id', $this->id)->orderBy('created_at')->first();
-        return $scores ? $scores->created_at : null;
-        // $this->review_entered_at = LogAccess::date_user_enter_review($this->user_id, $this->id);
-        // $this->save();
-        // return $this->review_entered_at;
+        return $scores ? substr($scores->created_at, 0, 16) : null;
     }
     public function countReviewItems(): int
     {
