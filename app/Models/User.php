@@ -263,4 +263,24 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             }
         }
     }
+
+    /**
+     * 同姓同名・同所属ユーザの注意を取得
+    */
+    public static function check_similar_user(): ?string
+    {
+        $user = auth()->user();
+        if (!$user) return null;
+        $similar_users = User::where('id', '!=', $user->id)
+            ->where('name', $user->name)
+            ->where('affil', $user->affil)
+            ->get();
+        if ($similar_users->isEmpty()) return null;
+        $msg = "本システム上に、同姓同名・同所属のユーザアカウントが複数あります。現在ログイン中のユーザID は " . $user->id . "ですが、別のユーザID: ";
+        foreach ($similar_users as $su) {
+            $msg .= $su->id . " ";
+        }
+        $msg .= " が存在します。この問題を解消したい場合は編集委員会にお問い合わせください。";
+        return $msg;
+    }
 }

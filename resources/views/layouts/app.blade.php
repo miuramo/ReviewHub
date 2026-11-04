@@ -34,6 +34,19 @@
             class="border border-yellow-800 bg-yellow-200 px-4 py-0 text-center text-yellow-800 font-bold dark:border-yellow-800 dark:bg-yellow-500 ">
             {!! $announce->value !!}</div>
     @endisset
+
+    {{-- 同姓同名・同所属ユーザの注意 --}}
+    @auth
+        @php
+            $check_similar_user = App\Models\User::check_similar_user();
+        @endphp
+        @isset($check_similar_user)
+            <div class="border border-blue-800 bg-blue-200 px-4 py-1 text-center text-blue-800 font-bold dark:border-blue-800 dark:bg-blue-500">
+                {!! $check_similar_user !!}
+            </div>
+        @endisset
+    @endauth
+
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
 
         {{-- @auth --}}
