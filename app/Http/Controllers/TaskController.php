@@ -262,4 +262,13 @@ class TaskController extends Controller
         $task->revert(); // review のアンロックも、終了日時のリセットもTaskモデル側で行われます。
         return redirect()->back()->with('feedback.success', 'タスクを未完了に戻しました');
     }
+
+    /**
+     * リマインダメールを送信する
+     */
+    public function sendReminderEmails()
+    {
+        if (!auth()->user()->can('role_any', 'ec')) abort(403);
+        \App\Models\Task::sendReminderEmails();
+    }
 }

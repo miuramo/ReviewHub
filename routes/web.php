@@ -254,6 +254,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('mt', MailTemplateController::class);
     Route::post('mt/bundle', [MailTemplateController::class, 'bundle'])->name('mt.bundle');
 
+    // リマインダメール送信
+    Route::get('/send_reminder_emails', [TaskController::class, 'sendReminderEmails'])->name('send_reminder_emails');
+
     // begin CRUD
     Route::get('/admin_crud', [AdminController::class, 'crud'])->name('admin.crud');
     Route::get('/admin_crudcopy', [AdminController::class, 'crudcopy'])->name('admin.crudcopy');

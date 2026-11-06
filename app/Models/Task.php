@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Mail\Reminder;
 use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class Task extends Model
 {
@@ -51,9 +53,10 @@ class Task extends Model
     /**
      * 柔軟な査読者の割り当てと査読タスク生成
      */
-    public static function createReviewTask(Submit $sub, int $revuid): Task {
+    public static function createReviewTask(Submit $sub, int $revuid): Task
+    {
         // ここに柔軟な査読者の割り当てと査読タスク生成の処理を書く
-        if (auth()->user()){
+        if (auth()->user()) {
             $obj_id = auth()->user()->id;
         } else {
             // ログインしていない場合は、デフォルトのユーザーIDを使用
@@ -111,10 +114,12 @@ class Task extends Model
             // 差分を計算
             $difference = $currentDate->diff($givenDate);
             // 差分の日数を返す（符号を考慮）
-            if ($difference->days > 0) {
-                return $prefix . $difference->days+1 . '日';
-            } else {
+            if ($difference->invert === 1) {
+                // 過去の日付（期限超過）
                 return $difference->days . '日' . $postfix;
+            } else {
+                // 未来の日付（残り日数）
+                return $prefix . ($difference->days + 1) . '日';
             }
         } catch (Exception $e) {
             // 不正な日付形式の場合はエラーメッセージを返す
@@ -161,12 +166,12 @@ class Task extends Model
             $this->sendApproveMail(1, 0);
         }
     }
-    public function logappend(?string $comment, ?int $subject_id=null, ?int $object_id=null, ?int $approved=null): void
+    public function logappend(?string $comment, ?int $subject_id = null, ?int $object_id = null, ?int $approved = null): void
     {
         $localLog = $this->log ?? [];
         $subject_id = $subject_id ?? $this->subject_id;
         $object_id = $object_id ?? $this->object_id;
-        $approved = $approved ?? $this->approved; 
+        $approved = $approved ?? $this->approved;
         $now = (new DateTime())->format('Y-m-d H:i:s');
         $newMes = ['workflow_id' => $this->workflow->id, 'subject_id' => $subject_id, 'object_id' => $object_id, 'comment' => $comment, 'approved' => $approved, 'datetime' => $now];
         $localLog[] = $newMes;
@@ -218,9 +223,9 @@ class Task extends Model
     {
         // いい感じに進める
         // もし割り当てタスクなら
-        if ($this->workflow->task == "assign"){
+        if ($this->workflow->task == "assign") {
             $rolename = $this->workflow->obj_role_name();
-            while(true){
+            while (true) {
                 $u_random = Role::findByIdOrName($rolename)->users()->get()->random();
                 if ($u_random->id > 2) break;
             }
@@ -233,7 +238,7 @@ class Task extends Model
             $this->refresh();
             $this->workflow->assign_forward($this, $this->object_id); // 割り当て
             $this->workflow->proceed_workflow($this); //承認が得られたので、ワークフローを介して、次のタスクに進む
-        } else if ($this->workflow->task == "submit"){
+        } else if ($this->workflow->task == "submit") {
             $this->completed = 1;
             $this->completed_at = $now = (new DateTime())->format('Y-m-d H:i:s');
             $this->require_approve = 0;
@@ -242,7 +247,7 @@ class Task extends Model
             $this->refresh();
             $this->workflow->assign_forward($this, $this->object_id); // 割り当て
             $this->workflow->proceed_workflow($this); //承認が得られたので、ワークフローを介して、次のタスクに進む
-        } else if ($this->workflow->task == "confirm"){
+        } else if ($this->workflow->task == "confirm") {
             $this->completed = 1;
             $this->completed_at = $now = (new DateTime())->format('Y-m-d H:i:s');
             $this->require_approve = 0;
@@ -297,8 +302,8 @@ class Task extends Model
      */
     public function updateReviewDownloadedAt(): ?string
     {
-        if (!$this->started){
-            if ($this->review->start_at){
+        if (!$this->started) {
+            if ($this->review->start_at) {
                 $this->started = true;
                 $this->save();
             }
@@ -321,4 +326,128 @@ class Task extends Model
         return $this->review ? $this->review->review_edit_started_at : null;
     }
 
+
+    /**
+     * リマインダメール送信
+     */
+    public function sendReminderEmail(): void
+    {
+        // 完了してたらリマインダメールを送らない
+        if ($this->completed) return;
+        // 査読かどうか？
+        if ($this->workflow_id != 4) return;
+
+        // メタかどうか？
+        $is_meta = $this->review->target == 1;
+        // 通常査読かどうか?
+        // $is_regular = $this->review->target == 0;
+
+        // もしメタの場合、ほかの通常査読が終わっているか？揃っていなければ締め切りを変更する
+        if ($is_meta) {
+            $this->extend_due_if_needed();
+            $this->refresh();
+        }
+
+        // due_date の確認
+        $seven_days_from_now = now()->addDays(8);
+        if ($this->due_date && $this->due_date < $seven_days_from_now) {
+            // 締め切りが7日以内の場合の処理
+            $mes = $this->get_description();
+            //メール通知
+            (new Reminder($this, $mes))->process_send();
+        } else {
+            // Log::channel('single')->info('Due date', ['task_id' => $this->id, 'due_at' => $this->due_date]);
+        }
+        // 実際のメール送信処理をここに記述
+    }
+
+    /**
+     * ここを定期的に呼び出すことで、リマインダメールを送信する
+     */
+    public static function sendReminderEmails(): void
+    {
+        $tasks = self::where('completed', 0)->get();
+        foreach ($tasks as $task) {
+            $task->sendReminderEmail();
+        }
+    }
+
+    public function get_mail_to_cc(): array
+    {
+        $tolist = [];
+        $cclist = [];
+        $bcclist = [];
+
+        $revuser = $this->subject;
+        if ($revuser && $revuser->email) {
+            $tolist[] = $revuser->email;
+        }
+        $paper = Paper::find($this->submit->paper_id);
+        $aec = User::find($paper->aec_id);
+        if ($aec && $aec->email) {
+            // Log::channel('single')->info('AEC email', ['aec_id' => $aec->id, 'email' => $aec->email]);
+            $cclist[] = $aec->email;
+        }
+        $bcclist[] = env('MAIL_BCC_ADDRESS', 'noreply@example.com');
+        // Log::channel('single')->info('cclist', ['cclist' => $cclist, 'bcc' => $bcclist]);
+
+        return ["to" => $tolist, "cc" => $cclist, "bcc" => $bcclist];
+    }
+
+    // メタの締め切りを延長する必要がある場合の処理
+    public function extend_due_if_needed(): void
+    {
+        // ここに締め切りを延長する処理を記述
+        $count_reviewtasks = Task::where("submit_id", $this->submit_id)
+            ->where("workflow_id", 4)
+            ->whereHas("review", function ($query) {
+                $query->where("target", 0);
+            })
+            ->count();
+        if ($count_reviewtasks == 2) {
+            $reviewtasks = Task::where("submit_id", $this->submit_id)
+                ->where("workflow_id", 4)
+                ->whereHas("review", function ($query) {
+                    $query->where("target", 0);
+                })
+                ->get();
+            $tmp_due_date = $this->due_date;
+            foreach ($reviewtasks as $reviewtask) {
+                if ($reviewtask->due_date && $reviewtask->due_date > $tmp_due_date) {
+                    $tmp_due_date = $reviewtask->due_date;
+                }
+            }
+            $review_duration = \App\Models\Setting::getary('REVIEW_DURATION_DAYS')[1];
+            $new_due_date = date('Y-m-d', strtotime($tmp_due_date . ' + ' . $review_duration . ' days'));
+            if ($new_due_date != $this->due_date) {
+                $this->due_date = $new_due_date;
+                $this->save();
+            }
+        }
+    }
+
+    public function get_description(): ?string
+    {
+        $mes = "";
+        if ($this->review->target == 1) {
+            $count_reviewtasks = Task::where("submit_id", $this->submit_id)
+                ->where("workflow_id", 4)
+                ->whereHas("review", function ($query) {
+                    $query->where("target", 0);
+                })
+                ->count();
+            if ($count_reviewtasks < 2) {
+                $mes .= "査読者2名の選定がまだおわっていません。";
+                return $mes;
+            }
+        }
+        if (!$this->review->updateReviewDownloadedAt()) {
+            $mes .= "論文がまだダウンロードされていません。";
+        } else if (!$this->review->updateReviewEditStartedAt()) {
+            $mes .= "査読報告の編集がまだ開始されていません。";
+        } else if (!$this->review->updateReviewEnteredAt()) {
+            $mes .= "査読報告の入力がまだ完了していません。";
+        }
+        return $mes;
+    }
 }

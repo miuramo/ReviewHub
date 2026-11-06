@@ -4,11 +4,13 @@ namespace App\Providers;
 
 use App\Actions\StorePasskey;
 use App\Actions\VerifyPasskey;
+use App\Models\Task;
 use App\Models\Accept;
 use App\Models\Bidding;
 use App\Models\Contact;
 use App\Models\EnqueteAnswer;
 use App\Models\EnqueteItem;
+use App\Models\PaperManager;
 use App\Models\File;
 use App\Models\MailTemplate;
 use App\Models\Paper;
@@ -68,6 +70,8 @@ class AppServiceProvider extends ServiceProvider
         Setting::observe(GenericObserver::class);
         Contact::observe(GenericObserver::class);
         Submit::observe(GenericObserver::class);
+        Task::observe(GenericObserver::class);
+        PaperManager::observe(GenericObserver::class);
 
         // if (PHP_OS == "Linux") { // 本番環境なら
         //     $url->forceScheme('https'); //  追加

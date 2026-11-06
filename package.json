@@ -2,7 +2,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "concurrently \"php artisan serve  --port 11111\" \"php artisan queue:work\" \"php artisan reverb:start\" \"npm run dev-only\"",
+        "dev": "concurrently \"php artisan serve  --port 11111\" \"php artisan queue:work\" \"php artisan reverb:start\" \"php artisan schedule:work\" \"npm run dev-only\"",
         "dev-only": "vite",
         "build": "vite build"
     },

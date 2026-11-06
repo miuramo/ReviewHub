@@ -4,10 +4,11 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Support\Facades\Log;
 
 $app = Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        channels: __DIR__.'/../routes/channels.php',
+        channels: __DIR__ . '/../routes/channels.php',
         web: __DIR__ . '/../routes/web.php',
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
@@ -33,6 +34,13 @@ $app = Application::configure(basePath: dirname(__DIR__))
     })
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('app:check-failed-jobs')->everyTenMinutes();
+
+        // リマインダメール送信（本番: 毎朝7:30、それ以外: ==テスト用に1分おき==）
+        if (env('APP_DEBUG', false) == false || app()->environment('production')) {
+            $schedule->call([\App\Models\Task::class, 'sendReminderEmails'])->dailyAt('07:30');
+        } else {
+            // $schedule->call([\App\Models\Task::class, 'sendReminderEmails'])->everyMinute();
+        }
     });
 
 $application = $app->create();
