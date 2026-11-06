@@ -35,9 +35,9 @@ $app = Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('app:check-failed-jobs')->everyTenMinutes();
 
-        // リマインダメール送信（本番: 毎朝7:30、それ以外: ==テスト用に1分おき==）
+        // リマインダメール送信（本番: 2日に1回 朝7:30、それ以外: テスト用に1分おき）
         if (env('APP_DEBUG', false) == false || app()->environment('production')) {
-            $schedule->call([\App\Models\Task::class, 'sendReminderEmails'])->dailyAt('07:30');
+            $schedule->call([\App\Models\Task::class, 'sendReminderEmails'])->cron('30 7 */2 * *');
         } else {
             // $schedule->call([\App\Models\Task::class, 'sendReminderEmails'])->everyMinute();
         }
