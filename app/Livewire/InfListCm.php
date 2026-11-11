@@ -7,7 +7,7 @@ use Livewire\Component;
 
 class InfListCm extends Component
 {
-    public $perPage = 5;
+    public $perPage = 15;
     public int $increment = 5;
     public bool $isLoading = false;
     public int $total = 0;
