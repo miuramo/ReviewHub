@@ -408,7 +408,7 @@ class Review extends MetaModel
      */
     public static function urllink(string $txt): string
     {
-        $txt = preg_replace_callback("/(<a [^>]+?>.+?<\/a>)|(https?:\/\/[a-zA-Z0-9_\.\/\~\%\:\#\?=&\;\-]+)/i", ["App\Models\Review", "urllink_callback"], $txt);
+        $txt = preg_replace_callback('!(<a [^>]+?>.+?</a>)|(https?://[a-zA-Z0-9_./~%:#?=&;\-\p{L}\p{N}]+)!iu', ["App\Models\Review", "urllink_callback"], $txt);
         $txt = strip_tags($txt, "<a>");
         return $txt;
     }

@@ -110,4 +110,14 @@ class ReviewTest extends TestCase
             $this->assertStringNotContainsString('&amp;amp;', $linked);
         }
     }
+
+    public function test_urllink_supports_japanese_query_strings(): void
+    {
+        $url = 'https://tce.eplang.jp/index.php?記事査読の手引き';
+
+        $linked = Review::urllink($url);
+
+        $this->assertStringContainsString('href="' . $url . '"', $linked);
+        $this->assertStringContainsString('>' . $url . '</a>', $linked);
+    }
 }
