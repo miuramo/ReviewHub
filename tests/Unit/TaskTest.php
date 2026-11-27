@@ -6,6 +6,8 @@ use App\Models\Task;
 use App\Models\Workflow;
 use App\Models\Submit;
 use App\Models\Paper;
+use App\Models\Review;
+use App\Models\Setting;
 use App\Models\User;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -241,5 +243,53 @@ class TaskTest extends TestCase
             // with属性が設定されていない場合はスキップ
             $this->markTestSkipped('with property not defined or not an array in Task model');
         }
+    }
+
+    #[Test]
+    public function it_does_not_extend_the_meta_due_date_repeatedly(): void
+    {
+        Setting::setval('REVIEW_DURATION_DAYS', '[24,14,5]');
+        $submit = Submit::factory()->create();
+        $reviewer_ids = User::factory()->count(3)->create()->pluck('id');
+
+        $reviews = collect([
+            Review::create([
+                'submit_id' => $submit->id,
+                'user_id' => $reviewer_ids[0],
+                'target' => 0,
+            ]),
+            Review::create([
+                'submit_id' => $submit->id,
+                'user_id' => $reviewer_ids[1],
+                'target' => 0,
+            ]),
+            Review::create([
+                'submit_id' => $submit->id,
+                'user_id' => $reviewer_ids[2],
+                'target' => 1,
+            ]),
+        ]);
+
+        Task::create([
+            'submit_id' => $submit->id,
+            'workflow_id' => 4,
+            'due_date' => '2026-12-01',
+        ])->forceFill(['review_id' => $reviews[0]->id])->save();
+        Task::create([
+            'submit_id' => $submit->id,
+            'workflow_id' => 4,
+            'due_date' => '2026-12-05',
+        ])->forceFill(['review_id' => $reviews[1]->id])->save();
+        $meta_task = Task::create([
+            'submit_id' => $submit->id,
+            'workflow_id' => 4,
+            'due_date' => '2026-12-10',
+        ]);
+        $meta_task->forceFill(['review_id' => $reviews[2]->id])->save();
+
+        $meta_task->extend_due_if_needed();
+        $meta_task->extend_due_if_needed();
+
+        $this->assertSame('2026-12-19', $meta_task->fresh()->due_date);
     }
 }

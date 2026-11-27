@@ -397,32 +397,29 @@ class Task extends Model
     // メタの締め切りを延長する必要がある場合の処理
     public function extend_due_if_needed(): void
     {
-        // ここに締め切りを延長する処理を記述
-        $count_reviewtasks = Task::where("submit_id", $this->submit_id)
+        $reviewtasks = Task::where("submit_id", $this->submit_id)
             ->where("workflow_id", 4)
             ->whereHas("review", function ($query) {
                 $query->where("target", 0);
             })
-            ->count();
-        if ($count_reviewtasks == 2) {
-            $reviewtasks = Task::where("submit_id", $this->submit_id)
-                ->where("workflow_id", 4)
-                ->whereHas("review", function ($query) {
-                    $query->where("target", 0);
-                })
-                ->get();
-            $tmp_due_date = $this->due_date;
-            foreach ($reviewtasks as $reviewtask) {
-                if ($reviewtask->due_date && $reviewtask->due_date > $tmp_due_date) {
-                    $tmp_due_date = $reviewtask->due_date;
-                }
-            }
-            $review_duration = \App\Models\Setting::getary('REVIEW_DURATION_DAYS')[1];
-            $new_due_date = date('Y-m-d', strtotime($tmp_due_date . ' + ' . $review_duration . ' days'));
-            if ($new_due_date != $this->due_date) {
-                $this->due_date = $new_due_date;
-                $this->save();
-            }
+            ->get();
+        if ($reviewtasks->count() != 2) {
+            return;
+        }
+
+        $latest_review_due_date = $reviewtasks
+            ->pluck('due_date')
+            ->filter()
+            ->max();
+        if (!$latest_review_due_date) {
+            return;
+        }
+
+        $review_duration = \App\Models\Setting::getary('REVIEW_DURATION_DAYS')[1];
+        $new_due_date = date('Y-m-d', strtotime($latest_review_due_date . ' + ' . $review_duration . ' days'));
+        if (!$this->due_date || $new_due_date > $this->due_date) {
+            $this->due_date = $new_due_date;
+            $this->save();
         }
     }
 
